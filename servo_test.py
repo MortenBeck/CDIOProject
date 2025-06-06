@@ -1,16 +1,11 @@
-from machine import Pin, PWM
+from gpiozero import Servo
 import time
 
 # === SERVO SETUP ===
 # Servos on pins 12, 32, and 33 (GPIO18, GPIO12, GPIO13)
-servo1 = PWM(Pin(18))  # Pin 12 = GPIO18
-servo2 = PWM(Pin(12))  # Pin 32 = GPIO12  
-servo3 = PWM(Pin(13))  # Pin 33 = GPIO13
-
-# Set all servos to 50Hz
-servo1.freq(50)
-servo2.freq(50)
-servo3.freq(50)
+servo1 = Servo(18)  # Pin 12 = GPIO18
+servo2 = Servo(12)  # Pin 32 = GPIO12  
+servo3 = Servo(13)  # Pin 33 = GPIO13
 
 # === SERVO FUNCTIONS ===
 def set_angle(servo, angle):
@@ -20,9 +15,10 @@ def set_angle(servo, angle):
     elif angle > 180:
         angle = 180
     
-    # Calculate duty cycle (0-65535 range)
-    duty = int(1640 + (angle * 36.4))
-    servo.duty_u16(duty)
+    # Convert angle to gpiozero range (-1 to 1)
+    # 0° = -1, 90° = 0, 180° = 1
+    value = (angle / 90.0) - 1.0
+    servo.value = value
 
 def set_servo1(angle):
     set_angle(servo1, angle)
@@ -128,9 +124,9 @@ while True:
             emergency_stop()
         elif cmd == 'quit' or cmd == 'q':
             emergency_stop()
-            servo1.deinit()
-            servo2.deinit()
-            servo3.deinit()
+            servo1.close()
+            servo2.close()
+            servo3.close()
             print("All servos stopped and disconnected")
             break
             
@@ -151,9 +147,9 @@ while True:
             
     except KeyboardInterrupt:
         emergency_stop()
-        servo1.deinit()
-        servo2.deinit()
-        servo3.deinit()
+        servo1.close()
+        servo2.close()
+        servo3.close()
         print("\nAll servos stopped")
         break
     except (ValueError, IndexError):
