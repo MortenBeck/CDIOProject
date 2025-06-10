@@ -1,0 +1,59 @@
+2025-06-10 17:42:27,461 - telemetry - INFO - Telemetry session started: golfbot_20250610_174227
+2025-06-10 17:42:27,967 - hardware - INFO - Motors stopped
+2025-06-10 17:42:27,967 - hardware - INFO - Hardware initialized successfully
+2025-06-10 17:42:27,968 - __main__ - INFO - Initializing GolfBot...
+2025-06-10 17:42:27,968 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-10 17:42:27,968 - __main__ - INFO - All systems initialized successfully
+2025-06-10 17:42:59,162 - __main__ - INFO - COMPETITION STARTED!
+2025-06-10 17:42:59,162 - __main__ - INFO - Time limit: 480 seconds
+2025-06-10 17:45:56,559 - telemetry - INFO - Telemetry session started: golfbot_20250610_174556
+2025-06-10 17:45:57,066 - hardware - INFO - Motors stopped
+2025-06-10 17:45:57,066 - hardware - INFO - Hardware initialized successfully
+2025-06-10 17:45:57,066 - __main__ - INFO - Initializing GolfBot...
+2025-06-10 17:45:57,066 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-10 17:45:57,066 - __main__ - INFO - All systems initialized successfully
+2025-06-10 17:45:58,574 - __main__ - INFO - COMPETITION STARTED!
+2025-06-10 17:45:58,575 - __main__ - INFO - Time limit: 480 seconds
+2025-06-10 17:45:59,254 - __main__ - INFO - Orange VIP ball spotted!
+2025-06-10 17:46:00,033 - hardware - INFO - Turning right
+2025-06-10 17:46:00,234 - hardware - INFO - Motors stopped
+2025-06-10 17:46:01,016 - hardware - INFO - Turning right
+2025-06-10 17:46:01,217 - hardware - INFO - Motors stopped
+2025-06-10 17:46:02,016 - hardware - INFO - Turning right
+2025-06-10 17:46:02,216 - hardware - INFO - Motors stopped
+2025-06-10 17:46:02,996 - hardware - INFO - Moving forward at 30% speed
+2025-06-10 17:46:03,296 - hardware - INFO - Motors stopped
+2025-06-10 17:46:04,074 - __main__ - WARNING - Near boundary - avoiding
+2025-06-10 17:46:04,074 - hardware - INFO - Motors stopped
+2025-06-10 17:46:04,274 - hardware - INFO - Moving backward at 30% speed
+2025-06-10 17:46:04,775 - hardware - INFO - Motors stopped
+2025-06-10 17:46:04,775 - hardware - INFO - Turning right
+2025-06-10 17:46:05,375 - hardware - INFO - Motors stopped
+2025-06-10 17:46:06,177 - __main__ - WARNING - Near boundary - avoiding
+2025-06-10 17:46:06,177 - hardware - INFO - Motors stopped
+2025-06-10 17:46:06,377 - hardware - INFO - Moving backward at 30% speed
+2025-06-10 17:46:06,878 - hardware - INFO - Motors stopped
+2025-06-10 17:46:06,878 - hardware - INFO - Turning right
+2025-06-10 17:46:07,478 - hardware - INFO - Motors stopped
+2025-06-10 17:46:08,301 - __main__ - WARNING - Near boundary - avoiding
+2025-06-10 17:46:08,302 - hardware - INFO - Motors stopped
+2025-06-10 17:46:08,502 - hardware - INFO - Moving backward at 30% speed
+2025-06-10 17:46:09,002 - hardware - INFO - Motors stopped
+2025-06-10 17:46:09,002 - hardware - INFO - Turning right
+2025-06-10 17:46:09,602 - hardware - INFO - Motors stopped
+2025-06-10 17:46:10,036 - __main__ - INFO - Shutdown signal received
+2025-06-10 17:46:10,036 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-10 17:46:10,037 - hardware - INFO - Motors stopped
+2025-06-10 17:46:10,537 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-10 17:46:10,553 - vision - INFO - Vision system cleanup completed
+2025-06-10 17:46:10,556 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250610_174556/analysis_export.json
+2025-06-10 17:46:10,556 - telemetry - INFO - Telemetry session completed:
+2025-06-10 17:46:10,556 - telemetry - INFO -   - Frames logged: 19
+2025-06-10 17:46:10,556 - telemetry - INFO -   - Balls detected: 48
+2025-06-10 17:46:10,556 - telemetry - INFO -   - Collections: 0
+2025-06-10 17:46:10,557 - telemetry - INFO -   - Errors: 0
+2025-06-10 17:46:10,557 - telemetry - INFO -   - Session data: logs/golfbot_20250610_174556
+2025-06-10 17:46:10,557 - hardware - INFO - Motors stopped
+2025-06-10 17:46:11,057 - hardware - INFO - Hardware cleanup completed
+2025-06-10 17:46:11,057 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-10 17:46:11,058 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
