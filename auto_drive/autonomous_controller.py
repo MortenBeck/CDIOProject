@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Autonomous Controller for GolfBot
-Implements state machine for autonomous ball collection behavior
+Implements the state machine for autonomous ball collection behavior
 """
 
 import time
