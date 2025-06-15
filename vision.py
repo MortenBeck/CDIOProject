@@ -229,27 +229,46 @@ class VisionSystem:
         return goals
     
     def detect_boundaries(self, frame) -> bool:
-        """Detect if robot is near boundaries"""
-        # Convert to grayscale for edge detection
+        """Detect if robot is near immediate boundaries/obstacles"""
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        
-        # Check edges of frame for dark boundaries
         h, w = gray.shape
-        edge_thickness = config.BOUNDARY_DETECTION_THRESHOLD
         
-        # Check if edges are darker than center (indicating boundary)
-        top_edge = np.mean(gray[0:edge_thickness, :])
-        bottom_edge = np.mean(gray[h-edge_thickness:h, :])
-        left_edge = np.mean(gray[:, 0:edge_thickness])
-        right_edge = np.mean(gray[:, w-edge_thickness:w])
-        center = np.mean(gray[h//4:3*h//4, w//4:3*w//4])
+        # Define region of interest - focus on lower portion where immediate obstacles matter
+        # Ignore top 40% of frame (distant walls) and focus on bottom 60%
+        roi_top = int(h * 0.4)  # Start checking from 40% down
+        roi_bottom = h
+        roi_left = 0
+        roi_right = w
         
-        # If any edge is significantly darker than center, we're near boundary
-        boundary_threshold = center - 30
-        near_boundary = (top_edge < boundary_threshold or 
-                        bottom_edge < boundary_threshold or
+        # Extract ROI
+        roi = gray[roi_top:roi_bottom, roi_left:roi_right]
+        roi_h, roi_w = roi.shape
+        
+        edge_thickness = min(config.BOUNDARY_DETECTION_THRESHOLD, roi_w//4, roi_h//4)
+        
+        # Check only immediate edges in ROI
+        bottom_edge = np.mean(roi[roi_h-edge_thickness:roi_h, :])  # Very bottom of frame
+        left_edge = np.mean(roi[:, 0:edge_thickness])              # Left edge in ROI
+        right_edge = np.mean(roi[:, roi_w-edge_thickness:roi_w])   # Right edge in ROI
+        
+        # Center reference from middle of ROI
+        center_y_start = roi_h//4
+        center_y_end = 3*roi_h//4
+        center_x_start = roi_w//4  
+        center_x_end = 3*roi_w//4
+        center = np.mean(roi[center_y_start:center_y_end, center_x_start:center_x_end])
+        
+        # More aggressive threshold for immediate obstacles
+        boundary_threshold = center - 50  # Darker threshold for true obstacles
+        
+        # Only trigger if edges are significantly darker (immediate obstacle)
+        near_boundary = (bottom_edge < boundary_threshold or 
                         left_edge < boundary_threshold or 
                         right_edge < boundary_threshold)
+        
+        # Debug visualization if enabled
+        if config.DEBUG_VISION and near_boundary:
+            self.logger.debug(f"Boundary detected - Bottom: {bottom_edge:.1f}, Left: {left_edge:.1f}, Right: {right_edge:.1f}, Center: {center:.1f}, Threshold: {boundary_threshold:.1f}")
         
         return near_boundary
     
@@ -308,6 +327,13 @@ class VisionSystem:
             return frame
         
         result = frame.copy()
+        h, w = result.shape[:2]
+        
+        # Draw boundary detection ROI
+        roi_top = int(h * 0.4)
+        cv2.rectangle(result, (0, roi_top), (w, h), (255, 0, 0), 2)
+        cv2.putText(result, 'Boundary ROI', (10, roi_top-5), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
         
         # Draw regular balls in green
         for ball in balls:
@@ -349,7 +375,7 @@ class VisionSystem:
         """Process current frame and return detection results"""
         ret, frame = self.get_frame()
         if not ret:
-            return None, None, None, None, None
+            return None, None, None, None, None, None
         
         # Detect all objects
         balls = self.detect_balls(frame)

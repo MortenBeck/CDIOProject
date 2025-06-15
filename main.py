@@ -3,6 +3,7 @@ import logging
 import cv2
 import signal
 import sys
+import os
 from enum import Enum
 from typing import Optional
 import config
@@ -24,6 +25,11 @@ class GolfBot:
     def __init__(self):
         self.setup_logging()
         self.logger = logging.getLogger(__name__)
+        
+        # Check if display is available
+        self.display_available = self.check_display_available()
+        if not self.display_available:
+            self.logger.info("No display detected - running in headless mode")
         
         # Initialize telemetry
         self.telemetry = TelemetryLogger()
@@ -47,6 +53,21 @@ class GolfBot:
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
+    
+    def check_display_available(self):
+        """Check if display/X11 is available"""
+        try:
+            # Check for DISPLAY environment variable
+            if os.environ.get('DISPLAY') is None:
+                return False
+            
+            # Try to initialize a test window
+            test_img = cv2.imread('/dev/null')  # This won't work but won't crash
+            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+            cv2.destroyWindow('test')
+            return True
+        except:
+            return False
         
     def setup_logging(self):
         """Configure logging"""
@@ -139,11 +160,15 @@ class GolfBot:
                 self.last_frame_time = time.time()
                 self.telemetry.log_performance_metrics(fps, frame_time)
                 
-                # Show debug frame if enabled
-                if config.SHOW_CAMERA_FEED and debug_frame is not None:
-                    self.add_status_overlay(debug_frame)
-                    cv2.imshow('GolfBot Debug', debug_frame)
-                    cv2.waitKey(1)
+                # Show debug frame if enabled AND display is available
+                if config.SHOW_CAMERA_FEED and self.display_available and debug_frame is not None:
+                    try:
+                        self.add_status_overlay(debug_frame)
+                        cv2.imshow('GolfBot Debug', debug_frame)
+                        cv2.waitKey(1)
+                    except Exception as e:
+                        self.logger.warning(f"Display error: {e}")
+                        self.display_available = False  # Disable further attempts
                 
                 # State machine
                 old_state = self.state
