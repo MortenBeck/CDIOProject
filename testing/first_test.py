@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-GolfBot Control System - FIXED SERVO VERSION
-Focus on servo2 and servo3 with proper angle mapping
+GolfBot Control System with Pi Camera 2 Integration
+Servo/Motor control + Camera testing for Pi 5
 """
 
 from gpiozero import Servo, OutputDevice
@@ -9,10 +9,10 @@ import time
 import subprocess
 import os
 
-# === SERVO SETUP - ONLY SERVO2 AND SERVO3 ===
-# Using custom min/max pulse widths for full 180° range
-servo2 = Servo(12, min_pulse_width=0.5/1000, max_pulse_width=2.5/1000)  # GPIO 12 (Pin 32)
-servo3 = Servo(13, min_pulse_width=0.5/1000, max_pulse_width=2.5/1000)  # GPIO 13 (Pin 33)
+# === SERVO SETUP ===
+servo1 = Servo(18)  # GPIO 18 (Pin 12) - Hardware PWM0
+servo2 = Servo(12)  # GPIO 12 (Pin 32) - Hardware PWM0 ALT  
+servo3 = Servo(13)  # GPIO 13 (Pin 33) - Hardware PWM1 ALT
 
 # === DC MOTOR SETUP ===
 motor_in1 = OutputDevice(19)  # GPIO 19 (Pin 35)
@@ -20,104 +20,124 @@ motor_in2 = OutputDevice(26)  # GPIO 26 (Pin 37)
 motor_in3 = OutputDevice(20)  # GPIO 20 (Pin 38)
 motor_in4 = OutputDevice(21)  # GPIO 21 (Pin 40)
 
-# === IMPROVED SERVO FUNCTIONS ===
-def set_servo_angle_precise(servo, angle):
-    """
-    Set servo to precise angle with proper 0-180° mapping
-    0° = -1 (leftmost position)
-    90° = 0 (center position)  
-    180° = +1 (rightmost position)
-    """
-    # Clamp angle to valid range
-    angle = max(0, min(180, angle))
+# === CAMERA SETUP ===
+def test_camera_detection():
+    """Test if Pi Camera 2 is detected"""
+    print("Testing Pi Camera 2 detection...")
+    try:
+        result = subprocess.run(['libcamera-hello', '--list-cameras'], 
+                              capture_output=True, text=True, timeout=10)
+        if result.returncode == 0:
+            print("✓ Camera detected:")
+            print(result.stdout)
+            return True
+        else:
+            print("✗ Camera detection failed:")
+            print(result.stderr)
+            return False
+    except Exception as e:
+        print(f"✗ Camera test error: {e}")
+        return False
+
+def camera_preview_test():
+    """Test camera preview for 5 seconds"""
+    print("Starting 5-second camera preview...")
+    try:
+        subprocess.run(['libcamera-hello', '-t', '5000'], timeout=10)
+        print("✓ Camera preview test complete")
+        return True
+    except Exception as e:
+        print(f"✗ Camera preview failed: {e}")
+        return False
+
+def camera_photo_test():
+    """Take a test photo"""
+    print("Taking test photo...")
+    filename = f"test_photo_{int(time.time())}.jpg"
+    try:
+        subprocess.run(['libcamera-still', '-o', filename, '-t', '2000'], timeout=10)
+        if os.path.exists(filename):
+            print(f"✓ Photo saved: {filename}")
+            return True
+        else:
+            print("✗ Photo not saved")
+            return False
+    except Exception as e:
+        print(f"✗ Photo capture failed: {e}")
+        return False
+
+def camera_video_test():
+    """Record 3-second test video"""
+    print("Recording 3-second test video...")
+    filename = f"test_video_{int(time.time())}.h264"
+    try:
+        subprocess.run(['libcamera-vid', '-o', filename, '-t', '3000'], timeout=10)
+        if os.path.exists(filename):
+            print(f"✓ Video saved: {filename}")
+            return True
+        else:
+            print("✗ Video not saved")
+            return False
+    except Exception as e:
+        print(f"✗ Video capture failed: {e}")
+        return False
+
+def camera_full_test():
+    """Complete camera system test"""
+    print("=== COMPLETE CAMERA TEST ===")
     
-    # Convert 0-180° to -1 to +1 range
-    # Formula: value = (angle - 90) / 90
-    value = (angle - 90) / 90
+    tests = [
+        ("Camera Detection", test_camera_detection),
+        ("Preview Test", camera_preview_test),
+        ("Photo Capture", camera_photo_test),
+        ("Video Recording", camera_video_test)
+    ]
     
+    results = {}
+    for test_name, test_func in tests:
+        print(f"\n--- {test_name} ---")
+        results[test_name] = test_func()
+        time.sleep(1)
+    
+    print("\n=== CAMERA TEST RESULTS ===")
+    for test_name, passed in results.items():
+        status = "✓ PASS" if passed else "✗ FAIL"
+        print(f"  {test_name}: {status}")
+    
+    if all(results.values()):
+        print("🎉 All camera tests passed!")
+    else:
+        print("⚠️  Some camera tests failed - check connections")
+
+# === SERVO FUNCTIONS ===
+def set_servo_angle(servo, angle):
+    """Set servo to any angle (no limits)"""
+    value = (angle / 90) - 1  # Convert angle to -1 to +1 range
     servo.value = value
-    return angle
+    
+def set_servo1(angle):
+    set_servo_angle(servo1, angle)
+    print(f"Servo 1 → {angle}°")
 
 def set_servo2(angle):
-    """Set servo2 to specific angle"""
-    actual_angle = set_servo_angle_precise(servo2, angle)
-    print(f"Servo 2 → {actual_angle}° (value: {servo2.value:.3f})")
-    return actual_angle
+    set_servo_angle(servo2, angle)
+    print(f"Servo 2 → {angle}°")
 
 def set_servo3(angle):
-    """Set servo3 to specific angle"""
-    actual_angle = set_servo_angle_precise(servo3, angle)
-    print(f"Servo 3 → {actual_angle}° (value: {servo3.value:.3f})")
-    return actual_angle
+    set_servo_angle(servo3, angle)
+    print(f"Servo 3 → {angle}°")
 
-def set_both_servos(angle):
-    """Set both servos to same angle"""
-    angle2 = set_servo_angle_precise(servo2, angle)
-    angle3 = set_servo_angle_precise(servo3, angle)
-    print(f"Both servos → {angle}°")
-    return angle
+def set_all_servos(angle):
+    set_servo_angle(servo1, angle)
+    set_servo_angle(servo2, angle)
+    set_servo_angle(servo3, angle)
+    print(f"All servos → {angle}°")
 
 def center_servos():
-    """Center both servos at 90°"""
-    set_both_servos(90)
-    print("Servos centered")
+    set_all_servos(90)
 
-def servo_test_sequence():
-    """Test servo range and precision"""
-    print("=== SERVO TEST SEQUENCE ===")
-    
-    test_angles = [0, 45, 90, 135, 180]
-    
-    print("Testing Servo 2...")
-    for angle in test_angles:
-        set_servo2(angle)
-        time.sleep(1)
-    
-    print("Testing Servo 3...")
-    for angle in test_angles:
-        set_servo3(angle)
-        time.sleep(1)
-    
-    print("Testing both servos together...")
-    for angle in test_angles:
-        set_both_servos(angle)
-        time.sleep(1)
-    
-    center_servos()
-    print("✓ Servo test complete")
-
-def servo_sweep_test():
-    """Smooth sweep test to verify full range"""
-    print("=== SERVO SWEEP TEST ===")
-    
-    print("Sweeping Servo 2...")
-    for angle in range(0, 181, 5):
-        set_servo2(angle)
-        time.sleep(0.1)
-    
-    print("Sweeping Servo 3...")
-    for angle in range(0, 181, 5):
-        set_servo3(angle)
-        time.sleep(0.1)
-    
-    center_servos()
-    print("✓ Sweep test complete")
-
-def servo_precision_test():
-    """Test precise angle control"""
-    print("=== SERVO PRECISION TEST ===")
-    
-    precise_angles = [0, 30, 60, 90, 120, 150, 180]
-    
-    for angle in precise_angles:
-        print(f"Setting both to {angle}°...")
-        set_both_servos(angle)
-        time.sleep(1.5)  # Give time to observe position
-    
-    center_servos()
-    print("✓ Precision test complete")
-
-# === DC MOTOR FUNCTIONS (UNCHANGED) ===
+# === DC MOTOR FUNCTIONS ===
+# === CORRECTED DC MOTOR FUNCTIONS ===
 def stop_motors():
     motor_in1.off()
     motor_in2.off()
@@ -145,6 +165,7 @@ def motor_b_reverse():
     motor_in4.on()
     print("Motor B reverse")
 
+# CORRECTED FUNCTIONS - Motor B is reversed for straight movement
 def both_motors_forward():
     motor_a_forward()
     motor_b_reverse()  # Reversed because motor B is mirrored
@@ -155,6 +176,7 @@ def both_motors_reverse():
     motor_b_forward()  # Reversed because motor B is mirrored
     print("Both motors reverse (straight)")
 
+# NEW FUNCTIONS - For actual turning
 def turn_right():
     motor_a_forward()
     motor_b_forward()  # Both same direction = turn right
@@ -164,85 +186,53 @@ def turn_left():
     motor_a_reverse()
     motor_b_reverse()  # Both same direction = turn left
     print("Turning left")
-
-# === CAMERA FUNCTIONS (SIMPLIFIED) ===
-def test_camera_detection():
-    """Test if Pi Camera 2 is detected"""
-    print("Testing Pi Camera 2 detection...")
-    try:
-        result = subprocess.run(['libcamera-hello', '--list-cameras'], 
-                              capture_output=True, text=True, timeout=10)
-        if result.returncode == 0:
-            print("✓ Camera detected")
-            return True
-        else:
-            print("✗ Camera detection failed")
-            return False
-    except Exception as e:
-        print(f"✗ Camera test error: {e}")
-        return False
-
-def camera_photo_test():
-    """Take a test photo"""
-    print("Taking test photo...")
-    filename = f"test_photo_{int(time.time())}.jpg"
-    try:
-        subprocess.run(['libcamera-still', '-o', filename, '-t', '2000'], timeout=10)
-        if os.path.exists(filename):
-            print(f"✓ Photo saved: {filename}")
-            return True
-        else:
-            print("✗ Photo not saved")
-            return False
-    except Exception as e:
-        print(f"✗ Photo capture failed: {e}")
-        return False
-
-# === DEMO FUNCTIONS ===
-def golf_demo():
-    """Golf-specific demo with servo and motor coordination"""
-    print("=== GOLF ROBOT DEMO ===")
+# === INTEGRATED DEMO ===
+def demo_sequence():
+    """Demo with servo, motor, and camera integration"""
+    print("=== COMPREHENSIVE SYSTEM DEMO ===")
     
     # 1. Initialize
-    print("1. Initializing...")
+    print("1. Initializing systems...")
     center_servos()
     stop_motors()
     time.sleep(1)
     
-    # 2. Setup position
-    print("2. Moving to golf setup position...")
-    set_servo2(45)   # Angle servo to 45°
-    set_servo3(135)  # Lift servo to 135°
-    time.sleep(2)
+    # 2. Camera test
+    print("2. Testing camera...")
+    camera_preview_test()
     
-    # 3. Approach ball
-    print("3. Approaching ball...")
+    # 3. Servo tests
+    print("3. Testing servos...")
+    for i, servo_func in enumerate([set_servo1, set_servo2, set_servo3], 1):
+        servo_func(0)
+        time.sleep(0.5)
+        servo_func(180)
+        time.sleep(0.5)
+        servo_func(90)
+        time.sleep(0.5)
+    
+    # 4. Motor tests
+    print("4. Testing motors...")
     both_motors_forward()
     time.sleep(1)
+    both_motors_reverse()
+    time.sleep(1)
     stop_motors()
     
-    # 4. Align for shot
-    print("4. Aligning for shot...")
-    set_servo2(90)   # Center angle
-    set_servo3(90)   # Lower to ball level
-    time.sleep(1)
+    # 5. Coordinated test with photo
+    print("5. Coordinated movement with photo capture...")
+    set_servo1(45)
+    set_servo2(90)
+    set_servo3(135)
+    both_motors_forward()
     
-    # 5. Take photo of ball
-    print("5. Taking photo of setup...")
+    # Take photo during movement
     camera_photo_test()
     
-    # 6. Execute swing motion
-    print("6. Executing swing...")
-    set_servo3(45)   # Pull back
-    time.sleep(0.5)
-    set_servo3(135)  # Swing forward
-    time.sleep(0.5)
-    
-    # 7. Return to center
-    print("7. Returning to ready position...")
+    stop_motors()
     center_servos()
     
-    print("🏌️ GOLF DEMO COMPLETE! 🏌️")
+    print("🎉 INTEGRATED DEMO COMPLETE! 🎉")
 
 def emergency_stop():
     """Stop everything immediately"""
@@ -250,9 +240,56 @@ def emergency_stop():
     center_servos()
     print("EMERGENCY STOP - All systems stopped")
 
+def test_servo_pins():
+    """Test servo pin responsiveness"""
+    from gpiozero import LED
+    test_pins = [18, 12, 13]
+    
+    print("Testing servo pins with LED mode...")
+    for pin in test_pins:
+        print(f"Testing GPIO {pin}...")
+        led = LED(pin)
+        led.on()
+        time.sleep(0.5)
+        led.off()
+        time.sleep(0.5)
+        led.close()
+        print(f"GPIO {pin} responded")
+    print("Pin test complete!")
+
+def competition_ready():
+    """Full system check for competition"""
+    print("=== COMPETITION READINESS CHECK ===")
+    
+    # Test all systems
+    print("Testing servos...")
+    center_servos()
+    for i in [1, 2, 3]:
+        getattr(globals(), f'set_servo{i}')(45)
+        time.sleep(0.2)
+        getattr(globals(), f'set_servo{i}')(135)
+        time.sleep(0.2)
+        getattr(globals(), f'set_servo{i}')(90)
+    print("✓ Servos responsive")
+    
+    print("Testing motors...")
+    motor_a_forward()
+    time.sleep(0.5)
+    motor_b_forward()
+    time.sleep(0.5)
+    stop_motors()
+    print("✓ Motors responsive")
+    
+    print("Testing camera...")
+    camera_ok = test_camera_detection()
+    
+    if camera_ok:
+        print("🏆 SYSTEM READY FOR COMPETITION!")
+    else:
+        print("⚠️  Camera issues detected - fix before competition")
+
 # === INITIALIZE ===
-print("=== GOLFBOT CONTROL SYSTEM - SERVO FIXED ===")
-print("Using Servo 2 (GPIO 12) and Servo 3 (GPIO 13)")
+print("=== GOLFBOT CONTROL SYSTEM WITH CAMERA ===")
 print("Initializing...")
 stop_motors()
 center_servos()
@@ -263,18 +300,35 @@ print("Ready! Type 'help' for commands")
 try:
     while True:
         try:
-            cmd = input("Golf> ").strip().lower()
+            cmd = input("Control> ").strip().lower()
+            if 'inputsubmission' in cmd:
+                cmd = cmd.split("'")[1].replace('\\n', '').strip()
             
             # === SERVO COMMANDS ===
-            if cmd.startswith('s2-'):
+            if cmd.startswith('s1-'):
                 angle = int(cmd[3:])
-                set_servo2(angle)
+                if 0 <= angle <= 180:
+                    set_servo1(angle)
+                else:
+                    print("Angle must be 0-180")
+            elif cmd.startswith('s2-'):
+                angle = int(cmd[3:])
+                if 0 <= angle <= 180:
+                    set_servo2(angle)
+                else:
+                    print("Angle must be 0-180")
             elif cmd.startswith('s3-'):
                 angle = int(cmd[3:])
-                set_servo3(angle)
-            elif cmd.startswith('sb-'):  # Both servos
+                if 0 <= angle <= 180:
+                    set_servo3(angle)
+                else:
+                    print("Angle must be 0-180")
+            elif cmd.startswith('sa-'):
                 angle = int(cmd[3:])
-                set_both_servos(angle)
+                if 0 <= angle <= 180:
+                    set_all_servos(angle)
+                else:
+                    print("Angle must be 0-180")
             
             # === MOTOR COMMANDS ===
             elif cmd == 'maf':
@@ -295,43 +349,41 @@ try:
                 turn_right()
             elif cmd == 'tl':
                 turn_left()
-            
             # === CAMERA COMMANDS ===
             elif cmd == 'cam':
                 test_camera_detection()
+            elif cmd == 'preview':
+                camera_preview_test()
             elif cmd == 'photo':
                 camera_photo_test()
+            elif cmd == 'video':
+                camera_video_test()
+            elif cmd == 'camtest':
+                camera_full_test()
             
-            # === SERVO TEST COMMANDS ===
+            # === SYSTEM COMMANDS ===
             elif cmd == 'sc':
                 center_servos()
-            elif cmd == 'stest':
-                servo_test_sequence()
-            elif cmd == 'ssweep':
-                servo_sweep_test()
-            elif cmd == 'sprec':
-                servo_precision_test()
-            
-            # === DEMO COMMANDS ===
-            elif cmd == 'golf':
-                golf_demo()
+            elif cmd == 'demo':
+                demo_sequence()
             elif cmd == 'stop':
                 emergency_stop()
+            elif cmd == 'test':
+                test_servo_pins()
+            elif cmd == 'ready':
+                competition_ready()
             elif cmd == 'quit' or cmd == 'q':
                 emergency_stop()
                 print("All systems stopped")
                 break
                 
             elif cmd == 'help':
-                print("\n=== SERVO COMMANDS (0-180°) ===")
-                print("  s2-90    - Set servo 2 to 90°")
-                print("  s3-45    - Set servo 3 to 45°") 
-                print("  sb-90    - Set both servos to 90°")
-                print("  sc       - Center both servos (90°)")
-                print("\n=== SERVO TESTS ===")
-                print("  stest    - Test servo positions")
-                print("  ssweep   - Smooth sweep test")
-                print("  sprec    - Precision angle test")
+                print("\n=== SERVO COMMANDS ===")
+                print("  s1-90    - Set servo 1 to 90°")
+                print("  s2-45    - Set servo 2 to 45°") 
+                print("  s3-180   - Set servo 3 to 180°")
+                print("  sa-90    - Set all servos to 90°")
+                print("  sc       - Center all servos")
                 print("\n=== MOTOR COMMANDS ===")
                 print("  maf      - Motor A forward")
                 print("  mar      - Motor A reverse")
@@ -344,9 +396,14 @@ try:
                 print("  tl       - Turn left")
                 print("\n=== CAMERA COMMANDS ===")
                 print("  cam      - Detect camera")
+                print("  preview  - 5-second preview")
                 print("  photo    - Take test photo")
-                print("\n=== DEMO COMMANDS ===")
-                print("  golf     - Golf robot demo")
+                print("  video    - Record 3s video")
+                print("  camtest  - Full camera test")
+                print("\n=== SYSTEM COMMANDS ===")
+                print("  demo     - Integrated system demo")
+                print("  test     - Test servo pins")
+                print("  ready    - Competition readiness check")
                 print("  stop     - Emergency stop")
                 print("  help     - Show this help")
                 print("  q        - Quit")
@@ -354,12 +411,13 @@ try:
                 print("Unknown command. Type 'help' for available commands")
                 
         except (ValueError, IndexError):
-            print("Invalid format. Use: s2-90, s3-45, etc.")
+            print("Invalid format. Use: s1-90, cam, etc.")
             
 except KeyboardInterrupt:
     emergency_stop()
     print("\nAll systems stopped")
 finally:
+    servo1.close()
     servo2.close()
     servo3.close()
     motor_in1.close()
