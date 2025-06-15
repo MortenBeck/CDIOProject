@@ -2,6 +2,7 @@
 """
 Autonomous Controller for GolfBot
 Implements the state machine for autonomous ball collection behavior
+OPTIMIZED: Still search -> rotate only when needed
 """
 
 import time
@@ -33,6 +34,14 @@ class AutonomousController:
         self.candidate_start_time = None     # When we started observing the candidate
         self.confirmed_ball = None           # Ball that has been confirmed for 2+ seconds
         self.ball_observation_history = []   # History of ball positions for tracking
+        
+        # NEW: Still search system
+        self.still_search_duration = 5.0    # Stay still for 5 seconds to search
+        self.rotation_amount = 30            # Degrees to rotate when no balls found
+        self.current_search_start = time.time()  # When current still search started
+        self.is_currently_rotating = False   # Flag to track if we're in rotation phase
+        self.rotation_start_time = None      # When rotation started
+        self.rotation_duration = 0.5        # How long to rotate (seconds)
     
     def is_same_ball(self, ball1, ball2):
         """Check if two ball detections are likely the same ball"""
@@ -147,6 +156,9 @@ class AutonomousController:
             self.candidate_ball = None
             self.candidate_start_time = None
             self.confirmed_ball = None
+            # Reset search state
+            self.is_currently_rotating = False
+            self.current_search_start = current_time
             return
         
         # Update ball confirmation system
@@ -154,7 +166,7 @@ class AutonomousController:
         
         # STATE MACHINE
         if self.state == RobotState.SEARCHING:
-            self.handle_searching_state(confirmed_ball, state_duration)
+            self.handle_searching_state_optimized(confirmed_ball, state_duration)
             
         elif self.state == RobotState.MOVING:
             self.handle_moving_state(confirmed_ball, state_duration)
@@ -165,8 +177,12 @@ class AutonomousController:
         elif self.state == RobotState.AVOIDING:
             self.handle_avoiding_state(danger_detected, state_duration)
     
-    def handle_searching_state(self, confirmed_ball, duration):
-        """Handle SEARCHING state - rotate to look for balls, wait for confirmation"""
+    def handle_searching_state_optimized(self, confirmed_ball, duration):
+        """
+        OPTIMIZED SEARCHING: Stay still for 5 seconds, then rotate briefly if no balls found
+        """
+        current_time = time.time()
+        
         if confirmed_ball:
             # Found and confirmed ball! Switch to moving
             self.target_ball = confirmed_ball
@@ -175,24 +191,56 @@ class AutonomousController:
             self.state_start_time = time.time()
             self.motor_controller.stop_motors()
             self.motor_state = MotorState.STOPPED
-        else:
-            # Keep searching by rotating (but slower if we're observing a candidate)
-            if duration > SEARCH_TIMEOUT:
-                # Search timeout - reverse direction and continue
-                print("⏰ Search timeout - changing direction")
-                self.state_start_time = time.time()
-                # Reset confirmation when changing search direction
+            # Reset search state
+            self.is_currently_rotating = False
+            self.current_search_start = current_time
+            return
+        
+        # Check if we're currently in rotation phase
+        if self.is_currently_rotating:
+            # We're rotating - check if rotation is complete
+            rotation_elapsed = current_time - self.rotation_start_time
+            
+            if rotation_elapsed >= self.rotation_duration:
+                # Rotation complete - stop and start new still search
+                print("🔄 Rotation complete - starting new still search phase")
+                self.motor_controller.stop_motors()
+                self.motor_state = MotorState.STOPPED
+                self.is_currently_rotating = False
+                self.current_search_start = current_time
+                # Reset ball confirmation for new position
                 self.candidate_ball = None
                 self.candidate_start_time = None
                 self.confirmed_ball = None
+            else:
+                # Continue rotating
+                self.motor_controller.turn_right(SEARCH_ROTATION_SPEED)
+                self.motor_state = MotorState.TURN_RIGHT
+        else:
+            # We're in still search phase
+            still_search_elapsed = current_time - self.current_search_start
             
-            # Rotate right to search (slower if observing candidate)
-            search_speed = SEARCH_ROTATION_SPEED
-            if self.candidate_ball is not None:
-                search_speed = SEARCH_ROTATION_SPEED * 0.5  # Slower rotation while confirming
-            
-            self.motor_controller.turn_right(search_speed)
-            self.motor_state = MotorState.TURN_RIGHT
+            if still_search_elapsed >= self.still_search_duration:
+                # Still search time is up - start rotation
+                print(f"⏰ Still search timeout ({self.still_search_duration}s) - starting brief rotation")
+                self.is_currently_rotating = True
+                self.rotation_start_time = current_time
+                self.motor_controller.turn_right(SEARCH_ROTATION_SPEED)
+                self.motor_state = MotorState.TURN_RIGHT
+                # Reset ball confirmation when starting rotation
+                self.candidate_ball = None
+                self.candidate_start_time = None
+                self.confirmed_ball = None
+            else:
+                # Stay still and search
+                self.motor_controller.stop_motors()
+                self.motor_state = MotorState.STOPPED
+                
+                # Optional: Print remaining time every second
+                if int(still_search_elapsed) != int(still_search_elapsed - 0.1):
+                    remaining_time = self.still_search_duration - still_search_elapsed
+                    if remaining_time > 0 and int(remaining_time * 10) % 10 == 0:
+                        print(f"🔍 Still searching... {remaining_time:.1f}s remaining")
     
     def handle_moving_state(self, confirmed_ball, duration):
         """Handle MOVING state - move towards confirmed target ball"""
@@ -205,6 +253,9 @@ class AutonomousController:
             self.confirmed_ball = None
             self.candidate_ball = None
             self.candidate_start_time = None
+            # Reset search state
+            self.is_currently_rotating = False
+            self.current_search_start = time.time()
             self.motor_controller.stop_motors()
             self.motor_state = MotorState.STOPPED
             return
@@ -257,6 +308,9 @@ class AutonomousController:
             self.candidate_start_time = None
             self.confirmed_ball = None
             self.target_ball = None
+            # Reset search state
+            self.is_currently_rotating = False
+            self.current_search_start = time.time()
             self.motor_controller.stop_motors()
             self.motor_state = MotorState.STOPPED
     
@@ -271,6 +325,9 @@ class AutonomousController:
             self.candidate_ball = None
             self.candidate_start_time = None
             self.confirmed_ball = None
+            # Reset search state
+            self.is_currently_rotating = False
+            self.current_search_start = time.time()
             self.motor_controller.stop_motors()
             self.motor_state = MotorState.STOPPED
         else:
@@ -288,6 +345,16 @@ class AutonomousController:
             return 0.0
         return time.time() - self.candidate_start_time
     
+    def get_search_progress(self):
+        """Get current still search progress (0.0 to still_search_duration)"""
+        if self.is_currently_rotating:
+            return self.still_search_duration  # Full progress during rotation
+        return min(time.time() - self.current_search_start, self.still_search_duration)
+    
+    def is_in_rotation_phase(self):
+        """Check if currently in rotation phase of searching"""
+        return self.is_currently_rotating
+    
     def emergency_stop(self):
         """Emergency stop - immediately halt all movement and reset state"""
         print("🛑 EMERGENCY STOP")
@@ -299,3 +366,6 @@ class AutonomousController:
         self.candidate_ball = None
         self.candidate_start_time = None
         self.confirmed_ball = None
+        # Reset search state
+        self.is_currently_rotating = False
+        self.current_search_start = time.time()
