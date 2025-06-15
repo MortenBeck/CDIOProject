@@ -28,11 +28,6 @@ try:
     print("✓ Servo 0 on channel 0")
     print("✓ Servo 1 on channel 1")
     
-    # Center servos
-    servo0.angle = 90
-    servo1.angle = 90
-    print("Servos centered to 90°")
-    
 except Exception as e:
     print(f"✗ Setup failed: {e}")
     exit(1)
