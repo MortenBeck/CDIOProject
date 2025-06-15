@@ -87,15 +87,15 @@ class MotorController:
         self.motor_a_reverse(speed)
         self.motor_b_reverse(speed)
     
-    def turn_right(self, speed=DEFAULT_SPEED):
-        """Turn right - one forward, one reverse"""
+    def turn_left(self, speed=DEFAULT_SPEED):
+        """Turn left - one forward, one reverse"""
         if not self.motors_available:
             return
         self.motor_a_forward(speed)
         self.motor_b_reverse(speed)
     
-    def turn_left(self, speed=DEFAULT_SPEED):
-        """Turn left - one reverse, one forward"""
+    def turn_right(self, speed=DEFAULT_SPEED):
+        """Turn right - one reverse, one forward"""
         if not self.motors_available:
             return
         self.motor_a_reverse(speed)
