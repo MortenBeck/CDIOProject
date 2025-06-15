@@ -5,23 +5,14 @@ Servo/Motor control + Camera testing for Pi 5
 Using PCA9685 for servo control
 """
 
-from gpiozero import OutputDevice
+from gpiozero import Servo, OutputDevice
 import time
 import subprocess
 import os
-import board
-import busio
-from adafruit_pca9685 import PCA9685
-from adafruit_motor import servo
 
-# === PCA9685 SERVO SETUP ===
-i2c = busio.I2C(board.SCL, board.SDA)
-pca = PCA9685(i2c)
-pca.frequency = 50  # 50Hz for servos
-
-servo1 = servo.Servo(pca.channels[0])  # Channel 0
-servo2 = servo.Servo(pca.channels[1])  # Channel 1
-servo3 = servo.Servo(pca.channels[2])  # Channel 2
+# === SERVO SETUP (Direct GPIO) ===
+ss = Servo(2)   # GPIO 2 (Pin 3)
+sf = Servo(3)   # GPIO 3 (Pin 5)
 
 # === DC MOTOR SETUP ===
 motor_in1 = OutputDevice(19)  # GPIO 19 (Pin 35)
@@ -126,28 +117,24 @@ def set_servo_angle(servo_obj, angle):
     elif angle > 180:
         angle = 180
     
-    servo_obj.angle = angle
+    value = (angle - 90) / 90
+    servo_obj.value = value
 
-def set_servo1(angle):
-    set_servo_angle(servo1, angle)
-    print(f"Servo 1 → {angle}°")
+def set_ss(angle):
+    set_servo_angle(ss, angle)
+    print(f"SS servo → {angle}°")
 
-def set_servo2(angle):
-    set_servo_angle(servo2, angle)
-    print(f"Servo 2 → {angle}°")
+def set_sf(angle):
+    set_servo_angle(sf, angle)
+    print(f"SF servo → {angle}°")
 
-def set_servo3(angle):
-    set_servo_angle(servo3, angle)
-    print(f"Servo 3 → {angle}°")
-
-def set_all_servos(angle):
-    set_servo_angle(servo1, angle)
-    set_servo_angle(servo2, angle)
-    set_servo_angle(servo3, angle)
-    print(f"All servos → {angle}°")
+def set_both_servos(angle):
+    set_servo_angle(ss, angle)
+    set_servo_angle(sf, angle)
+    print(f"Both servos → {angle}°")
 
 def center_servos():
-    set_all_servos(90)
+    set_both_servos(90)
 
 # === DC MOTOR FUNCTIONS ===
 # === CORRECTED DC MOTOR FUNCTIONS ===
@@ -216,7 +203,7 @@ def demo_sequence():
     
     # 3. Servo tests
     print("3. Testing servos...")
-    for i, servo_func in enumerate([set_servo1, set_servo2, set_servo3], 1):
+    for i, servo_func in enumerate([set_ss, set_sf], 1):
         servo_func(0)
         time.sleep(0.5)
         servo_func(180)
@@ -234,9 +221,8 @@ def demo_sequence():
     
     # 5. Coordinated test with photo
     print("5. Coordinated movement with photo capture...")
-    set_servo1(45)
-    set_servo2(90)
-    set_servo3(135)
+    set_ss(45)
+    set_sf(135)
     both_motors_forward()
     
     # Take photo during movement
@@ -254,19 +240,21 @@ def emergency_stop():
     print("EMERGENCY STOP - All systems stopped")
 
 def test_servo_pins():
-    """Test servo channel responsiveness"""
-    print("Testing servo channels...")
-    for i, servo_obj in enumerate([servo1, servo2, servo3], 1):
-        print(f"Testing servo {i}...")
-        servo_obj.angle = 90
+    """Test servo pin responsiveness"""
+    from gpiozero import LED
+    test_pins = [2, 3]
+    
+    print("Testing servo pins with LED mode...")
+    for pin in test_pins:
+        print(f"Testing GPIO {pin}...")
+        led = LED(pin)
+        led.on()
         time.sleep(0.5)
-        servo_obj.angle = 45
+        led.off()
         time.sleep(0.5)
-        servo_obj.angle = 135
-        time.sleep(0.5)
-        servo_obj.angle = 90
-        print(f"Servo {i} responded")
-    print("Servo test complete!")
+        led.close()
+        print(f"GPIO {pin} responded")
+    print("Pin test complete!")
 
 def competition_ready():
     """Full system check for competition"""
@@ -275,12 +263,16 @@ def competition_ready():
     # Test all systems
     print("Testing servos...")
     center_servos()
-    for i in [1, 2, 3]:
-        getattr(globals(), f'set_servo{i}')(45)
-        time.sleep(0.2)
-        getattr(globals(), f'set_servo{i}')(135)
-        time.sleep(0.2)
-        getattr(globals(), f'set_servo{i}')(90)
+    set_ss(45)
+    time.sleep(0.2)
+    set_ss(135)
+    time.sleep(0.2)
+    set_ss(90)
+    set_sf(45)
+    time.sleep(0.2)
+    set_sf(135)
+    time.sleep(0.2)
+    set_sf(90)
     print("✓ Servos responsive")
     
     print("Testing motors...")
@@ -300,7 +292,9 @@ def competition_ready():
         print("⚠️  Camera issues detected - fix before competition")
 
 # === INITIALIZE ===
-print("=== GOLFBOT CONTROL SYSTEM WITH PCA9685 ===")
+print("=== GOLFBOT CONTROL SYSTEM - GPIO SERVOS ===")
+print("SS servo: GPIO 2 (Pin 3)")
+print("SF servo: GPIO 3 (Pin 5)")
 print("Initializing...")
 stop_motors()
 center_servos()
@@ -316,28 +310,22 @@ try:
                 cmd = cmd.split("'")[1].replace('\\n', '').strip()
             
             # === SERVO COMMANDS ===
-            if cmd.startswith('s1-'):
+            if cmd.startswith('ss-'):
                 angle = int(cmd[3:])
                 if 0 <= angle <= 180:
-                    set_servo1(angle)
+                    set_ss(angle)
                 else:
                     print("Angle must be 0-180")
-            elif cmd.startswith('s2-'):
+            elif cmd.startswith('sf-'):
                 angle = int(cmd[3:])
                 if 0 <= angle <= 180:
-                    set_servo2(angle)
+                    set_sf(angle)
                 else:
                     print("Angle must be 0-180")
-            elif cmd.startswith('s3-'):
+            elif cmd.startswith('sb-'):
                 angle = int(cmd[3:])
                 if 0 <= angle <= 180:
-                    set_servo3(angle)
-                else:
-                    print("Angle must be 0-180")
-            elif cmd.startswith('sa-'):
-                angle = int(cmd[3:])
-                if 0 <= angle <= 180:
-                    set_all_servos(angle)
+                    set_both_servos(angle)
                 else:
                     print("Angle must be 0-180")
             
@@ -390,11 +378,10 @@ try:
                 
             elif cmd == 'help':
                 print("\n=== SERVO COMMANDS ===")
-                print("  s1-90    - Set servo 1 to 90°")
-                print("  s2-45    - Set servo 2 to 45°") 
-                print("  s3-180   - Set servo 3 to 180°")
-                print("  sa-90    - Set all servos to 90°")
-                print("  sc       - Center all servos")
+                print("  ss-90    - Set SS servo to 90°")
+                print("  sf-45    - Set SF servo to 45°") 
+                print("  sb-90    - Set both servos to 90°")
+                print("  sc       - Center both servos")
                 print("\n=== MOTOR COMMANDS ===")
                 print("  maf      - Motor A forward")
                 print("  mar      - Motor A reverse")
@@ -413,7 +400,7 @@ try:
                 print("  camtest  - Full camera test")
                 print("\n=== SYSTEM COMMANDS ===")
                 print("  demo     - Integrated system demo")
-                print("  test     - Test servo channels")
+                print("  test     - Test servo pins")
                 print("  ready    - Competition readiness check")
                 print("  stop     - Emergency stop")
                 print("  help     - Show this help")
@@ -428,7 +415,8 @@ except KeyboardInterrupt:
     emergency_stop()
     print("\nAll systems stopped")
 finally:
-    pca.deinit()
+    ss.close()
+    sf.close()
     motor_in1.close()
     motor_in2.close()
     motor_in3.close()
