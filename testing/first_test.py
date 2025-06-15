@@ -111,11 +111,10 @@ def camera_full_test():
 
 # === SERVO FUNCTIONS ===
 def set_servo_angle(servo, angle):
-    """Set servo to angle (0-180 degrees)"""
-    angle = max(0, min(180, angle))  # Clamp to 0-180
-    value = (angle / 90) - 1         # Convert to -1 to +1 range
+    """Set servo to any angle (no limits)"""
+    value = (angle / 90) - 1  # Convert angle to -1 to +1 range
     servo.value = value
-
+    
 def set_servo1(angle):
     set_servo_angle(servo1, angle)
     print(f"Servo 1 → {angle}°")
