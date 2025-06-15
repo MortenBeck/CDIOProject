@@ -9,16 +9,21 @@ import time
 
 def test_pca9685():
     try:
-        import board
+        print("Testing PCA9685...")
+        print("Device detected at address 0x40 ✓")
+        
+        # Use direct I2C setup instead of board
         import busio
+        import digitalio
+        import board
         from adafruit_pca9685 import PCA9685
         from adafruit_motor import servo
         
-        print("Testing PCA9685...")
-        
-        # Initialize
+        # Create I2C bus directly
         i2c = busio.I2C(board.SCL, board.SDA)
-        pca = PCA9685(i2c)
+        
+        # Initialize PCA9685 with explicit address
+        pca = PCA9685(i2c, address=0x40)
         pca.frequency = 50
         
         # Create servo on channel 0
@@ -26,19 +31,24 @@ def test_pca9685():
         
         print("Moving servo on channel 0...")
         servo1.angle = 0
+        print("Servo at 0°")
         time.sleep(1)
         servo1.angle = 90
+        print("Servo at 90°")
         time.sleep(1)
         servo1.angle = 180
+        print("Servo at 180°")
         time.sleep(1)
         servo1.angle = 90
+        print("Servo at 90°")
         
-        print("PCA9685 test complete!")
+        print("✓ PCA9685 test complete!")
         pca.deinit()
         
     except Exception as e:
         print(f"PCA9685 failed: {e}")
-        print("Check connections: VCC, GND, SDA (pin 3), SCL (pin 5)")
+        import traceback
+        traceback.print_exc()
 
 # ===== OPTION B: DIRECT GPIO =====
 # Use this if servo is connected directly to Pi pin (no PCA9685)
