@@ -13,15 +13,16 @@ from config import (
 )
 
 def detect_white_balls_fast(frame):
-    """Optimized white ball detection"""
+    """Optimized white ball detection with relaxed thresholds"""
     if frame is None:
         return []
     
     small_frame = cv2.resize(frame, (PROCESS_WIDTH, PROCESS_HEIGHT))
     hsv = cv2.cvtColor(small_frame, cv2.COLOR_BGR2HSV)
     
-    lower_white = np.array([0, 0, 180])
-    upper_white = np.array([180, 25, 255])
+    # Relaxed white detection thresholds
+    lower_white = np.array([0, 0, 120])    # Lowered brightness from 180 to 120
+    upper_white = np.array([180, 60, 255]) # Increased saturation from 25 to 60
     
     mask = cv2.inRange(hsv, lower_white, upper_white)
     
@@ -37,19 +38,19 @@ def detect_white_balls_fast(frame):
     
     for contour in contours:
         area = cv2.contourArea(contour)
-        if area > MIN_BALL_AREA:
+        if area > MIN_BALL_AREA * 0.7:  # Reduced area requirement by 30%
             perimeter = cv2.arcLength(contour, True)
             if perimeter > 0:
                 circularity = 4 * np.pi * area / (perimeter * perimeter)
                 
-                if circularity > BALL_CIRCULARITY_THRESHOLD:
+                if circularity > BALL_CIRCULARITY_THRESHOLD * 0.6:  # Reduced circularity requirement
                     (x, y), radius = cv2.minEnclosingCircle(contour)
                     
                     center_x = int(x * scale_x)
                     center_y = int(y * scale_y)
                     radius_scaled = int(radius * max(scale_x, scale_y))
                     
-                    if 5 < radius_scaled < 150:
+                    if 3 < radius_scaled < 200:  # Relaxed radius constraints
                         balls.append((center_x, center_y, radius_scaled))
     
     return balls
