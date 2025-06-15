@@ -129,9 +129,6 @@ except KeyboardInterrupt:
 finally:
     # Center servos and cleanup
     try:
-        servo0.angle = 90
-        servo1.angle = 90
-        print("Servos centered")
         pca.deinit()
         print("PCA9685 stopped")
     except:
