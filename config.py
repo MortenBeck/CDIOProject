@@ -14,13 +14,14 @@ BOUNDARY_PENALTY = -50
 OBSTACLE_MOVE_PENALTY = -100
 EGG_MOVE_PENALTY = -300
 
-# === GPIO PIN ASSIGNMENTS ===
-# Servos (Hardware PWM)
-SERVO_1_PIN = 18  # GPIO 18 (Pin 12)
-SERVO_2_PIN = 12  # GPIO 12 (Pin 32)  
-SERVO_3_PIN = 13  # GPIO 13 (Pin 33)
+# === PCA9685 SERVO SETTINGS ===
+PCA9685_ADDRESS = 0x40
+PCA9685_FREQUENCY = 50
+SERVO_1_CHANNEL = 0  # PCA9685 Channel 0
+SERVO_2_CHANNEL = 1  # PCA9685 Channel 1
+SERVO_3_CHANNEL = 2  # PCA9685 Channel 2
 
-# DC Motors
+# === DC MOTOR GPIO PINS ===
 MOTOR_IN1 = 19  # GPIO 19 (Pin 35) - Motor A
 MOTOR_IN2 = 26  # GPIO 26 (Pin 37) - Motor A
 MOTOR_IN3 = 20  # GPIO 20 (Pin 38) - Motor B
@@ -58,7 +59,7 @@ GOAL_HSV_UPPER = np.array([10, 255, 255])
 BOUNDARY_HSV_LOWER = np.array([0, 0, 0])    # Dark boundaries
 BOUNDARY_HSV_UPPER = np.array([180, 255, 50])
 
-# === SERVO POSITIONS ===
+# === SERVO POSITIONS (ANGLES IN DEGREES) ===
 SERVO_CENTER = 90
 SERVO_COLLECT_OPEN = 45   # Open position for collection
 SERVO_COLLECT_CLOSE = 135 # Close position to hold ball

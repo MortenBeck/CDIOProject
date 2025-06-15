@@ -123,10 +123,12 @@ class TelemetryLogger:
     
     def log_hardware_state(self, hardware):
         """Log current hardware state"""
+        # Get servo angles directly from PCA9685 servos
+        servo_angles = hardware.get_servo_angles()
         servo_states = {
-            "s1": self._get_servo_angle(hardware.servo1),
-            "s2": self._get_servo_angle(hardware.servo2),
-            "s3": self._get_servo_angle(hardware.servo3)
+            "s1": int(servo_angles.get("servo1", 90)),
+            "s2": int(servo_angles.get("servo2", 90)),
+            "s3": int(servo_angles.get("servo3", 90))
         }
         
         motor_speeds = {
@@ -205,14 +207,6 @@ class TelemetryLogger:
                 "frames_processed": self.frame_count
             }
         )
-    
-    def _get_servo_angle(self, servo):
-        """Convert servo value back to angle"""
-        try:
-            # Convert from gpiozero range (-1 to 1) back to degrees (0-180)
-            return int((servo.value + 1) * 90)
-        except:
-            return 90  # Default center position
     
     def _flush_buffer(self):
         """Write buffer to file"""

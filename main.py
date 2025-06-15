@@ -9,6 +9,7 @@ import config
 from hardware import GolfBotHardware
 from vision import VisionSystem
 from telemetry import TelemetryLogger
+from hardware_test import run_hardware_test
 
 class RobotState(Enum):
     SEARCHING = "searching"
@@ -447,28 +448,67 @@ class GolfBot:
         except Exception as e:
             self.logger.error(f"Emergency stop error: {e}")
 
+def show_startup_menu():
+    """Show startup menu with options"""
+    print("\n" + "="*50)
+    print("🤖 GOLFBOT CONTROL SYSTEM")
+    print("="*50)
+    print("1. Start Competition")
+    print("2. Hardware Testing")
+    print("3. Exit")
+    print("="*50)
+    
+    while True:
+        choice = input("Select option (1-3): ").strip()
+        
+        if choice == '1':
+            return 'competition'
+        elif choice == '2':
+            return 'testing'
+        elif choice == '3':
+            return 'exit'
+        else:
+            print("Invalid choice. Enter 1, 2, or 3.")
+
 def main():
     """Main entry point"""
-    robot = GolfBot()
     
-    if not robot.initialize():
-        print("Failed to initialize robot - exiting")
-        return 1
+    # Show startup menu
+    mode = show_startup_menu()
     
-    try:
-        # Wait for user to start competition
-        input("Press Enter to start competition...")
+    if mode == 'exit':
+        print("Goodbye!")
+        return 0
+    elif mode == 'testing':
+        print("\n🔧 Entering Hardware Testing Mode...")
+        if run_hardware_test():
+            print("Testing completed successfully!")
+        else:
+            print("Testing failed!")
+        return 0
+    elif mode == 'competition':
+        print("\n🏁 Entering Competition Mode...")
         
-        robot.start_competition()
+        robot = GolfBot()
         
-    except KeyboardInterrupt:
-        robot.logger.info("Interrupted by user")
-    except Exception as e:
-        robot.logger.error(f"Unexpected error: {e}")
-    finally:
-        robot.emergency_stop()
-    
-    return 0
+        if not robot.initialize():
+            print("Failed to initialize robot - exiting")
+            return 1
+        
+        try:
+            # Wait for user to start competition
+            input("Press Enter to start competition...")
+            
+            robot.start_competition()
+            
+        except KeyboardInterrupt:
+            robot.logger.info("Interrupted by user")
+        except Exception as e:
+            robot.logger.error(f"Unexpected error: {e}")
+        finally:
+            robot.emergency_stop()
+        
+        return 0
 
 if __name__ == "__main__":
     exit_code = main()

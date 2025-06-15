@@ -1,6 +1,10 @@
 import time
 import logging
-from gpiozero import Servo, PWMOutputDevice
+import busio
+import board
+from adafruit_pca9685 import PCA9685
+from adafruit_motor import servo
+from gpiozero import PWMOutputDevice
 import config
 
 class GolfBotHardware:
@@ -13,10 +17,16 @@ class GolfBotHardware:
     def setup_hardware(self):
         """Initialize all hardware components"""
         try:
+            # Setup PCA9685 for servo control
+            self.logger.info("Initializing PCA9685 for servo control...")
+            self.i2c = busio.I2C(board.SCL, board.SDA)
+            self.pca = PCA9685(self.i2c, address=config.PCA9685_ADDRESS)
+            self.pca.frequency = config.PCA9685_FREQUENCY
+            
             # Setup servos
-            self.servo1 = Servo(config.SERVO_1_PIN)
-            self.servo2 = Servo(config.SERVO_2_PIN) 
-            self.servo3 = Servo(config.SERVO_3_PIN)
+            self.servo1 = servo.Servo(self.pca.channels[config.SERVO_1_CHANNEL])
+            self.servo2 = servo.Servo(self.pca.channels[config.SERVO_2_CHANNEL]) 
+            self.servo3 = servo.Servo(self.pca.channels[config.SERVO_3_CHANNEL])
             
             # Setup motors with PWM for speed control
             self.motor_in1 = PWMOutputDevice(config.MOTOR_IN1)
@@ -29,54 +39,74 @@ class GolfBotHardware:
             self.stop_motors()
             
             self.logger.info("Hardware initialized successfully")
+            self.logger.info("✓ PCA9685 ready for servo control")
+            self.logger.info(f"✓ Servo 1 on channel {config.SERVO_1_CHANNEL}")
+            self.logger.info(f"✓ Servo 2 on channel {config.SERVO_2_CHANNEL}")
+            self.logger.info(f"✓ Servo 3 on channel {config.SERVO_3_CHANNEL}")
             
         except Exception as e:
             self.logger.error(f"Hardware initialization failed: {e}")
             raise
     
     # === SERVO CONTROL ===
-    def set_servo_angle(self, servo, angle):
+    def set_servo_angle(self, servo_obj, angle):
         """Set servo to specific angle (0-180 degrees)"""
         angle = max(0, min(180, angle))  # Clamp to valid range
-        value = (angle - 90) / 90  # Convert to gpiozero range (-1 to 1)
-        servo.value = value
+        try:
+            servo_obj.angle = angle
+        except Exception as e:
+            self.logger.error(f"Failed to set servo angle: {e}")
         
     def center_servos(self):
         """Center all servos to 90 degrees"""
-        for servo in [self.servo1, self.servo2, self.servo3]:
-            self.set_servo_angle(servo, config.SERVO_CENTER)
-        time.sleep(0.5)  # Allow time to reach position
+        try:
+            self.set_servo_angle(self.servo1, config.SERVO_CENTER)
+            self.set_servo_angle(self.servo2, config.SERVO_CENTER)
+            self.set_servo_angle(self.servo3, config.SERVO_CENTER)
+            time.sleep(0.5)  # Allow time to reach position
+        except Exception as e:
+            self.logger.error(f"Failed to center servos: {e}")
         
     def collection_position(self):
         """Move servos to ball collection position"""
-        self.set_servo_angle(self.servo1, config.SERVO_COLLECT_OPEN)
-        self.set_servo_angle(self.servo2, config.SERVO_COLLECT_OPEN)
-        self.set_servo_angle(self.servo3, config.SERVO_COLLECT_OPEN)
-        time.sleep(0.5)
-        if config.DEBUG_COLLECTION:
-            self.logger.info("Servos in collection position")
+        try:
+            self.set_servo_angle(self.servo1, config.SERVO_COLLECT_OPEN)
+            self.set_servo_angle(self.servo2, config.SERVO_COLLECT_OPEN)
+            self.set_servo_angle(self.servo3, config.SERVO_COLLECT_OPEN)
+            time.sleep(0.5)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Servos in collection position")
+        except Exception as e:
+            self.logger.error(f"Failed to set collection position: {e}")
     
     def grab_ball(self):
         """Close servos to grab a ball"""
-        self.set_servo_angle(self.servo1, config.SERVO_COLLECT_CLOSE)
-        self.set_servo_angle(self.servo2, config.SERVO_COLLECT_CLOSE) 
-        self.set_servo_angle(self.servo3, config.SERVO_COLLECT_CLOSE)
-        time.sleep(0.8)  # Give time to secure ball
-        self.collected_balls.append(time.time())  # Track collection time
-        if config.DEBUG_COLLECTION:
-            self.logger.info(f"Ball grabbed! Total collected: {len(self.collected_balls)}")
+        try:
+            self.set_servo_angle(self.servo1, config.SERVO_COLLECT_CLOSE)
+            self.set_servo_angle(self.servo2, config.SERVO_COLLECT_CLOSE) 
+            self.set_servo_angle(self.servo3, config.SERVO_COLLECT_CLOSE)
+            time.sleep(0.8)  # Give time to secure ball
+            self.collected_balls.append(time.time())  # Track collection time
+            if config.DEBUG_COLLECTION:
+                self.logger.info(f"Ball grabbed! Total collected: {len(self.collected_balls)}")
+        except Exception as e:
+            self.logger.error(f"Failed to grab ball: {e}")
     
     def release_balls(self):
         """Release all collected balls"""
-        self.set_servo_angle(self.servo1, config.SERVO_RELEASE)
-        self.set_servo_angle(self.servo2, config.SERVO_RELEASE)
-        self.set_servo_angle(self.servo3, config.SERVO_RELEASE)
-        time.sleep(1.0)  # Allow balls to fall out
-        balls_released = len(self.collected_balls)
-        self.collected_balls.clear()
-        if config.DEBUG_COLLECTION:
-            self.logger.info(f"Released {balls_released} balls")
-        return balls_released
+        try:
+            self.set_servo_angle(self.servo1, config.SERVO_RELEASE)
+            self.set_servo_angle(self.servo2, config.SERVO_RELEASE)
+            self.set_servo_angle(self.servo3, config.SERVO_RELEASE)
+            time.sleep(1.0)  # Allow balls to fall out
+            balls_released = len(self.collected_balls)
+            self.collected_balls.clear()
+            if config.DEBUG_COLLECTION:
+                self.logger.info(f"Released {balls_released} balls")
+            return balls_released
+        except Exception as e:
+            self.logger.error(f"Failed to release balls: {e}")
+            return 0
     
     # === MOTOR CONTROL ===
     def stop_motors(self):
@@ -239,6 +269,19 @@ class GolfBotHardware:
             self.logger.error(f"Ball delivery failed: {e}")
             return 0
     
+    # === SERVO ANGLE GETTERS ===
+    def get_servo_angles(self):
+        """Get current servo angles"""
+        try:
+            return {
+                "servo1": getattr(self.servo1, 'angle', 90),
+                "servo2": getattr(self.servo2, 'angle', 90),
+                "servo3": getattr(self.servo3, 'angle', 90)
+            }
+        except Exception as e:
+            self.logger.error(f"Failed to get servo angles: {e}")
+            return {"servo1": 90, "servo2": 90, "servo3": 90}
+    
     # === EMERGENCY AND CLEANUP ===
     def emergency_stop(self):
         """Emergency stop all movement"""
@@ -252,11 +295,13 @@ class GolfBotHardware:
             self.stop_motors()
             self.center_servos()
             
-            # Close GPIO connections
-            for component in [self.servo1, self.servo2, self.servo3,
-                            self.motor_in1, self.motor_in2, self.motor_in3, self.motor_in4]:
+            # Close motor GPIO connections
+            for component in [self.motor_in1, self.motor_in2, self.motor_in3, self.motor_in4]:
                 component.close()
-                
+            
+            # Deinitialize PCA9685
+            self.pca.deinit()
+            
             self.logger.info("Hardware cleanup completed")
             
         except Exception as e:
@@ -276,5 +321,6 @@ class GolfBotHardware:
         return {
             'collected_balls': len(self.collected_balls),
             'current_speed': self.current_speed,
-            'speed_percentage': f"{self.current_speed*100:.0f}%"
+            'speed_percentage': f"{self.current_speed*100:.0f}%",
+            'servo_angles': self.get_servo_angles()
         }
