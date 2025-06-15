@@ -112,35 +112,35 @@ def motor_b_reverse(speed=DEFAULT_SPEED):
 
 # CORRECTED FUNCTIONS - Both motors same direction for straight movement
 def both_motors_forward(speed=DEFAULT_SPEED):
-    """Move forward (straight) - both motors forward"""
+    """Move forward (straight) - CORRECTED for proper wiring"""
     if not MOTORS_AVAILABLE:
         return
     motor_a_forward(speed)
-    motor_b_forward(speed)  # Both motors forward for straight movement
+    motor_b_reverse(speed)  # CHANGED: Motor B needs to be reverse for forward motion
     print(f"Moving forward at {int(speed*100)}% speed")
 
 def both_motors_reverse(speed=DEFAULT_SPEED):
-    """Move reverse (straight) - both motors reverse"""
+    """Move reverse (straight) - CORRECTED for proper wiring"""
     if not MOTORS_AVAILABLE:
         return
     motor_a_reverse(speed)
-    motor_b_reverse(speed)  # Both motors reverse for straight movement
+    motor_b_forward(speed)  # CHANGED: Motor B needs to be forward for reverse motion
     print(f"Moving reverse at {int(speed*100)}% speed")
 
 def turn_right(speed=DEFAULT_SPEED):
-    """Turn right - one forward, one reverse"""
+    """Turn right - CORRECTED direction"""
     if not MOTORS_AVAILABLE:
         return
-    motor_a_forward(speed)
-    motor_b_reverse(speed)  # Opposite directions = turn right
+    motor_a_forward(speed)   # Left motor forward
+    motor_b_forward(speed)   # Right motor forward (same direction = turn right)
     print(f"Turning right at {int(speed*100)}% speed")
 
 def turn_left(speed=DEFAULT_SPEED):
-    """Turn left - one reverse, one forward"""
+    """Turn left - CORRECTED direction"""
     if not MOTORS_AVAILABLE:
         return
-    motor_a_reverse(speed)
-    motor_b_forward(speed)  # Opposite directions = turn left
+    motor_a_reverse(speed)   # Left motor reverse  
+    motor_b_reverse(speed)   # Right motor reverse (same direction = turn left)
     print(f"Turning left at {int(speed*100)}% speed")
 
 # Visualization modes
