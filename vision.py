@@ -293,20 +293,24 @@ class VisionSystem:
         return danger_detected
     
     def get_navigation_command(self, detected_objects: List[DetectedObject], 
-                             orange_ball: Optional[DetectedObject]) -> str:
-        """Determine navigation command based on detected objects"""
+                         orange_ball: Optional[DetectedObject]) -> str:
+        """Determine navigation command based on detected objects (all balls treated equally)"""
         
-        # Priority 1: Orange ball if not collected yet
-        if orange_ball and orange_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
-            return "collect_orange"
-        elif orange_ball:
-            return self._get_direction_to_object(orange_ball)
-        
-        # Priority 2: Regular balls
+        # Combine all balls into one list
+        all_balls = []
         if detected_objects:
-            closest_ball = detected_objects[0]  # Already sorted by distance
+            all_balls.extend(detected_objects)
+        if orange_ball:
+            all_balls.append(orange_ball)
+        
+        # If we have any balls, target the closest one
+        if all_balls:
+            # Sort by distance from center (closest first)
+            all_balls.sort(key=lambda x: x.distance_from_center)
+            closest_ball = all_balls[0]
+            
             if closest_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
-                return "collect_ball"
+                return "collect_ball"  # Generic collection command
             else:
                 return self._get_direction_to_object(closest_ball)
         
