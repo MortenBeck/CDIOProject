@@ -55,10 +55,14 @@ def create_white_ball_mask(frame):
     # BGR method - white objects have high values in all channels
     b, g, r = cv2.split(small_frame)
     white_threshold = 80
-    mask_bgr = cv2.bitwise_and(
-        cv2.bitwise_and(b > white_threshold, g > white_threshold),
-        r > white_threshold
-    ).astype(np.uint8) * 255
+    
+    # Create boolean masks and convert to uint8
+    mask_b = (b > white_threshold).astype(np.uint8)
+    mask_g = (g > white_threshold).astype(np.uint8)
+    mask_r = (r > white_threshold).astype(np.uint8)
+    
+    # Combine masks
+    mask_bgr = cv2.bitwise_and(cv2.bitwise_and(mask_b, mask_g), mask_r) * 255
     
     # Grayscale threshold
     gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
