@@ -235,7 +235,7 @@ class VisionSystem:
         
         # Define region of interest - focus on lower portion where immediate obstacles matter
         # Ignore top 40% of frame (distant walls) and focus on bottom 60%
-        roi_top = int(h * 0.4)  # Start checking from 40% down
+        roi_top = int(h * 0.2)  # Start checking from 40% down
         roi_bottom = h
         roi_left = 0
         roi_right = w
