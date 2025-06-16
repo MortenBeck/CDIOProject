@@ -24,7 +24,7 @@ from detection_system import detect_white_balls_fast, detect_red_walls_fast
 from autonomous_controller import AutonomousController
 from display_system import (
     PerformanceMonitor, draw_autonomous_display, add_performance_stats,
-    add_mode_indicator, print_headless_status
+    add_mode_indicator, print_headless_status, create_combined_debug_view
 )
 
 def autonomous_wall_avoidance_system():
