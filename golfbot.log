@@ -267,3 +267,1105 @@
 2025-06-10 18:36:58,594 - hardware - INFO - Hardware cleanup completed
 2025-06-10 18:36:58,594 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
 2025-06-10 18:36:58,594 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-15 18:02:55,785 - telemetry - INFO - Telemetry session started: golfbot_20250615_180255
+2025-06-15 18:02:56,293 - hardware - INFO - Motors stopped
+2025-06-15 18:02:56,293 - hardware - INFO - Hardware initialized successfully
+2025-06-15 18:02:56,293 - __main__ - INFO - Initializing GolfBot...
+2025-06-15 18:02:56,293 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-15 18:02:56,293 - __main__ - INFO - All systems initialized successfully
+2025-06-15 18:03:07,973 - __main__ - INFO - COMPETITION STARTED!
+2025-06-15 18:03:07,973 - __main__ - INFO - Time limit: 480 seconds
+2025-06-15 18:03:09,175 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:09,175 - hardware - INFO - Motors stopped
+2025-06-15 18:03:09,376 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:09,876 - hardware - INFO - Motors stopped
+2025-06-15 18:03:09,876 - hardware - INFO - Turning right
+2025-06-15 18:03:10,476 - hardware - INFO - Motors stopped
+2025-06-15 18:03:11,405 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:11,405 - hardware - INFO - Motors stopped
+2025-06-15 18:03:11,605 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:12,106 - hardware - INFO - Motors stopped
+2025-06-15 18:03:12,106 - hardware - INFO - Turning right
+2025-06-15 18:03:12,706 - hardware - INFO - Motors stopped
+2025-06-15 18:03:13,662 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:13,662 - hardware - INFO - Motors stopped
+2025-06-15 18:03:13,863 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:14,363 - hardware - INFO - Motors stopped
+2025-06-15 18:03:14,363 - hardware - INFO - Turning right
+2025-06-15 18:03:14,963 - hardware - INFO - Motors stopped
+2025-06-15 18:03:15,909 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:15,909 - hardware - INFO - Motors stopped
+2025-06-15 18:03:16,110 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:16,610 - hardware - INFO - Motors stopped
+2025-06-15 18:03:16,610 - hardware - INFO - Turning right
+2025-06-15 18:03:17,211 - hardware - INFO - Motors stopped
+2025-06-15 18:03:18,138 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:18,138 - hardware - INFO - Motors stopped
+2025-06-15 18:03:18,338 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:18,839 - hardware - INFO - Motors stopped
+2025-06-15 18:03:18,839 - hardware - INFO - Turning right
+2025-06-15 18:03:19,439 - hardware - INFO - Motors stopped
+2025-06-15 18:03:20,462 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:20,462 - hardware - INFO - Motors stopped
+2025-06-15 18:03:20,662 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:21,163 - hardware - INFO - Motors stopped
+2025-06-15 18:03:21,163 - hardware - INFO - Turning right
+2025-06-15 18:03:21,763 - hardware - INFO - Motors stopped
+2025-06-15 18:03:22,720 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:22,720 - hardware - INFO - Motors stopped
+2025-06-15 18:03:22,921 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:22,982 - __main__ - INFO - Shutdown signal received
+2025-06-15 18:03:22,982 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 18:03:22,982 - hardware - INFO - Motors stopped
+2025-06-15 18:03:23,482 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-15 18:03:23,483 - vision - INFO - Vision system cleanup completed
+2025-06-15 18:03:23,485 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250615_180255/analysis_export.json
+2025-06-15 18:03:23,486 - telemetry - INFO - Telemetry session completed:
+2025-06-15 18:03:23,486 - telemetry - INFO -   - Frames logged: 16
+2025-06-15 18:03:23,486 - telemetry - INFO -   - Balls detected: 22
+2025-06-15 18:03:23,486 - telemetry - INFO -   - Collections: 0
+2025-06-15 18:03:23,486 - telemetry - INFO -   - Errors: 0
+2025-06-15 18:03:23,486 - telemetry - INFO -   - Session data: logs/golfbot_20250615_180255
+2025-06-15 18:03:23,486 - hardware - INFO - Motors stopped
+2025-06-15 18:03:23,550 - __main__ - INFO - Shutdown signal received
+2025-06-15 18:03:23,550 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 18:03:23,550 - hardware - INFO - Motors stopped
+2025-06-15 18:03:24,050 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-15 18:03:24,050 - vision - INFO - Vision system cleanup completed
+2025-06-15 18:03:24,052 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250615_180255/analysis_export.json
+2025-06-15 18:03:24,070 - telemetry - INFO - Telemetry session completed:
+2025-06-15 18:03:24,070 - telemetry - INFO -   - Frames logged: 16
+2025-06-15 18:03:24,070 - telemetry - INFO -   - Balls detected: 22
+2025-06-15 18:03:24,070 - telemetry - INFO -   - Collections: 0
+2025-06-15 18:03:24,070 - telemetry - INFO -   - Errors: 0
+2025-06-15 18:03:24,070 - telemetry - INFO -   - Session data: logs/golfbot_20250615_180255
+2025-06-15 18:03:24,070 - hardware - INFO - Motors stopped
+2025-06-15 18:03:24,571 - hardware - INFO - Hardware cleanup completed
+2025-06-15 18:03:24,571 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 18:03:24,571 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-15 18:03:32,938 - telemetry - INFO - Telemetry session started: golfbot_20250615_180332
+2025-06-15 18:03:33,445 - hardware - INFO - Motors stopped
+2025-06-15 18:03:33,445 - hardware - INFO - Hardware initialized successfully
+2025-06-15 18:03:33,445 - __main__ - INFO - Initializing GolfBot...
+2025-06-15 18:03:33,445 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-15 18:03:33,445 - __main__ - INFO - All systems initialized successfully
+2025-06-15 18:03:34,698 - __main__ - INFO - COMPETITION STARTED!
+2025-06-15 18:03:34,698 - __main__ - INFO - Time limit: 480 seconds
+2025-06-15 18:03:35,682 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:35,682 - hardware - INFO - Motors stopped
+2025-06-15 18:03:35,882 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:36,384 - hardware - INFO - Motors stopped
+2025-06-15 18:03:36,384 - hardware - INFO - Turning right
+2025-06-15 18:03:36,984 - hardware - INFO - Motors stopped
+2025-06-15 18:03:37,954 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:37,954 - hardware - INFO - Motors stopped
+2025-06-15 18:03:38,154 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:38,655 - hardware - INFO - Motors stopped
+2025-06-15 18:03:38,655 - hardware - INFO - Turning right
+2025-06-15 18:03:39,255 - hardware - INFO - Motors stopped
+2025-06-15 18:03:40,180 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:40,180 - hardware - INFO - Motors stopped
+2025-06-15 18:03:40,380 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:40,881 - hardware - INFO - Motors stopped
+2025-06-15 18:03:40,881 - hardware - INFO - Turning right
+2025-06-15 18:03:41,481 - hardware - INFO - Motors stopped
+2025-06-15 18:03:42,425 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:42,426 - hardware - INFO - Motors stopped
+2025-06-15 18:03:42,626 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:43,126 - hardware - INFO - Motors stopped
+2025-06-15 18:03:43,126 - hardware - INFO - Turning right
+2025-06-15 18:03:43,727 - hardware - INFO - Motors stopped
+2025-06-15 18:03:44,670 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:44,670 - hardware - INFO - Motors stopped
+2025-06-15 18:03:44,870 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:45,370 - hardware - INFO - Motors stopped
+2025-06-15 18:03:45,371 - hardware - INFO - Turning right
+2025-06-15 18:03:45,973 - hardware - INFO - Motors stopped
+2025-06-15 18:03:47,925 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:47,926 - hardware - INFO - Motors stopped
+2025-06-15 18:03:48,126 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:48,626 - hardware - INFO - Motors stopped
+2025-06-15 18:03:48,626 - hardware - INFO - Turning right
+2025-06-15 18:03:49,227 - hardware - INFO - Motors stopped
+2025-06-15 18:03:50,198 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 18:03:50,198 - hardware - INFO - Motors stopped
+2025-06-15 18:03:50,399 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 18:03:50,899 - hardware - INFO - Motors stopped
+2025-06-15 18:03:50,899 - hardware - INFO - Turning right
+2025-06-15 18:03:51,499 - hardware - INFO - Motors stopped
+2025-06-15 18:03:51,637 - __main__ - INFO - Shutdown signal received
+2025-06-15 18:03:51,638 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 18:03:51,638 - hardware - INFO - Motors stopped
+2025-06-15 18:03:52,138 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-15 18:03:52,139 - vision - INFO - Vision system cleanup completed
+2025-06-15 18:03:52,142 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250615_180332/analysis_export.json
+2025-06-15 18:03:52,142 - telemetry - INFO - Telemetry session completed:
+2025-06-15 18:03:52,142 - telemetry - INFO -   - Frames logged: 20
+2025-06-15 18:03:52,142 - telemetry - INFO -   - Balls detected: 52
+2025-06-15 18:03:52,142 - telemetry - INFO -   - Collections: 0
+2025-06-15 18:03:52,142 - telemetry - INFO -   - Errors: 0
+2025-06-15 18:03:52,142 - telemetry - INFO -   - Session data: logs/golfbot_20250615_180332
+2025-06-15 18:03:52,142 - hardware - INFO - Motors stopped
+2025-06-15 18:03:52,643 - hardware - INFO - Hardware cleanup completed
+2025-06-15 18:03:52,643 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 18:03:52,643 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-15 21:27:13,018 - telemetry - INFO - Telemetry session started: golfbot_20250615_212713
+2025-06-15 21:27:13,528 - hardware - INFO - Motors stopped
+2025-06-15 21:27:13,528 - hardware - INFO - Hardware initialized successfully
+2025-06-15 21:27:13,528 - __main__ - INFO - Initializing GolfBot...
+2025-06-15 21:27:13,528 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-15 21:27:13,528 - __main__ - INFO - All systems initialized successfully
+2025-06-15 21:27:15,800 - __main__ - INFO - COMPETITION STARTED!
+2025-06-15 21:27:15,800 - __main__ - INFO - Time limit: 480 seconds
+2025-06-15 21:27:16,989 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:16,989 - hardware - INFO - Motors stopped
+2025-06-15 21:27:17,189 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:17,690 - hardware - INFO - Motors stopped
+2025-06-15 21:27:17,690 - hardware - INFO - Turning right
+2025-06-15 21:27:18,290 - hardware - INFO - Motors stopped
+2025-06-15 21:27:19,242 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:19,242 - hardware - INFO - Motors stopped
+2025-06-15 21:27:19,442 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:19,942 - hardware - INFO - Motors stopped
+2025-06-15 21:27:19,943 - hardware - INFO - Turning right
+2025-06-15 21:27:20,543 - hardware - INFO - Motors stopped
+2025-06-15 21:27:21,472 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:21,472 - hardware - INFO - Motors stopped
+2025-06-15 21:27:21,672 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:22,173 - hardware - INFO - Motors stopped
+2025-06-15 21:27:22,173 - hardware - INFO - Turning right
+2025-06-15 21:27:22,773 - hardware - INFO - Motors stopped
+2025-06-15 21:27:23,679 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:23,679 - hardware - INFO - Motors stopped
+2025-06-15 21:27:23,880 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:24,380 - hardware - INFO - Motors stopped
+2025-06-15 21:27:24,380 - hardware - INFO - Turning right
+2025-06-15 21:27:24,980 - hardware - INFO - Motors stopped
+2025-06-15 21:27:25,919 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:25,919 - hardware - INFO - Motors stopped
+2025-06-15 21:27:26,120 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:26,620 - hardware - INFO - Motors stopped
+2025-06-15 21:27:26,620 - hardware - INFO - Turning right
+2025-06-15 21:27:27,220 - hardware - INFO - Motors stopped
+2025-06-15 21:27:28,162 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:28,163 - hardware - INFO - Motors stopped
+2025-06-15 21:27:28,363 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:28,863 - hardware - INFO - Motors stopped
+2025-06-15 21:27:28,864 - hardware - INFO - Turning right
+2025-06-15 21:27:29,464 - hardware - INFO - Motors stopped
+2025-06-15 21:27:30,419 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:30,420 - hardware - INFO - Motors stopped
+2025-06-15 21:27:30,620 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:31,120 - hardware - INFO - Motors stopped
+2025-06-15 21:27:31,121 - hardware - INFO - Turning right
+2025-06-15 21:27:31,721 - hardware - INFO - Motors stopped
+2025-06-15 21:27:32,665 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:32,665 - hardware - INFO - Motors stopped
+2025-06-15 21:27:32,866 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:33,366 - hardware - INFO - Motors stopped
+2025-06-15 21:27:33,366 - hardware - INFO - Turning right
+2025-06-15 21:27:33,966 - hardware - INFO - Motors stopped
+2025-06-15 21:27:34,916 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:34,916 - hardware - INFO - Motors stopped
+2025-06-15 21:27:35,116 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:35,617 - hardware - INFO - Motors stopped
+2025-06-15 21:27:35,617 - hardware - INFO - Turning right
+2025-06-15 21:27:36,217 - hardware - INFO - Motors stopped
+2025-06-15 21:27:37,172 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:27:37,172 - hardware - INFO - Motors stopped
+2025-06-15 21:27:37,372 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:27:37,873 - hardware - INFO - Motors stopped
+2025-06-15 21:27:37,873 - hardware - INFO - Turning right
+2025-06-15 21:27:38,416 - __main__ - INFO - Shutdown signal received
+2025-06-15 21:27:38,416 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:27:38,416 - hardware - INFO - Motors stopped
+2025-06-15 21:27:38,917 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-15 21:27:38,918 - vision - INFO - Vision system cleanup completed
+2025-06-15 21:27:38,919 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250615_212713/analysis_export.json
+2025-06-15 21:27:38,920 - telemetry - INFO - Telemetry session completed:
+2025-06-15 21:27:38,920 - telemetry - INFO -   - Frames logged: 22
+2025-06-15 21:27:38,920 - telemetry - INFO -   - Balls detected: 12
+2025-06-15 21:27:38,920 - telemetry - INFO -   - Collections: 0
+2025-06-15 21:27:38,920 - telemetry - INFO -   - Errors: 0
+2025-06-15 21:27:38,920 - telemetry - INFO -   - Session data: logs/golfbot_20250615_212713
+2025-06-15 21:27:38,920 - hardware - INFO - Motors stopped
+2025-06-15 21:27:39,421 - hardware - INFO - Hardware cleanup completed
+2025-06-15 21:27:39,421 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:27:39,421 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-15 21:42:40,189 - telemetry - INFO - Telemetry session started: golfbot_20250615_214240
+2025-06-15 21:42:40,195 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-15 21:42:40,715 - hardware - INFO - Motors stopped
+2025-06-15 21:42:40,716 - hardware - INFO - Hardware initialized successfully
+2025-06-15 21:42:40,716 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-15 21:42:40,716 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-15 21:42:40,716 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-15 21:42:40,716 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-15 21:42:40,716 - __main__ - INFO - Initializing GolfBot...
+2025-06-15 21:42:40,716 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-15 21:42:40,716 - __main__ - INFO - All systems initialized successfully
+2025-06-15 21:42:44,706 - __main__ - INFO - COMPETITION STARTED!
+2025-06-15 21:42:44,707 - __main__ - INFO - Time limit: 480 seconds
+2025-06-15 21:48:56,062 - telemetry - INFO - Telemetry session started: golfbot_20250615_214856
+2025-06-15 21:48:56,064 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-15 21:48:56,592 - hardware - INFO - Motors stopped
+2025-06-15 21:48:56,592 - hardware - INFO - Hardware initialized successfully
+2025-06-15 21:48:56,592 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-15 21:48:56,592 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-15 21:48:56,592 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-15 21:48:56,593 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-15 21:48:56,593 - __main__ - INFO - Initializing GolfBot...
+2025-06-15 21:48:56,593 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-15 21:48:56,593 - __main__ - INFO - All systems initialized successfully
+2025-06-15 21:48:58,267 - __main__ - INFO - COMPETITION STARTED!
+2025-06-15 21:48:58,267 - __main__ - INFO - Time limit: 480 seconds
+2025-06-15 21:49:00,302 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:00,302 - hardware - INFO - Motors stopped
+2025-06-15 21:49:00,503 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:01,003 - hardware - INFO - Motors stopped
+2025-06-15 21:49:01,003 - hardware - INFO - Turning right
+2025-06-15 21:49:01,603 - hardware - INFO - Motors stopped
+2025-06-15 21:49:02,493 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:02,494 - hardware - INFO - Motors stopped
+2025-06-15 21:49:02,694 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:03,194 - hardware - INFO - Motors stopped
+2025-06-15 21:49:03,194 - hardware - INFO - Turning right
+2025-06-15 21:49:03,795 - hardware - INFO - Motors stopped
+2025-06-15 21:49:04,742 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:04,743 - hardware - INFO - Motors stopped
+2025-06-15 21:49:04,943 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:05,443 - hardware - INFO - Motors stopped
+2025-06-15 21:49:05,446 - hardware - INFO - Turning right
+2025-06-15 21:49:06,047 - hardware - INFO - Motors stopped
+2025-06-15 21:49:06,996 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:06,997 - hardware - INFO - Motors stopped
+2025-06-15 21:49:07,197 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:07,698 - hardware - INFO - Motors stopped
+2025-06-15 21:49:07,698 - hardware - INFO - Turning right
+2025-06-15 21:49:08,298 - hardware - INFO - Motors stopped
+2025-06-15 21:49:09,267 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:09,267 - hardware - INFO - Motors stopped
+2025-06-15 21:49:09,467 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:09,969 - hardware - INFO - Motors stopped
+2025-06-15 21:49:09,969 - hardware - INFO - Turning right
+2025-06-15 21:49:10,569 - hardware - INFO - Motors stopped
+2025-06-15 21:49:11,534 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:11,535 - hardware - INFO - Motors stopped
+2025-06-15 21:49:11,735 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:12,235 - hardware - INFO - Motors stopped
+2025-06-15 21:49:12,236 - hardware - INFO - Turning right
+2025-06-15 21:49:12,836 - hardware - INFO - Motors stopped
+2025-06-15 21:49:13,788 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:13,788 - hardware - INFO - Motors stopped
+2025-06-15 21:49:13,988 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:14,489 - hardware - INFO - Motors stopped
+2025-06-15 21:49:14,489 - hardware - INFO - Turning right
+2025-06-15 21:49:15,089 - hardware - INFO - Motors stopped
+2025-06-15 21:49:16,025 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:16,026 - hardware - INFO - Motors stopped
+2025-06-15 21:49:16,226 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:16,726 - hardware - INFO - Motors stopped
+2025-06-15 21:49:16,726 - hardware - INFO - Turning right
+2025-06-15 21:49:17,327 - hardware - INFO - Motors stopped
+2025-06-15 21:49:18,347 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:18,347 - hardware - INFO - Motors stopped
+2025-06-15 21:49:18,547 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:19,047 - hardware - INFO - Motors stopped
+2025-06-15 21:49:19,048 - hardware - INFO - Turning right
+2025-06-15 21:49:19,648 - hardware - INFO - Motors stopped
+2025-06-15 21:49:20,575 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:20,575 - hardware - INFO - Motors stopped
+2025-06-15 21:49:20,775 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:21,276 - hardware - INFO - Motors stopped
+2025-06-15 21:49:21,276 - hardware - INFO - Turning right
+2025-06-15 21:49:21,876 - hardware - INFO - Motors stopped
+2025-06-15 21:49:22,787 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:22,787 - hardware - INFO - Motors stopped
+2025-06-15 21:49:22,988 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:23,488 - hardware - INFO - Motors stopped
+2025-06-15 21:49:23,488 - hardware - INFO - Turning right
+2025-06-15 21:49:24,089 - hardware - INFO - Motors stopped
+2025-06-15 21:49:25,000 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:25,000 - hardware - INFO - Motors stopped
+2025-06-15 21:49:25,200 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:25,701 - hardware - INFO - Motors stopped
+2025-06-15 21:49:25,701 - hardware - INFO - Turning right
+2025-06-15 21:49:26,301 - hardware - INFO - Motors stopped
+2025-06-15 21:49:27,212 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:27,213 - hardware - INFO - Motors stopped
+2025-06-15 21:49:27,413 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:27,913 - hardware - INFO - Motors stopped
+2025-06-15 21:49:27,914 - hardware - INFO - Turning right
+2025-06-15 21:49:28,514 - hardware - INFO - Motors stopped
+2025-06-15 21:49:29,454 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:29,454 - hardware - INFO - Motors stopped
+2025-06-15 21:49:29,654 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:30,155 - hardware - INFO - Motors stopped
+2025-06-15 21:49:30,155 - hardware - INFO - Turning right
+2025-06-15 21:49:30,755 - hardware - INFO - Motors stopped
+2025-06-15 21:49:31,685 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:31,685 - hardware - INFO - Motors stopped
+2025-06-15 21:49:31,886 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:32,386 - hardware - INFO - Motors stopped
+2025-06-15 21:49:32,397 - hardware - INFO - Turning right
+2025-06-15 21:49:32,997 - hardware - INFO - Motors stopped
+2025-06-15 21:49:33,978 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:33,978 - hardware - INFO - Motors stopped
+2025-06-15 21:49:34,179 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:34,679 - hardware - INFO - Motors stopped
+2025-06-15 21:49:34,679 - hardware - INFO - Turning right
+2025-06-15 21:49:35,279 - hardware - INFO - Motors stopped
+2025-06-15 21:49:36,218 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:36,219 - hardware - INFO - Motors stopped
+2025-06-15 21:49:36,419 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:36,919 - hardware - INFO - Motors stopped
+2025-06-15 21:49:36,919 - hardware - INFO - Turning right
+2025-06-15 21:49:37,520 - hardware - INFO - Motors stopped
+2025-06-15 21:49:38,497 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:38,497 - hardware - INFO - Motors stopped
+2025-06-15 21:49:38,698 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:39,198 - hardware - INFO - Motors stopped
+2025-06-15 21:49:39,199 - hardware - INFO - Turning right
+2025-06-15 21:49:39,799 - hardware - INFO - Motors stopped
+2025-06-15 21:49:40,748 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:40,748 - hardware - INFO - Motors stopped
+2025-06-15 21:49:40,949 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:41,449 - hardware - INFO - Motors stopped
+2025-06-15 21:49:41,449 - hardware - INFO - Turning right
+2025-06-15 21:49:42,050 - hardware - INFO - Motors stopped
+2025-06-15 21:49:42,981 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:42,982 - hardware - INFO - Motors stopped
+2025-06-15 21:49:43,182 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:43,682 - hardware - INFO - Motors stopped
+2025-06-15 21:49:43,683 - hardware - INFO - Turning right
+2025-06-15 21:49:44,283 - hardware - INFO - Motors stopped
+2025-06-15 21:49:45,256 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:45,256 - hardware - INFO - Motors stopped
+2025-06-15 21:49:45,456 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:45,957 - hardware - INFO - Motors stopped
+2025-06-15 21:49:45,957 - hardware - INFO - Turning right
+2025-06-15 21:49:46,557 - hardware - INFO - Motors stopped
+2025-06-15 21:49:47,488 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:47,488 - hardware - INFO - Motors stopped
+2025-06-15 21:49:47,689 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:48,189 - hardware - INFO - Motors stopped
+2025-06-15 21:49:48,189 - hardware - INFO - Turning right
+2025-06-15 21:49:48,789 - hardware - INFO - Motors stopped
+2025-06-15 21:49:49,727 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:49,727 - hardware - INFO - Motors stopped
+2025-06-15 21:49:49,928 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:50,428 - hardware - INFO - Motors stopped
+2025-06-15 21:49:50,428 - hardware - INFO - Turning right
+2025-06-15 21:49:51,028 - hardware - INFO - Motors stopped
+2025-06-15 21:49:51,961 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:51,961 - hardware - INFO - Motors stopped
+2025-06-15 21:49:52,162 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:52,662 - hardware - INFO - Motors stopped
+2025-06-15 21:49:52,662 - hardware - INFO - Turning right
+2025-06-15 21:49:53,262 - hardware - INFO - Motors stopped
+2025-06-15 21:49:54,182 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:54,183 - hardware - INFO - Motors stopped
+2025-06-15 21:49:54,383 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:54,883 - hardware - INFO - Motors stopped
+2025-06-15 21:49:54,883 - hardware - INFO - Turning right
+2025-06-15 21:49:55,484 - hardware - INFO - Motors stopped
+2025-06-15 21:49:56,437 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:56,437 - hardware - INFO - Motors stopped
+2025-06-15 21:49:56,637 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:57,138 - hardware - INFO - Motors stopped
+2025-06-15 21:49:57,138 - hardware - INFO - Turning right
+2025-06-15 21:49:57,738 - hardware - INFO - Motors stopped
+2025-06-15 21:49:58,672 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:49:58,672 - hardware - INFO - Motors stopped
+2025-06-15 21:49:58,873 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:49:59,373 - hardware - INFO - Motors stopped
+2025-06-15 21:49:59,373 - hardware - INFO - Turning right
+2025-06-15 21:49:59,983 - hardware - INFO - Motors stopped
+2025-06-15 21:50:00,948 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:50:00,948 - hardware - INFO - Motors stopped
+2025-06-15 21:50:01,149 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:50:01,649 - hardware - INFO - Motors stopped
+2025-06-15 21:50:01,649 - hardware - INFO - Turning right
+2025-06-15 21:50:02,249 - hardware - INFO - Motors stopped
+2025-06-15 21:50:03,195 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:50:03,196 - hardware - INFO - Motors stopped
+2025-06-15 21:50:03,396 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:50:03,766 - __main__ - INFO - Shutdown signal received
+2025-06-15 21:50:03,766 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:50:03,766 - hardware - INFO - Motors stopped
+2025-06-15 21:50:04,268 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-15 21:50:04,269 - vision - INFO - Vision system cleanup completed
+2025-06-15 21:50:04,272 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250615_214856/analysis_export.json
+2025-06-15 21:50:04,273 - telemetry - INFO - Telemetry session completed:
+2025-06-15 21:50:04,273 - telemetry - INFO -   - Frames logged: 60
+2025-06-15 21:50:04,273 - telemetry - INFO -   - Balls detected: 26
+2025-06-15 21:50:04,273 - telemetry - INFO -   - Collections: 0
+2025-06-15 21:50:04,273 - telemetry - INFO -   - Errors: 0
+2025-06-15 21:50:04,273 - telemetry - INFO -   - Session data: logs/golfbot_20250615_214856
+2025-06-15 21:50:04,273 - hardware - INFO - Motors stopped
+2025-06-15 21:50:04,776 - hardware - INFO - Hardware cleanup completed
+2025-06-15 21:50:04,776 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:50:04,776 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-15 21:58:02,438 - telemetry - INFO - Telemetry session started: golfbot_20250615_215802
+2025-06-15 21:58:02,450 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-15 21:58:02,968 - hardware - INFO - Motors stopped
+2025-06-15 21:58:02,969 - hardware - INFO - Hardware initialized successfully
+2025-06-15 21:58:02,969 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-15 21:58:02,969 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-15 21:58:02,969 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-15 21:58:02,969 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-15 21:58:02,969 - __main__ - INFO - Initializing GolfBot...
+2025-06-15 21:58:02,969 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-15 21:58:02,969 - __main__ - INFO - All systems initialized successfully
+2025-06-15 21:58:03,882 - __main__ - INFO - COMPETITION STARTED!
+2025-06-15 21:58:03,882 - __main__ - INFO - Time limit: 480 seconds
+2025-06-15 21:58:04,691 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:04,691 - hardware - INFO - Motors stopped
+2025-06-15 21:58:04,892 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:05,392 - hardware - INFO - Motors stopped
+2025-06-15 21:58:05,392 - hardware - INFO - Turning right
+2025-06-15 21:58:05,992 - hardware - INFO - Motors stopped
+2025-06-15 21:58:06,912 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:06,912 - hardware - INFO - Motors stopped
+2025-06-15 21:58:07,113 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:07,614 - hardware - INFO - Motors stopped
+2025-06-15 21:58:07,615 - hardware - INFO - Turning right
+2025-06-15 21:58:08,221 - hardware - INFO - Motors stopped
+2025-06-15 21:58:09,129 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:09,130 - hardware - INFO - Motors stopped
+2025-06-15 21:58:09,330 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:09,830 - hardware - INFO - Motors stopped
+2025-06-15 21:58:09,830 - hardware - INFO - Turning right
+2025-06-15 21:58:10,430 - hardware - INFO - Motors stopped
+2025-06-15 21:58:11,362 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:11,363 - hardware - INFO - Motors stopped
+2025-06-15 21:58:11,563 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:12,063 - hardware - INFO - Motors stopped
+2025-06-15 21:58:12,064 - hardware - INFO - Turning right
+2025-06-15 21:58:12,664 - hardware - INFO - Motors stopped
+2025-06-15 21:58:13,585 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:13,585 - hardware - INFO - Motors stopped
+2025-06-15 21:58:13,786 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:14,287 - hardware - INFO - Motors stopped
+2025-06-15 21:58:14,287 - hardware - INFO - Turning right
+2025-06-15 21:58:14,887 - hardware - INFO - Motors stopped
+2025-06-15 21:58:15,793 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:15,794 - hardware - INFO - Motors stopped
+2025-06-15 21:58:15,994 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:16,494 - hardware - INFO - Motors stopped
+2025-06-15 21:58:16,494 - hardware - INFO - Turning right
+2025-06-15 21:58:17,095 - hardware - INFO - Motors stopped
+2025-06-15 21:58:18,022 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:18,022 - hardware - INFO - Motors stopped
+2025-06-15 21:58:18,222 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:18,723 - hardware - INFO - Motors stopped
+2025-06-15 21:58:18,723 - hardware - INFO - Turning right
+2025-06-15 21:58:19,323 - hardware - INFO - Motors stopped
+2025-06-15 21:58:20,238 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:20,238 - hardware - INFO - Motors stopped
+2025-06-15 21:58:20,438 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:20,939 - hardware - INFO - Motors stopped
+2025-06-15 21:58:20,939 - hardware - INFO - Turning right
+2025-06-15 21:58:21,539 - hardware - INFO - Motors stopped
+2025-06-15 21:58:22,450 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:22,450 - hardware - INFO - Motors stopped
+2025-06-15 21:58:22,650 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:23,150 - hardware - INFO - Motors stopped
+2025-06-15 21:58:23,151 - hardware - INFO - Turning right
+2025-06-15 21:58:23,751 - hardware - INFO - Motors stopped
+2025-06-15 21:58:24,702 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:24,702 - hardware - INFO - Motors stopped
+2025-06-15 21:58:24,902 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:25,402 - hardware - INFO - Motors stopped
+2025-06-15 21:58:25,403 - hardware - INFO - Turning right
+2025-06-15 21:58:26,003 - hardware - INFO - Motors stopped
+2025-06-15 21:58:26,913 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:26,913 - hardware - INFO - Motors stopped
+2025-06-15 21:58:27,113 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:27,613 - hardware - INFO - Motors stopped
+2025-06-15 21:58:27,613 - hardware - INFO - Turning right
+2025-06-15 21:58:28,214 - hardware - INFO - Motors stopped
+2025-06-15 21:58:29,143 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:29,144 - hardware - INFO - Motors stopped
+2025-06-15 21:58:29,344 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:29,844 - hardware - INFO - Motors stopped
+2025-06-15 21:58:29,844 - hardware - INFO - Turning right
+2025-06-15 21:58:30,445 - hardware - INFO - Motors stopped
+2025-06-15 21:58:31,351 - __main__ - WARNING - Near boundary - avoiding
+2025-06-15 21:58:31,351 - hardware - INFO - Motors stopped
+2025-06-15 21:58:31,551 - hardware - INFO - Moving backward at 30% speed
+2025-06-15 21:58:31,750 - __main__ - INFO - Shutdown signal received
+2025-06-15 21:58:31,750 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:58:31,750 - hardware - INFO - Motors stopped
+2025-06-15 21:58:32,026 - __main__ - INFO - Shutdown signal received
+2025-06-15 21:58:32,027 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:58:32,027 - hardware - INFO - Motors stopped
+2025-06-15 21:58:32,407 - __main__ - INFO - Shutdown signal received
+2025-06-15 21:58:32,407 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:58:32,407 - hardware - INFO - Motors stopped
+2025-06-15 21:58:32,714 - __main__ - INFO - Shutdown signal received
+2025-06-15 21:58:32,714 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:58:32,714 - hardware - INFO - Motors stopped
+2025-06-15 21:58:33,026 - __main__ - INFO - Shutdown signal received
+2025-06-15 21:58:33,026 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:58:33,026 - hardware - INFO - Motors stopped
+2025-06-15 21:58:33,528 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-15 21:58:33,528 - vision - INFO - Vision system cleanup completed
+2025-06-15 21:58:33,530 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250615_215802/analysis_export.json
+2025-06-15 21:58:33,530 - telemetry - INFO - Telemetry session completed:
+2025-06-15 21:58:33,530 - telemetry - INFO -   - Frames logged: 28
+2025-06-15 21:58:33,530 - telemetry - INFO -   - Balls detected: 1
+2025-06-15 21:58:33,530 - telemetry - INFO -   - Collections: 0
+2025-06-15 21:58:33,530 - telemetry - INFO -   - Errors: 0
+2025-06-15 21:58:33,530 - telemetry - INFO -   - Session data: logs/golfbot_20250615_215802
+2025-06-15 21:58:33,531 - hardware - INFO - Motors stopped
+2025-06-15 21:58:34,033 - hardware - INFO - Hardware cleanup completed
+2025-06-15 21:58:34,033 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-15 21:58:34,033 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-16 14:02:38,317 - telemetry - INFO - Telemetry session started: golfbot_20250616_140238
+2025-06-16 14:02:38,319 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-16 14:02:38,849 - hardware - INFO - Motors stopped
+2025-06-16 14:02:38,849 - hardware - INFO - Hardware initialized successfully
+2025-06-16 14:02:38,850 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-16 14:02:38,850 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-16 14:02:38,850 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-16 14:02:38,850 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-16 14:02:38,850 - __main__ - INFO - Initializing GolfBot...
+2025-06-16 14:02:38,850 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-16 14:02:38,850 - __main__ - INFO - All systems initialized successfully
+2025-06-16 14:02:46,581 - __main__ - INFO - COMPETITION STARTED!
+2025-06-16 14:02:46,581 - __main__ - INFO - Time limit: 480 seconds
+2025-06-16 14:02:47,684 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:02:47,685 - hardware - INFO - Motors stopped
+2025-06-16 14:02:47,885 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:02:48,386 - hardware - INFO - Motors stopped
+2025-06-16 14:02:48,386 - hardware - INFO - Turning right
+2025-06-16 14:02:48,986 - hardware - INFO - Motors stopped
+2025-06-16 14:02:49,885 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:02:49,886 - hardware - INFO - Motors stopped
+2025-06-16 14:02:50,086 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:02:50,586 - hardware - INFO - Motors stopped
+2025-06-16 14:02:50,587 - hardware - INFO - Turning right
+2025-06-16 14:02:51,187 - hardware - INFO - Motors stopped
+2025-06-16 14:02:52,119 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:02:52,119 - hardware - INFO - Motors stopped
+2025-06-16 14:02:52,320 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:02:52,820 - hardware - INFO - Motors stopped
+2025-06-16 14:02:52,820 - hardware - INFO - Turning right
+2025-06-16 14:02:53,420 - hardware - INFO - Motors stopped
+2025-06-16 14:02:54,344 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:02:54,344 - hardware - INFO - Motors stopped
+2025-06-16 14:02:54,544 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:02:55,045 - hardware - INFO - Motors stopped
+2025-06-16 14:02:55,045 - hardware - INFO - Turning right
+2025-06-16 14:02:55,645 - hardware - INFO - Motors stopped
+2025-06-16 14:02:56,606 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:02:56,606 - hardware - INFO - Motors stopped
+2025-06-16 14:02:56,807 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:02:57,307 - hardware - INFO - Motors stopped
+2025-06-16 14:02:57,307 - hardware - INFO - Turning right
+2025-06-16 14:02:57,907 - hardware - INFO - Motors stopped
+2025-06-16 14:02:58,846 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:02:58,847 - hardware - INFO - Motors stopped
+2025-06-16 14:02:59,047 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:02:59,547 - hardware - INFO - Motors stopped
+2025-06-16 14:02:59,547 - hardware - INFO - Turning right
+2025-06-16 14:03:00,148 - hardware - INFO - Motors stopped
+2025-06-16 14:03:01,071 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:03:01,072 - hardware - INFO - Motors stopped
+2025-06-16 14:03:01,272 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:03:01,772 - hardware - INFO - Motors stopped
+2025-06-16 14:03:01,773 - hardware - INFO - Turning right
+2025-06-16 14:03:02,373 - hardware - INFO - Motors stopped
+2025-06-16 14:03:03,307 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:03:03,308 - hardware - INFO - Motors stopped
+2025-06-16 14:03:03,508 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:03:04,008 - hardware - INFO - Motors stopped
+2025-06-16 14:03:04,008 - hardware - INFO - Turning right
+2025-06-16 14:03:04,609 - hardware - INFO - Motors stopped
+2025-06-16 14:03:05,546 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:03:05,546 - hardware - INFO - Motors stopped
+2025-06-16 14:03:05,746 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:03:06,247 - hardware - INFO - Motors stopped
+2025-06-16 14:03:06,247 - hardware - INFO - Turning right
+2025-06-16 14:03:06,847 - hardware - INFO - Motors stopped
+2025-06-16 14:03:06,887 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:03:06,888 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:03:06,888 - hardware - INFO - Motors stopped
+2025-06-16 14:03:07,096 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:03:07,096 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:03:07,096 - hardware - INFO - Motors stopped
+2025-06-16 14:03:07,300 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:03:07,300 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:03:07,300 - hardware - INFO - Motors stopped
+2025-06-16 14:03:07,522 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:03:07,522 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:03:07,522 - hardware - INFO - Motors stopped
+2025-06-16 14:03:07,807 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:03:07,807 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:03:07,807 - hardware - INFO - Motors stopped
+2025-06-16 14:03:08,309 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-16 14:03:08,321 - vision - INFO - Vision system cleanup completed
+2025-06-16 14:03:08,323 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250616_140238/analysis_export.json
+2025-06-16 14:03:08,324 - telemetry - INFO - Telemetry session completed:
+2025-06-16 14:03:08,324 - telemetry - INFO -   - Frames logged: 20
+2025-06-16 14:03:08,324 - telemetry - INFO -   - Balls detected: 36
+2025-06-16 14:03:08,324 - telemetry - INFO -   - Collections: 0
+2025-06-16 14:03:08,324 - telemetry - INFO -   - Errors: 0
+2025-06-16 14:03:08,324 - telemetry - INFO -   - Session data: logs/golfbot_20250616_140238
+2025-06-16 14:03:08,324 - hardware - INFO - Motors stopped
+2025-06-16 14:03:08,826 - hardware - INFO - Hardware cleanup completed
+2025-06-16 14:03:08,827 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:03:08,827 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-16 14:06:29,178 - telemetry - INFO - Telemetry session started: golfbot_20250616_140629
+2025-06-16 14:06:29,179 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-16 14:06:29,700 - hardware - INFO - Motors stopped
+2025-06-16 14:06:29,700 - hardware - INFO - Hardware initialized successfully
+2025-06-16 14:06:29,700 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-16 14:06:29,700 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-16 14:06:29,700 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-16 14:06:29,700 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-16 14:06:29,700 - __main__ - INFO - Initializing GolfBot...
+2025-06-16 14:06:29,700 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-16 14:06:29,700 - __main__ - INFO - All systems initialized successfully
+2025-06-16 14:06:38,016 - __main__ - INFO - COMPETITION STARTED!
+2025-06-16 14:06:38,016 - __main__ - INFO - Time limit: 480 seconds
+2025-06-16 14:06:38,862 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:38,862 - hardware - INFO - Motors stopped
+2025-06-16 14:06:39,062 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:39,563 - hardware - INFO - Motors stopped
+2025-06-16 14:06:39,563 - hardware - INFO - Turning right
+2025-06-16 14:06:40,163 - hardware - INFO - Motors stopped
+2025-06-16 14:06:41,086 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:41,086 - hardware - INFO - Motors stopped
+2025-06-16 14:06:41,287 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:41,787 - hardware - INFO - Motors stopped
+2025-06-16 14:06:41,787 - hardware - INFO - Turning right
+2025-06-16 14:06:42,387 - hardware - INFO - Motors stopped
+2025-06-16 14:06:43,300 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:43,300 - hardware - INFO - Motors stopped
+2025-06-16 14:06:43,501 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:44,001 - hardware - INFO - Motors stopped
+2025-06-16 14:06:44,001 - hardware - INFO - Turning right
+2025-06-16 14:06:44,601 - hardware - INFO - Motors stopped
+2025-06-16 14:06:45,580 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:45,581 - hardware - INFO - Motors stopped
+2025-06-16 14:06:45,781 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:46,281 - hardware - INFO - Motors stopped
+2025-06-16 14:06:46,281 - hardware - INFO - Turning right
+2025-06-16 14:06:46,882 - hardware - INFO - Motors stopped
+2025-06-16 14:06:47,827 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:47,827 - hardware - INFO - Motors stopped
+2025-06-16 14:06:48,027 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:48,527 - hardware - INFO - Motors stopped
+2025-06-16 14:06:48,528 - hardware - INFO - Turning right
+2025-06-16 14:06:49,128 - hardware - INFO - Motors stopped
+2025-06-16 14:06:50,074 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:50,075 - hardware - INFO - Motors stopped
+2025-06-16 14:06:50,275 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:50,775 - hardware - INFO - Motors stopped
+2025-06-16 14:06:50,775 - hardware - INFO - Turning right
+2025-06-16 14:06:51,376 - hardware - INFO - Motors stopped
+2025-06-16 14:06:53,278 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:53,278 - hardware - INFO - Motors stopped
+2025-06-16 14:06:53,478 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:53,979 - hardware - INFO - Motors stopped
+2025-06-16 14:06:53,979 - hardware - INFO - Turning right
+2025-06-16 14:06:54,579 - hardware - INFO - Motors stopped
+2025-06-16 14:06:56,462 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:56,462 - hardware - INFO - Motors stopped
+2025-06-16 14:06:56,662 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:57,163 - hardware - INFO - Motors stopped
+2025-06-16 14:06:57,163 - hardware - INFO - Turning right
+2025-06-16 14:06:57,763 - hardware - INFO - Motors stopped
+2025-06-16 14:06:58,717 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:06:58,717 - hardware - INFO - Motors stopped
+2025-06-16 14:06:58,918 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:06:59,418 - hardware - INFO - Motors stopped
+2025-06-16 14:06:59,418 - hardware - INFO - Turning right
+2025-06-16 14:07:00,018 - hardware - INFO - Motors stopped
+2025-06-16 14:07:00,930 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:07:00,931 - hardware - INFO - Motors stopped
+2025-06-16 14:07:01,131 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:07:01,631 - hardware - INFO - Motors stopped
+2025-06-16 14:07:01,631 - hardware - INFO - Turning right
+2025-06-16 14:07:02,232 - hardware - INFO - Motors stopped
+2025-06-16 14:07:03,179 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:07:03,179 - hardware - INFO - Motors stopped
+2025-06-16 14:07:03,379 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:07:03,840 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:07:03,841 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:07:03,841 - hardware - INFO - Motors stopped
+2025-06-16 14:07:04,343 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-16 14:07:04,344 - vision - INFO - Vision system cleanup completed
+2025-06-16 14:07:04,349 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250616_140629/analysis_export.json
+2025-06-16 14:07:04,349 - telemetry - INFO - Telemetry session completed:
+2025-06-16 14:07:04,349 - telemetry - INFO -   - Frames logged: 32
+2025-06-16 14:07:04,349 - telemetry - INFO -   - Balls detected: 65
+2025-06-16 14:07:04,349 - telemetry - INFO -   - Collections: 0
+2025-06-16 14:07:04,349 - telemetry - INFO -   - Errors: 0
+2025-06-16 14:07:04,349 - telemetry - INFO -   - Session data: logs/golfbot_20250616_140629
+2025-06-16 14:07:04,349 - hardware - INFO - Motors stopped
+2025-06-16 14:07:04,852 - hardware - INFO - Hardware cleanup completed
+2025-06-16 14:07:04,852 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:07:04,852 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-16 14:12:56,633 - telemetry - INFO - Telemetry session started: golfbot_20250616_141256
+2025-06-16 14:12:56,633 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-16 14:12:57,151 - hardware - INFO - Motors stopped
+2025-06-16 14:12:57,151 - hardware - INFO - Hardware initialized successfully
+2025-06-16 14:12:57,151 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-16 14:12:57,151 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-16 14:12:57,151 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-16 14:12:57,151 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-16 14:12:57,151 - __main__ - INFO - Initializing GolfBot...
+2025-06-16 14:12:57,151 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-16 14:12:57,151 - __main__ - INFO - All systems initialized successfully
+2025-06-16 14:12:58,579 - __main__ - INFO - COMPETITION STARTED!
+2025-06-16 14:12:58,579 - __main__ - INFO - Time limit: 480 seconds
+2025-06-16 14:12:59,342 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:12:59,343 - hardware - INFO - Motors stopped
+2025-06-16 14:12:59,543 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:13:00,043 - hardware - INFO - Motors stopped
+2025-06-16 14:13:00,043 - hardware - INFO - Turning right
+2025-06-16 14:13:00,643 - hardware - INFO - Motors stopped
+2025-06-16 14:13:01,488 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:13:01,489 - hardware - INFO - Motors stopped
+2025-06-16 14:13:01,689 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:13:02,189 - hardware - INFO - Motors stopped
+2025-06-16 14:13:02,189 - hardware - INFO - Turning right
+2025-06-16 14:13:02,790 - hardware - INFO - Motors stopped
+2025-06-16 14:13:03,662 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:13:03,662 - hardware - INFO - Motors stopped
+2025-06-16 14:13:03,862 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:13:04,363 - hardware - INFO - Motors stopped
+2025-06-16 14:13:04,363 - hardware - INFO - Turning right
+2025-06-16 14:13:04,963 - hardware - INFO - Motors stopped
+2025-06-16 14:13:05,794 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:13:05,795 - hardware - INFO - Motors stopped
+2025-06-16 14:13:05,995 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:13:06,495 - hardware - INFO - Motors stopped
+2025-06-16 14:13:06,495 - hardware - INFO - Turning right
+2025-06-16 14:13:07,095 - hardware - INFO - Motors stopped
+2025-06-16 14:13:07,954 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:13:07,954 - hardware - INFO - Motors stopped
+2025-06-16 14:13:08,154 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:13:08,654 - hardware - INFO - Motors stopped
+2025-06-16 14:13:08,655 - hardware - INFO - Turning right
+2025-06-16 14:13:09,255 - hardware - INFO - Motors stopped
+2025-06-16 14:13:10,126 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:13:10,126 - hardware - INFO - Motors stopped
+2025-06-16 14:13:10,326 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:13:10,826 - hardware - INFO - Motors stopped
+2025-06-16 14:13:10,827 - hardware - INFO - Turning right
+2025-06-16 14:13:11,427 - hardware - INFO - Motors stopped
+2025-06-16 14:13:12,269 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:13:12,269 - hardware - INFO - Motors stopped
+2025-06-16 14:13:12,470 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:13:12,744 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:12,744 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:12,744 - hardware - INFO - Motors stopped
+2025-06-16 14:13:13,033 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:13,033 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:13,033 - hardware - INFO - Motors stopped
+2025-06-16 14:13:13,280 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:13,281 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:13,281 - hardware - INFO - Motors stopped
+2025-06-16 14:13:13,519 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:13,519 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:13,519 - hardware - INFO - Motors stopped
+2025-06-16 14:13:13,730 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:13,731 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:13,731 - hardware - INFO - Motors stopped
+2025-06-16 14:13:13,975 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:13,975 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:13,975 - hardware - INFO - Motors stopped
+2025-06-16 14:13:14,230 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:14,230 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:14,231 - hardware - INFO - Motors stopped
+2025-06-16 14:13:14,479 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:14,479 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:14,479 - hardware - INFO - Motors stopped
+2025-06-16 14:13:14,731 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:13:14,731 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:14,731 - hardware - INFO - Motors stopped
+2025-06-16 14:13:15,233 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-16 14:13:15,239 - vision - INFO - Vision system cleanup completed
+2025-06-16 14:13:15,241 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250616_141256/analysis_export.json
+2025-06-16 14:13:15,241 - telemetry - INFO - Telemetry session completed:
+2025-06-16 14:13:15,241 - telemetry - INFO -   - Frames logged: 16
+2025-06-16 14:13:15,241 - telemetry - INFO -   - Balls detected: 6
+2025-06-16 14:13:15,241 - telemetry - INFO -   - Collections: 0
+2025-06-16 14:13:15,241 - telemetry - INFO -   - Errors: 0
+2025-06-16 14:13:15,241 - telemetry - INFO -   - Session data: logs/golfbot_20250616_141256
+2025-06-16 14:13:15,242 - hardware - INFO - Motors stopped
+2025-06-16 14:13:15,744 - hardware - INFO - Hardware cleanup completed
+2025-06-16 14:13:15,745 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:13:15,745 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-16 14:17:09,015 - telemetry - INFO - Telemetry session started: golfbot_20250616_141709
+2025-06-16 14:17:09,016 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-16 14:17:09,534 - hardware - INFO - Motors stopped
+2025-06-16 14:17:09,534 - hardware - INFO - Hardware initialized successfully
+2025-06-16 14:17:09,534 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-16 14:17:09,534 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-16 14:17:09,534 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-16 14:17:09,534 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-16 14:17:09,534 - __main__ - INFO - Initializing GolfBot...
+2025-06-16 14:17:09,534 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-16 14:17:09,534 - __main__ - INFO - All systems initialized successfully
+2025-06-16 14:17:11,975 - __main__ - INFO - COMPETITION STARTED!
+2025-06-16 14:17:11,975 - __main__ - INFO - Time limit: 480 seconds
+2025-06-16 14:17:12,801 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:12,802 - hardware - INFO - Motors stopped
+2025-06-16 14:17:13,002 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:13,502 - hardware - INFO - Motors stopped
+2025-06-16 14:17:13,502 - hardware - INFO - Turning right
+2025-06-16 14:17:14,102 - hardware - INFO - Motors stopped
+2025-06-16 14:17:14,954 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:14,954 - hardware - INFO - Motors stopped
+2025-06-16 14:17:15,155 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:15,656 - hardware - INFO - Motors stopped
+2025-06-16 14:17:15,656 - hardware - INFO - Turning right
+2025-06-16 14:17:16,256 - hardware - INFO - Motors stopped
+2025-06-16 14:17:17,138 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:17,138 - hardware - INFO - Motors stopped
+2025-06-16 14:17:17,339 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:17,839 - hardware - INFO - Motors stopped
+2025-06-16 14:17:17,839 - hardware - INFO - Turning right
+2025-06-16 14:17:18,439 - hardware - INFO - Motors stopped
+2025-06-16 14:17:19,315 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:19,316 - hardware - INFO - Motors stopped
+2025-06-16 14:17:19,516 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:20,016 - hardware - INFO - Motors stopped
+2025-06-16 14:17:20,016 - hardware - INFO - Turning right
+2025-06-16 14:17:20,617 - hardware - INFO - Motors stopped
+2025-06-16 14:17:21,486 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:21,486 - hardware - INFO - Motors stopped
+2025-06-16 14:17:21,686 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:22,187 - hardware - INFO - Motors stopped
+2025-06-16 14:17:22,188 - hardware - INFO - Turning right
+2025-06-16 14:17:22,788 - hardware - INFO - Motors stopped
+2025-06-16 14:17:23,658 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:23,658 - hardware - INFO - Motors stopped
+2025-06-16 14:17:23,858 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:24,359 - hardware - INFO - Motors stopped
+2025-06-16 14:17:24,359 - hardware - INFO - Turning right
+2025-06-16 14:17:24,959 - hardware - INFO - Motors stopped
+2025-06-16 14:17:25,829 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:25,829 - hardware - INFO - Motors stopped
+2025-06-16 14:17:26,029 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:26,530 - hardware - INFO - Motors stopped
+2025-06-16 14:17:26,530 - hardware - INFO - Turning right
+2025-06-16 14:17:27,130 - hardware - INFO - Motors stopped
+2025-06-16 14:17:27,984 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:27,984 - hardware - INFO - Motors stopped
+2025-06-16 14:17:28,184 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:28,684 - hardware - INFO - Motors stopped
+2025-06-16 14:17:28,685 - hardware - INFO - Turning right
+2025-06-16 14:17:29,285 - hardware - INFO - Motors stopped
+2025-06-16 14:17:30,137 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:30,137 - hardware - INFO - Motors stopped
+2025-06-16 14:17:30,338 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:30,838 - hardware - INFO - Motors stopped
+2025-06-16 14:17:30,838 - hardware - INFO - Turning right
+2025-06-16 14:17:31,438 - hardware - INFO - Motors stopped
+2025-06-16 14:17:32,320 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:32,320 - hardware - INFO - Motors stopped
+2025-06-16 14:17:32,521 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:33,021 - hardware - INFO - Motors stopped
+2025-06-16 14:17:33,021 - hardware - INFO - Turning right
+2025-06-16 14:17:33,621 - hardware - INFO - Motors stopped
+2025-06-16 14:17:34,479 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:34,479 - hardware - INFO - Motors stopped
+2025-06-16 14:17:34,680 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:35,180 - hardware - INFO - Motors stopped
+2025-06-16 14:17:35,180 - hardware - INFO - Turning right
+2025-06-16 14:17:35,780 - hardware - INFO - Motors stopped
+2025-06-16 14:17:36,636 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:36,637 - hardware - INFO - Motors stopped
+2025-06-16 14:17:36,837 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:37,337 - hardware - INFO - Motors stopped
+2025-06-16 14:17:37,338 - hardware - INFO - Turning right
+2025-06-16 14:17:37,938 - hardware - INFO - Motors stopped
+2025-06-16 14:17:38,832 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:38,832 - hardware - INFO - Motors stopped
+2025-06-16 14:17:39,032 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:39,532 - hardware - INFO - Motors stopped
+2025-06-16 14:17:39,533 - hardware - INFO - Turning right
+2025-06-16 14:17:40,133 - hardware - INFO - Motors stopped
+2025-06-16 14:17:40,987 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:40,987 - hardware - INFO - Motors stopped
+2025-06-16 14:17:41,187 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:41,688 - hardware - INFO - Motors stopped
+2025-06-16 14:17:41,688 - hardware - INFO - Turning right
+2025-06-16 14:17:42,288 - hardware - INFO - Motors stopped
+2025-06-16 14:17:43,161 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:43,162 - hardware - INFO - Motors stopped
+2025-06-16 14:17:43,362 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:43,862 - hardware - INFO - Motors stopped
+2025-06-16 14:17:43,863 - hardware - INFO - Turning right
+2025-06-16 14:17:44,463 - hardware - INFO - Motors stopped
+2025-06-16 14:17:45,334 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:45,335 - hardware - INFO - Motors stopped
+2025-06-16 14:17:45,535 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:46,035 - hardware - INFO - Motors stopped
+2025-06-16 14:17:46,036 - hardware - INFO - Turning right
+2025-06-16 14:17:46,636 - hardware - INFO - Motors stopped
+2025-06-16 14:17:47,490 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:47,491 - hardware - INFO - Motors stopped
+2025-06-16 14:17:47,691 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:48,191 - hardware - INFO - Motors stopped
+2025-06-16 14:17:48,191 - hardware - INFO - Turning right
+2025-06-16 14:17:48,792 - hardware - INFO - Motors stopped
+2025-06-16 14:17:49,674 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:49,674 - hardware - INFO - Motors stopped
+2025-06-16 14:17:49,875 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:50,375 - hardware - INFO - Motors stopped
+2025-06-16 14:17:50,375 - hardware - INFO - Turning right
+2025-06-16 14:17:50,975 - hardware - INFO - Motors stopped
+2025-06-16 14:17:51,851 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:51,851 - hardware - INFO - Motors stopped
+2025-06-16 14:17:52,051 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:52,552 - hardware - INFO - Motors stopped
+2025-06-16 14:17:52,552 - hardware - INFO - Turning right
+2025-06-16 14:17:53,152 - hardware - INFO - Motors stopped
+2025-06-16 14:17:54,002 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:54,002 - hardware - INFO - Motors stopped
+2025-06-16 14:17:54,202 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:54,703 - hardware - INFO - Motors stopped
+2025-06-16 14:17:54,703 - hardware - INFO - Turning right
+2025-06-16 14:17:55,303 - hardware - INFO - Motors stopped
+2025-06-16 14:17:56,219 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:17:56,219 - hardware - INFO - Motors stopped
+2025-06-16 14:17:56,420 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:17:56,920 - hardware - INFO - Motors stopped
+2025-06-16 14:17:56,920 - hardware - INFO - Turning right
+2025-06-16 14:17:57,098 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:17:57,098 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:17:57,099 - hardware - INFO - Motors stopped
+2025-06-16 14:17:57,359 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:17:57,359 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:17:57,359 - hardware - INFO - Motors stopped
+2025-06-16 14:17:57,544 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:17:57,544 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:17:57,544 - hardware - INFO - Motors stopped
+2025-06-16 14:17:58,046 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-16 14:17:58,048 - vision - INFO - Vision system cleanup completed
+2025-06-16 14:17:58,056 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250616_141709/analysis_export.json
+2025-06-16 14:17:58,056 - telemetry - INFO - Telemetry session completed:
+2025-06-16 14:17:58,056 - telemetry - INFO -   - Frames logged: 44
+2025-06-16 14:17:58,056 - telemetry - INFO -   - Balls detected: 100
+2025-06-16 14:17:58,056 - telemetry - INFO -   - Collections: 0
+2025-06-16 14:17:58,056 - telemetry - INFO -   - Errors: 0
+2025-06-16 14:17:58,056 - telemetry - INFO -   - Session data: logs/golfbot_20250616_141709
+2025-06-16 14:17:58,056 - hardware - INFO - Motors stopped
+2025-06-16 14:17:58,559 - hardware - INFO - Hardware cleanup completed
+2025-06-16 14:17:58,559 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:17:58,560 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-16 14:25:17,390 - telemetry - INFO - Telemetry session started: golfbot_20250616_142517
+2025-06-16 14:25:17,392 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-16 14:25:17,919 - hardware - INFO - Motors stopped
+2025-06-16 14:25:17,919 - hardware - INFO - Hardware initialized successfully
+2025-06-16 14:25:17,919 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-16 14:25:17,919 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-16 14:25:17,919 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-16 14:25:17,919 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-16 14:25:17,919 - __main__ - INFO - Initializing GolfBot...
+2025-06-16 14:25:17,919 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-16 14:25:17,919 - __main__ - INFO - All systems initialized successfully
+2025-06-16 14:25:22,092 - __main__ - INFO - COMPETITION STARTED!
+2025-06-16 14:25:22,092 - __main__ - INFO - Time limit: 480 seconds
+2025-06-16 14:25:22,891 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:22,891 - hardware - INFO - Motors stopped
+2025-06-16 14:25:23,092 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:23,592 - hardware - INFO - Motors stopped
+2025-06-16 14:25:23,592 - hardware - INFO - Turning right
+2025-06-16 14:25:24,192 - hardware - INFO - Motors stopped
+2025-06-16 14:25:25,069 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:25,070 - hardware - INFO - Motors stopped
+2025-06-16 14:25:25,270 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:25,771 - hardware - INFO - Motors stopped
+2025-06-16 14:25:25,771 - hardware - INFO - Turning right
+2025-06-16 14:25:26,371 - hardware - INFO - Motors stopped
+2025-06-16 14:25:27,241 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:27,241 - hardware - INFO - Motors stopped
+2025-06-16 14:25:27,441 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:27,941 - hardware - INFO - Motors stopped
+2025-06-16 14:25:27,942 - hardware - INFO - Turning right
+2025-06-16 14:25:28,542 - hardware - INFO - Motors stopped
+2025-06-16 14:25:29,436 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:29,437 - hardware - INFO - Motors stopped
+2025-06-16 14:25:29,637 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:30,137 - hardware - INFO - Motors stopped
+2025-06-16 14:25:30,137 - hardware - INFO - Turning right
+2025-06-16 14:25:30,738 - hardware - INFO - Motors stopped
+2025-06-16 14:25:31,643 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:31,643 - hardware - INFO - Motors stopped
+2025-06-16 14:25:31,843 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:32,343 - hardware - INFO - Motors stopped
+2025-06-16 14:25:32,344 - hardware - INFO - Turning right
+2025-06-16 14:25:32,944 - hardware - INFO - Motors stopped
+2025-06-16 14:25:33,841 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:33,841 - hardware - INFO - Motors stopped
+2025-06-16 14:25:34,041 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:34,541 - hardware - INFO - Motors stopped
+2025-06-16 14:25:34,542 - hardware - INFO - Turning right
+2025-06-16 14:25:35,142 - hardware - INFO - Motors stopped
+2025-06-16 14:25:36,039 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:36,039 - hardware - INFO - Motors stopped
+2025-06-16 14:25:36,239 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:36,740 - hardware - INFO - Motors stopped
+2025-06-16 14:25:36,740 - hardware - INFO - Turning right
+2025-06-16 14:25:37,340 - hardware - INFO - Motors stopped
+2025-06-16 14:25:38,252 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:38,253 - hardware - INFO - Motors stopped
+2025-06-16 14:25:38,453 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:38,953 - hardware - INFO - Motors stopped
+2025-06-16 14:25:38,953 - hardware - INFO - Turning right
+2025-06-16 14:25:39,553 - hardware - INFO - Motors stopped
+2025-06-16 14:25:40,397 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:40,398 - hardware - INFO - Motors stopped
+2025-06-16 14:25:40,598 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:41,098 - hardware - INFO - Motors stopped
+2025-06-16 14:25:41,098 - hardware - INFO - Turning right
+2025-06-16 14:25:41,698 - hardware - INFO - Motors stopped
+2025-06-16 14:25:42,575 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:42,575 - hardware - INFO - Motors stopped
+2025-06-16 14:25:42,775 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:43,276 - hardware - INFO - Motors stopped
+2025-06-16 14:25:43,276 - hardware - INFO - Turning right
+2025-06-16 14:25:43,876 - hardware - INFO - Motors stopped
+2025-06-16 14:25:44,841 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:44,841 - hardware - INFO - Motors stopped
+2025-06-16 14:25:45,041 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:45,544 - hardware - INFO - Motors stopped
+2025-06-16 14:25:45,544 - hardware - INFO - Turning right
+2025-06-16 14:25:46,145 - hardware - INFO - Motors stopped
+2025-06-16 14:25:46,989 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:46,989 - hardware - INFO - Motors stopped
+2025-06-16 14:25:47,190 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:47,690 - hardware - INFO - Motors stopped
+2025-06-16 14:25:47,690 - hardware - INFO - Turning right
+2025-06-16 14:25:48,290 - hardware - INFO - Motors stopped
+2025-06-16 14:25:49,203 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:49,203 - hardware - INFO - Motors stopped
+2025-06-16 14:25:49,404 - hardware - INFO - Moving backward at 30% speed
+2025-06-16 14:25:49,904 - hardware - INFO - Motors stopped
+2025-06-16 14:25:49,904 - hardware - INFO - Turning right
+2025-06-16 14:25:50,505 - hardware - INFO - Motors stopped
+2025-06-16 14:25:51,405 - __main__ - WARNING - Near boundary - avoiding
+2025-06-16 14:25:51,405 - hardware - INFO - Motors stopped
+2025-06-16 14:25:51,559 - __main__ - INFO - Shutdown signal received
+2025-06-16 14:25:51,559 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:25:51,559 - hardware - INFO - Motors stopped
+2025-06-16 14:25:52,061 - hardware - WARNING - EMERGENCY STOP activated
+2025-06-16 14:25:52,062 - vision - INFO - Vision system cleanup completed
+2025-06-16 14:25:52,065 - __main__ - INFO - 📊 Telemetry exported: logs/golfbot_20250616_142517/analysis_export.json
+2025-06-16 14:25:52,065 - telemetry - INFO - Telemetry session completed:
+2025-06-16 14:25:52,065 - telemetry - INFO -   - Frames logged: 30
+2025-06-16 14:25:52,065 - telemetry - INFO -   - Balls detected: 47
+2025-06-16 14:25:52,065 - telemetry - INFO -   - Collections: 0
+2025-06-16 14:25:52,065 - telemetry - INFO -   - Errors: 0
+2025-06-16 14:25:52,065 - telemetry - INFO -   - Session data: logs/golfbot_20250616_142517
+2025-06-16 14:25:52,066 - hardware - INFO - Motors stopped
+2025-06-16 14:25:52,568 - hardware - INFO - Hardware cleanup completed
+2025-06-16 14:25:52,568 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-16 14:25:52,568 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized

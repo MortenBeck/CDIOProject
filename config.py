@@ -85,7 +85,7 @@ MAX_COLLECTION_ATTEMPTS = 3
 DEBUG_VISION = True
 DEBUG_MOVEMENT = True
 DEBUG_COLLECTION = True
-SHOW_CAMERA_FEED = False  # Set to False for headless operation
+SHOW_CAMERA_FEED = True
 
 # === ERROR HANDLING ===
 MOTOR_TIMEOUT = 5.0  # Max time for any single movement
