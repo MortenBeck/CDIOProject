@@ -42,18 +42,24 @@ class Pi5Camera:
             cmd = [
                 'libcamera-still',
                 '--output', self.temp_file,
-                '--timeout', '1',
+                '--timeout', '100',  # Faster timeout
                 '--width', str(config.CAMERA_WIDTH),
                 '--height', str(config.CAMERA_HEIGHT),
-                '--quality', '80'
+                '--quality', '80',
+                '--nopreview'  # No preview window
             ]
             
-            result = subprocess.run(cmd, capture_output=True, timeout=2)
+            result = subprocess.run(cmd, capture_output=True, timeout=3)
             
             if result.returncode == 0 and os.path.exists(self.temp_file):
                 frame = cv2.imread(self.temp_file)
-                return True, frame
+                if frame is not None and frame.size > 0:
+                    return True, frame
+                else:
+                    self.logger.warning("Empty frame captured")
+                    return False, None
             else:
+                self.logger.warning(f"Camera capture failed: {result.stderr}")
                 return False, None
                 
         except Exception as e:
@@ -235,7 +241,7 @@ class VisionSystem:
         
         # Define region of interest - focus on lower portion where immediate obstacles matter
         # Ignore top 40% of frame (distant walls) and focus on bottom 60%
-        roi_top = int(h * 0.2)  # Start checking from 40% down
+        roi_top = int(h * 0.8)  # Start checking from 40% down
         roi_bottom = h
         roi_left = 0
         roi_right = w

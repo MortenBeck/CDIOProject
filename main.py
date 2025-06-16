@@ -161,11 +161,13 @@ class GolfBot:
                 self.telemetry.log_performance_metrics(fps, frame_time)
                 
                 # Show debug frame if enabled AND display is available
-                if config.SHOW_CAMERA_FEED and self.display_available and debug_frame is not None:
+                if (config.SHOW_CAMERA_FEED and self.display_available and 
+                    debug_frame is not None and debug_frame.size > 0):
                     try:
                         self.add_status_overlay(debug_frame)
                         cv2.imshow('GolfBot Debug', debug_frame)
-                        cv2.waitKey(1)
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                            break
                     except Exception as e:
                         self.logger.warning(f"Display error: {e}")
                         self.display_available = False  # Disable further attempts
