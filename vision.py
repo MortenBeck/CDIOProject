@@ -11,7 +11,7 @@ import config
 @dataclass
 class DetectedObject:
     """Class to store detected object information"""
-    object_type: str  # 'ball', 'orange_ball', 'goal_a', 'goal_b', 'boundary'
+    object_type: str  # 'ball', 'orange_ball', 'boundary'
     center: Tuple[int, int]
     radius: int
     area: int
@@ -236,47 +236,8 @@ class VisionSystem:
         
         return best_orange_ball
     
-    def detect_goals(self, frame) -> List[DetectedObject]:
-        """Detect red tape goals (Goal A = smaller, Goal B = larger)"""
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # Create mask for red color (handle wrap-around at 0/180)
-        mask1 = cv2.inRange(hsv, config.GOAL_HSV_LOWER, config.GOAL_HSV_UPPER)
-        mask2 = cv2.inRange(hsv, np.array([170, 100, 100]), np.array([180, 255, 255]))
-        mask = cv2.bitwise_or(mask1, mask2)
-        
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        goals = []
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            
-            if area > 500:  # Minimum area for goals
-                x, y, w, h = cv2.boundingRect(contour)
-                center = (x + w//2, y + h//2)
-                
-                # Classify goal based on size
-                goal_type = 'goal_a' if area < 2000 else 'goal_b'  # Smaller area = Goal A
-                
-                distance_from_center = np.sqrt(
-                    (center[0] - self.frame_center_x)**2 + 
-                    (center[1] - self.frame_center_y)**2
-                )
-                
-                goal = DetectedObject(
-                    object_type=goal_type,
-                    center=center,
-                    radius=max(w, h)//2,
-                    area=area,
-                    confidence=1.0,
-                    distance_from_center=distance_from_center
-                )
-                goals.append(goal)
-        
-        return goals
-    
     def detect_boundaries(self, frame) -> bool:
-        """Detect red walls/boundaries using color detection with danger zone analysis"""
+        """Detect red walls/boundaries using color detection with enhanced sensitivity"""
         if frame is None:
             return False
         
@@ -285,10 +246,13 @@ class VisionSystem:
         # Convert to HSV for red detection
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        # Red color detection (two ranges for red hue wrap-around)
-        lower_red1 = np.array([0, 50, 50])
-        upper_red1 = np.array([10, 255, 255])
-        lower_red2 = np.array([170, 50, 50])
+        # Enhanced red color detection with wider ranges
+        # Lower red range (around 0-10)
+        lower_red1 = np.array([0, 40, 40])
+        upper_red1 = np.array([15, 255, 255])
+        
+        # Upper red range (around 170-180)
+        lower_red2 = np.array([165, 40, 40])
         upper_red2 = np.array([180, 255, 255])
         
         # Create combined red mask
@@ -301,35 +265,60 @@ class VisionSystem:
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
         
-        # Define danger zone (bottom 150 pixels or 30% of frame)
+        # Enhanced danger zone detection - check multiple areas
         danger_distance = min(150, int(h * 0.3))
-        danger_y_threshold = h - danger_distance
         
-        # Focus on danger zone only
-        danger_zone_mask = red_mask[danger_y_threshold:h, :]
+        # Check bottom area (primary danger zone)
+        bottom_danger_y = h - danger_distance
+        bottom_mask = red_mask[bottom_danger_y:h, :]
         
-        # Find contours in danger zone
-        contours, _ = cv2.findContours(danger_zone_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Also check left and right edges for walls
+        edge_width = min(100, int(w * 0.15))
+        left_mask = red_mask[:, 0:edge_width]
+        right_mask = red_mask[:, w-edge_width:w]
         
-        # Check for significant red objects in danger zone
-        min_wall_area = 100  # Minimum area for wall detection
+        # Find contours in all danger zones
         danger_detected = False
+        min_wall_area = 80  # Reduced minimum area for better sensitivity
         
+        # Check bottom area
+        contours, _ = cv2.findContours(bottom_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_wall_area:
-                # Get bounding rectangle
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                
-                # Check if it's long enough to be a wall segment
                 length = max(w_rect, h_rect)
-                if length > 50:  # Minimum wall segment length
+                if length > 40:  # Reduced minimum wall segment length
                     danger_detected = True
+                    if config.DEBUG_VISION:
+                        self.logger.debug(f"Red wall detected in bottom danger zone (area: {area})")
                     break
         
-        # Debug logging
-        if config.DEBUG_VISION and danger_detected:
-            self.logger.debug(f"Red wall detected in danger zone (bottom {danger_distance}px)")
+        # Check left edge
+        if not danger_detected:
+            contours, _ = cv2.findContours(left_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            for contour in contours:
+                area = cv2.contourArea(contour)
+                if area > min_wall_area:
+                    x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                    if h_rect > 60:  # Vertical wall segment
+                        danger_detected = True
+                        if config.DEBUG_VISION:
+                            self.logger.debug(f"Red wall detected on left edge (area: {area})")
+                        break
+        
+        # Check right edge
+        if not danger_detected:
+            contours, _ = cv2.findContours(right_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            for contour in contours:
+                area = cv2.contourArea(contour)
+                if area > min_wall_area:
+                    x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                    if h_rect > 60:  # Vertical wall segment
+                        danger_detected = True
+                        if config.DEBUG_VISION:
+                            self.logger.debug(f"Red wall detected on right edge (area: {area})")
+                        break
         
         return danger_detected
     
@@ -392,20 +381,8 @@ class VisionSystem:
             # Object is centered, move forward
             return "forward"
     
-    def find_goal_direction(self, goals: List[DetectedObject], prefer_goal_a=False) -> Optional[str]:
-        """Find direction to specified goal type"""
-        target_goals = [g for g in goals if 
-                       (g.object_type == 'goal_a' if prefer_goal_a else g.object_type == 'goal_b')]
-        
-        if target_goals:
-            closest_goal = min(target_goals, key=lambda x: x.distance_from_center)
-            return self._get_direction_to_object(closest_goal)
-        
-        return None
-    
     def draw_detections(self, frame, balls: List[DetectedObject], 
-                       orange_ball: Optional[DetectedObject], 
-                       goals: List[DetectedObject]) -> np.ndarray:
+                       orange_ball: Optional[DetectedObject]) -> np.ndarray:
         """Draw detection results on frame for debugging with collection zone visualization"""
         if not config.DEBUG_VISION:
             return frame
@@ -431,12 +408,19 @@ class VisionSystem:
         cv2.putText(result, '50% horizontal, bottom 20%', (zone['left'] + 10, zone['top'] + 50), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
         
-        # Draw danger zone line (bottom 150px or 30% of frame)
+        # Draw danger zones for wall detection
         danger_distance = min(150, int(h * 0.3))
         danger_y = h - danger_distance
-        cv2.line(result, (0, danger_y), (w, danger_y), (0, 255, 255), 2)
-        cv2.putText(result, 'DANGER ZONE', (w - 150, danger_y - 10), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+        edge_width = min(100, int(w * 0.15))
+        
+        # Bottom danger zone
+        cv2.line(result, (0, danger_y), (w, danger_y), (0, 0, 255), 2)
+        cv2.putText(result, 'WALL DANGER ZONE', (w - 200, danger_y - 10), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        
+        # Left and right edge danger zones
+        cv2.line(result, (edge_width, 0), (edge_width, h), (0, 0, 255), 2)
+        cv2.line(result, (w - edge_width, 0), (w - edge_width, h), (0, 0, 255), 2)
         
         # Draw regular balls in green
         for ball in balls:
@@ -512,18 +496,6 @@ class VisionSystem:
                            (orange_ball.center[0]-20, orange_ball.center[1]-orange_ball.radius-10), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
         
-        # Draw goals in red with labels
-        for goal in goals:
-            color = (0, 0, 255)
-            label = 'Goal A' if goal.object_type == 'goal_a' else 'Goal B'
-            cv2.rectangle(result, 
-                         (goal.center[0]-goal.radius, goal.center[1]-goal.radius),
-                         (goal.center[0]+goal.radius, goal.center[1]+goal.radius),
-                         color, 2)
-            cv2.putText(result, label, 
-                       (goal.center[0]-20, goal.center[1]-goal.radius-10), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-        
         # Draw center crosshair
         cv2.line(result, (self.frame_center_x-20, self.frame_center_y), 
                 (self.frame_center_x+20, self.frame_center_y), (255, 255, 255), 2)
@@ -552,21 +524,20 @@ class VisionSystem:
         """Process current frame and return detection results"""
         ret, frame = self.get_frame()
         if not ret:
-            return None, None, None, None, None, None
+            return None, None, None, None, None
         
-        # Detect all objects
+        # Detect all objects (no goals anymore)
         balls = self.detect_balls(frame)
         orange_ball = self.detect_orange_ball(frame)
-        goals = self.detect_goals(frame)
         near_boundary = self.detect_boundaries(frame)
         
         # Get navigation command (this also sets the current target)
         nav_command = self.get_navigation_command(balls, orange_ball)
         
         # Create debug visualization with target highlighting and collection zone
-        debug_frame = self.draw_detections(frame, balls, orange_ball, goals)
+        debug_frame = self.draw_detections(frame, balls, orange_ball)
         
-        return balls, orange_ball, goals, near_boundary, nav_command, debug_frame
+        return balls, orange_ball, near_boundary, nav_command, debug_frame
     
     def cleanup(self):
         """Clean up vision system"""
