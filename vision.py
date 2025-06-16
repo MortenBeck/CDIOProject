@@ -235,48 +235,62 @@ class VisionSystem:
         return goals
     
     def detect_boundaries(self, frame) -> bool:
-        """Detect if robot is near immediate boundaries/obstacles"""
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        h, w = gray.shape
+        """Detect red walls/boundaries using color detection with danger zone analysis"""
+        if frame is None:
+            return False
         
-        # Define region of interest - focus on lower portion where immediate obstacles matter
-        # Ignore top 40% of frame (distant walls) and focus on bottom 60%
-        roi_top = int(h * 0.8)  # Start checking from 40% down
-        roi_bottom = h
-        roi_left = 0
-        roi_right = w
+        h, w = frame.shape[:2]
         
-        # Extract ROI
-        roi = gray[roi_top:roi_bottom, roi_left:roi_right]
-        roi_h, roi_w = roi.shape
+        # Convert to HSV for red detection
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        edge_thickness = min(config.BOUNDARY_DETECTION_THRESHOLD, roi_w//4, roi_h//4)
+        # Red color detection (two ranges for red hue wrap-around)
+        lower_red1 = np.array([0, 50, 50])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([170, 50, 50])
+        upper_red2 = np.array([180, 255, 255])
         
-        # Check only immediate edges in ROI
-        bottom_edge = np.mean(roi[roi_h-edge_thickness:roi_h, :])  # Very bottom of frame
-        left_edge = np.mean(roi[:, 0:edge_thickness])              # Left edge in ROI
-        right_edge = np.mean(roi[:, roi_w-edge_thickness:roi_w])   # Right edge in ROI
+        # Create combined red mask
+        mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+        mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+        red_mask = mask1 + mask2
         
-        # Center reference from middle of ROI
-        center_y_start = roi_h//4
-        center_y_end = 3*roi_h//4
-        center_x_start = roi_w//4  
-        center_x_end = 3*roi_w//4
-        center = np.mean(roi[center_y_start:center_y_end, center_x_start:center_x_end])
+        # Clean up mask
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
         
-        # More aggressive threshold for immediate obstacles
-        boundary_threshold = center - 50  # Darker threshold for true obstacles
+        # Define danger zone (bottom 150 pixels or 30% of frame)
+        danger_distance = min(150, int(h * 0.3))
+        danger_y_threshold = h - danger_distance
         
-        # Only trigger if edges are significantly darker (immediate obstacle)
-        near_boundary = (bottom_edge < boundary_threshold or 
-                        left_edge < boundary_threshold or 
-                        right_edge < boundary_threshold)
+        # Focus on danger zone only
+        danger_zone_mask = red_mask[danger_y_threshold:h, :]
         
-        # Debug visualization if enabled
-        if config.DEBUG_VISION and near_boundary:
-            self.logger.debug(f"Boundary detected - Bottom: {bottom_edge:.1f}, Left: {left_edge:.1f}, Right: {right_edge:.1f}, Center: {center:.1f}, Threshold: {boundary_threshold:.1f}")
+        # Find contours in danger zone
+        contours, _ = cv2.findContours(danger_zone_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        return near_boundary
+        # Check for significant red objects in danger zone
+        min_wall_area = 100  # Minimum area for wall detection
+        danger_detected = False
+        
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_wall_area:
+                # Get bounding rectangle
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                
+                # Check if it's long enough to be a wall segment
+                length = max(w_rect, h_rect)
+                if length > 50:  # Minimum wall segment length
+                    danger_detected = True
+                    break
+        
+        # Debug logging
+        if config.DEBUG_VISION and danger_detected:
+            self.logger.debug(f"Red wall detected in danger zone (bottom {danger_distance}px)")
+        
+        return danger_detected
     
     def get_navigation_command(self, detected_objects: List[DetectedObject], 
                              orange_ball: Optional[DetectedObject]) -> str:
@@ -335,11 +349,12 @@ class VisionSystem:
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # Draw boundary detection ROI
-        roi_top = int(h * 0.4)
-        cv2.rectangle(result, (0, roi_top), (w, h), (255, 0, 0), 2)
-        cv2.putText(result, 'Boundary ROI', (10, roi_top-5), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+        # Draw danger zone line (bottom 150px or 30% of frame)
+        danger_distance = min(150, int(h * 0.3))
+        danger_y = h - danger_distance
+        cv2.line(result, (0, danger_y), (w, danger_y), (0, 255, 255), 2)
+        cv2.putText(result, 'DANGER ZONE', (w - 150, danger_y - 10), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
         
         # Draw regular balls in green
         for ball in balls:
