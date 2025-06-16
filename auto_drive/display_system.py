@@ -39,42 +39,54 @@ class PerformanceMonitor:
         self.last_time = current_time
 
 def create_white_ball_mask(frame):
-    """Create a detailed white ball detection mask for debugging"""
+    """Create a more selective white ball detection mask for debugging"""
     if frame is None:
         return np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH), dtype=np.uint8)
     
     # Resize for processing
     small_frame = cv2.resize(frame, (PROCESS_WIDTH, PROCESS_HEIGHT))
     
-    # HSV method
+    # Method 1: More restrictive HSV - target bright, low-saturation objects
     hsv = cv2.cvtColor(small_frame, cv2.COLOR_BGR2HSV)
-    lower_white_hsv = np.array([0, 0, 60])     # Lowered threshold
-    upper_white_hsv = np.array([180, 100, 255]) # Higher saturation
+    lower_white_hsv = np.array([0, 0, 140])      # Higher brightness threshold
+    upper_white_hsv = np.array([180, 40, 255])   # Lower saturation threshold
     mask_hsv = cv2.inRange(hsv, lower_white_hsv, upper_white_hsv)
     
-    # BGR method - white objects have high values in all channels
+    # Method 2: More restrictive BGR - all channels must be high AND similar
     b, g, r = cv2.split(small_frame)
-    white_threshold = 80
     
-    # Create boolean masks and convert to uint8
-    mask_b = (b > white_threshold).astype(np.uint8)
-    mask_g = (g > white_threshold).astype(np.uint8)
-    mask_r = (r > white_threshold).astype(np.uint8)
+    # All channels must be above a high threshold
+    high_threshold = 120
+    mask_b = (b > high_threshold).astype(np.uint8)
+    mask_g = (g > high_threshold).astype(np.uint8)
+    mask_r = (r > high_threshold).astype(np.uint8)
     
-    # Combine masks
-    mask_bgr = cv2.bitwise_and(cv2.bitwise_and(mask_b, mask_g), mask_r) * 255
+    # All channels must be similar (white objects have balanced RGB)
+    max_diff = 30  # Maximum difference between channels
+    diff_bg = np.abs(b.astype(np.int16) - g.astype(np.int16))
+    diff_br = np.abs(b.astype(np.int16) - r.astype(np.int16))
+    diff_gr = np.abs(g.astype(np.int16) - r.astype(np.int16))
     
-    # Grayscale threshold
+    mask_similar = ((diff_bg < max_diff) & (diff_br < max_diff) & (diff_gr < max_diff)).astype(np.uint8)
+    
+    # Combine: high values AND similar values
+    mask_bgr = cv2.bitwise_and(
+        cv2.bitwise_and(cv2.bitwise_and(mask_b, mask_g), mask_r),
+        mask_similar
+    ) * 255
+    
+    # Method 3: More restrictive grayscale
     gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
-    _, mask_gray = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
+    _, mask_gray = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)  # Higher threshold
     
-    # Combine all methods
-    combined_mask = cv2.bitwise_or(cv2.bitwise_or(mask_hsv, mask_bgr), mask_gray)
+    # Combine methods - require at least 2 out of 3 methods to agree
+    vote_count = (mask_hsv > 0).astype(np.uint8) + (mask_bgr > 0).astype(np.uint8) + (mask_gray > 0).astype(np.uint8)
+    combined_mask = (vote_count >= 2).astype(np.uint8) * 255
     
-    # Morphological operations
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel, iterations=1)
-    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+    # More aggressive morphological operations to remove noise
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel, iterations=1)
     
     # Scale back up to original size
     mask_full_size = cv2.resize(combined_mask, (CAMERA_WIDTH, CAMERA_HEIGHT))
@@ -109,7 +121,7 @@ def create_red_wall_mask(frame):
     
     return mask_full_size
 
-def create_combined_debug_view(frame, balls, walls):
+def create_combined_debug_view(frame, balls, walls, hsv_threshold=140, bgr_threshold=120, show_individual_masks=False):
     """Create a combined debug view showing detection masks and results"""
     if frame is None:
         return np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), dtype=np.uint8)
@@ -118,11 +130,48 @@ def create_combined_debug_view(frame, balls, walls):
     white_mask = create_white_ball_mask(frame)
     red_mask = create_red_wall_mask(frame)
     
-    # Create colored overlay
-    debug_frame = cv2.cvtColor(white_mask, cv2.COLOR_GRAY2BGR)
-    
-    # Add red mask in red channel
-    debug_frame[:, :, 2] = cv2.bitwise_or(debug_frame[:, :, 2], red_mask)
+    if show_individual_masks:
+        # Show individual method masks for debugging
+        small_frame = cv2.resize(frame, (PROCESS_WIDTH, PROCESS_HEIGHT))
+        
+        # HSV mask
+        hsv = cv2.cvtColor(small_frame, cv2.COLOR_BGR2HSV)
+        mask_hsv = cv2.inRange(hsv, np.array([0, 0, hsv_threshold]), np.array([180, 40, 255]))
+        mask_hsv_full = cv2.resize(mask_hsv, (CAMERA_WIDTH, CAMERA_HEIGHT))
+        
+        # Create RGB view: R=HSV, G=BGR, B=Combined
+        debug_frame = np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), dtype=np.uint8)
+        debug_frame[:, :, 0] = mask_hsv_full  # Red channel = HSV mask
+        debug_frame[:, :, 1] = white_mask     # Green channel = Combined mask
+        debug_frame[:, :, 2] = red_mask       # Blue channel = Red walls
+        
+        # Add text overlay
+        cv2.putText(debug_frame, "INDIVIDUAL MASKS DEBUG", (10, 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+        cv2.putText(debug_frame, f"Red: HSV mask (thresh={hsv_threshold})", (10, 60), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+        cv2.putText(debug_frame, "Green: Combined white mask", (10, 80), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        cv2.putText(debug_frame, "Blue: Red walls", (10, 100), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        cv2.putText(debug_frame, "Press 'i' to toggle individual/combined view", (10, 120), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+    else:
+        # Normal combined view
+        debug_frame = cv2.cvtColor(white_mask, cv2.COLOR_GRAY2BGR)
+        
+        # Add red mask in red channel
+        debug_frame[:, :, 2] = cv2.bitwise_or(debug_frame[:, :, 2], red_mask)
+        
+        # Add text overlay
+        cv2.putText(debug_frame, "COMBINED MASK VIEW", (10, 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+        cv2.putText(debug_frame, f"White: Ball detection", (10, 60), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        cv2.putText(debug_frame, f"Red: Wall detection", (10, 80), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+        cv2.putText(debug_frame, "Press 'i' to see individual masks", (10, 100), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
     
     # Draw detected balls as green circles
     for x, y, radius in balls:
@@ -135,18 +184,12 @@ def create_combined_debug_view(frame, balls, walls):
     for x, y, w, h in walls:
         cv2.rectangle(debug_frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
     
-    # Add text overlay
-    cv2.putText(debug_frame, "DEBUG MASK VIEW", (10, 30), 
-               cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
-    cv2.putText(debug_frame, f"White: Balls ({len(balls)})", (10, 60), 
-               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-    cv2.putText(debug_frame, f"Red: Walls ({len(walls)})", (10, 80), 
-               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-    cv2.putText(debug_frame, "Green: Detected balls", (10, 100), 
+    # Status info
+    cv2.putText(debug_frame, f"Balls found: {len(balls)}", (10, 140), 
                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-    cv2.putText(debug_frame, "Blue: Detected walls", (10, 120), 
+    cv2.putText(debug_frame, f"Walls found: {len(walls)}", (10, 160), 
                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-    cv2.putText(debug_frame, "Press 'o' to return to normal view", (10, 140), 
+    cv2.putText(debug_frame, "Press 'o' to return to normal view", (10, 180), 
                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
     
     return debug_frame
