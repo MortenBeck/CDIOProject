@@ -17,6 +17,7 @@ class DetectedObject:
     area: int
     confidence: float
     distance_from_center: float
+    in_collection_zone: bool = False  # NEW: Is ball in collection zone?
 
 class Pi5Camera:
     """Camera interface for Raspberry Pi 5 using libcamera"""
@@ -83,6 +84,37 @@ class VisionSystem:
         self.last_frame = None
         self.current_target = None  # Store currently targeted ball
         
+        # Collection zone boundaries
+        self.collection_zone = self._calculate_collection_zone()
+        
+    def _calculate_collection_zone(self):
+        """Calculate the collection zone boundaries (middle 50% horizontal, bottom 20% vertical)"""
+        # Horizontal: middle 50% (25% margin on each side)
+        horizontal_margin = config.CAMERA_WIDTH * 0.25
+        left_boundary = int(horizontal_margin)
+        right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
+        
+        # Vertical: bottom 20%
+        vertical_threshold = int(config.CAMERA_HEIGHT * 0.8)  # 80% down from top
+        bottom_boundary = config.CAMERA_HEIGHT
+        
+        return {
+            'left': left_boundary,
+            'right': right_boundary, 
+            'top': vertical_threshold,
+            'bottom': bottom_boundary
+        }
+    
+    def is_in_collection_zone(self, ball_center: Tuple[int, int]) -> bool:
+        """Check if ball center is in the collection zone"""
+        x, y = ball_center
+        zone = self.collection_zone
+        
+        horizontal_ok = zone['left'] <= x <= zone['right']
+        vertical_ok = zone['top'] <= y <= zone['bottom']
+        
+        return horizontal_ok and vertical_ok
+    
     def start(self):
         """Initialize vision system"""
         return self.camera.start_capture()
@@ -132,13 +164,17 @@ class VisionSystem:
                                 (center[1] - self.frame_center_y)**2
                             )
                             
+                            # Check if ball is in collection zone
+                            in_collection_zone = self.is_in_collection_zone(center)
+                            
                             ball = DetectedObject(
                                 object_type='ball',
                                 center=center,
                                 radius=radius,
                                 area=area,
                                 confidence=circularity,
-                                distance_from_center=distance_from_center
+                                distance_from_center=distance_from_center,
+                                in_collection_zone=in_collection_zone
                             )
                             detected_objects.append(ball)
         
@@ -184,13 +220,17 @@ class VisionSystem:
                                     (center[1] - self.frame_center_y)**2
                                 )
                                 
+                                # Check if ball is in collection zone
+                                in_collection_zone = self.is_in_collection_zone(center)
+                                
                                 best_orange_ball = DetectedObject(
                                     object_type='orange_ball',
                                     center=center,
                                     radius=radius,
                                     area=area,
                                     confidence=circularity,
-                                    distance_from_center=distance_from_center
+                                    distance_from_center=distance_from_center,
+                                    in_collection_zone=in_collection_zone
                                 )
                                 best_score = score
         
@@ -314,15 +354,23 @@ class VisionSystem:
         self.current_target = None
         return None
     
+    def should_activate_servo(self) -> bool:
+        """Check if servo1 should be activated based on target ball position"""
+        if not self.current_target:
+            return False
+        
+        return self.current_target.in_collection_zone
+    
     def get_navigation_command(self, detected_objects: List[DetectedObject], 
                          orange_ball: Optional[DetectedObject]) -> str:
-        """Determine navigation command based on detected objects (all balls treated equally)"""
+        """Determine navigation command based on detected objects"""
         
         target_ball = self.get_target_ball(detected_objects, orange_ball)
         
         if target_ball:
-            if target_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
-                return "collect_ball"  # Generic collection command
+            # Check if ball is in collection zone (position-based)
+            if target_ball.in_collection_zone:
+                return "collect_ball"  # This will trigger servo activation
             else:
                 return self._get_direction_to_object(target_ball)
         
@@ -358,12 +406,30 @@ class VisionSystem:
     def draw_detections(self, frame, balls: List[DetectedObject], 
                        orange_ball: Optional[DetectedObject], 
                        goals: List[DetectedObject]) -> np.ndarray:
-        """Draw detection results on frame for debugging with target highlighting"""
+        """Draw detection results on frame for debugging with collection zone visualization"""
         if not config.DEBUG_VISION:
             return frame
         
         result = frame.copy()
         h, w = result.shape[:2]
+        
+        # Draw collection zone rectangle
+        zone = self.collection_zone
+        # Collection zone in semi-transparent green
+        overlay = result.copy()
+        cv2.rectangle(overlay, (zone['left'], zone['top']), 
+                     (zone['right'], zone['bottom']), (0, 255, 0), -1)
+        cv2.addWeighted(result, 0.8, overlay, 0.2, 0, result)
+        
+        # Collection zone border
+        cv2.rectangle(result, (zone['left'], zone['top']), 
+                     (zone['right'], zone['bottom']), (0, 255, 0), 3)
+        
+        # Collection zone labels
+        cv2.putText(result, 'COLLECTION ZONE', (zone['left'] + 10, zone['top'] + 25), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        cv2.putText(result, '50% horizontal, bottom 20%', (zone['left'] + 10, zone['top'] + 50), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
         
         # Draw danger zone line (bottom 150px or 30% of frame)
         danger_distance = min(150, int(h * 0.3))
@@ -393,19 +459,23 @@ class VisionSystem:
                 arrow_end = ball.center
                 cv2.arrowedLine(result, arrow_start, arrow_end, (255, 255, 0), 3, tipLength=0.3)
                 
-                # Add "TARGET" label
-                label_pos = (ball.center[0]-30, ball.center[1]-ball.radius-25)
-                cv2.putText(result, 'TARGET', label_pos, 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+                # Add "TARGET" label with collection zone status
+                label = 'TARGET (IN ZONE)' if ball.in_collection_zone else 'TARGET'
+                label_color = (255, 255, 0) if ball.in_collection_zone else (255, 255, 255)
+                label_pos = (ball.center[0]-50, ball.center[1]-ball.radius-25)
+                cv2.putText(result, label, label_pos, 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, label_color, 2)
             else:
-                # Regular ball display
-                cv2.circle(result, ball.center, ball.radius, (0, 255, 0), 2)
-                cv2.circle(result, ball.center, 3, (0, 255, 0), -1)
-                cv2.putText(result, 'Ball', 
+                # Regular ball display with zone status
+                color = (0, 255, 0) if ball.in_collection_zone else (100, 255, 100)
+                cv2.circle(result, ball.center, ball.radius, color, 2)
+                cv2.circle(result, ball.center, 3, color, -1)
+                label = 'Ball (Zone)' if ball.in_collection_zone else 'Ball'
+                cv2.putText(result, label, 
                            (ball.center[0]-20, ball.center[1]-ball.radius-10), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
-        # Draw orange ball with special handling for target
+        # Draw orange ball with special handling for target and zone
         if orange_ball:
             # Check if orange ball is the current target
             is_target = (self.current_target and 
@@ -426,17 +496,21 @@ class VisionSystem:
                 arrow_end = orange_ball.center
                 cv2.arrowedLine(result, arrow_start, arrow_end, (255, 255, 0), 3, tipLength=0.3)
                 
-                # Add "VIP TARGET" label
-                label_pos = (orange_ball.center[0]-45, orange_ball.center[1]-orange_ball.radius-25)
-                cv2.putText(result, 'VIP TARGET', label_pos, 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+                # Add "VIP TARGET" label with zone status
+                label = 'VIP TARGET (IN ZONE)' if orange_ball.in_collection_zone else 'VIP TARGET'
+                label_color = (255, 255, 0) if orange_ball.in_collection_zone else (255, 255, 255)
+                label_pos = (orange_ball.center[0]-60, orange_ball.center[1]-orange_ball.radius-25)
+                cv2.putText(result, label, label_pos, 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, label_color, 2)
             else:
-                # Regular orange ball display
-                cv2.circle(result, orange_ball.center, orange_ball.radius, (0, 165, 255), 3)
-                cv2.circle(result, orange_ball.center, 5, (0, 165, 255), -1)
-                cv2.putText(result, 'VIP!', 
-                           (orange_ball.center[0]-15, orange_ball.center[1]-orange_ball.radius-10), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 165, 255), 2)
+                # Regular orange ball display with zone status
+                color = (0, 165, 255) if orange_ball.in_collection_zone else (100, 200, 255)
+                cv2.circle(result, orange_ball.center, orange_ball.radius, color, 3)
+                cv2.circle(result, orange_ball.center, 5, color, -1)
+                label = 'VIP (Zone)' if orange_ball.in_collection_zone else 'VIP!'
+                cv2.putText(result, label, 
+                           (orange_ball.center[0]-20, orange_ball.center[1]-orange_ball.radius-10), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
         
         # Draw goals in red with labels
         for goal in goals:
@@ -459,10 +533,14 @@ class VisionSystem:
         # Add targeting information in the corner
         if self.current_target:
             target_info = f"TARGET: {self.current_target.object_type.upper()}"
-            distance_info = f"Distance: {self.current_target.distance_from_center:.0f}px"
-            cv2.putText(result, target_info, (10, h-60), 
+            zone_info = f"IN COLLECTION ZONE: {'YES' if self.current_target.in_collection_zone else 'NO'}"
+            servo_info = f"SERVO1 ACTIVE: {'YES' if self.should_activate_servo() else 'NO'}"
+            
+            cv2.putText(result, target_info, (10, h-80), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
-            cv2.putText(result, distance_info, (10, h-35), 
+            cv2.putText(result, zone_info, (10, h-55), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+            cv2.putText(result, servo_info, (10, h-30), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
         else:
             cv2.putText(result, "TARGET: NONE - SEARCHING", (10, h-35), 
@@ -485,7 +563,7 @@ class VisionSystem:
         # Get navigation command (this also sets the current target)
         nav_command = self.get_navigation_command(balls, orange_ball)
         
-        # Create debug visualization with target highlighting
+        # Create debug visualization with target highlighting and collection zone
         debug_frame = self.draw_detections(frame, balls, orange_ball, goals)
         
         return balls, orange_ball, goals, near_boundary, nav_command, debug_frame
