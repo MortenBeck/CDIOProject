@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Display System for GolfBot
-Handles all visual display and status information
+Enhanced Display System with Live Mask Debugging
+Press 'o' to toggle between normal view and detection masks
 """
 
 import cv2
@@ -9,8 +9,9 @@ import time
 import numpy as np
 from robot_states import RobotState, MotorState
 from config import (
-    CAMERA_WIDTH, CAMERA_HEIGHT, WALL_DANGER_DISTANCE,
-    BALL_CONFIRMATION_TIME, TARGET_FPS, ENABLE_PERFORMANCE_STATS
+    CAMERA_WIDTH, CAMERA_HEIGHT, PROCESS_WIDTH, PROCESS_HEIGHT,
+    WALL_DANGER_DISTANCE, BALL_CONFIRMATION_TIME, TARGET_FPS, 
+    ENABLE_PERFORMANCE_STATS
 )
 
 class PerformanceMonitor:
@@ -36,6 +37,115 @@ class PerformanceMonitor:
             self.avg_latency = np.mean(self.frame_times) * 1000  # ms
             
         self.last_time = current_time
+
+def create_white_ball_mask(frame):
+    """Create a detailed white ball detection mask for debugging"""
+    if frame is None:
+        return np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH), dtype=np.uint8)
+    
+    # Resize for processing
+    small_frame = cv2.resize(frame, (PROCESS_WIDTH, PROCESS_HEIGHT))
+    
+    # HSV method
+    hsv = cv2.cvtColor(small_frame, cv2.COLOR_BGR2HSV)
+    lower_white_hsv = np.array([0, 0, 60])     # Lowered threshold
+    upper_white_hsv = np.array([180, 100, 255]) # Higher saturation
+    mask_hsv = cv2.inRange(hsv, lower_white_hsv, upper_white_hsv)
+    
+    # BGR method - white objects have high values in all channels
+    b, g, r = cv2.split(small_frame)
+    white_threshold = 80
+    mask_bgr = cv2.bitwise_and(
+        cv2.bitwise_and(b > white_threshold, g > white_threshold),
+        r > white_threshold
+    ).astype(np.uint8) * 255
+    
+    # Grayscale threshold
+    gray = cv2.cvtColor(small_frame, cv2.COLOR_BGR2GRAY)
+    _, mask_gray = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
+    
+    # Combine all methods
+    combined_mask = cv2.bitwise_or(cv2.bitwise_or(mask_hsv, mask_bgr), mask_gray)
+    
+    # Morphological operations
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel, iterations=1)
+    combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+    
+    # Scale back up to original size
+    mask_full_size = cv2.resize(combined_mask, (CAMERA_WIDTH, CAMERA_HEIGHT))
+    
+    return mask_full_size
+
+def create_red_wall_mask(frame):
+    """Create red wall detection mask for debugging"""
+    if frame is None:
+        return np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH), dtype=np.uint8)
+    
+    small_frame = cv2.resize(frame, (PROCESS_WIDTH, PROCESS_HEIGHT))
+    hsv = cv2.cvtColor(small_frame, cv2.COLOR_BGR2HSV)
+    
+    # Red detection
+    lower_red1 = np.array([0, 50, 50])
+    upper_red1 = np.array([10, 255, 255])
+    lower_red2 = np.array([170, 50, 50])
+    upper_red2 = np.array([180, 255, 255])
+    
+    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+    red_mask = mask1 + mask2
+    
+    # Morphological operations
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
+    red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+    
+    # Scale back up
+    mask_full_size = cv2.resize(red_mask, (CAMERA_WIDTH, CAMERA_HEIGHT))
+    
+    return mask_full_size
+
+def create_combined_debug_view(frame, balls, walls):
+    """Create a combined debug view showing detection masks and results"""
+    if frame is None:
+        return np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), dtype=np.uint8)
+    
+    # Get masks
+    white_mask = create_white_ball_mask(frame)
+    red_mask = create_red_wall_mask(frame)
+    
+    # Create colored overlay
+    debug_frame = cv2.cvtColor(white_mask, cv2.COLOR_GRAY2BGR)
+    
+    # Add red mask in red channel
+    debug_frame[:, :, 2] = cv2.bitwise_or(debug_frame[:, :, 2], red_mask)
+    
+    # Draw detected balls as green circles
+    for x, y, radius in balls:
+        cv2.circle(debug_frame, (x, y), radius, (0, 255, 0), 2)
+        cv2.circle(debug_frame, (x, y), 2, (0, 255, 0), -1)
+        cv2.putText(debug_frame, f"R:{radius}", (x-20, y-radius-10), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+    
+    # Draw detected walls as blue rectangles
+    for x, y, w, h in walls:
+        cv2.rectangle(debug_frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+    
+    # Add text overlay
+    cv2.putText(debug_frame, "DEBUG MASK VIEW", (10, 30), 
+               cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+    cv2.putText(debug_frame, f"White: Balls ({len(balls)})", (10, 60), 
+               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    cv2.putText(debug_frame, f"Red: Walls ({len(walls)})", (10, 80), 
+               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+    cv2.putText(debug_frame, "Green: Detected balls", (10, 100), 
+               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+    cv2.putText(debug_frame, "Blue: Detected walls", (10, 120), 
+               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+    cv2.putText(debug_frame, "Press 'o' to return to normal view", (10, 140), 
+               cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+    
+    return debug_frame
 
 def draw_autonomous_display(frame, balls, walls, robot_state, motor_state, danger_detected, 
                           target_ball=None, candidate_ball=None, confirmation_progress=0.0):
@@ -133,6 +243,10 @@ def draw_autonomous_display(frame, balls, walls, robot_state, motor_state, dange
     # Autonomous mode indicator
     cv2.putText(display_frame, "AUTONOMOUS MODE", (10, y_offset + 60), 
                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+    
+    # Debug mode hint
+    cv2.putText(display_frame, "Press 'o' for debug masks", (10, y_offset + 80), 
+               cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
     
     if danger_detected:
         cv2.putText(display_frame, "⚠️ DANGER ZONE ⚠️", (CAMERA_WIDTH//2 - 100, 50), 

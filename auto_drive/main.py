@@ -99,16 +99,21 @@ def autonomous_wall_avoidance_system():
                 # Calculate confirmation progress for display
                 confirmation_progress = autonomous_controller.get_confirmation_progress()
                 
-                # Draw display
-                display_frame = draw_autonomous_display(
-                    frame, balls, walls, 
-                    autonomous_controller.state, 
-                    autonomous_controller.motor_state, 
-                    danger_detected, 
-                    autonomous_controller.target_ball,
-                    autonomous_controller.candidate_ball,
-                    confirmation_progress
-                )
+                # Check if debug mode is active
+                if show_debug_masks:
+                    # Show debug mask view
+                    display_frame = create_combined_debug_view(frame, balls, walls)
+                else:
+                    # Show normal autonomous display
+                    display_frame = draw_autonomous_display(
+                        frame, balls, walls, 
+                        autonomous_controller.state, 
+                        autonomous_controller.motor_state, 
+                        danger_detected, 
+                        autonomous_controller.target_ball,
+                        autonomous_controller.candidate_ball,
+                        confirmation_progress
+                    )
                 
                 # Add performance stats if enabled
                 if show_stats:
@@ -133,6 +138,9 @@ def autonomous_wall_avoidance_system():
                 elif key == ord('s'):
                     show_stats = not show_stats
                     print(f"Performance stats: {'ON' if show_stats else 'OFF'}")
+                elif key == ord('o'):  # NEW DEBUG TOGGLE
+                    show_debug_masks = not show_debug_masks
+                    print(f"Debug masks: {'ON' if show_debug_masks else 'OFF'}")
                 elif key == ord(' '):  # Emergency stop
                     autonomous_controller.emergency_stop()
             else:
