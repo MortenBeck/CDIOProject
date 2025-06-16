@@ -50,192 +50,59 @@ class GolfBotHardware:
     
     # === SERVO CONTROL ===
     def set_servo_angle(self, servo_obj, angle):
-        """Set servo to specific angle (0-180 degrees) - immediate movement"""
+        """Set servo to specific angle (0-180 degrees)"""
         angle = max(0, min(180, angle))  # Clamp to valid range
         try:
             servo_obj.angle = angle
         except Exception as e:
             self.logger.error(f"Failed to set servo angle: {e}")
-    
-    def set_servo_angle_gradual(self, servo_obj, target_angle, speed_delay=None):
-        """Set servo to specific angle gradually to reduce current draw"""
-        if speed_delay is None:
-            speed_delay = getattr(config, 'SERVO_STEP_DELAY', 0.02)
-            
-        target_angle = max(0, min(180, target_angle))  # Clamp to valid range
-        
-        try:
-            # Get current angle (default to 90 if unknown)
-            current_angle = getattr(servo_obj, 'angle', 90)
-            if current_angle is None:
-                current_angle = 90
-            
-            # Calculate step direction and size
-            angle_diff = target_angle - current_angle
-            if abs(angle_diff) <= 2:  # Already close enough
-                servo_obj.angle = target_angle
-                return
-            
-            # Move in 2-degree increments
-            step_size = 2 if angle_diff > 0 else -2
-            steps = int(abs(angle_diff) / 2)
-            
-            for i in range(steps):
-                current_angle += step_size
-                servo_obj.angle = current_angle
-                time.sleep(speed_delay)  # Small delay between steps
-            
-            # Final position
-            servo_obj.angle = target_angle
-            
-        except Exception as e:
-            self.logger.error(f"Failed to set servo angle gradually: {e}")
-
-    def set_servo_angle_smooth(self, servo_obj, target_angle, duration=None):
-        """Set servo angle with smooth movement over specified duration"""
-        if duration is None:
-            duration = getattr(config, 'SERVO_SMOOTH_DURATION', 0.5)
-            
-        target_angle = max(0, min(180, target_angle))
-        
-        try:
-            current_angle = getattr(servo_obj, 'angle', 90)
-            if current_angle is None:
-                current_angle = 90
-            
-            angle_diff = target_angle - current_angle
-            if abs(angle_diff) <= 1:
-                servo_obj.angle = target_angle
-                return
-            
-            # Calculate movement parameters
-            steps = max(10, int(duration / 0.02))  # At least 10 steps
-            angle_step = angle_diff / steps
-            time_step = duration / steps
-            
-            # Smooth movement
-            for i in range(steps):
-                current_angle += angle_step
-                servo_obj.angle = int(current_angle)
-                time.sleep(time_step)
-            
-            # Ensure final position
-            servo_obj.angle = target_angle
-            
-        except Exception as e:
-            self.logger.error(f"Failed to set servo angle smoothly: {e}")
         
     def center_servos(self):
         """Center all servos to 90 degrees"""
         try:
-            # Check if gradual movement is enabled
-            use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
-            
-            if use_gradual:
-                # Move servos one at a time to reduce current draw
-                self.set_servo_angle_gradual(self.servo1, config.SERVO_CENTER)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_gradual(self.servo2, config.SERVO_CENTER)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_gradual(self.servo3, config.SERVO_CENTER)
-                time.sleep(0.3)  # Final settling time
-            else:
-                # Original immediate movement
-                self.set_servo_angle(self.servo1, config.SERVO_CENTER)
-                self.set_servo_angle(self.servo2, config.SERVO_CENTER)
-                self.set_servo_angle(self.servo3, config.SERVO_CENTER)
-                time.sleep(0.5)  # Allow time to reach position
-                
+            self.set_servo_angle(self.servo1, config.SERVO_CENTER)
+            self.set_servo_angle(self.servo2, config.SERVO_CENTER)
+            self.set_servo_angle(self.servo3, config.SERVO_CENTER)
+            time.sleep(0.5)  # Allow time to reach position
         except Exception as e:
             self.logger.error(f"Failed to center servos: {e}")
         
     def collection_position(self):
         """Move servos to ball collection position"""
         try:
-            # Check if gradual movement is enabled
-            use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
-            
-            if use_gradual:
-                # Move servos one at a time to reduce current draw
-                self.set_servo_angle_gradual(self.servo1, config.SERVO_COLLECT_OPEN)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_gradual(self.servo2, config.SERVO_COLLECT_OPEN)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_gradual(self.servo3, config.SERVO_COLLECT_OPEN)
-                time.sleep(0.3)  # Final settling time
-            else:
-                # Original immediate movement
-                self.set_servo_angle(self.servo1, config.SERVO_COLLECT_OPEN)
-                self.set_servo_angle(self.servo2, config.SERVO_COLLECT_OPEN)
-                self.set_servo_angle(self.servo3, config.SERVO_COLLECT_OPEN)
-                time.sleep(0.5)
-                
+            self.set_servo_angle(self.servo1, config.SERVO_COLLECT_OPEN)
+            self.set_servo_angle(self.servo2, config.SERVO_COLLECT_OPEN)
+            self.set_servo_angle(self.servo3, config.SERVO_COLLECT_OPEN)
+            time.sleep(0.5)
             if config.DEBUG_COLLECTION:
-                movement_type = "gradually" if use_gradual else "immediately"
-                self.logger.info(f"Servos moved to collection position {movement_type}")
+                self.logger.info("Servos in collection position")
         except Exception as e:
             self.logger.error(f"Failed to set collection position: {e}")
     
     def grab_ball(self):
         """Close servos to grab a ball"""
         try:
-            # Check if gradual movement is enabled
-            use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
-            
-            if use_gradual:
-                # Move servos sequentially for smoother operation
-                self.set_servo_angle_smooth(self.servo1, config.SERVO_COLLECT_CLOSE, duration=0.4)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_smooth(self.servo2, config.SERVO_COLLECT_CLOSE, duration=0.4)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_smooth(self.servo3, config.SERVO_COLLECT_CLOSE, duration=0.4)
-                time.sleep(0.5)  # Give time to secure ball
-            else:
-                # Original immediate movement
-                self.set_servo_angle(self.servo1, config.SERVO_COLLECT_CLOSE)
-                self.set_servo_angle(self.servo2, config.SERVO_COLLECT_CLOSE) 
-                self.set_servo_angle(self.servo3, config.SERVO_COLLECT_CLOSE)
-                time.sleep(0.8)  # Give time to secure ball
-                
+            self.set_servo_angle(self.servo1, config.SERVO_COLLECT_CLOSE)
+            self.set_servo_angle(self.servo2, config.SERVO_COLLECT_CLOSE) 
+            self.set_servo_angle(self.servo3, config.SERVO_COLLECT_CLOSE)
+            time.sleep(0.8)  # Give time to secure ball
             self.collected_balls.append(time.time())  # Track collection time
-            
             if config.DEBUG_COLLECTION:
-                movement_type = "gradually" if use_gradual else "immediately"
-                self.logger.info(f"Ball grabbed {movement_type}! Total collected: {len(self.collected_balls)}")
+                self.logger.info(f"Ball grabbed! Total collected: {len(self.collected_balls)}")
         except Exception as e:
             self.logger.error(f"Failed to grab ball: {e}")
     
     def release_balls(self):
         """Release all collected balls"""
         try:
-            # Check if gradual movement is enabled
-            use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
-            
-            if use_gradual:
-                # Move servos one at a time for controlled release
-                self.set_servo_angle_smooth(self.servo1, config.SERVO_RELEASE, duration=0.6)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_smooth(self.servo2, config.SERVO_RELEASE, duration=0.6)
-                time.sleep(sequential_delay)
-                self.set_servo_angle_smooth(self.servo3, config.SERVO_RELEASE, duration=0.6)
-                time.sleep(1.0)  # Allow balls to fall out
-            else:
-                # Original immediate movement
-                self.set_servo_angle(self.servo1, config.SERVO_RELEASE)
-                self.set_servo_angle(self.servo2, config.SERVO_RELEASE)
-                self.set_servo_angle(self.servo3, config.SERVO_RELEASE)
-                time.sleep(1.0)  # Allow balls to fall out
-                
+            self.set_servo_angle(self.servo1, config.SERVO_RELEASE)
+            self.set_servo_angle(self.servo2, config.SERVO_RELEASE)
+            self.set_servo_angle(self.servo3, config.SERVO_RELEASE)
+            time.sleep(1.0)  # Allow balls to fall out
             balls_released = len(self.collected_balls)
             self.collected_balls.clear()
-            
             if config.DEBUG_COLLECTION:
-                movement_type = "gradually" if use_gradual else "immediately"
-                self.logger.info(f"Released {balls_released} balls {movement_type}")
+                self.logger.info(f"Released {balls_released} balls")
             return balls_released
         except Exception as e:
             self.logger.error(f"Failed to release balls: {e}")
@@ -451,11 +318,9 @@ class GolfBotHardware:
     
     def get_status(self):
         """Get hardware status"""
-        use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
         return {
             'collected_balls': len(self.collected_balls),
             'current_speed': self.current_speed,
             'speed_percentage': f"{self.current_speed*100:.0f}%",
-            'servo_angles': self.get_servo_angles(),
-            'gradual_movement': use_gradual
+            'servo_angles': self.get_servo_angles()
         }

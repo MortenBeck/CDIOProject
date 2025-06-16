@@ -65,11 +65,7 @@ SERVO_COLLECT_OPEN = 45   # Open position for collection
 SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
 SERVO_RELEASE = 0         # Release position
 
-# === SERVO MOVEMENT SETTINGS ===
-SERVO_GRADUAL_MOVEMENT = True  # Enable gradual servo movement to reduce current draw
-SERVO_STEP_DELAY = 0.02  # Seconds between angle steps for gradual movement
-SERVO_SMOOTH_DURATION = 0.5  # Duration for smooth movements (seconds)
-SERVO_SEQUENTIAL_DELAY = 0.1  # Delay between multiple servo movements (seconds)
+
 
 # === MOVEMENT PARAMETERS ===
 TURN_TIME_90_DEGREES = 0.6  # Time to turn 90 degrees
