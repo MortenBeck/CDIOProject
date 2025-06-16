@@ -51,6 +51,7 @@ def autonomous_wall_avoidance_system():
     autonomous_controller = AutonomousController(motor_controller, servo_controller)
     
     show_stats = ENABLE_PERFORMANCE_STATS and not HEADLESS_MODE
+    show_debug_masks = False
     
     # Initialize camera
     if not camera_manager.initialize_camera():
