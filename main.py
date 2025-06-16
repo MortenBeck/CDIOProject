@@ -1,419 +1,622 @@
-import cv2
-import numpy as np
+print("DEBUG: Script starting...")
+print("DEBUG: About to import time...")
 import time
-import subprocess
-import os
+print("DEBUG: About to import logging...")
 import logging
-from dataclasses import dataclass
-from typing import List, Tuple, Optional
+print("DEBUG: About to import cv2...")
+import cv2
+print("DEBUG: About to import signal...")
+import signal
+print("DEBUG: About to import sys...")
+import sys
+print("DEBUG: About to import os...")
+import os
+print("DEBUG: About to import Enum...")
+from enum import Enum
+print("DEBUG: About to import typing...")
+from typing import Optional
+print("DEBUG: About to import config...")
 import config
+print("DEBUG: About to import hardware...")
+from hardware import GolfBotHardware
+print("DEBUG: About to import vision...")
+from vision import VisionSystem
+print("DEBUG: About to import telemetry...")
+from telemetry import TelemetryLogger
+print("DEBUG: About to import hardware_test...")
+from hardware_test import run_hardware_test
+print("DEBUG: All imports completed successfully!")
 
-@dataclass
-class DetectedObject:
-    """Class to store detected object information"""
-    object_type: str  # 'ball', 'orange_ball', 'goal_a', 'goal_b', 'boundary'
-    center: Tuple[int, int]
-    radius: int
-    area: int
-    confidence: float
-    distance_from_center: float
+class RobotState(Enum):
+    SEARCHING = "searching"
+    APPROACHING_BALL = "approaching_ball"
+    COLLECTING_BALL = "collecting_ball"
+    APPROACHING_GOAL = "approaching_goal"
+    DELIVERING_BALLS = "delivering_balls"
+    AVOIDING_BOUNDARY = "avoiding_boundary"
+    EMERGENCY_STOP = "emergency_stop"
 
-class Pi5Camera:
-    """Camera interface for Raspberry Pi 5 using libcamera"""
-    
+class GolfBot:
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.temp_file = "/tmp/golfbot_frame.jpg"
-        self.running = False
+        print("DEBUG: Entering GolfBot.__init__")
+        print("DEBUG: About to call setup_logging...")
+        self.setup_logging()
+        print("DEBUG: setup_logging completed")
         
-    def start_capture(self):
-        """Initialize camera"""
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("DEBUG: Logger created")
+        
+        # Check if display is available
+        print("DEBUG: About to check display...")
+        self.display_available = self.check_display_available()
+        print(f"DEBUG: Display available: {self.display_available}")
+        if not self.display_available:
+            self.logger.info("No display detected - running in headless mode")
+        
+        # Initialize telemetry
+        print("DEBUG: About to initialize telemetry...")
+        self.telemetry = TelemetryLogger()
+        print("DEBUG: Telemetry initialized")
+        
+        # Initialize systems - THIS IS LIKELY WHERE IT HANGS
+        print("DEBUG: About to initialize hardware...")
         try:
-            self.running = True
-            self.logger.info("Pi 5 camera initialized with libcamera")
+            self.hardware = GolfBotHardware()
+            print("DEBUG: Hardware initialized successfully")
+        except Exception as e:
+            print(f"DEBUG: Hardware initialization FAILED: {e}")
+            raise
+        
+        print("DEBUG: About to initialize vision...")
+        try:
+            self.vision = VisionSystem()
+            print("DEBUG: Vision initialized successfully")
+        except Exception as e:
+            print(f"DEBUG: Vision initialization FAILED: {e}")
+            raise
+        
+        # Competition state
+        print("DEBUG: Setting up competition state...")
+        self.start_time = None
+        self.competition_active = False
+        self.state = RobotState.SEARCHING
+        self.search_pattern_index = 0
+        self.last_ball_seen_time = None
+        self.delivery_attempts = 0
+        
+        # Performance tracking
+        self.last_frame_time = time.time()
+        
+        # Setup signal handlers
+        print("DEBUG: Setting up signal handlers...")
+        signal.signal(signal.SIGINT, self.signal_handler)
+        signal.signal(signal.SIGTERM, self.signal_handler)
+        print("DEBUG: GolfBot.__init__ completed successfully!")
+    
+    def check_display_available(self):
+        """Check if display/X11 is available"""
+        print("DEBUG: Checking display availability...")
+        try:
+            # Check for DISPLAY environment variable
+            if os.environ.get('DISPLAY') is None:
+                print("DEBUG: No DISPLAY environment variable")
+                return False
+            
+            # Try to initialize a test window
+            test_img = cv2.imread('/dev/null')  # This won't work but won't crash
+            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+            cv2.destroyWindow('test')
+            print("DEBUG: Display test successful")
             return True
         except Exception as e:
-            self.logger.error(f"Failed to initialize Pi 5 camera: {e}")
+            print(f"DEBUG: Display test failed: {e}")
             return False
-    
-    def capture_frame(self):
-        """Capture a single frame"""
-        try:
-            cmd = [
-                'libcamera-still',
-                '--output', self.temp_file,
-                '--timeout', '100',  # Faster timeout
-                '--width', str(config.CAMERA_WIDTH),
-                '--height', str(config.CAMERA_HEIGHT),
-                '--quality', '80',
-                '--nopreview'  # No preview window
+        
+    def setup_logging(self):
+        """Configure logging"""
+        print("DEBUG: Setting up logging...")
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler('golfbot.log'),
+                logging.StreamHandler()
             ]
+        )
+        print("DEBUG: Logging setup completed")
+    
+    def signal_handler(self, signum, frame):
+        """Handle shutdown signals"""
+        print(f"DEBUG: Signal {signum} received")
+        self.logger.info("Shutdown signal received")
+        self.emergency_stop()
+        sys.exit(0)
+    
+    def initialize(self) -> bool:
+        """Initialize all systems"""
+        print("DEBUG: Entering initialize()")
+        self.logger.info("Initializing GolfBot...")
+        
+        try:
+            # Start vision system
+            print("DEBUG: About to start vision system...")
+            if not self.vision.start():
+                self.logger.error("Failed to initialize vision system")
+                return False
+            print("DEBUG: Vision system started successfully")
             
-            result = subprocess.run(cmd, capture_output=True, timeout=3)
+            self.logger.info("All systems initialized successfully")
+            print("DEBUG: initialize() completed successfully")
+            return True
             
-            if result.returncode == 0 and os.path.exists(self.temp_file):
-                frame = cv2.imread(self.temp_file)
-                if frame is not None and frame.size > 0:
-                    return True, frame
-                else:
-                    self.logger.warning("Empty frame captured")
-                    return False, None
-            else:
-                self.logger.warning(f"Camera capture failed: {result.stderr}")
-                return False, None
-                
         except Exception as e:
-            self.logger.error(f"Frame capture error: {e}")
-            return False, None
-    
-    def release(self):
-        """Clean up camera resources"""
-        self.running = False
-        if os.path.exists(self.temp_file):
-            os.remove(self.temp_file)
-
-class VisionSystem:
-    """Main vision processing system for GolfBot"""
-    
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.camera = Pi5Camera()
-        self.frame_center_x = config.CAMERA_WIDTH // 2
-        self.frame_center_y = config.CAMERA_HEIGHT // 2
-        self.last_frame = None
-        
-    def start(self):
-        """Initialize vision system"""
-        return self.camera.start_capture()
-    
-    def get_frame(self):
-        """Get current camera frame"""
-        ret, frame = self.camera.capture_frame()
-        if ret:
-            self.last_frame = frame
-        return ret, frame
-    
-    def detect_balls(self, frame) -> List[DetectedObject]:
-        """Detect white ping pong balls in frame"""
-        detected_objects = []
-        
-        # Convert to HSV for better color filtering
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # Create mask for white/light colors
-        mask = cv2.inRange(hsv, config.BALL_HSV_LOWER, config.BALL_HSV_UPPER)
-        
-        # Clean up noise
-        kernel = np.ones((5,5), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-        
-        # Find contours
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            
-            if config.BALL_MIN_AREA < area < config.BALL_MAX_AREA:
-                # Check circularity
-                perimeter = cv2.arcLength(contour, True)
-                if perimeter > 0:
-                    circularity = 4 * np.pi * area / (perimeter * perimeter)
-                    
-                    if circularity > 0.3:  # Reasonably circular
-                        (x, y), radius = cv2.minEnclosingCircle(contour)
-                        center = (int(x), int(y))
-                        radius = int(radius)
-                        
-                        if config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS:
-                            distance_from_center = np.sqrt(
-                                (center[0] - self.frame_center_x)**2 + 
-                                (center[1] - self.frame_center_y)**2
-                            )
-                            
-                            ball = DetectedObject(
-                                object_type='ball',
-                                center=center,
-                                radius=radius,
-                                area=area,
-                                confidence=circularity,
-                                distance_from_center=distance_from_center
-                            )
-                            detected_objects.append(ball)
-        
-        # Sort by distance from center (closest first)
-        detected_objects.sort(key=lambda x: x.distance_from_center)
-        return detected_objects
-    
-    def detect_orange_ball(self, frame) -> Optional[DetectedObject]:
-        """Detect orange VIP ball specifically"""
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv, config.ORANGE_HSV_LOWER, config.ORANGE_HSV_UPPER)
-        
-        # Clean up noise
-        kernel = np.ones((5,5), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-        
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        best_orange_ball = None
-        best_score = 0
-        
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            
-            if config.BALL_MIN_AREA < area < config.BALL_MAX_AREA:
-                perimeter = cv2.arcLength(contour, True)
-                if perimeter > 0:
-                    circularity = 4 * np.pi * area / (perimeter * perimeter)
-                    
-                    if circularity > 0.3:
-                        (x, y), radius = cv2.minEnclosingCircle(contour)
-                        center = (int(x), int(y))
-                        radius = int(radius)
-                        
-                        if config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS:
-                            # Score based on size and circularity
-                            score = area * circularity
-                            
-                            if score > best_score:
-                                distance_from_center = np.sqrt(
-                                    (center[0] - self.frame_center_x)**2 + 
-                                    (center[1] - self.frame_center_y)**2
-                                )
-                                
-                                best_orange_ball = DetectedObject(
-                                    object_type='orange_ball',
-                                    center=center,
-                                    radius=radius,
-                                    area=area,
-                                    confidence=circularity,
-                                    distance_from_center=distance_from_center
-                                )
-                                best_score = score
-        
-        return best_orange_ball
-    
-    def detect_goals(self, frame) -> List[DetectedObject]:
-        """Detect red tape goals (Goal A = smaller, Goal B = larger)"""
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # Create mask for red color (handle wrap-around at 0/180)
-        mask1 = cv2.inRange(hsv, config.GOAL_HSV_LOWER, config.GOAL_HSV_UPPER)
-        mask2 = cv2.inRange(hsv, np.array([170, 100, 100]), np.array([180, 255, 255]))
-        mask = cv2.bitwise_or(mask1, mask2)
-        
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        goals = []
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            
-            if area > 500:  # Minimum area for goals
-                x, y, w, h = cv2.boundingRect(contour)
-                center = (x + w//2, y + h//2)
-                
-                # Classify goal based on size
-                goal_type = 'goal_a' if area < 2000 else 'goal_b'  # Smaller area = Goal A
-                
-                distance_from_center = np.sqrt(
-                    (center[0] - self.frame_center_x)**2 + 
-                    (center[1] - self.frame_center_y)**2
-                )
-                
-                goal = DetectedObject(
-                    object_type=goal_type,
-                    center=center,
-                    radius=max(w, h)//2,
-                    area=area,
-                    confidence=1.0,
-                    distance_from_center=distance_from_center
-                )
-                goals.append(goal)
-        
-        return goals
-    
-    def detect_boundaries(self, frame) -> bool:
-        """Detect red walls/boundaries using color detection with danger zone analysis"""
-        if frame is None:
+            print(f"DEBUG: initialize() FAILED: {e}")
+            self.logger.error(f"Initialization failed: {e}")
             return False
+    
+    def start_competition(self):
+        """Start the competition timer and main loop"""
+        self.start_time = time.time()
+        self.competition_active = True
+        self.state = RobotState.SEARCHING
         
-        h, w = frame.shape[:2]
+        self.logger.info("COMPETITION STARTED!")
+        self.logger.info(f"Time limit: {config.COMPETITION_TIME} seconds")
         
-        # Convert to HSV for red detection
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # Red color detection (two ranges for red hue wrap-around)
-        lower_red1 = np.array([0, 50, 50])
-        upper_red1 = np.array([10, 255, 255])
-        lower_red2 = np.array([170, 50, 50])
-        upper_red2 = np.array([180, 255, 255])
-        
-        # Create combined red mask
-        mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
-        mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
-        red_mask = mask1 + mask2
-        
-        # Clean up mask
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
-        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
-        
-        # Define danger zone (bottom 150 pixels or 30% of frame)
-        danger_distance = min(150, int(h * 0.3))
-        danger_y_threshold = h - danger_distance
-        
-        # Focus on danger zone only
-        danger_zone_mask = red_mask[danger_y_threshold:h, :]
-        
-        # Find contours in danger zone
-        contours, _ = cv2.findContours(danger_zone_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        # Check for significant red objects in danger zone
-        min_wall_area = 100  # Minimum area for wall detection
-        danger_detected = False
-        
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area > min_wall_area:
-                # Get bounding rectangle
-                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+        try:
+            self.main_loop()
+        except Exception as e:
+            self.logger.error(f"Main loop error: {e}")
+            self.emergency_stop()
+    
+    def get_time_remaining(self) -> float:
+        """Get remaining competition time"""
+        if not self.start_time:
+            return config.COMPETITION_TIME
+        elapsed = time.time() - self.start_time
+        return max(0, config.COMPETITION_TIME - elapsed)
+    
+    def is_time_up(self) -> bool:
+        """Check if competition time is up"""
+        return self.get_time_remaining() <= 0
+    
+    def main_loop(self):
+        """Main competition control loop"""
+        while self.competition_active and not self.is_time_up():
+            try:
+                # Track frame performance
+                frame_start = time.time()
                 
-                # Check if it's long enough to be a wall segment
-                length = max(w_rect, h_rect)
-                if length > 50:  # Minimum wall segment length
-                    danger_detected = True
-                    break
+                # Get current vision data
+                balls, orange_ball, goals, near_boundary, nav_command, debug_frame = self.vision.process_frame()
+                
+                if balls is None:  # Frame capture failed
+                    self.telemetry.log_error("Frame capture failed", "vision")
+                    continue
+                
+                # Log vision detection results
+                self.telemetry.log_ball_detection(balls, orange_ball, goals)
+                
+                # Update ball tracking
+                if balls or orange_ball:
+                    self.last_ball_seen_time = time.time()
+                
+                # Log hardware state periodically
+                if self.telemetry.frame_count % 10 == 0:
+                    self.telemetry.log_hardware_state(self.hardware)
+                
+                # Calculate and log performance
+                frame_time = time.time() - frame_start
+                fps = 1.0 / (time.time() - self.last_frame_time) if self.last_frame_time else 0
+                self.last_frame_time = time.time()
+                self.telemetry.log_performance_metrics(fps, frame_time)
+                
+                # Show debug frame if enabled AND display is available
+                if (config.SHOW_CAMERA_FEED and self.display_available and 
+                    debug_frame is not None and debug_frame.size > 0):
+                    try:
+                        self.add_status_overlay(debug_frame)
+                        cv2.imshow('GolfBot Debug', debug_frame)
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                            break
+                    except Exception as e:
+                        self.logger.warning(f"Display error: {e}")
+                        self.display_available = False  # Disable further attempts
+                
+                # State machine
+                old_state = self.state
+                self.execute_state_machine(balls, orange_ball, goals, near_boundary, nav_command)
+                
+                # Log state transitions
+                if old_state != self.state:
+                    self.telemetry.log_state_transition(old_state, self.state, nav_command or "automatic")
+                
+                # Brief pause to prevent overwhelming
+                time.sleep(0.1)
+                
+            except Exception as e:
+                self.logger.error(f"Main loop iteration error: {e}")
+                self.telemetry.log_error(f"Main loop error: {str(e)}", "main_loop")
+                self.hardware.stop_motors()
+                time.sleep(0.5)
         
-        # Debug logging
-        if config.DEBUG_VISION and danger_detected:
-            self.logger.debug(f"Red wall detected in danger zone (bottom {danger_distance}px)")
-        
-        return danger_detected
+        # Competition ended
+        self.end_competition()
     
-    def get_navigation_command(self, detected_objects: List[DetectedObject], 
-                             orange_ball: Optional[DetectedObject]) -> str:
-        """Determine navigation command based on detected objects"""
+    def execute_state_machine(self, balls, orange_ball, goals, near_boundary, nav_command):
+        """Execute current state logic"""
         
-        # Priority 1: Orange ball if not collected yet
-        if orange_ball and orange_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
-            return "collect_orange"
-        elif orange_ball:
-            return self._get_direction_to_object(orange_ball)
+        # Always check for boundary first
+        if near_boundary:
+            self.state = RobotState.AVOIDING_BOUNDARY
         
-        # Priority 2: Regular balls
-        if detected_objects:
-            closest_ball = detected_objects[0]  # Already sorted by distance
-            if closest_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
-                return "collect_ball"
-            else:
-                return self._get_direction_to_object(closest_ball)
-        
-        # No balls detected - search
-        return "search"
+        if self.state == RobotState.SEARCHING:
+            self.handle_searching(balls, orange_ball, nav_command)
+            
+        elif self.state == RobotState.APPROACHING_BALL:
+            self.handle_approaching_ball(balls, orange_ball, nav_command)
+            
+        elif self.state == RobotState.COLLECTING_BALL:
+            self.handle_collecting_ball()
+            
+        elif self.state == RobotState.APPROACHING_GOAL:
+            self.handle_approaching_goal(goals)
+            
+        elif self.state == RobotState.DELIVERING_BALLS:
+            self.handle_delivering_balls()
+            
+        elif self.state == RobotState.AVOIDING_BOUNDARY:
+            self.handle_avoiding_boundary(near_boundary)
+            
+        elif self.state == RobotState.EMERGENCY_STOP:
+            self.hardware.emergency_stop()
     
-    def _get_direction_to_object(self, obj: DetectedObject) -> str:
-        """Get direction command to move toward object"""
-        x_offset = obj.center[0] - self.frame_center_x
-        y_offset = obj.center[1] - self.frame_center_y
+    def handle_searching(self, balls, orange_ball, nav_command):
+        """Handle searching for balls"""
+        # Look for any balls (treat all balls equally)
+        if balls:
+            self.logger.info(f"Found {len(balls)} ball(s)")
+            self.state = RobotState.APPROACHING_BALL
+            return
         
-        # Determine horizontal direction
-        if abs(x_offset) > 30:  # Deadband for "centered"
-            if x_offset > 0:
-                return "turn_right"
-            else:
-                return "turn_left"
-        else:
-            # Object is centered, move forward
-            return "forward"
+        # No balls found - execute search pattern
+        self.execute_search_pattern()
     
-    def find_goal_direction(self, goals: List[DetectedObject], prefer_goal_a=False) -> Optional[str]:
-        """Find direction to specified goal type"""
-        target_goals = [g for g in goals if 
-                       (g.object_type == 'goal_a' if prefer_goal_a else g.object_type == 'goal_b')]
-        
-        if target_goals:
-            closest_goal = min(target_goals, key=lambda x: x.distance_from_center)
-            return self._get_direction_to_object(closest_goal)
-        
-        return None
-    
-    def draw_detections(self, frame, balls: List[DetectedObject], 
-                       orange_ball: Optional[DetectedObject], 
-                       goals: List[DetectedObject]) -> np.ndarray:
-        """Draw detection results on frame for debugging"""
-        if not config.DEBUG_VISION:
-            return frame
-        
-        result = frame.copy()
-        h, w = result.shape[:2]
-        
-        # Draw danger zone line (bottom 150px or 30% of frame)
-        danger_distance = min(150, int(h * 0.3))
-        danger_y = h - danger_distance
-        cv2.line(result, (0, danger_y), (w, danger_y), (0, 255, 255), 2)
-        cv2.putText(result, 'DANGER ZONE', (w - 150, danger_y - 10), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
-        
-        # Draw regular balls in green
-        for ball in balls:
-            cv2.circle(result, ball.center, ball.radius, (0, 255, 0), 2)
-            cv2.circle(result, ball.center, 3, (0, 255, 0), -1)
-            cv2.putText(result, 'Ball', 
-                       (ball.center[0]-20, ball.center[1]-ball.radius-10), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        
-        # Draw orange ball in orange
+    def handle_approaching_ball(self, balls, orange_ball, nav_command):
+        """Handle approaching detected ball"""
+        # Get closest ball (any type)
+        all_balls = []
+        if balls:
+            all_balls.extend(balls)
         if orange_ball:
-            cv2.circle(result, orange_ball.center, orange_ball.radius, (0, 165, 255), 3)
-            cv2.circle(result, orange_ball.center, 5, (0, 165, 255), -1)
-            cv2.putText(result, 'VIP!', 
-                       (orange_ball.center[0]-15, orange_ball.center[1]-orange_ball.radius-10), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 165, 255), 2)
+            all_balls.append(orange_ball)
         
-        # Draw goals in red with labels
-        for goal in goals:
-            color = (0, 0, 255)
-            label = 'Goal A' if goal.object_type == 'goal_a' else 'Goal B'
-            cv2.rectangle(result, 
-                         (goal.center[0]-goal.radius, goal.center[1]-goal.radius),
-                         (goal.center[0]+goal.radius, goal.center[1]+goal.radius),
-                         color, 2)
-            cv2.putText(result, label, 
-                       (goal.center[0]-20, goal.center[1]-goal.radius-10), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+        if not all_balls:
+            self.logger.info("Lost sight of ball - returning to search")
+            self.state = RobotState.SEARCHING
+            return
         
-        # Draw center crosshair
-        cv2.line(result, (self.frame_center_x-20, self.frame_center_y), 
-                (self.frame_center_x+20, self.frame_center_y), (255, 255, 255), 2)
-        cv2.line(result, (self.frame_center_x, self.frame_center_y-20), 
-                (self.frame_center_x, self.frame_center_y+20), (255, 255, 255), 2)
+        # Choose closest ball
+        target_ball = min(all_balls, key=lambda b: b.distance_from_center)
         
-        return result
+        # Check if close enough to collect
+        if target_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
+            self.logger.info("Ball in collection range")
+            self.state = RobotState.COLLECTING_BALL
+            return
+        
+        # Navigate toward ball
+        self.execute_navigation_command(nav_command)
     
-    def process_frame(self):
-        """Process current frame and return detection results"""
-        ret, frame = self.get_frame()
-        if not ret:
-            return None, None, None, None, None, None
+    def handle_collecting_ball(self):
+        """Handle ball collection sequence"""
+        self.logger.info("Attempting ball collection...")
         
-        # Detect all objects
-        balls = self.detect_balls(frame)
-        orange_ball = self.detect_orange_ball(frame)
-        goals = self.detect_goals(frame)
-        near_boundary = self.detect_boundaries(frame)
+        success = self.hardware.attempt_ball_collection()
         
-        # Get navigation command
-        nav_command = self.get_navigation_command(balls, orange_ball)
+        # Log collection attempt
+        self.telemetry.log_collection_attempt(success, "regular")
         
-        # Create debug visualization
-        debug_frame = self.draw_detections(frame, balls, orange_ball, goals)
-        
-        return balls, orange_ball, goals, near_boundary, nav_command, debug_frame
+        if success:
+            self.logger.info("Ball collected successfully!")
+            
+            # Check if we should deliver or keep collecting
+            if self.hardware.get_ball_count() >= 3 or self.get_time_remaining() < 120:
+                self.logger.info("Ready to deliver balls")
+                self.state = RobotState.APPROACHING_GOAL
+            else:
+                self.state = RobotState.SEARCHING
+        else:
+            self.logger.warning("Ball collection failed - returning to search")
+            self.telemetry.log_error("Ball collection failed", "collection")
+            self.state = RobotState.SEARCHING
     
-    def cleanup(self):
-        """Clean up vision system"""
-        self.camera.release()
-        cv2.destroyAllWindows()
-        self.logger.info("Vision system cleanup completed")
+    def handle_approaching_goal(self, goals):
+        """Handle approaching goal for delivery"""
+        if not self.hardware.has_balls():
+            self.logger.info("No balls to deliver - returning to search")
+            self.state = RobotState.SEARCHING
+            return
+        
+        if not goals:
+            # No goals visible - search for goal
+            self.execute_search_pattern()
+            return
+        
+        # Choose goal strategy
+        prefer_goal_a = self.should_prefer_goal_a()
+        goal_direction = self.vision.find_goal_direction(goals, prefer_goal_a)
+        
+        if goal_direction:
+            # Check if close enough to deliver
+            target_goals = [g for g in goals if 
+                          (g.object_type == 'goal_a' if prefer_goal_a else g.object_type == 'goal_b')]
+            
+            if target_goals:
+                closest_goal = min(target_goals, key=lambda x: x.distance_from_center)
+                if closest_goal.distance_from_center < 50:  # Close enough to deliver
+                    self.state = RobotState.DELIVERING_BALLS
+                    return
+            
+            # Navigate toward goal
+            self.execute_navigation_command(goal_direction)
+        else:
+            self.execute_search_pattern()
+    
+    def handle_delivering_balls(self):
+        """Handle ball delivery sequence"""
+        self.logger.info("Delivering balls...")
+        
+        # Determine goal type for scoring
+        goal_type = "A" if self.should_prefer_goal_a() else "B"
+        balls_delivered = self.hardware.delivery_sequence(goal_type)
+        
+        # Log delivery attempt
+        self.telemetry.log_delivery_attempt(balls_delivered, goal_type)
+        
+        if balls_delivered > 0:
+            points = balls_delivered * (config.GOAL_A_POINTS if goal_type == "A" else config.GOAL_B_POINTS)
+            self.logger.info(f"Delivered {balls_delivered} balls to Goal {goal_type} for {points} points!")
+            
+            self.delivery_attempts += 1
+        
+        # Return to searching
+        self.state = RobotState.SEARCHING
+    
+    def handle_avoiding_boundary(self, near_boundary):
+        """Handle boundary avoidance"""
+        if near_boundary:
+            self.logger.warning("Near boundary - avoiding")
+            
+            # Stop and back up
+            self.hardware.stop_motors()
+            time.sleep(0.2)
+            self.hardware.move_backward(duration=0.5)
+            
+            # Turn away from boundary
+            self.hardware.turn_90_right()  # Simple avoidance
+            
+        else:
+            # No longer near boundary
+            self.state = RobotState.SEARCHING
+    
+    def execute_navigation_command(self, command):
+        """Execute navigation command from vision system"""
+        if command == "forward":
+            self.hardware.move_forward(duration=0.3)
+        elif command == "turn_left":
+            self.hardware.turn_left(duration=0.2)
+        elif command == "turn_right":
+            self.hardware.turn_right(duration=0.2)
+        elif command == "collect_ball" or command == "collect_orange":
+            self.state = RobotState.COLLECTING_BALL
+        else:
+            self.execute_search_pattern()
+    
+    def execute_search_pattern(self):
+        """Execute systematic search pattern"""
+        pattern = config.SEARCH_PATTERN
+        action = pattern[self.search_pattern_index % len(pattern)]
+        
+        if action == "forward":
+            self.hardware.forward_step()
+        elif action == "turn_right":
+            self.hardware.turn_90_right()
+        elif action == "turn_left":
+            self.hardware.turn_90_left()
+        
+        self.search_pattern_index += 1
+        
+        # Pause between search moves
+        time.sleep(0.3)
+    
+    def should_prefer_goal_a(self) -> bool:
+        """Determine if we should prefer Goal A (150 pts) over Goal B (100 pts)"""
+        # Prefer Goal A if we have fewer balls or time is running out
+        ball_count = self.hardware.get_ball_count()
+        time_remaining = self.get_time_remaining()
+        
+        # Go for higher points if we have few balls or little time
+        return ball_count <= 2 or time_remaining < 60
+    
+    def add_status_overlay(self, frame):
+        """Add status information to debug frame"""
+        y = 30
+        line_height = 25
+        
+        # Time remaining
+        time_remaining = self.get_time_remaining()
+        cv2.putText(frame, f"Time: {time_remaining:.0f}s", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+        y += line_height
+        
+        # Current state
+        cv2.putText(frame, f"State: {self.state.value}", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+        y += line_height
+        
+        # Ball count
+        ball_count = self.hardware.get_ball_count()
+        cv2.putText(frame, f"Balls: {ball_count}", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+    
+    def end_competition(self):
+        """End competition and calculate final score"""
+        self.competition_active = False
+        elapsed_time = time.time() - self.start_time if self.start_time else 0
+        
+        self.logger.info("COMPETITION ENDED!")
+        self.logger.info(f"Total time: {elapsed_time:.1f} seconds")
+        self.logger.info(f"Balls collected: {self.hardware.get_ball_count()}")
+        self.logger.info(f"Deliveries made: {self.delivery_attempts}")
+        
+        # Create competition results for telemetry
+        competition_result = {
+            "elapsed_time": elapsed_time,
+            "balls_collected": self.hardware.get_ball_count(),
+            "delivery_attempts": self.delivery_attempts,
+            "final_state": self.state.value
+        }
+        
+        # Final delivery if we have balls
+        if self.hardware.has_balls():
+            self.logger.info("Final ball delivery...")
+            balls_delivered = self.hardware.delivery_sequence()
+            competition_result["final_delivery"] = balls_delivered
+        
+        # Create session summary with results
+        summary = self.telemetry.create_session_summary(competition_result)
+        self.logger.info(f"Session data saved to: {summary['session_metadata']['session_dir']}")
+        
+        self.emergency_stop()
+    
+    def emergency_stop(self):
+        """Emergency stop all systems"""
+        self.competition_active = False
+        self.state = RobotState.EMERGENCY_STOP
+        
+        self.logger.warning("EMERGENCY STOP ACTIVATED")
+        
+        try:
+            self.hardware.emergency_stop()
+            self.vision.cleanup()
+            
+            # Export telemetry data for analysis
+            export_file = self.telemetry.export_for_analysis()
+            self.logger.info(f"📊 Telemetry exported: {export_file}")
+            
+            self.telemetry.cleanup()
+            self.hardware.cleanup()
+        except Exception as e:
+            self.logger.error(f"Emergency stop error: {e}")
+
+def show_startup_menu():
+    """Show startup menu with options"""
+    print("DEBUG: Entering show_startup_menu")
+    print("\n" + "="*50)
+    print("🤖 GOLFBOT CONTROL SYSTEM")
+    print("="*50)
+    print("1. Start Competition")
+    print("2. Hardware Testing")
+    print("3. Exit")
+    print("="*50)
+    print("DEBUG: About to start while loop in menu")
+    
+    while True:
+        print("DEBUG: About to call input()")
+        try:
+            choice = input("Select option (1-3): ").strip()
+            print(f"DEBUG: Got choice: '{choice}'")
+            
+            if choice == '1':
+                print("DEBUG: Choice 1 selected - returning 'competition'")
+                return 'competition'
+            elif choice == '2':
+                print("DEBUG: Choice 2 selected - returning 'testing'")
+                return 'testing'
+            elif choice == '3':
+                print("DEBUG: Choice 3 selected - returning 'exit'")
+                return 'exit'
+            else:
+                print(f"DEBUG: Invalid choice '{choice}' - asking again")
+                print("Invalid choice. Enter 1, 2, or 3.")
+                
+        except KeyboardInterrupt:
+            print("\nDEBUG: KeyboardInterrupt in menu")
+            return 'exit'
+        except EOFError:
+            print("\nDEBUG: EOFError in menu")
+            return 'exit'
+        except Exception as e:
+            print(f"DEBUG: Exception in menu: {e}")
+            return 'exit'
+
+def main():
+    """Main entry point"""
+    print("DEBUG: Entering main()")
+    
+    # Show startup menu
+    print("DEBUG: About to call show_startup_menu()")
+    mode = show_startup_menu()
+    print(f"DEBUG: show_startup_menu returned: {mode}")
+    
+    if mode == 'exit':
+        print("DEBUG: Exit mode - goodbye!")
+        print("Goodbye!")
+        return 0
+    elif mode == 'testing':
+        print("DEBUG: Testing mode selected")
+        print("\n🔧 Entering Hardware Testing Mode...")
+        try:
+            if run_hardware_test():
+                print("Testing completed successfully!")
+            else:
+                print("Testing failed!")
+        except Exception as e:
+            print(f"DEBUG: Testing mode exception: {e}")
+        return 0
+    elif mode == 'competition':
+        print("DEBUG: Competition mode selected")
+        print("\n🏁 Entering Competition Mode...")
+        
+        print("DEBUG: About to create GolfBot instance...")
+        try:
+            robot = GolfBot()
+            print("DEBUG: GolfBot instance created successfully!")
+        except Exception as e:
+            print(f"DEBUG: GolfBot creation FAILED: {e}")
+            print("Failed to create robot - exiting")
+            return 1
+        
+        print("DEBUG: About to initialize robot...")
+        if not robot.initialize():
+            print("DEBUG: Robot initialization failed")
+            print("Failed to initialize robot - exiting")
+            return 1
+        print("DEBUG: Robot initialized successfully!")
+        
+        try:
+            # Wait for user to start competition
+            print("DEBUG: About to wait for user input to start...")
+            input("Press Enter to start competition...")
+            print("DEBUG: User pressed Enter - starting competition...")
+            
+            robot.start_competition()
+            
+        except KeyboardInterrupt:
+            print("DEBUG: KeyboardInterrupt in competition")
+            robot.logger.info("Interrupted by user")
+        except Exception as e:
+            print(f"DEBUG: Competition exception: {e}")
+            robot.logger.error(f"Unexpected error: {e}")
+        finally:
+            print("DEBUG: Calling emergency_stop...")
+            robot.emergency_stop()
+        
+        return 0
+
+if __name__ == "__main__":
+    print("DEBUG: Script being run directly")
+    exit_code = main()
+    print(f"DEBUG: main() returned exit code: {exit_code}")
+    sys.exit(exit_code)
