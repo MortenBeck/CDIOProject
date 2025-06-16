@@ -81,6 +81,7 @@ class VisionSystem:
         self.frame_center_x = config.CAMERA_WIDTH // 2
         self.frame_center_y = config.CAMERA_HEIGHT // 2
         self.last_frame = None
+        self.current_target = None  # Store currently targeted ball
         
     def start(self):
         """Initialize vision system"""
@@ -292,14 +293,12 @@ class VisionSystem:
         
         return danger_detected
     
-    def get_navigation_command(self, detected_objects: List[DetectedObject], 
-                         orange_ball: Optional[DetectedObject]) -> str:
-        """Determine navigation command based on detected objects (all balls treated equally)"""
-        
+    def get_target_ball(self, balls: List[DetectedObject], orange_ball: Optional[DetectedObject]) -> Optional[DetectedObject]:
+        """Determine which ball the robot should target (stored for visualization)"""
         # Combine all balls into one list
         all_balls = []
-        if detected_objects:
-            all_balls.extend(detected_objects)
+        if balls:
+            all_balls.extend(balls)
         if orange_ball:
             all_balls.append(orange_ball)
         
@@ -307,12 +306,25 @@ class VisionSystem:
         if all_balls:
             # Sort by distance from center (closest first)
             all_balls.sort(key=lambda x: x.distance_from_center)
-            closest_ball = all_balls[0]
-            
-            if closest_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
+            target = all_balls[0]
+            self.current_target = target
+            return target
+        
+        # No balls detected
+        self.current_target = None
+        return None
+    
+    def get_navigation_command(self, detected_objects: List[DetectedObject], 
+                         orange_ball: Optional[DetectedObject]) -> str:
+        """Determine navigation command based on detected objects (all balls treated equally)"""
+        
+        target_ball = self.get_target_ball(detected_objects, orange_ball)
+        
+        if target_ball:
+            if target_ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD:
                 return "collect_ball"  # Generic collection command
             else:
-                return self._get_direction_to_object(closest_ball)
+                return self._get_direction_to_object(target_ball)
         
         # No balls detected - search
         return "search"
@@ -346,7 +358,7 @@ class VisionSystem:
     def draw_detections(self, frame, balls: List[DetectedObject], 
                        orange_ball: Optional[DetectedObject], 
                        goals: List[DetectedObject]) -> np.ndarray:
-        """Draw detection results on frame for debugging"""
+        """Draw detection results on frame for debugging with target highlighting"""
         if not config.DEBUG_VISION:
             return frame
         
@@ -362,19 +374,69 @@ class VisionSystem:
         
         # Draw regular balls in green
         for ball in balls:
-            cv2.circle(result, ball.center, ball.radius, (0, 255, 0), 2)
-            cv2.circle(result, ball.center, 3, (0, 255, 0), -1)
-            cv2.putText(result, 'Ball', 
-                       (ball.center[0]-20, ball.center[1]-ball.radius-10), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            # Check if this is the current target
+            is_target = (self.current_target and 
+                        self.current_target.center == ball.center and 
+                        self.current_target.object_type == 'ball')
+            
+            if is_target:
+                # Highlight target ball with thick pulsing border
+                thickness = 4
+                color = (0, 255, 0)  # Bright green
+                # Add pulsing effect based on time
+                pulse = int(5 * (1 + np.sin(time.time() * 8)))  # Pulse between 0-10
+                cv2.circle(result, ball.center, ball.radius + pulse, color, thickness)
+                cv2.circle(result, ball.center, 5, color, -1)
+                
+                # Add arrow pointing to target
+                arrow_start = (self.frame_center_x, self.frame_center_y)
+                arrow_end = ball.center
+                cv2.arrowedLine(result, arrow_start, arrow_end, (255, 255, 0), 3, tipLength=0.3)
+                
+                # Add "TARGET" label
+                label_pos = (ball.center[0]-30, ball.center[1]-ball.radius-25)
+                cv2.putText(result, 'TARGET', label_pos, 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+            else:
+                # Regular ball display
+                cv2.circle(result, ball.center, ball.radius, (0, 255, 0), 2)
+                cv2.circle(result, ball.center, 3, (0, 255, 0), -1)
+                cv2.putText(result, 'Ball', 
+                           (ball.center[0]-20, ball.center[1]-ball.radius-10), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         
-        # Draw orange ball in orange
+        # Draw orange ball with special handling for target
         if orange_ball:
-            cv2.circle(result, orange_ball.center, orange_ball.radius, (0, 165, 255), 3)
-            cv2.circle(result, orange_ball.center, 5, (0, 165, 255), -1)
-            cv2.putText(result, 'VIP!', 
-                       (orange_ball.center[0]-15, orange_ball.center[1]-orange_ball.radius-10), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 165, 255), 2)
+            # Check if orange ball is the current target
+            is_target = (self.current_target and 
+                        self.current_target.center == orange_ball.center and 
+                        self.current_target.object_type == 'orange_ball')
+            
+            if is_target:
+                # Highlight target orange ball with thick pulsing border
+                thickness = 4
+                color = (0, 165, 255)  # Orange
+                # Add pulsing effect
+                pulse = int(5 * (1 + np.sin(time.time() * 8)))
+                cv2.circle(result, orange_ball.center, orange_ball.radius + pulse, color, thickness)
+                cv2.circle(result, orange_ball.center, 5, color, -1)
+                
+                # Add arrow pointing to target
+                arrow_start = (self.frame_center_x, self.frame_center_y)
+                arrow_end = orange_ball.center
+                cv2.arrowedLine(result, arrow_start, arrow_end, (255, 255, 0), 3, tipLength=0.3)
+                
+                # Add "VIP TARGET" label
+                label_pos = (orange_ball.center[0]-45, orange_ball.center[1]-orange_ball.radius-25)
+                cv2.putText(result, 'VIP TARGET', label_pos, 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+            else:
+                # Regular orange ball display
+                cv2.circle(result, orange_ball.center, orange_ball.radius, (0, 165, 255), 3)
+                cv2.circle(result, orange_ball.center, 5, (0, 165, 255), -1)
+                cv2.putText(result, 'VIP!', 
+                           (orange_ball.center[0]-15, orange_ball.center[1]-orange_ball.radius-10), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 165, 255), 2)
         
         # Draw goals in red with labels
         for goal in goals:
@@ -394,6 +456,18 @@ class VisionSystem:
         cv2.line(result, (self.frame_center_x, self.frame_center_y-20), 
                 (self.frame_center_x, self.frame_center_y+20), (255, 255, 255), 2)
         
+        # Add targeting information in the corner
+        if self.current_target:
+            target_info = f"TARGET: {self.current_target.object_type.upper()}"
+            distance_info = f"Distance: {self.current_target.distance_from_center:.0f}px"
+            cv2.putText(result, target_info, (10, h-60), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+            cv2.putText(result, distance_info, (10, h-35), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+        else:
+            cv2.putText(result, "TARGET: NONE - SEARCHING", (10, h-35), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        
         return result
     
     def process_frame(self):
@@ -408,10 +482,10 @@ class VisionSystem:
         goals = self.detect_goals(frame)
         near_boundary = self.detect_boundaries(frame)
         
-        # Get navigation command
+        # Get navigation command (this also sets the current target)
         nav_command = self.get_navigation_command(balls, orange_ball)
         
-        # Create debug visualization
+        # Create debug visualization with target highlighting
         debug_frame = self.draw_detections(frame, balls, orange_ball, goals)
         
         return balls, orange_ball, goals, near_boundary, nav_command, debug_frame
