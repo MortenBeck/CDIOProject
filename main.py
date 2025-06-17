@@ -43,6 +43,7 @@ class GolfBot:
         
         # Performance tracking
         self.last_frame_time = time.time()
+        self.frame_skip_counter = 0  # NEW: Skip frames for performance
         
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -51,11 +52,8 @@ class GolfBot:
     def check_display_available(self):
         """Check if display/X11 is available"""
         try:
-            # Check for DISPLAY environment variable
             if os.environ.get('DISPLAY') is None:
                 return False
-            
-            # Try to initialize a test window
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
             cv2.destroyWindow('test')
             return True
@@ -81,13 +79,23 @@ class GolfBot:
     
     def initialize(self) -> bool:
         """Initialize all systems"""
-        self.logger.info("Initializing GolfBot...")
+        self.logger.info("Initializing GolfBot with improved vision...")
         
         try:
             # Start vision system
             if not self.vision.start():
                 self.logger.error("Failed to initialize vision system")
                 return False
+            
+            # Let vision system detect arena boundaries on startup
+            self.logger.info("Detecting arena boundaries...")
+            ret, frame = self.vision.get_frame()
+            if ret:
+                self.vision.detect_arena_boundaries(frame)
+                if self.vision.arena_detected:
+                    self.logger.info("✅ Arena boundaries detected successfully")
+                else:
+                    self.logger.info("⚠️  Using fallback arena boundaries")
             
             self.logger.info("All systems initialized successfully")
             return True
@@ -104,6 +112,7 @@ class GolfBot:
         
         self.logger.info("COMPETITION STARTED!")
         self.logger.info(f"Time limit: {config.COMPETITION_TIME} seconds")
+        self.logger.info("Using improved vision: HoughCircles + Arena detection")
         
         try:
             self.main_loop()
@@ -123,58 +132,84 @@ class GolfBot:
         return self.get_time_remaining() <= 0
     
     def main_loop(self):
-        """Main competition control loop (simplified)"""
+        """Main competition control loop with improved performance"""
         while self.competition_active and not self.is_time_up():
             try:
-                # Track frame performance
                 frame_start = time.time()
                 
-                # Get current vision data (simplified - no separate orange ball)
+                # Skip frames for performance (process every 2nd frame)
+                self.frame_skip_counter += 1
+                if self.frame_skip_counter % 2 != 0:
+                    time.sleep(0.05)
+                    continue
+                
+                # Get current vision data
                 balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame()
                 
                 if balls is None:  # Frame capture failed
                     self.telemetry.log_error("Frame capture failed", "vision")
                     continue
                 
-                # Log vision detection results (simplified)
+                # Enhanced logging with detection method info
+                detection_info = {
+                    "detection_method": "hough_circles_hybrid",
+                    "arena_detected": self.vision.arena_detected,
+                    "balls_found": len(balls) if balls else 0
+                }
+                
+                # Log ball detections with enhanced info
+                if balls:
+                    for i, ball in enumerate(balls):
+                        detection_info[f"ball_{i}_confidence"] = ball.confidence
+                        detection_info[f"ball_{i}_type"] = ball.object_type
+                        detection_info[f"ball_{i}_in_zone"] = ball.in_collection_zone
+                
                 self.telemetry.log_ball_detection(balls, None, None)
+                self.telemetry.log_frame_data(extra_data=detection_info)
                 
                 # Update ball tracking
                 if balls:
                     self.last_ball_seen_time = time.time()
+                    high_confidence_balls = [b for b in balls if b.confidence > 0.5]
+                    if high_confidence_balls:
+                        self.logger.debug(f"High confidence balls: {len(high_confidence_balls)}")
                 
                 # Log hardware state periodically
-                if self.telemetry.frame_count % 10 == 0:
+                if self.telemetry.frame_count % 20 == 0:  # Less frequent logging
                     self.telemetry.log_hardware_state(self.hardware)
                 
-                # Calculate and log performance
+                # Performance tracking
                 frame_time = time.time() - frame_start
                 fps = 1.0 / (time.time() - self.last_frame_time) if self.last_frame_time else 0
                 self.last_frame_time = time.time()
                 self.telemetry.log_performance_metrics(fps, frame_time)
                 
-                # Show debug frame if enabled AND display is available
+                # Show debug frame if enabled
                 if (config.SHOW_CAMERA_FEED and self.display_available and 
                     debug_frame is not None and debug_frame.size > 0):
                     try:
                         self.add_status_overlay(debug_frame)
-                        cv2.imshow('GolfBot Debug', debug_frame)
+                        cv2.imshow('GolfBot Debug - Improved Vision', debug_frame)
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
                     except Exception as e:
                         self.logger.warning(f"Display error: {e}")
-                        self.display_available = False  # Disable further attempts
+                        self.display_available = False
                 
-                # State machine (simplified)
+                # State machine execution
                 old_state = self.state
                 self.execute_state_machine(balls, near_boundary, nav_command)
                 
-                # Log state transitions
+                # Log state transitions with enhanced info
                 if old_state != self.state:
-                    self.telemetry.log_state_transition(old_state, self.state, nav_command or "automatic")
+                    reason = f"{nav_command} | balls={len(balls) if balls else 0} | boundary={near_boundary}"
+                    self.telemetry.log_state_transition(old_state, self.state, reason)
                 
-                # Brief pause to prevent overwhelming
-                time.sleep(0.1)
+                # Adaptive sleep based on detection results
+                if balls and len(balls) > 0:
+                    time.sleep(0.05)  # Faster when balls detected
+                else:
+                    time.sleep(0.1)   # Slower when searching
                 
             except Exception as e:
                 self.logger.error(f"Main loop iteration error: {e}")
@@ -182,11 +217,10 @@ class GolfBot:
                 self.hardware.stop_motors()
                 time.sleep(0.5)
         
-        # Competition ended
         self.end_competition()
     
     def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute current state logic (simplified)"""
+        """Execute current state logic with improved ball handling"""
         
         # Always check for boundary first
         if near_boundary:
@@ -208,32 +242,45 @@ class GolfBot:
             self.hardware.emergency_stop()
     
     def handle_searching(self, balls, nav_command):
-        """Handle searching for balls (simplified)"""
-        # Look for any balls
+        """Handle searching with confidence filtering"""
         if balls:
-            ball_count = len(balls)
-            orange_count = sum(1 for ball in balls if ball.object_type == 'orange_ball')
-            white_count = ball_count - orange_count
-            self.logger.info(f"Found {ball_count} ball(s) - {white_count} white, {orange_count} orange")
-            self.state = RobotState.APPROACHING_BALL
-            return
+            # Filter for high confidence balls only
+            confident_balls = [ball for ball in balls if ball.confidence > 0.4]
+            
+            if confident_balls:
+                ball_count = len(confident_balls)
+                orange_count = sum(1 for ball in confident_balls if ball.object_type == 'orange_ball')
+                white_count = ball_count - orange_count
+                
+                avg_confidence = sum(ball.confidence for ball in confident_balls) / ball_count
+                
+                self.logger.info(f"Found {ball_count} confident ball(s) - {white_count} white, {orange_count} orange (avg conf: {avg_confidence:.2f})")
+                self.state = RobotState.APPROACHING_BALL
+                return
         
-        # No balls found - execute search pattern
+        # No confident balls found
         self.execute_search_pattern()
     
     def handle_approaching_ball(self, balls, nav_command):
-        """Handle approaching detected ball (simplified)"""
+        """Handle approaching with confidence tracking"""
         if not balls:
-            self.logger.info("Lost sight of ball - returning to search")
+            self.logger.info("Lost sight of all balls - returning to search")
             self.state = RobotState.SEARCHING
             return
         
-        # Choose closest ball (vision system already sorted by distance)
-        target_ball = balls[0]
+        # Filter for confident balls
+        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
         
-        # Check if ball is in collection zone
+        if not confident_balls:
+            self.logger.info("No confident ball detections - returning to search")
+            self.state = RobotState.SEARCHING
+            return
+        
+        # Target the closest confident ball
+        target_ball = confident_balls[0]
+        
         if target_ball.in_collection_zone:
-            self.logger.info(f"Ball in collection zone - attempting collection")
+            self.logger.info(f"Ball in collection zone - attempting collection (confidence: {target_ball.confidence:.2f})")
             self.state = RobotState.COLLECTING_BALL
             return
         
@@ -241,67 +288,75 @@ class GolfBot:
         self.execute_navigation_command(nav_command)
     
     def handle_collecting_ball(self):
-        """Handle ball collection sequence (simplified)"""
-        self.logger.info("Attempting ball collection...")
+        """Handle ball collection with improved logging"""
+        current_target = self.vision.current_target
+        
+        if current_target:
+            ball_type = "orange" if current_target.object_type == "orange_ball" else "regular"
+            confidence = current_target.confidence
+            self.logger.info(f"Attempting {ball_type} ball collection (confidence: {confidence:.2f})...")
+        else:
+            ball_type = "unknown"
+            self.logger.info("Attempting ball collection...")
         
         success = self.hardware.attempt_ball_collection()
         
-        # Determine ball type for logging (just for stats)
-        ball_type = "regular"
-        if self.vision.current_target and self.vision.current_target.object_type == "orange_ball":
-            ball_type = "orange"
-        
-        # Log collection attempt
+        # Enhanced logging
         self.telemetry.log_collection_attempt(success, ball_type)
         
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"Ball collected successfully! Total balls: {total_balls}")
+            self.logger.info(f"✅ {ball_type.title()} ball collected! Total: {total_balls}")
+            
+            # Log collection success with details
+            collection_data = {
+                "ball_type": ball_type,
+                "confidence": confidence if current_target else 0.0,
+                "total_collected": total_balls
+            }
+            self.telemetry.log_frame_data(action="successful_collection", extra_data=collection_data)
         else:
-            self.logger.warning("Ball collection failed")
-            self.telemetry.log_error("Ball collection failed", "collection")
+            self.logger.warning(f"❌ {ball_type.title()} ball collection failed")
+            self.telemetry.log_error(f"Ball collection failed - {ball_type}", "collection")
         
-        # Return to searching for more balls
+        # Return to searching
         self.state = RobotState.SEARCHING
     
     def handle_avoiding_boundary(self, near_boundary):
-        """Handle boundary avoidance"""
+        """Handle boundary avoidance with improved timing"""
         if near_boundary:
-            self.logger.warning("Near red wall - executing avoidance")
+            self.logger.warning("⚠️  Near arena boundary - executing avoidance")
             
-            # Stop immediately
+            # Immediate stop
             self.hardware.stop_motors()
-            time.sleep(0.1)  # Reduced from 0.2
+            time.sleep(0.1)
             
-            # Much shorter backup - just enough to clear the wall
-            self.hardware.move_backward(duration=0.3)  # Reduced from 0.8
+            # Quick backup
+            self.hardware.move_backward(duration=0.25)
             
-            # Smaller turn to avoid wall
-            self.hardware.turn_right(duration=0.3)  # Reduced from full 90 degree turn
+            # Small turn to avoid
+            self.hardware.turn_right(duration=0.25)
             
-            # Reduced settling time
-            time.sleep(0.2)  # Reduced from 0.5
-            
+            time.sleep(0.15)
         else:
-            # No longer near boundary - return to searching
+            # Clear of boundary
             self.state = RobotState.SEARCHING
     
     def execute_navigation_command(self, command):
-        """Execute navigation command from vision system"""
+        """Execute navigation with improved timing"""
         if command == "forward":
-            self.hardware.move_forward(duration=0.3)
+            self.hardware.move_forward(duration=0.25)  # Shorter movements
         elif command == "turn_left":
-            self.hardware.turn_left(duration=0.2)
+            self.hardware.turn_left(duration=0.15)
         elif command == "turn_right":
-            self.hardware.turn_right(duration=0.2)
+            self.hardware.turn_right(duration=0.15)
         elif command == "collect_ball":
             self.state = RobotState.COLLECTING_BALL
         else:
-            # Default to search pattern
             self.execute_search_pattern()
     
     def execute_search_pattern(self):
-        """Execute systematic search pattern"""
+        """Execute search pattern with better timing"""
         pattern = config.SEARCH_PATTERN
         action = pattern[self.search_pattern_index % len(pattern)]
         
@@ -313,12 +368,10 @@ class GolfBot:
             self.hardware.turn_90_left()
         
         self.search_pattern_index += 1
-        
-        # Pause between search moves
-        time.sleep(0.3)
+        time.sleep(0.2)  # Shorter pause
     
     def add_status_overlay(self, frame):
-        """Add status information to debug frame"""
+        """Enhanced status overlay with vision info"""
         y = 30
         line_height = 25
         
@@ -337,9 +390,23 @@ class GolfBot:
         ball_count = self.hardware.get_ball_count()
         cv2.putText(frame, f"Balls Collected: {ball_count}", (10, y), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+        y += line_height
+        
+        # Vision status
+        arena_status = "Detected" if self.vision.arena_detected else "Fallback"
+        cv2.putText(frame, f"Arena: {arena_status}", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+        y += line_height
+        
+        # Current target info
+        if self.vision.current_target:
+            target = self.vision.current_target
+            target_info = f"Target: {target.object_type} (Conf: {target.confidence:.2f})"
+            cv2.putText(frame, target_info, (10, y), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
     
     def end_competition(self):
-        """End competition and show final results"""
+        """End competition with enhanced results"""
         self.competition_active = False
         elapsed_time = time.time() - self.start_time if self.start_time else 0
         
@@ -349,16 +416,18 @@ class GolfBot:
         self.logger.info(f"Total time: {elapsed_time:.1f} seconds")
         self.logger.info(f"Balls collected: {self.hardware.get_ball_count()}")
         self.logger.info(f"Final state: {self.state.value}")
+        self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
         self.logger.info("=" * 50)
         
-        # Create competition results for telemetry
+        # Enhanced competition results
         competition_result = {
             "elapsed_time": elapsed_time,
             "balls_collected": self.hardware.get_ball_count(),
-            "final_state": self.state.value
+            "final_state": self.state.value,
+            "vision_system": "hough_circles_hybrid",
+            "arena_detected": self.vision.arena_detected
         }
         
-        # Create session summary with results
         summary = self.telemetry.create_session_summary(competition_result)
         self.logger.info(f"Session data saved to: {summary['session_metadata']['session_dir']}")
         
@@ -375,7 +444,6 @@ class GolfBot:
             self.hardware.emergency_stop()
             self.vision.cleanup()
             
-            # Export telemetry data for analysis
             export_file = self.telemetry.export_for_analysis()
             self.logger.info(f"📊 Telemetry exported: {export_file}")
             
@@ -387,9 +455,9 @@ class GolfBot:
 def show_startup_menu():
     """Show startup menu with options"""
     print("\n" + "="*50)
-    print("🤖 GOLFBOT CONTROL SYSTEM")
+    print("🤖 GOLFBOT CONTROL SYSTEM - IMPROVED VISION")
     print("="*50)
-    print("1. Start Competition")
+    print("1. Start Competition (HoughCircles + Arena Detection)")
     print("2. Hardware Testing") 
     print("3. Exit")
     print("="*50)
@@ -419,7 +487,6 @@ def show_startup_menu():
 
 def main():
     """Main entry point"""
-    # Show startup menu
     mode = show_startup_menu()
     
     if mode == 'exit':
@@ -438,27 +505,28 @@ def main():
         return 0
         
     elif mode == 'competition':
-        print("\n🏁 Entering Competition Mode...")
+        print("\n🏁 Entering Competition Mode with Improved Vision...")
         
         try:
-            # Create robot instance
             robot = GolfBot()
             
-            # Initialize systems
             if not robot.initialize():
                 print("❌ Failed to initialize robot - exiting")
                 return 1
             
-            # Wait for user to start competition
-            print("\n🚀 Robot ready! Press Enter to start competition...")
+            print("\n🚀 Robot ready with improved vision system!")
+            print("   - HoughCircles shape detection")
+            print("   - Arena boundary detection") 
+            print("   - Enhanced ball confidence scoring")
+            print("\nPress Enter to start competition...")
             input()
             
-            # Start competition
             robot.start_competition()
             
         except KeyboardInterrupt:
             print("\n⚠️  Competition interrupted by user")
-            robot.logger.info("Competition interrupted by user")
+            if 'robot' in locals():
+                robot.logger.info("Competition interrupted by user")
         except Exception as e:
             print(f"❌ Competition error: {e}")
             if 'robot' in locals():
