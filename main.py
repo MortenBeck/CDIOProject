@@ -273,20 +273,20 @@ class GolfBot:
     def handle_avoiding_boundary(self, near_boundary):
         """Handle boundary avoidance"""
         if near_boundary:
-            self.logger.warning("Near red wall - executing avoidance maneuver")
+            self.logger.warning("Near red wall - executing avoidance")
             
             # Stop immediately
             self.hardware.stop_motors()
-            time.sleep(0.2)
+            time.sleep(0.1)  # Reduced from 0.2
             
-            # Back up to create distance
-            self.hardware.move_backward(duration=0.8)
+            # Much shorter backup - just enough to clear the wall
+            self.hardware.move_backward(duration=0.3)  # Reduced from 0.8
             
-            # Turn to avoid wall
-            self.hardware.turn_90_right()
+            # Smaller turn to avoid wall
+            self.hardware.turn_right(duration=0.3)  # Reduced from full 90 degree turn
             
-            # Extra delay to ensure clear of wall
-            time.sleep(0.5)
+            # Reduced settling time
+            time.sleep(0.2)  # Reduced from 0.5
             
         else:
             # No longer near boundary - return to searching
