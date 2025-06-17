@@ -304,7 +304,7 @@ class VisionSystem:
         return best_orange_ball
     
     def detect_boundaries(self, frame) -> bool:
-        """Detect red walls/boundaries using color detection with enhanced sensitivity"""
+        """Detect red walls/boundaries with reduced sensitivity for closer proximity detection"""
         if frame is None:
             return False
         
@@ -332,59 +332,61 @@ class VisionSystem:
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
         
-        # Enhanced danger zone detection - check multiple areas
-        danger_distance = min(150, int(h * 0.3))
-        
-        # Check bottom area (primary danger zone)
+        # MUCH SMALLER danger zones - only trigger when very close to walls
+        # Bottom danger zone: only bottom 10% of frame (was 30%)
+        danger_distance = min(60, int(h * 0.12))  # Much smaller
         bottom_danger_y = h - danger_distance
         bottom_mask = red_mask[bottom_danger_y:h, :]
         
-        # Also check left and right edges for walls
-        edge_width = min(100, int(w * 0.15))
+        # Side danger zones: only check very close to edges (was 15% of width)
+        edge_width = min(40, int(w * 0.08))  # Much smaller
         left_mask = red_mask[:, 0:edge_width]
         right_mask = red_mask[:, w-edge_width:w]
         
-        # Find contours in all danger zones
+        # Find contours in danger zones with stricter requirements
         danger_detected = False
-        min_wall_area = 80  # Reduced minimum area for better sensitivity
+        min_wall_area = 200  # INCREASED from 80 - need bigger wall segments
         
-        # Check bottom area
+        # Check bottom area - only if wall takes up significant portion
         contours, _ = cv2.findContours(bottom_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_wall_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
                 length = max(w_rect, h_rect)
-                if length > 40:  # Reduced minimum wall segment length
+                # INCREASED minimum wall segment length (was 40)
+                if length > 80 and w_rect > 60:  # Must be substantial horizontal wall
                     danger_detected = True
                     if config.DEBUG_VISION:
-                        self.logger.debug(f"Red wall detected in bottom danger zone (area: {area})")
+                        self.logger.debug(f"Red wall detected in bottom danger zone (area: {area}, length: {length})")
                     break
         
-        # Check left edge
+        # Check left edge - stricter requirements
         if not danger_detected:
             contours, _ = cv2.findContours(left_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
                 area = cv2.contourArea(contour)
                 if area > min_wall_area:
                     x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    if h_rect > 60:  # Vertical wall segment
+                    # INCREASED minimum height (was 60) and added width requirement
+                    if h_rect > 100 and w_rect > 20:  # Must be substantial vertical wall
                         danger_detected = True
                         if config.DEBUG_VISION:
-                            self.logger.debug(f"Red wall detected on left edge (area: {area})")
+                            self.logger.debug(f"Red wall detected on left edge (area: {area}, height: {h_rect})")
                         break
         
-        # Check right edge
+        # Check right edge - stricter requirements  
         if not danger_detected:
             contours, _ = cv2.findContours(right_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
                 area = cv2.contourArea(contour)
                 if area > min_wall_area:
                     x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    if h_rect > 60:  # Vertical wall segment
+                    # INCREASED minimum height (was 60) and added width requirement
+                    if h_rect > 100 and w_rect > 20:  # Must be substantial vertical wall
                         danger_detected = True
                         if config.DEBUG_VISION:
-                            self.logger.debug(f"Red wall detected on right edge (area: {area})")
+                            self.logger.debug(f"Red wall detected on right edge (area: {area}, height: {h_rect})")
                         break
         
         return danger_detected
