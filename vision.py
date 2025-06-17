@@ -99,6 +99,9 @@ class VisionSystem:
         # Detection method tracking
         self.detection_method = "hybrid"
         
+        # Dashboard support - store recent detections
+        self._last_detected_balls = []
+        
     def _calculate_collection_zone(self):
         """Calculate the collection zone boundaries"""
         horizontal_margin = config.CAMERA_WIDTH * 0.375
@@ -475,7 +478,12 @@ class VisionSystem:
         hough_balls.sort(key=lambda x: (x.distance_from_center, -x.confidence))
         
         # Limit to reasonable number of balls
-        return hough_balls[:6]
+        detected_balls = hough_balls[:6]
+        
+        # Store for dashboard access
+        self._last_detected_balls = detected_balls
+        
+        return detected_balls
     
     def detect_boundaries(self, frame) -> bool:
         """Detect if robot is too close to red walls (danger zones)
