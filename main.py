@@ -191,12 +191,23 @@ class GolfBot:
                 self.last_frame_time = time.time()
                 self.telemetry.log_performance_metrics(fps, frame_time)
                 
-                # Show debug frame if enabled
+                # Show debug frame if enabled - NOW WITH 200% SCALING
                 if (config.SHOW_CAMERA_FEED and self.display_available and 
                     debug_frame is not None and debug_frame.size > 0):
                     try:
                         self.add_status_overlay(debug_frame)
-                        cv2.imshow('GolfBot Debug - Enhanced Collection', debug_frame)
+                        
+                        # Scale the frame to 200% (2x larger)
+                        original_height, original_width = debug_frame.shape[:2]
+                        scaled_width = original_width * 2
+                        scaled_height = original_height * 2
+                        scaled_frame = cv2.resize(debug_frame, (scaled_width, scaled_height), 
+                                                interpolation=cv2.INTER_LINEAR)
+                        
+                        # Create resizable window for better viewing
+                        cv2.namedWindow('GolfBot Debug - Enhanced Collection (200% Scale)', cv2.WINDOW_NORMAL)
+                        cv2.imshow('GolfBot Debug - Enhanced Collection (200% Scale)', scaled_frame)
+                        
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
                     except Exception as e:
@@ -582,6 +593,7 @@ def show_startup_menu():
     print("• Ball centering before collection")
     print("• Blind drive to ball (no vision occlusion)")
     print("• Enhanced servo control for precision")
+    print("• 200% Scaled Camera Preview Window")
     print("="*60)
     
     while True:
@@ -641,10 +653,12 @@ def main():
             print("   - Blind collection to avoid vision occlusion") 
             print("   - HoughCircles + Arena boundary detection")
             print("   - Enhanced servo control with gradual movement")
+            print("   - 200% scaled camera preview for better visibility")
             print(f"\n⚙️  Configuration:")
             print(f"   - Centering tolerance: ±{config.CENTERING_TOLERANCE} pixels")
             print(f"   - Collection speed: {config.COLLECTION_SPEED}")
             print(f"   - Drive time calculation: {config.COLLECTION_DRIVE_TIME_PER_PIXEL:.3f}s/pixel")
+            print(f"   - Camera preview: {config.CAMERA_WIDTH}x{config.CAMERA_HEIGHT} → {config.CAMERA_WIDTH*2}x{config.CAMERA_HEIGHT*2}")
             print("\nPress Enter to start competition...")
             input()
             
