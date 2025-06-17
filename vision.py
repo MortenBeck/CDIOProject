@@ -126,27 +126,34 @@ class VisionSystem:
         return ret, frame
     
     def detect_balls(self, frame) -> List[DetectedObject]:
-        """Detect white ping pong balls in frame with improved filtering"""
+        """Detect ALL ping pong balls (white AND orange) in frame with improved filtering"""
         detected_objects = []
         
         # Convert to HSV for better color filtering
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
+        # WHITE BALL DETECTION
         # More restrictive white/light color detection to reduce false positives
-        # Focus on bright whites, not just light colors
         ball_lower = np.array([0, 0, 200])    # Higher value threshold (brighter whites)
         ball_upper = np.array([180, 40, 255]) # Lower saturation (more white, less colored)
+        white_mask = cv2.inRange(hsv, ball_lower, ball_upper)
         
-        # Create mask for white/light colors
-        mask = cv2.inRange(hsv, ball_lower, ball_upper)
+        # ORANGE BALL DETECTION  
+        # Orange color detection
+        orange_lower = np.array([10, 100, 100])
+        orange_upper = np.array([25, 255, 255])
+        orange_mask = cv2.inRange(hsv, orange_lower, orange_upper)
+        
+        # COMBINE BOTH MASKS - treat all balls the same!
+        combined_mask = cv2.bitwise_or(white_mask, orange_mask)
         
         # More aggressive noise cleanup
         kernel = np.ones((7,7), np.uint8)  # Larger kernel
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=2)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+        combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
         
         # Additional: Remove small noise blobs
-        mask = cv2.medianBlur(mask, 5)
+        combined_mask = cv2.medianBlur(combined_mask, 5)
         
         # Define arena boundaries (exclude areas outside the red boundary)
         h, w = frame.shape[:2]
@@ -164,10 +171,10 @@ class VisionSystem:
         arena_mask[top_margin:h-bottom_margin, left_margin:w-right_margin] = 255
         
         # Apply arena mask to ball detection mask
-        mask = cv2.bitwise_and(mask, arena_mask)
+        combined_mask = cv2.bitwise_and(combined_mask, arena_mask)
         
         # Find contours
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(combined_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         for contour in contours:
             area = cv2.contourArea(contour)
@@ -202,21 +209,27 @@ class VisionSystem:
                             # Only accept if the shape closely matches a circle
                             if overlap_ratio > 0.7:  # Must be at least 70% circle-like
                                 
-                                # Additional check: verify the object is actually white/bright in the original image
-                                # Sample the center region and check brightness
+                                # Additional check: verify the object is actually white/bright OR orange in the original image
+                                # Sample the center region and check color
                                 sample_radius = max(3, radius // 3)
                                 y1, y2 = max(0, center[1] - sample_radius), min(h, center[1] + sample_radius)
                                 x1, x2 = max(0, center[0] - sample_radius), min(w, center[0] + sample_radius)
                                 
                                 center_region = frame[y1:y2, x1:x2]
                                 if center_region.size > 0:
-                                    # Convert to grayscale and check brightness
+                                    # Check if it's white OR orange
                                     gray_region = cv2.cvtColor(center_region, cv2.COLOR_BGR2GRAY)
                                     mean_brightness = np.mean(gray_region)
                                     
-                                    # Only accept if the center is actually bright (white ball)
-                                    if mean_brightness > 180:  # Bright threshold
-                                        
+                                    # Check if it's in the orange region of original masks
+                                    center_hsv = cv2.cvtColor(center_region, cv2.COLOR_BGR2HSV)
+                                    orange_pixels = cv2.inRange(center_hsv, orange_lower, orange_upper)
+                                    orange_ratio = np.sum(orange_pixels > 0) / max(1, orange_pixels.size)
+                                    
+                                    # Accept if it's bright (white) OR has significant orange content
+                                    is_valid_ball = (mean_brightness > 180) or (orange_ratio > 0.3)
+                                    
+                                    if is_valid_ball:
                                         distance_from_center = np.sqrt(
                                             (center[0] - self.frame_center_x)**2 + 
                                             (center[1] - self.frame_center_y)**2
@@ -225,8 +238,11 @@ class VisionSystem:
                                         # Check if ball is in collection zone
                                         in_collection_zone = self.is_in_collection_zone(center)
                                         
+                                        # Determine ball type for display purposes only
+                                        ball_type = 'orange_ball' if orange_ratio > 0.3 else 'ball'
+                                        
                                         ball = DetectedObject(
-                                            object_type='ball',
+                                            object_type=ball_type,  # Just for display color
                                             center=center,
                                             radius=radius,
                                             area=area,
@@ -248,60 +264,6 @@ class VisionSystem:
         
         return detected_objects
 
-    
-    def detect_orange_ball(self, frame) -> Optional[DetectedObject]:
-        """Detect orange VIP ball specifically"""
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv, config.ORANGE_HSV_LOWER, config.ORANGE_HSV_UPPER)
-        
-        # Clean up noise
-        kernel = np.ones((5,5), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-        
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        best_orange_ball = None
-        best_score = 0
-        
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            
-            if config.BALL_MIN_AREA < area < config.BALL_MAX_AREA:
-                perimeter = cv2.arcLength(contour, True)
-                if perimeter > 0:
-                    circularity = 4 * np.pi * area / (perimeter * perimeter)
-                    
-                    if circularity > 0.3:
-                        (x, y), radius = cv2.minEnclosingCircle(contour)
-                        center = (int(x), int(y))
-                        radius = int(radius)
-                        
-                        if config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS:
-                            # Score based on size and circularity
-                            score = area * circularity
-                            
-                            if score > best_score:
-                                distance_from_center = np.sqrt(
-                                    (center[0] - self.frame_center_x)**2 + 
-                                    (center[1] - self.frame_center_y)**2
-                                )
-                                
-                                # Check if ball is in collection zone
-                                in_collection_zone = self.is_in_collection_zone(center)
-                                
-                                best_orange_ball = DetectedObject(
-                                    object_type='orange_ball',
-                                    center=center,
-                                    radius=radius,
-                                    area=area,
-                                    confidence=circularity,
-                                    distance_from_center=distance_from_center,
-                                    in_collection_zone=in_collection_zone
-                                )
-                                best_score = score
-        
-        return best_orange_ball
     
     def detect_boundaries(self, frame) -> bool:
         """Detect red walls/boundaries with reduced sensitivity for closer proximity detection"""
@@ -391,20 +353,14 @@ class VisionSystem:
         
         return danger_detected
     
-    def get_target_ball(self, balls: List[DetectedObject], orange_ball: Optional[DetectedObject]) -> Optional[DetectedObject]:
-        """Determine which ball the robot should target (stored for visualization)"""
-        # Combine all balls into one list
-        all_balls = []
-        if balls:
-            all_balls.extend(balls)
-        if orange_ball:
-            all_balls.append(orange_ball)
+    def get_target_ball(self, balls: List[DetectedObject]) -> Optional[DetectedObject]:
+        """Determine which ball the robot should target (simplified - no orange priority)"""
         
         # If we have any balls, target the closest one
-        if all_balls:
+        if balls:
             # Sort by distance from center (closest first)
-            all_balls.sort(key=lambda x: x.distance_from_center)
-            target = all_balls[0]
+            balls.sort(key=lambda x: x.distance_from_center)
+            target = balls[0]
             self.current_target = target
             return target
         
@@ -419,11 +375,10 @@ class VisionSystem:
         
         return self.current_target.in_collection_zone
     
-    def get_navigation_command(self, detected_objects: List[DetectedObject], 
-                         orange_ball: Optional[DetectedObject]) -> str:
-        """Determine navigation command based on detected objects"""
+    def get_navigation_command(self, detected_objects: List[DetectedObject]) -> str:
+        """Determine navigation command based on detected objects (simplified)"""
         
-        target_ball = self.get_target_ball(detected_objects, orange_ball)
+        target_ball = self.get_target_ball(detected_objects)
         
         if target_ball:
             # Check if ball is in collection zone (position-based)
@@ -450,9 +405,8 @@ class VisionSystem:
             # Object is centered, move forward
             return "forward"
     
-    def draw_detections(self, frame, balls: List[DetectedObject], 
-                       orange_ball: Optional[DetectedObject]) -> np.ndarray:
-        """Draw detection results on frame for debugging with collection zone visualization"""
+    def draw_detections(self, frame, balls: List[DetectedObject]) -> np.ndarray:
+        """Draw detection results on frame for debugging (simplified - no separate orange handling)"""
         if not config.DEBUG_VISION:
             return frame
         
@@ -464,44 +418,47 @@ class VisionSystem:
         # Collection zone in semi-transparent green
         overlay = result.copy()
         cv2.rectangle(overlay, (zone['left'], zone['top']), 
-                     (zone['right'], zone['bottom']), (0, 255, 0), -1)
+                    (zone['right'], zone['bottom']), (0, 255, 0), -1)
         cv2.addWeighted(result, 0.8, overlay, 0.2, 0, result)
         
         # Collection zone border
         cv2.rectangle(result, (zone['left'], zone['top']), 
-                     (zone['right'], zone['bottom']), (0, 255, 0), 3)
+                    (zone['right'], zone['bottom']), (0, 255, 0), 3)
         
         # Collection zone labels
         cv2.putText(result, 'COLLECTION ZONE', (zone['left'] + 10, zone['top'] + 25), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-        cv2.putText(result, '50% horizontal, bottom 20%', (zone['left'] + 10, zone['top'] + 50), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         
-        # Draw danger zones for wall detection
-        danger_distance = min(150, int(h * 0.3))
+        # Draw danger zones for wall detection (updated to match new detection)
+        danger_distance = min(60, int(h * 0.12))  # Match new detection zones
         danger_y = h - danger_distance
-        edge_width = min(100, int(w * 0.15))
+        edge_width = min(40, int(w * 0.08))  # Match new detection zones
         
         # Bottom danger zone
         cv2.line(result, (0, danger_y), (w, danger_y), (0, 0, 255), 2)
         cv2.putText(result, 'WALL DANGER ZONE', (w - 200, danger_y - 10), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         
         # Left and right edge danger zones
         cv2.line(result, (edge_width, 0), (edge_width, h), (0, 0, 255), 2)
         cv2.line(result, (w - edge_width, 0), (w - edge_width, h), (0, 0, 255), 2)
         
-        # Draw regular balls in green
+        # Draw all balls (white and orange treated the same)
         for ball in balls:
             # Check if this is the current target
             is_target = (self.current_target and 
-                        self.current_target.center == ball.center and 
-                        self.current_target.object_type == 'ball')
+                        self.current_target.center == ball.center)
+            
+            # Choose color based on ball type but treat functionally the same
+            if ball.object_type == 'orange_ball':
+                base_color = (0, 165, 255)  # Orange color for display
+            else:
+                base_color = (0, 255, 0)    # Green for white balls
             
             if is_target:
                 # Highlight target ball with thick pulsing border
                 thickness = 4
-                color = (0, 255, 0)  # Bright green
+                color = base_color
                 # Add pulsing effect based on time
                 pulse = int(5 * (1 + np.sin(time.time() * 8)))  # Pulse between 0-10
                 cv2.circle(result, ball.center, ball.radius + pulse, color, thickness)
@@ -513,57 +470,23 @@ class VisionSystem:
                 cv2.arrowedLine(result, arrow_start, arrow_end, (255, 255, 0), 3, tipLength=0.3)
                 
                 # Add "TARGET" label with collection zone status
-                label = 'TARGET (IN ZONE)' if ball.in_collection_zone else 'TARGET'
+                ball_name = 'ORANGE' if ball.object_type == 'orange_ball' else 'BALL'
+                label = f'{ball_name} TARGET (IN ZONE)' if ball.in_collection_zone else f'{ball_name} TARGET'
                 label_color = (255, 255, 0) if ball.in_collection_zone else (255, 255, 255)
                 label_pos = (ball.center[0]-50, ball.center[1]-ball.radius-25)
                 cv2.putText(result, label, label_pos, 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, label_color, 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, label_color, 2)
             else:
                 # Regular ball display with zone status
-                color = (0, 255, 0) if ball.in_collection_zone else (100, 255, 100)
+                color = base_color if ball.in_collection_zone else tuple(int(c*0.7) for c in base_color)
                 cv2.circle(result, ball.center, ball.radius, color, 2)
                 cv2.circle(result, ball.center, 3, color, -1)
-                label = 'Ball (Zone)' if ball.in_collection_zone else 'Ball'
-                cv2.putText(result, label, 
-                           (ball.center[0]-20, ball.center[1]-ball.radius-10), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-        
-        # Draw orange ball with special handling for target and zone
-        if orange_ball:
-            # Check if orange ball is the current target
-            is_target = (self.current_target and 
-                        self.current_target.center == orange_ball.center and 
-                        self.current_target.object_type == 'orange_ball')
-            
-            if is_target:
-                # Highlight target orange ball with thick pulsing border
-                thickness = 4
-                color = (0, 165, 255)  # Orange
-                # Add pulsing effect
-                pulse = int(5 * (1 + np.sin(time.time() * 8)))
-                cv2.circle(result, orange_ball.center, orange_ball.radius + pulse, color, thickness)
-                cv2.circle(result, orange_ball.center, 5, color, -1)
                 
-                # Add arrow pointing to target
-                arrow_start = (self.frame_center_x, self.frame_center_y)
-                arrow_end = orange_ball.center
-                cv2.arrowedLine(result, arrow_start, arrow_end, (255, 255, 0), 3, tipLength=0.3)
-                
-                # Add "VIP TARGET" label with zone status
-                label = 'VIP TARGET (IN ZONE)' if orange_ball.in_collection_zone else 'VIP TARGET'
-                label_color = (255, 255, 0) if orange_ball.in_collection_zone else (255, 255, 255)
-                label_pos = (orange_ball.center[0]-60, orange_ball.center[1]-orange_ball.radius-25)
-                cv2.putText(result, label, label_pos, 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, label_color, 2)
-            else:
-                # Regular orange ball display with zone status
-                color = (0, 165, 255) if orange_ball.in_collection_zone else (100, 200, 255)
-                cv2.circle(result, orange_ball.center, orange_ball.radius, color, 3)
-                cv2.circle(result, orange_ball.center, 5, color, -1)
-                label = 'VIP (Zone)' if orange_ball.in_collection_zone else 'VIP!'
+                ball_name = 'Orange' if ball.object_type == 'orange_ball' else 'Ball'
+                label = f'{ball_name} (Zone)' if ball.in_collection_zone else ball_name
                 cv2.putText(result, label, 
-                           (orange_ball.center[0]-20, orange_ball.center[1]-orange_ball.radius-10), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+                        (ball.center[0]-20, ball.center[1]-ball.radius-10), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
         # Draw center crosshair
         cv2.line(result, (self.frame_center_x-20, self.frame_center_y), 
@@ -573,38 +496,39 @@ class VisionSystem:
         
         # Add targeting information in the corner
         if self.current_target:
-            target_info = f"TARGET: {self.current_target.object_type.upper()}"
+            ball_name = 'ORANGE BALL' if self.current_target.object_type == 'orange_ball' else 'WHITE BALL'
+            target_info = f"TARGET: {ball_name}"
             zone_info = f"IN COLLECTION ZONE: {'YES' if self.current_target.in_collection_zone else 'NO'}"
             servo_info = f"SERVO1 ACTIVE: {'YES' if self.should_activate_servo() else 'NO'}"
             
             cv2.putText(result, target_info, (10, h-80), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
             cv2.putText(result, zone_info, (10, h-55), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
             cv2.putText(result, servo_info, (10, h-30), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
         else:
             cv2.putText(result, "TARGET: NONE - SEARCHING", (10, h-35), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
         return result
     
     def process_frame(self):
-        """Process current frame and return detection results"""
+        """Process current frame and return detection results (simplified)"""
         ret, frame = self.get_frame()
         if not ret:
             return None, None, None, None, None
         
-        # Detect all objects (no goals anymore)
+        # Detect all balls (white and orange together)
         balls = self.detect_balls(frame)
-        orange_ball = self.detect_orange_ball(frame)
+        orange_ball = None  # No longer used separately
         near_boundary = self.detect_boundaries(frame)
         
         # Get navigation command (this also sets the current target)
-        nav_command = self.get_navigation_command(balls, orange_ball)
+        nav_command = self.get_navigation_command(balls)
         
         # Create debug visualization with target highlighting and collection zone
-        debug_frame = self.draw_detections(frame, balls, orange_ball)
+        debug_frame = self.draw_detections(frame, balls)
         
         return balls, orange_ball, near_boundary, nav_command, debug_frame
     

@@ -123,24 +123,24 @@ class GolfBot:
         return self.get_time_remaining() <= 0
     
     def main_loop(self):
-        """Main competition control loop"""
+        """Main competition control loop (simplified)"""
         while self.competition_active and not self.is_time_up():
             try:
                 # Track frame performance
                 frame_start = time.time()
                 
-                # Get current vision data (no goals anymore)
-                balls, orange_ball, near_boundary, nav_command, debug_frame = self.vision.process_frame()
+                # Get current vision data (simplified - no separate orange ball)
+                balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame()
                 
                 if balls is None:  # Frame capture failed
                     self.telemetry.log_error("Frame capture failed", "vision")
                     continue
                 
-                # Log vision detection results
-                self.telemetry.log_ball_detection(balls, orange_ball, None)
+                # Log vision detection results (simplified)
+                self.telemetry.log_ball_detection(balls, None, None)
                 
                 # Update ball tracking
-                if balls or orange_ball:
+                if balls:
                     self.last_ball_seen_time = time.time()
                 
                 # Log hardware state periodically
@@ -165,9 +165,9 @@ class GolfBot:
                         self.logger.warning(f"Display error: {e}")
                         self.display_available = False  # Disable further attempts
                 
-                # State machine
+                # State machine (simplified)
                 old_state = self.state
-                self.execute_state_machine(balls, orange_ball, near_boundary, nav_command)
+                self.execute_state_machine(balls, near_boundary, nav_command)
                 
                 # Log state transitions
                 if old_state != self.state:
@@ -185,18 +185,18 @@ class GolfBot:
         # Competition ended
         self.end_competition()
     
-    def execute_state_machine(self, balls, orange_ball, near_boundary, nav_command):
-        """Execute current state logic"""
+    def execute_state_machine(self, balls, near_boundary, nav_command):
+        """Execute current state logic (simplified)"""
         
         # Always check for boundary first
         if near_boundary:
             self.state = RobotState.AVOIDING_BOUNDARY
         
         if self.state == RobotState.SEARCHING:
-            self.handle_searching(balls, orange_ball, nav_command)
+            self.handle_searching(balls, nav_command)
             
         elif self.state == RobotState.APPROACHING_BALL:
-            self.handle_approaching_ball(balls, orange_ball, nav_command)
+            self.handle_approaching_ball(balls, nav_command)
             
         elif self.state == RobotState.COLLECTING_BALL:
             self.handle_collecting_ball()
@@ -207,35 +207,29 @@ class GolfBot:
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
     
-    def handle_searching(self, balls, orange_ball, nav_command):
-        """Handle searching for balls"""
+    def handle_searching(self, balls, nav_command):
+        """Handle searching for balls (simplified)"""
         # Look for any balls
-        if balls or orange_ball:
-            ball_count = len(balls) if balls else 0
-            orange_count = 1 if orange_ball else 0
-            self.logger.info(f"Found {ball_count + orange_count} ball(s) - {ball_count} regular, {orange_count} orange")
+        if balls:
+            ball_count = len(balls)
+            orange_count = sum(1 for ball in balls if ball.object_type == 'orange_ball')
+            white_count = ball_count - orange_count
+            self.logger.info(f"Found {ball_count} ball(s) - {white_count} white, {orange_count} orange")
             self.state = RobotState.APPROACHING_BALL
             return
         
         # No balls found - execute search pattern
         self.execute_search_pattern()
     
-    def handle_approaching_ball(self, balls, orange_ball, nav_command):
-        """Handle approaching detected ball"""
-        # Get all available balls
-        all_balls = []
-        if balls:
-            all_balls.extend(balls)
-        if orange_ball:
-            all_balls.append(orange_ball)
-        
-        if not all_balls:
+    def handle_approaching_ball(self, balls, nav_command):
+        """Handle approaching detected ball (simplified)"""
+        if not balls:
             self.logger.info("Lost sight of ball - returning to search")
             self.state = RobotState.SEARCHING
             return
         
-        # Choose closest ball
-        target_ball = min(all_balls, key=lambda b: b.distance_from_center)
+        # Choose closest ball (vision system already sorted by distance)
+        target_ball = balls[0]
         
         # Check if ball is in collection zone
         if target_ball.in_collection_zone:
@@ -247,12 +241,12 @@ class GolfBot:
         self.execute_navigation_command(nav_command)
     
     def handle_collecting_ball(self):
-        """Handle ball collection sequence"""
+        """Handle ball collection sequence (simplified)"""
         self.logger.info("Attempting ball collection...")
         
         success = self.hardware.attempt_ball_collection()
         
-        # Determine ball type for logging
+        # Determine ball type for logging (just for stats)
         ball_type = "regular"
         if self.vision.current_target and self.vision.current_target.object_type == "orange_ball":
             ball_type = "orange"
