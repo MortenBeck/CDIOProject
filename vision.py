@@ -87,6 +87,10 @@ class VisionSystem:
         # Collection zone boundaries
         self.collection_zone = self._calculate_collection_zone()
         
+        # Store wall detection results for visualization
+        self.detected_walls = []
+        self.red_mask = None
+        
     def _calculate_collection_zone(self):
         """Calculate the collection zone boundaries (middle 25% horizontal, bottom 20% vertical)"""
         # Horizontal: middle 25% (37.5% margin on each side)
@@ -266,11 +270,14 @@ class VisionSystem:
 
     
     def detect_boundaries(self, frame) -> bool:
-        """Detect red walls/boundaries with reduced sensitivity for closer proximity detection"""
+        """Detect red walls/boundaries with visualization data stored"""
         if frame is None:
             return False
         
         h, w = frame.shape[:2]
+        
+        # Clear previous wall detections
+        self.detected_walls = []
         
         # Convert to HSV for red detection
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -288,6 +295,9 @@ class VisionSystem:
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
         mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
         red_mask = mask1 + mask2
+        
+        # Store the red mask for visualization
+        self.red_mask = red_mask.copy()
         
         # Clean up mask
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
@@ -319,37 +329,94 @@ class VisionSystem:
                 # INCREASED minimum wall segment length (was 40)
                 if length > 80 and w_rect > 60:  # Must be substantial horizontal wall
                     danger_detected = True
+                    # Store wall detection for visualization
+                    wall_info = {
+                        'zone': 'bottom',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (x, bottom_danger_y + y, w_rect, h_rect),  # Adjust y coordinate
+                        'length': length,
+                        'triggered': True
+                    }
+                    self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
                         self.logger.debug(f"Red wall detected in bottom danger zone (area: {area}, length: {length})")
                     break
+                else:
+                    # Store non-triggering walls too for visualization
+                    wall_info = {
+                        'zone': 'bottom',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (x, bottom_danger_y + y, w_rect, h_rect),
+                        'length': length,
+                        'triggered': False
+                    }
+                    self.detected_walls.append(wall_info)
         
         # Check left edge - stricter requirements
-        if not danger_detected:
-            contours, _ = cv2.findContours(left_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
-                area = cv2.contourArea(contour)
-                if area > min_wall_area:
-                    x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    # INCREASED minimum height (was 60) and added width requirement
-                    if h_rect > 100 and w_rect > 20:  # Must be substantial vertical wall
+        contours, _ = cv2.findContours(left_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_wall_area:
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                # INCREASED minimum height (was 60) and added width requirement
+                if h_rect > 100 and w_rect > 20:  # Must be substantial vertical wall
+                    if not danger_detected:  # Only set if not already detected
                         danger_detected = True
-                        if config.DEBUG_VISION:
-                            self.logger.debug(f"Red wall detected on left edge (area: {area}, height: {h_rect})")
-                        break
+                    wall_info = {
+                        'zone': 'left',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (x, y, w_rect, h_rect),
+                        'length': h_rect,
+                        'triggered': True
+                    }
+                    self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.debug(f"Red wall detected on left edge (area: {area}, height: {h_rect})")
+                else:
+                    wall_info = {
+                        'zone': 'left',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (x, y, w_rect, h_rect),
+                        'length': h_rect,
+                        'triggered': False
+                    }
+                    self.detected_walls.append(wall_info)
         
         # Check right edge - stricter requirements  
-        if not danger_detected:
-            contours, _ = cv2.findContours(right_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
-                area = cv2.contourArea(contour)
-                if area > min_wall_area:
-                    x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    # INCREASED minimum height (was 60) and added width requirement
-                    if h_rect > 100 and w_rect > 20:  # Must be substantial vertical wall
+        contours, _ = cv2.findContours(right_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_wall_area:
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                # INCREASED minimum height (was 60) and added width requirement
+                if h_rect > 100 and w_rect > 20:  # Must be substantial vertical wall
+                    if not danger_detected:  # Only set if not already detected
                         danger_detected = True
-                        if config.DEBUG_VISION:
-                            self.logger.debug(f"Red wall detected on right edge (area: {area}, height: {h_rect})")
-                        break
+                    wall_info = {
+                        'zone': 'right',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (w - edge_width + x, y, w_rect, h_rect),  # Adjust x coordinate
+                        'length': h_rect,
+                        'triggered': True
+                    }
+                    self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.debug(f"Red wall detected on right edge (area: {area}, height: {h_rect})")
+                else:
+                    wall_info = {
+                        'zone': 'right',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (w - edge_width + x, y, w_rect, h_rect),
+                        'length': h_rect,
+                        'triggered': False
+                    }
+                    self.detected_walls.append(wall_info)
         
         return danger_detected
     
@@ -406,12 +473,86 @@ class VisionSystem:
             return "forward"
     
     def draw_detections(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Draw detection results on frame for debugging (simplified - no separate orange handling)"""
+        """Draw detection results on frame for debugging with enhanced wall visualization"""
         if not config.DEBUG_VISION:
             return frame
         
         result = frame.copy()
         h, w = result.shape[:2]
+        
+        # === WALL VISUALIZATION (NEW SECTION) ===
+        
+        # 1. Show the raw red mask as a semi-transparent overlay
+        if self.red_mask is not None:
+            # Create a colored version of the red mask
+            red_overlay = np.zeros_like(result)
+            red_overlay[:, :, 2] = self.red_mask  # Red channel
+            
+            # Apply semi-transparent overlay to show all detected red areas
+            cv2.addWeighted(result, 0.85, red_overlay, 0.15, 0, result)
+        
+        # 2. Draw danger zone boundaries
+        danger_distance = min(60, int(h * 0.12))
+        danger_y = h - danger_distance
+        edge_width = min(40, int(w * 0.08))
+        
+        # Bottom danger zone
+        cv2.rectangle(result, (0, danger_y), (w, h), (0, 0, 255), 2)
+        cv2.putText(result, f'BOTTOM DANGER ZONE ({danger_distance}px)', 
+                   (10, danger_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        
+        # Left danger zone
+        cv2.rectangle(result, (0, 0), (edge_width, h), (0, 0, 255), 2)
+        cv2.putText(result, f'L DANGER\n({edge_width}px)', 
+                   (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
+        
+        # Right danger zone
+        cv2.rectangle(result, (w - edge_width, 0), (w, h), (0, 0, 255), 2)
+        cv2.putText(result, f'R DANGER\n({edge_width}px)', 
+                   (w - edge_width + 5, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
+        
+        # 3. Draw detected wall segments with detailed information
+        wall_count = 0
+        for wall in self.detected_walls:
+            wall_count += 1
+            x, y, w_rect, h_rect = wall['bbox']
+            
+            # Color coding: Red for triggering walls, Yellow for non-triggering
+            color = (0, 0, 255) if wall['triggered'] else (0, 255, 255)
+            thickness = 3 if wall['triggered'] else 2
+            
+            # Draw bounding box
+            cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
+            
+            # Draw contour outline
+            if wall['zone'] == 'bottom':
+                # Adjust contour coordinates for bottom zone
+                adjusted_contour = wall['contour'].copy()
+                adjusted_contour[:, :, 1] += danger_y
+                cv2.drawContours(result, [adjusted_contour], -1, color, 1)
+            elif wall['zone'] == 'left':
+                cv2.drawContours(result, [wall['contour']], -1, color, 1)
+            elif wall['zone'] == 'right':
+                # Adjust contour coordinates for right zone
+                adjusted_contour = wall['contour'].copy()
+                adjusted_contour[:, :, 0] += (w - edge_width)
+                cv2.drawContours(result, [adjusted_contour], -1, color, 1)
+            
+            # Add wall information label
+            status = "TRIGGERED" if wall['triggered'] else "detected"
+            label = f"WALL #{wall_count} ({wall['zone']}) - {status}"
+            label_detail = f"Area:{wall['area']:.0f} Len:{wall['length']:.0f}"
+            
+            # Position label near the wall
+            label_x = max(5, min(w - 200, x))
+            label_y = max(20, y - 10) if y > 30 else y + h_rect + 20
+            
+            cv2.putText(result, label, (label_x, label_y), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
+            cv2.putText(result, label_detail, (label_x, label_y + 15), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1)
+        
+        # === COLLECTION ZONE VISUALIZATION ===
         
         # Draw collection zone rectangle
         zone = self.collection_zone
@@ -429,19 +570,7 @@ class VisionSystem:
         cv2.putText(result, 'COLLECTION ZONE', (zone['left'] + 10, zone['top'] + 25), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         
-        # Draw danger zones for wall detection (updated to match new detection)
-        danger_distance = min(60, int(h * 0.12))  # Match new detection zones
-        danger_y = h - danger_distance
-        edge_width = min(40, int(w * 0.08))  # Match new detection zones
-        
-        # Bottom danger zone
-        cv2.line(result, (0, danger_y), (w, danger_y), (0, 0, 255), 2)
-        cv2.putText(result, 'WALL DANGER ZONE', (w - 200, danger_y - 10), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        
-        # Left and right edge danger zones
-        cv2.line(result, (edge_width, 0), (edge_width, h), (0, 0, 255), 2)
-        cv2.line(result, (w - edge_width, 0), (w - edge_width, h), (0, 0, 255), 2)
+        # === BALL VISUALIZATION ===
         
         # Draw all balls (white and orange treated the same)
         for ball in balls:
@@ -494,7 +623,24 @@ class VisionSystem:
         cv2.line(result, (self.frame_center_x, self.frame_center_y-20), 
                 (self.frame_center_x, self.frame_center_y+20), (255, 255, 255), 2)
         
-        # Add targeting information in the corner
+        # === STATUS INFORMATION OVERLAY ===
+        
+        # Add wall detection status in top-left corner
+        wall_status = f"WALLS DETECTED: {len(self.detected_walls)}"
+        triggered_walls = sum(1 for wall in self.detected_walls if wall['triggered'])
+        boundary_status = f"BOUNDARY TRIGGERED: {'YES' if triggered_walls > 0 else 'NO'} ({triggered_walls})"
+        
+        cv2.putText(result, wall_status, (10, 25), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        cv2.putText(result, boundary_status, (10, 50), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255) if triggered_walls > 0 else (255, 255, 255), 2)
+        
+        # Add detection thresholds info
+        threshold_info = f"Min Wall Area: {200}, Min Length: 80/100"
+        cv2.putText(result, threshold_info, (10, 75), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
+        
+        # Add targeting information in the bottom-left corner
         if self.current_target:
             ball_name = 'ORANGE BALL' if self.current_target.object_type == 'orange_ball' else 'WHITE BALL'
             target_info = f"TARGET: {ball_name}"
@@ -510,6 +656,20 @@ class VisionSystem:
         else:
             cv2.putText(result, "TARGET: NONE - SEARCHING", (10, h-35), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        
+        # Add legend in top-right corner
+        legend_x = w - 250
+        legend_y = 25
+        cv2.putText(result, "LEGEND:", (legend_x, legend_y), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+        cv2.putText(result, "Red Overlay: Raw red detection", (legend_x, legend_y + 20), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 100, 100), 1)
+        cv2.putText(result, "Red Boxes: Triggering walls", (legend_x, legend_y + 35), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
+        cv2.putText(result, "Yellow Boxes: Non-triggering walls", (legend_x, legend_y + 50), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
+        cv2.putText(result, "Green Zone: Collection area", (legend_x, legend_y + 65), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
         
         return result
     
