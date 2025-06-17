@@ -79,7 +79,7 @@ BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [
     "forward", "turn_right", "forward", "turn_right", 
-    "forward", "turn_left", "forward", "turn_left"
+    "forward", "turn_right", "forward", "turn_right"
 ]
 
 # === BALL COLLECTION ===
