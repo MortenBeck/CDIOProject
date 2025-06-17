@@ -336,7 +336,7 @@ class GolfBotHardware:
             # Step 2: Drive forward for collection
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 2: Driving forward for collection")
-            self.move_forward(duration=1.0, speed=config.COLLECTION_SPEED)
+            self.move_forward(duration=1.2, speed=config.COLLECTION_SPEED)
             time.sleep(0.1)
             
             # Step 3: Move servo 1 to collect position (capture ball)
