@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Optional
 import config
 from hardware import GolfBotHardware
-from vision_improved import VisionSystem
+from vision import VisionSystem
 from telemetry import TelemetryLogger
 from hardware_test import run_hardware_test
 
