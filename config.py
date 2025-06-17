@@ -65,7 +65,7 @@ SERVO_COLLECT_OPEN = 45   # Open position for collection
 SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
 SERVO_RELEASE = 0         # Release position
 
-# === SIMPLE COLLECTION POSITIONS ===
+# === NEW: ENHANCED COLLECTION POSITIONS ===
 SERVO_READY_POSITION = 90  # Servos up and ready to catch
 SERVO_CATCH_POSITION = 135  # Close position to secure ball
 
@@ -80,13 +80,12 @@ TURN_TIME_90_DEGREES = 0.6  # Time to turn 90 degrees
 FORWARD_TIME_SHORT = 0.2    # Short forward movement
 BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 
-# === SIMPLE COLLECTION BEHAVIOR (NO CENTERING) ===
-COLLECTION_DISTANCE_THRESHOLD = 120  # Pixels - how close ball must be to start blind collection
-COLLECTION_DRIVE_TIME_BASE = 1.0     # Base drive time when ball is at collection threshold
-COLLECTION_DRIVE_TIME_PER_PIXEL = 0.005  # Additional time per pixel closer than threshold
-COLLECTION_SPEED = 0.35  # Slower speed for precise collection
+# === NEW: COLLECTION BEHAVIOR ===
+CENTERING_TOLERANCE = 15  # Pixels - how close to center before starting collection
+COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
 MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
 MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
+COLLECTION_SPEED = 0.4  # Slower speed for precise collection
 
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [
@@ -95,6 +94,7 @@ SEARCH_PATTERN = [
 ]
 
 # === BALL COLLECTION ===
+COLLECTION_DISTANCE_THRESHOLD = 30  # Pixels - how close before attempting collection
 BALL_LOST_TIMEOUT = 2.0  # Seconds before giving up on a ball
 MAX_COLLECTION_ATTEMPTS = 3
 
