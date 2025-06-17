@@ -600,253 +600,203 @@ class VisionSystem:
             return "forward"
     
     def draw_detections(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Enhanced detection visualization with prominent wall display"""
+        """Clean and organized detection visualization"""
         if not config.DEBUG_VISION:
             return frame
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # Draw arena mask (keep subtle)
-        if self.arena_mask is not None:
-            arena_overlay = np.zeros_like(result)
-            arena_overlay[:, :, 1] = self.arena_mask  # Green channel
-            cv2.addWeighted(result, 0.92, arena_overlay, 0.08, 0, result)
-            
-            # Draw arena boundary if detected
-            if self.arena_detected and self.arena_contour is not None:
-                cv2.drawContours(result, [self.arena_contour], -1, (0, 255, 255), 2)
+        # === CLEAN WALL VISUALIZATION ===
         
-        # === ENHANCED WALL VISUALIZATION ===
-        
-        # Create a more prominent red overlay for walls
+        # Show red walls with clear but subtle overlay
         if self.red_mask is not None:
-            # Create wall overlay with higher opacity
+            # Create clean red overlay - moderate opacity
             wall_overlay = np.zeros_like(result)
-            wall_overlay[:, :, 2] = self.red_mask  # Red channel only
+            wall_overlay[:, :, 2] = self.red_mask  # Red channel
+            cv2.addWeighted(result, 0.75, wall_overlay, 0.25, 0, result)
             
-            # Apply stronger red overlay (40% instead of 15%)
-            cv2.addWeighted(result, 0.6, wall_overlay, 0.4, 0, result)
-            
-            # Add bright red outlines around detected red areas
+            # Add clean outlines around red walls
             contours, _ = cv2.findContours(self.red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
-                area = cv2.contourArea(contour)
-                if area > 50:  # Only outline significant red areas
-                    cv2.drawContours(result, [contour], -1, (0, 0, 255), 3)
+                if cv2.contourArea(contour) > 100:
+                    cv2.drawContours(result, [contour], -1, (0, 0, 255), 2)
         
-        # === DANGER ZONE VISUALIZATION ===
+        # === DANGER ZONES - CLEAN BORDERS ONLY ===
         
-        # Calculate danger zones
         danger_distance = min(50, int(h * 0.1))
         danger_y = h - danger_distance
         edge_width = min(30, int(w * 0.06))
         
-        # Create danger zone overlay with pulsing effect
-        danger_overlay = np.zeros_like(result)
+        # Draw clean danger zone borders (no fill)
+        cv2.rectangle(result, (0, danger_y), (w, h), (0, 100, 255), 2)  # Bottom
+        cv2.rectangle(result, (0, 0), (edge_width, h), (0, 100, 255), 2)  # Left
+        cv2.rectangle(result, (w - edge_width, 0), (w, h), (0, 100, 255), 2)  # Right
         
-        # Bottom danger zone - bright red with transparency
-        cv2.rectangle(danger_overlay, (0, danger_y), (w, h), (0, 0, 255), -1)
+        # === TRIGGERED WALLS - MINIMAL BUT CLEAR ===
         
-        # Side danger zones - bright red with transparency
-        cv2.rectangle(danger_overlay, (0, 0), (edge_width, h), (0, 0, 255), -1)
-        cv2.rectangle(danger_overlay, (w - edge_width, 0), (w, h), (0, 0, 255), -1)
-        
-        # Apply danger zone overlay with moderate opacity
-        cv2.addWeighted(result, 0.75, danger_overlay, 0.25, 0, result)
-        
-        # Draw bright borders around danger zones
-        cv2.rectangle(result, (0, danger_y), (w, h), (0, 100, 255), 3)  # Bottom
-        cv2.rectangle(result, (0, 0), (edge_width, h), (0, 100, 255), 3)  # Left
-        cv2.rectangle(result, (w - edge_width, 0), (w, h), (0, 100, 255), 3)  # Right
-        
-        # Add danger zone labels with better visibility
-        cv2.putText(result, f'BOTTOM DANGER ZONE ({danger_distance}px)', 
-                (10, danger_y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-        cv2.putText(result, f'BOTTOM DANGER ZONE ({danger_distance}px)', 
-                (10, danger_y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
-        
-        cv2.putText(result, 'LEFT\nDANGER', (5, 30), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        cv2.putText(result, f'RIGHT\nDANGER', (w - edge_width + 5, 30), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        
-        # === DETECTED WALL HIGHLIGHTS ===
-        
-        # Draw detected walls with prominent highlighting
-        for i, wall in enumerate(self.detected_walls):
-            x, y, w_rect, h_rect = wall['bbox']
-            
+        triggered_walls = 0
+        for wall in self.detected_walls:
             if wall['triggered']:
-                # Triggered walls - very prominent
-                color = (0, 0, 255)  # Bright red
-                thickness = 5
-                
-                # Add pulsing effect with double border
-                cv2.rectangle(result, (x-2, y-2), (x + w_rect+2, y + h_rect+2), (255, 255, 255), 2)
-                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
-                
-                # Add warning text
-                warning_text = f"⚠ WALL DETECTED - {wall['zone'].upper()} ⚠"
-                text_x = max(10, x - 50)
-                text_y = max(30, y - 10)
-                
-                # White background for text
-                text_size = cv2.getTextSize(warning_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)[0]
-                cv2.rectangle(result, (text_x - 5, text_y - text_size[1] - 5), 
-                            (text_x + text_size[0] + 5, text_y + 5), (255, 255, 255), -1)
-                
-                # Red warning text
-                cv2.putText(result, warning_text, (text_x, text_y), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-                
-                # Add area and length info
-                info_text = f"Area: {wall['area']:.0f} | Length: {wall['length']}px"
-                cv2.putText(result, info_text, (text_x, text_y + 25), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
-            else:
-                # Non-triggered walls - still visible but less prominent
-                color = (0, 255, 255)  # Yellow
-                thickness = 3
-                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
-                
-                label = f"Wall {i+1} ({wall['zone']}) - detected"
-                cv2.putText(result, label, (x, max(20, y - 5)), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
+                triggered_walls += 1
+                x, y, w_rect, h_rect = wall['bbox']
+                # Simple bright red rectangle for triggered walls
+                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 4)
         
-        # === WALL DETECTION STATUS ===
+        # === COLLECTION ZONE - CLEAN ===
         
-        # Add prominent wall detection status
-        triggered_walls = sum(1 for wall in self.detected_walls if wall['triggered'])
-        total_walls = len(self.detected_walls)
-        
-        status_text = f"WALLS: {total_walls} detected | {triggered_walls} TRIGGERED"
-        status_color = (0, 0, 255) if triggered_walls > 0 else (0, 255, 0)
-        
-        # Background for status
-        text_size = cv2.getTextSize(status_text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
-        cv2.rectangle(result, (10, h - 100), (text_size[0] + 20, h - 60), (0, 0, 0), -1)
-        cv2.rectangle(result, (10, h - 100), (text_size[0] + 20, h - 60), status_color, 2)
-        
-        cv2.putText(result, status_text, (15, h - 75), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, status_color, 2)
-        
-        # === RED MASK VISUALIZATION OPTIONS ===
-        
-        # Option 1: Show red mask as separate window section (top-right corner)
-        if self.red_mask is not None:
-            mask_size = 150
-            mask_resized = cv2.resize(self.red_mask, (mask_size, int(mask_size * h / w)))
-            mask_colored = cv2.applyColorMap(mask_resized, cv2.COLORMAP_HOT)
-            
-            # Place in top-right corner
-            start_x = w - mask_size - 10
-            start_y = 10
-            end_x = start_x + mask_size
-            end_y = start_y + mask_colored.shape[0]
-            
-            # Ensure it fits in frame
-            if end_y < h and end_x < w:
-                result[start_y:end_y, start_x:end_x] = mask_colored
-                cv2.rectangle(result, (start_x, start_y), (end_x, end_y), (255, 255, 255), 2)
-                cv2.putText(result, "RED MASK", (start_x, start_y - 5), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        
-        # Draw collection zone (keep existing)
         zone = self.collection_zone
-        overlay = result.copy()
-        cv2.rectangle(overlay, (zone['left'], zone['top']), 
-                    (zone['right'], zone['bottom']), (0, 255, 0), -1)
-        cv2.addWeighted(result, 0.8, overlay, 0.2, 0, result)
         cv2.rectangle(result, (zone['left'], zone['top']), 
-                    (zone['right'], zone['bottom']), (0, 255, 0), 3)
+                    (zone['right'], zone['bottom']), (0, 255, 0), 2)
         
-        # Draw balls with enhanced info (keep existing ball detection visualization)
+        # === BALL DETECTION - SIMPLIFIED ===
+        
         for ball in balls:
             is_target = (self.current_target and 
                         self.current_target.center == ball.center)
             
-            base_color = (0, 165, 255) if ball.object_type == 'orange_ball' else (0, 255, 0)
+            if ball.object_type == 'orange_ball':
+                color = (0, 165, 255)  # Orange
+                ball_char = 'O'
+            else:
+                color = (0, 255, 0)    # Green for white balls
+                ball_char = 'B'
             
             if is_target:
-                thickness = 4
-                cv2.circle(result, ball.center, ball.radius + 3, base_color, thickness)
-                cv2.circle(result, ball.center, 5, base_color, -1)
+                # Target ball - prominent
+                cv2.circle(result, ball.center, ball.radius + 2, color, 3)
+                cv2.circle(result, ball.center, 4, (255, 255, 0), -1)
                 
-                # Arrow to target
+                # Simple arrow to target
                 cv2.arrowedLine(result, (self.frame_center_x, self.frame_center_y), 
-                            ball.center, (255, 255, 0), 3, tipLength=0.3)
-                
-                ball_name = 'ORANGE' if ball.object_type == 'orange_ball' else 'BALL'
-                label = f'{ball_name} TARGET'
-                zone_status = ' (IN ZONE)' if ball.in_collection_zone else ''
-                conf_info = f' Conf:{ball.confidence:.2f}'
-                
-                cv2.putText(result, label + zone_status + conf_info, 
-                        (ball.center[0]-60, ball.center[1]-ball.radius-15), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+                            ball.center, (255, 255, 0), 2)
             else:
-                cv2.circle(result, ball.center, ball.radius, base_color, 2)
-                cv2.circle(result, ball.center, 3, base_color, -1)
-                
-                # Confidence and type info
-                ball_name = 'O' if ball.object_type == 'orange_ball' else 'B'
-                label = f'{ball_name}({ball.confidence:.2f})'
-                cv2.putText(result, label, (ball.center[0]-15, ball.center[1]-ball.radius-8), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, base_color, 1)
-        
-        # Center crosshair
-        cv2.line(result, (self.frame_center_x-20, self.frame_center_y), 
-                (self.frame_center_x+20, self.frame_center_y), (255, 255, 255), 2)
-        cv2.line(result, (self.frame_center_x, self.frame_center_y-20), 
-                (self.frame_center_x, self.frame_center_y+20), (255, 255, 255), 2)
-        
-        # === STATUS INFORMATION ===
-        
-        # Detection method and arena status
-        detection_info = f"Method: HoughCircles+Color | Arena: {'Detected' if self.arena_detected else 'Fallback'}"
-        cv2.putText(result, detection_info, (10, 25), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        
-        # Ball count
-        balls_text = f"Balls: {len(balls)}"
-        cv2.putText(result, balls_text, (10, 50), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        
-        # Target information
-        if self.current_target:
-            ball_name = 'ORANGE BALL' if self.current_target.object_type == 'orange_ball' else 'WHITE BALL'
-            target_info = f"TARGET: {ball_name} (Conf: {self.current_target.confidence:.2f})"
-            zone_info = f"IN COLLECTION ZONE: {'YES' if self.current_target.in_collection_zone else 'NO'}"
+                # Other balls - simple
+                cv2.circle(result, ball.center, ball.radius, color, 2)
+                cv2.circle(result, ball.center, 2, color, -1)
             
-            cv2.putText(result, target_info, (10, h-40), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
-            cv2.putText(result, zone_info, (10, h-15), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
-        else:
-            cv2.putText(result, "TARGET: NONE - SEARCHING", (10, h-20), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            # Simple ball label
+            cv2.putText(result, f'{ball_char}', (ball.center[0]-5, ball.center[1]+5), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
-        # Enhanced Legend
-        legend_x = w - 300
-        legend_y = 180  # Moved down to avoid red mask display
-        cv2.rectangle(result, (legend_x-5, legend_y-10), (w-5, legend_y+120), (0, 0, 0), -1)
-        cv2.rectangle(result, (legend_x-5, legend_y-10), (w-5, legend_y+120), (255, 255, 255), 2)
+        # === CLEAN STATUS PANEL ===
         
-        cv2.putText(result, "WALL DETECTION LEGEND:", (legend_x, legend_y), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-        cv2.putText(result, "Red Overlay: Detected red walls", (legend_x, legend_y + 20), 
+        # Create semi-transparent status panel at top
+        panel_height = 120
+        panel_overlay = np.zeros((panel_height, w, 3), dtype=np.uint8)
+        panel_overlay[:, :] = (0, 0, 0)  # Black background
+        
+        # Apply panel with transparency
+        result[0:panel_height, 0:w] = cv2.addWeighted(
+            result[0:panel_height, 0:w], 0.3, 
+            panel_overlay, 0.7, 0
+        )
+        
+        # Panel border
+        cv2.rectangle(result, (0, 0), (w, panel_height), (100, 100, 100), 2)
+        
+        # === CLEAN STATUS TEXT ===
+        
+        y_pos = 25
+        line_height = 20
+        
+        # System status
+        cv2.putText(result, f"GolfBot Vision System", (10, y_pos), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        y_pos += line_height
+        
+        # Ball status
+        ball_count = len(balls)
+        target_text = "TARGET" if self.current_target else "SEARCHING"
+        cv2.putText(result, f"Balls: {ball_count} | Status: {target_text}", (10, y_pos), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+        y_pos += line_height
+        
+        # Wall status
+        wall_status = "DANGER" if triggered_walls > 0 else "SAFE"
+        wall_color = (0, 0, 255) if triggered_walls > 0 else (0, 255, 0)
+        cv2.putText(result, f"Walls: {len(self.detected_walls)} detected | Status: {wall_status}", 
+                (10, y_pos), cv2.FONT_HERSHEY_SIMPLEX, 0.5, wall_color, 1)
+        y_pos += line_height
+        
+        # Target info (if available)
+        if self.current_target:
+            ball_type = "ORANGE" if self.current_target.object_type == 'orange_ball' else "WHITE"
+            zone_status = "IN ZONE" if self.current_target.in_collection_zone else "APPROACHING"
+            cv2.putText(result, f"Target: {ball_type} ball | {zone_status}", (10, y_pos), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
+        y_pos += line_height
+        
+        # Arena status
+        arena_status = "Detected" if self.arena_detected else "Fallback"
+        cv2.putText(result, f"Arena: {arena_status} | Method: HoughCircles+Color", (10, y_pos), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
+        
+        # === MINIMAL RED MASK PREVIEW ===
+        
+        if self.red_mask is not None:
+            # Small, clean preview in bottom-right
+            mask_size = 120
+            mask_resized = cv2.resize(self.red_mask, (mask_size, int(mask_size * h / w)))
+            mask_colored = cv2.applyColorMap(mask_resized, cv2.COLORMAP_HOT)
+            
+            # Position in bottom-right
+            start_x = w - mask_size - 10
+            start_y = h - mask_resized.shape[0] - 10
+            end_x = start_x + mask_size
+            end_y = start_y + mask_resized.shape[0]
+            
+            # Place mask preview
+            result[start_y:end_y, start_x:end_x] = mask_colored
+            cv2.rectangle(result, (start_x, start_y), (end_x, end_y), (255, 255, 255), 1)
+            
+            # Small label
+            cv2.putText(result, "Red Mask", (start_x, start_y - 5), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+        
+        # === CLEAN LEGEND (BOTTOM LEFT) ===
+        
+        legend_x = 10
+        legend_y = h - 80
+        legend_bg_height = 70
+        
+        # Legend background
+        legend_overlay = np.zeros((legend_bg_height, 280, 3), dtype=np.uint8)
+        result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+280] = cv2.addWeighted(
+            result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+280], 0.3,
+            legend_overlay, 0.7, 0
+        )
+        
+        cv2.rectangle(result, (legend_x, legend_y-10), (legend_x+280, legend_y+legend_bg_height-10), 
+                    (100, 100, 100), 1)
+        
+        # Legend content
+        cv2.putText(result, "LEGEND", (legend_x+5, legend_y), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        cv2.putText(result, "Red: Wall areas", (legend_x+5, legend_y+15), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
-        cv2.putText(result, "Red Rectangles: Wall boundaries", (legend_x, legend_y + 35), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
-        cv2.putText(result, "Red Zones: Danger areas", (legend_x, legend_y + 50), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 100, 255), 1)
-        cv2.putText(result, "White borders: Triggered walls", (legend_x, legend_y + 65), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-        cv2.putText(result, "Top-right: Red mask view", (legend_x, legend_y + 80), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
-        cv2.putText(result, "Green Zone: Ball collection area", (legend_x, legend_y + 95), 
+        cv2.putText(result, "Blue: Danger zones", (legend_x+5, legend_y+30), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 100, 0), 1)
+        cv2.putText(result, "Green: Collection zone", (legend_x+5, legend_y+45), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+        cv2.putText(result, "Yellow: Current target", (legend_x+150, legend_y+15), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
+        cv2.putText(result, "O: Orange ball", (legend_x+150, legend_y+30), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 165, 255), 1)
+        cv2.putText(result, "B: White ball", (legend_x+150, legend_y+45), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+        
+        # === CENTER CROSSHAIR - MINIMAL ===
+        
+        cv2.line(result, (self.frame_center_x-10, self.frame_center_y), 
+                (self.frame_center_x+10, self.frame_center_y), (255, 255, 255), 1)
+        cv2.line(result, (self.frame_center_x, self.frame_center_y-10), 
+                (self.frame_center_x, self.frame_center_y+10), (255, 255, 255), 1)
+        
+        # === ARENA BOUNDARY (IF DETECTED) ===
+        
+        if self.arena_detected and self.arena_contour is not None:
+            cv2.drawContours(result, [self.arena_contour], -1, (0, 255, 255), 1)
         
         return result
     
