@@ -88,14 +88,13 @@ class VisionSystem:
         self.collection_zone = self._calculate_collection_zone()
         
     def _calculate_collection_zone(self):
-        """Calculate the collection zone boundaries (middle 50% horizontal, bottom 20% vertical)"""
-        # Horizontal: middle 50% (25% margin on each side)
-        horizontal_margin = config.CAMERA_WIDTH * 0.25
+        """Calculate the collection zone boundaries (middle 25% horizontal, bottom 20% vertical)"""
+        # Horizontal: middle 25% (37.5% margin on each side)
+        horizontal_margin = config.CAMERA_WIDTH * 0.375
         left_boundary = int(horizontal_margin)
         right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
         
-        # Vertical: bottom 20%
-        vertical_threshold = int(config.CAMERA_HEIGHT * 0.8)  # 80% down from top
+        vertical_threshold = int(config.CAMERA_HEIGHT * 0.8)
         bottom_boundary = config.CAMERA_HEIGHT
         
         return {
