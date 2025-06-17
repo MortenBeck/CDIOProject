@@ -67,9 +67,9 @@ SERVO_RELEASE = 0         # Release position
 
 # === NEW: SERVO 1 FOUR-STATE SYSTEM ===
 SERVO_1_STORE = 20        # Store position
-SERVO_1_PRE_COLLECT = 150 # Pre-collect position
-SERVO_1_DRIVING = 160     # Driving position (default/start position)
-SERVO_1_COLLECT = 180     # Collect position
+SERVO_1_PRE_COLLECT = 120 # Pre-collect position
+SERVO_1_DRIVING = 150     # Driving position (default/start position)
+SERVO_1_COLLECT = 165     # Collect position
 SERVO_1_STEP_SIZE = 5     # Incremental movement step size
 
 # === ENHANCED COLLECTION POSITIONS ===
