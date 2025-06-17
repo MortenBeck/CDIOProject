@@ -133,7 +133,7 @@ class GolfBotHardware:
         except Exception as e:
             self.logger.error(f"Failed to set servo angle smoothly: {e}")
 
-    # === NEW: SERVO 1 THREE-STATE SYSTEM ===
+    # === NEW: SERVO 1 FOUR-STATE SYSTEM ===
     def set_servo1_incremental(self, target_angle):
         """Move servo 1 incrementally by 5-degree steps"""
         try:
@@ -172,23 +172,29 @@ class GolfBotHardware:
         except Exception as e:
             self.logger.error(f"Failed to move servo 1 incrementally: {e}")
 
-    def servo1_to_top(self):
-        """Move servo 1 to top position"""
+    def servo1_to_store(self):
+        """Move servo 1 to store position"""
         if config.DEBUG_COLLECTION:
-            self.logger.info(f"🔝 Moving servo 1 to TOP position ({config.SERVO_1_TOP}°)")
-        self.set_servo1_incremental(config.SERVO_1_TOP)
+            self.logger.info(f"📦 Moving servo 1 to STORE position ({config.SERVO_1_STORE}°)")
+        self.set_servo1_incremental(config.SERVO_1_STORE)
 
-    def servo1_to_middle(self):
-        """Move servo 1 to middle position"""
+    def servo1_to_pre_collect(self):
+        """Move servo 1 to pre-collect position"""
         if config.DEBUG_COLLECTION:
-            self.logger.info(f"🔄 Moving servo 1 to MIDDLE position ({config.SERVO_1_MIDDLE}°)")
-        self.set_servo1_incremental(config.SERVO_1_MIDDLE)
+            self.logger.info(f"🎯 Moving servo 1 to PRE-COLLECT position ({config.SERVO_1_PRE_COLLECT}°)")
+        self.set_servo1_incremental(config.SERVO_1_PRE_COLLECT)
 
-    def servo1_to_bottom(self):
-        """Move servo 1 to bottom position"""
+    def servo1_to_driving(self):
+        """Move servo 1 to driving position"""
         if config.DEBUG_COLLECTION:
-            self.logger.info(f"🔻 Moving servo 1 to BOTTOM position ({config.SERVO_1_BOTTOM}°)")
-        self.set_servo1_incremental(config.SERVO_1_BOTTOM)
+            self.logger.info(f"🚗 Moving servo 1 to DRIVING position ({config.SERVO_1_DRIVING}°)")
+        self.set_servo1_incremental(config.SERVO_1_DRIVING)
+
+    def servo1_to_collect(self):
+        """Move servo 1 to collect position"""
+        if config.DEBUG_COLLECTION:
+            self.logger.info(f"🤏 Moving servo 1 to COLLECT position ({config.SERVO_1_COLLECT}°)")
+        self.set_servo1_incremental(config.SERVO_1_COLLECT)
 
     def get_servo1_state(self):
         """Get current servo 1 state as string"""
@@ -199,9 +205,10 @@ class GolfBotHardware:
             
             # Determine which state we're closest to
             distances = {
-                'top': abs(current_angle - config.SERVO_1_TOP),
-                'middle': abs(current_angle - config.SERVO_1_MIDDLE),
-                'bottom': abs(current_angle - config.SERVO_1_BOTTOM)
+                'store': abs(current_angle - config.SERVO_1_STORE),
+                'pre-collect': abs(current_angle - config.SERVO_1_PRE_COLLECT),
+                'driving': abs(current_angle - config.SERVO_1_DRIVING),
+                'collect': abs(current_angle - config.SERVO_1_COLLECT)
             }
             
             closest_state = min(distances.keys(), key=lambda k: distances[k])
@@ -212,19 +219,18 @@ class GolfBotHardware:
             return "unknown"
 
     def initialize_servo1_for_competition(self):
-        """Initialize servo 1 to bottom position for competition start"""
+        """Initialize servo 1 to driving position for competition start"""
         try:
             if config.DEBUG_COLLECTION:
                 self.logger.info("🚀 Initializing servo 1 for competition start...")
-            self.servo1_to_bottom()
+            self.servo1_to_driving()
             time.sleep(0.5)  # Allow time to settle
             if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Servo 1 initialized at bottom position")
+                self.logger.info("✅ Servo 1 initialized at driving position")
         except Exception as e:
             self.logger.error(f"Failed to initialize servo 1 for competition: {e}")
-        
     def center_servos(self):
-        """Center all servos to 90 degrees"""
+        """Center all servos - servo 1 goes to driving position"""
         try:
             # Check if gradual movement is enabled
             use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
@@ -234,8 +240,8 @@ class GolfBotHardware:
                 self.logger.info("🔧 Centering servos...")
             
             if use_gradual:
-                # Move servo 1 to middle using incremental movement
-                self.servo1_to_middle()
+                # Move servo 1 to driving position using incremental movement
+                self.servo1_to_driving()
                 time.sleep(sequential_delay)
                 # Move other servos gradually
                 self.set_servo_angle_gradual(self.servo2, config.SERVO_CENTER)
@@ -244,13 +250,13 @@ class GolfBotHardware:
                 time.sleep(0.3)  # Final settling time
             else:
                 # Original immediate movement
-                self.set_servo1_incremental(config.SERVO_1_MIDDLE)
+                self.servo1_to_driving()
                 self.set_servo_angle(self.servo2, config.SERVO_CENTER)
                 self.set_servo_angle(self.servo3, config.SERVO_CENTER)
                 time.sleep(0.5)  # Allow time to reach position
             
             if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Servos centered")
+                self.logger.info("✅ Servos centered - servo 1 at driving position")
                 
         except Exception as e:
             self.logger.error(f"Failed to center servos: {e}")
@@ -285,46 +291,46 @@ class GolfBotHardware:
     
     # === ENHANCED COLLECTION METHODS ===
     def prepare_for_collection(self):
-        """Prepare servos for ball collection - cage up and ready"""
+        """Prepare servos for ball collection - servo 1 stays in driving position"""
         try:
             use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
             sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
             
             if config.DEBUG_COLLECTION:
-                self.logger.info("🔧 Preparing cage for blind collection...")
+                self.logger.info("🔧 Preparing for collection - keeping servo 1 in driving position...")
             
             if use_gradual:
-                # Move servo 1 to middle position using incremental movement
-                self.servo1_to_middle()
+                # Keep servo 1 in driving position, move other servos to ready position
+                self.servo1_to_driving()
                 time.sleep(sequential_delay)
-                # Move other servos to ready position
                 self.set_servo_angle_smooth(self.servo2, config.SERVO_READY_POSITION, duration=0.4)
                 time.sleep(sequential_delay)
                 self.set_servo_angle_smooth(self.servo3, config.SERVO_READY_POSITION, duration=0.4)
                 time.sleep(0.3)
             else:
-                self.servo1_to_middle()
+                self.servo1_to_driving()
                 self.set_servo_angle(self.servo2, config.SERVO_READY_POSITION)
                 self.set_servo_angle(self.servo3, config.SERVO_READY_POSITION)
                 time.sleep(0.5)
                 
             if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Cage prepared - servo 1 at middle, others at ready position")
+                self.logger.info("✅ Prepared for collection - servo 1 at driving, others ready")
                 
         except Exception as e:
             self.logger.error(f"Failed to prepare for collection: {e}")
 
     # === NEW: ENHANCED COLLECTION SEQUENCE ===
     def enhanced_collection_sequence(self):
-        """New collection sequence using servo 1 three-state system"""
+        """New collection sequence using servo 1 four-state system"""
         try:
             if config.DEBUG_COLLECTION:
-                self.logger.info("🚀 Starting enhanced collection sequence with three-state system...")
+                self.logger.info("🚀 Starting enhanced collection sequence with four-state system...")
+                self.logger.info("   Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving")
             
-            # Step 1: Set servo 1 to middle position (ready)
+            # Step 1: From driving to pre-collect position
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 1: Setting servo 1 to MIDDLE position (ready)")
-            self.servo1_to_middle()
+                self.logger.info("Step 1: Moving servo 1 from DRIVING to PRE-COLLECT")
+            self.servo1_to_pre_collect()
             time.sleep(0.2)
             
             # Step 2: Drive forward for collection
@@ -333,22 +339,22 @@ class GolfBotHardware:
             self.move_forward(duration=1.0, speed=config.COLLECTION_SPEED)
             time.sleep(0.1)
             
-            # Step 3: Move servo 1 to bottom position (capture)
+            # Step 3: Move servo 1 to collect position (capture ball)
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 3: Moving servo 1 to BOTTOM position (capture)")
-            self.servo1_to_bottom()
+                self.logger.info("Step 3: Moving servo 1 to COLLECT position (capture)")
+            self.servo1_to_collect()
             time.sleep(0.3)
             
-            # Step 4: Move servo 1 to top position (secure)
+            # Step 4: Move servo 1 to store position (secure ball)
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 4: Moving servo 1 to TOP position (secure)")
-            self.servo1_to_top()
+                self.logger.info("Step 4: Moving servo 1 to STORE position (secure)")
+            self.servo1_to_store()
             time.sleep(0.3)
             
-            # Step 5: Move servo 1 back to bottom position (hold)
+            # Step 5: Move servo 1 back to driving position (ready for next action)
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 5: Moving servo 1 back to BOTTOM position (hold)")
-            self.servo1_to_bottom()
+                self.logger.info("Step 5: Moving servo 1 to DRIVING position (ready)")
+            self.servo1_to_driving()
             time.sleep(0.2)
             
             # Record collection
@@ -363,6 +369,8 @@ class GolfBotHardware:
         except Exception as e:
             self.logger.error(f"Enhanced collection sequence failed: {e}")
             self.stop_motors()
+            # Ensure we return to driving position on error
+            self.servo1_to_driving()
             return False
 
     def blind_collection_sequence(self, drive_time):
@@ -413,24 +421,29 @@ class GolfBotHardware:
                 self.logger.info(f"🔓 Releasing {balls_to_release} balls...")
             
             if use_gradual:
-                # Move servo 1 to top position for release
-                self.servo1_to_top()
+                # Move servo 1 to store position for release
+                self.servo1_to_store()
                 time.sleep(sequential_delay)
                 # Move other servos to release position
                 self.set_servo_angle_smooth(self.servo2, config.SERVO_RELEASE, duration=0.6)
                 time.sleep(sequential_delay)
                 self.set_servo_angle_smooth(self.servo3, config.SERVO_RELEASE, duration=0.6)
                 time.sleep(1.0)  # Allow balls to fall out
+                
+                # Return servo 1 to driving position after release
+                self.servo1_to_driving()
+                time.sleep(0.2)
             else:
-                self.servo1_to_top()
+                self.servo1_to_store()
                 self.set_servo_angle(self.servo2, config.SERVO_RELEASE)
                 self.set_servo_angle(self.servo3, config.SERVO_RELEASE)
                 time.sleep(1.0)  # Allow balls to fall out
+                self.servo1_to_driving()  # Return to driving
                 
             self.collected_balls.clear()
             
             if config.DEBUG_COLLECTION:
-                self.logger.info(f"✅ Released {balls_to_release} balls")
+                self.logger.info(f"✅ Released {balls_to_release} balls - servo 1 returned to driving position")
                 
             return balls_to_release
             
@@ -636,7 +649,7 @@ class GolfBotHardware:
     def emergency_stop(self):
         """Emergency stop all movement"""
         self.stop_motors()
-        self.center_servos()
+        self.center_servos()  # This will set servo 1 to driving position
         self.logger.warning("🛑 EMERGENCY STOP activated")
     
     def cleanup(self):
@@ -646,7 +659,7 @@ class GolfBotHardware:
                 self.logger.info("🧹 Starting hardware cleanup...")
             
             self.stop_motors()
-            self.center_servos()
+            self.center_servos()  # This will set servo 1 to driving position
             
             # Close motor GPIO connections
             for component in [self.motor_in1, self.motor_in2, self.motor_in3, self.motor_in4]:
@@ -693,7 +706,7 @@ class GolfBotHardware:
             'servo1_state': servo1_state,
             'motor_status': motor_status,
             'gradual_movement': use_gradual,
-            'collection_method': 'enhanced_three_state_collection',
+            'collection_method': 'enhanced_four_state_collection',
             'hardware_ready': True
         }
     
@@ -726,15 +739,17 @@ class GolfBotHardware:
             self.turn_left(duration=0.2)
             time.sleep(0.2)
             
-            # Test servo 1 three-state system
-            self.logger.info("Testing servo 1 three-state system...")
-            self.servo1_to_middle()
+            # Test servo 1 four-state system
+            self.logger.info("Testing servo 1 four-state system...")
+            self.servo1_to_driving()
             time.sleep(1)
-            self.servo1_to_top()
+            self.servo1_to_pre_collect()
             time.sleep(1)
-            self.servo1_to_bottom()
+            self.servo1_to_collect()
             time.sleep(1)
-            self.servo1_to_middle()
+            self.servo1_to_store()
+            time.sleep(1)
+            self.servo1_to_driving()  # Return to driving
             time.sleep(1)
             
             # Test other servos
