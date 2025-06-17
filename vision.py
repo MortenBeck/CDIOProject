@@ -98,7 +98,7 @@ class VisionSystem:
         left_boundary = int(horizontal_margin)
         right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
         
-        vertical_threshold = int(config.CAMERA_HEIGHT * 0.8)
+        vertical_threshold = int(config.CAMERA_HEIGHT * 0.6)
         bottom_boundary = config.CAMERA_HEIGHT
         
         return {
