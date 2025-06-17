@@ -319,11 +319,19 @@ class HardwareTester:
         print("All systems stopped!")
     
     def cleanup(self):
-        """Clean shutdown"""
+        """Clean shutdown - motors only"""
         if self.hardware:
-            print("\nCleaning up hardware...")
-            self.hardware.cleanup()
-            print("✓ Hardware cleanup complete")
+            print("\nStopping motors...")
+            # Only stop motors, don't center servos
+            self.hardware.stop_motors()
+            # Close GPIO connections only
+            try:
+                for component in [self.hardware.motor_in1, self.hardware.motor_in2, 
+                                self.hardware.motor_in3, self.hardware.motor_in4]:
+                    component.close()
+                print("✓ Motor cleanup complete (servos left in position)")
+            except Exception as e:
+                print(f"Motor cleanup error: {e}")
 
 def run_hardware_test():
     """Main entry point for hardware testing"""

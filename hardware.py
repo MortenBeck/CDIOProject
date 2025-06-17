@@ -34,8 +34,8 @@ class GolfBotHardware:
             self.motor_in3 = PWMOutputDevice(config.MOTOR_IN3)
             self.motor_in4 = PWMOutputDevice(config.MOTOR_IN4)
             
-            # Initialize positions
-            self.center_servos()
+            # Initialize positions - REMOVED SERVO CENTERING
+            # self.center_servos()  # <-- REMOVED THIS LINE
             self.stop_motors()
             
             self.logger.info("Hardware initialized successfully")
