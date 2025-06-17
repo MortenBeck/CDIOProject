@@ -49,9 +49,8 @@ class GolfBotDashboard:
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
                                 self.bg_color, dtype=np.uint8)
         
-        # 1. Place camera preview with minimal overlays
-        clean_camera = self._add_essential_overlays(camera_frame, vision_system)
-        self._place_camera_preview(clean_camera)
+        # 1. Place clean camera preview (already processed by vision system)
+        self._place_camera_preview(camera_frame)
         
         # 2. Add top status bar
         self._add_top_status_bar(robot_state, hardware)
@@ -85,96 +84,6 @@ class GolfBotDashboard:
                          (self.camera_x-2, self.camera_y-2), 
                          (end_x+1, end_y+1), 
                          self.accent_color, 2)
-    
-    def _add_essential_overlays(self, frame, vision_system):
-        """Add only essential overlays to camera preview"""
-        if frame is None:
-            return np.zeros((self.camera_height, self.camera_width, 3), dtype=np.uint8)
-        
-        result = frame.copy()
-        h, w = result.shape[:2]
-        
-        # 1. ZONE BOUNDARIES (keep these visible)
-        # Collection zone
-        if hasattr(vision_system, 'collection_zone'):
-            zone = vision_system.collection_zone
-            cv2.rectangle(result, (zone['left'], zone['top']), 
-                         (zone['right'], zone['bottom']), self.success_color, 2)
-        
-        # Centering tolerance lines
-        if hasattr(vision_system, 'frame_center_x'):
-            tolerance = getattr(config, 'CENTERING_TOLERANCE', 15)
-            center_x = vision_system.frame_center_x
-            left_line = center_x - tolerance
-            right_line = center_x + tolerance
-            
-            cv2.line(result, (left_line, 0), (left_line, h), self.accent_color, 1)
-            cv2.line(result, (right_line, 0), (right_line, h), self.accent_color, 1)
-        
-        # 2. WALL/BOUNDARY DETECTION (safety critical)
-        if hasattr(vision_system, 'detected_walls') and vision_system.detected_walls:
-            for wall in vision_system.detected_walls:
-                if wall.get('triggered', False):
-                    x, y, w_rect, h_rect = wall['bbox']
-                    cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), self.danger_color, 3)
-        
-        # 3. BALL DETECTIONS (core functionality)
-        if hasattr(vision_system, 'current_target') and vision_system.current_target:
-            balls = [vision_system.current_target]  # Focus on current target
-        else:
-            balls = []
-        
-        # Add other detected balls if available
-        if hasattr(vision_system, '_last_detected_balls'):
-            all_balls = getattr(vision_system, '_last_detected_balls', [])
-            for ball in all_balls[:4]:  # Limit to 4 balls for clarity
-                if vision_system.current_target is None or ball.center != vision_system.current_target.center:
-                    balls.append(ball)
-        
-        for ball in balls:
-            is_target = (vision_system.current_target and 
-                        vision_system.current_target.center == ball.center)
-            
-            # Ball color
-            if ball.object_type == 'orange_ball':
-                color = self.warning_color  # Orange
-                ball_char = 'O'
-            else:
-                color = self.success_color  # Green for white balls
-                ball_char = 'B'
-            
-            if is_target:
-                # TARGET BALL - prominent display
-                cv2.circle(result, ball.center, ball.radius + 3, color, 3)
-                cv2.circle(result, ball.center, 3, self.accent_color, -1)
-                
-                # Arrow to target
-                cv2.arrowedLine(result, (vision_system.frame_center_x, vision_system.frame_center_y), 
-                               ball.center, self.accent_color, 2)
-                
-                # Centering status (minimal text)
-                if hasattr(vision_system, 'is_ball_centered'):
-                    centered = vision_system.is_ball_centered(ball)
-                    center_color = self.success_color if centered else self.danger_color
-                    status = "✓" if centered else "⊙"
-                    cv2.putText(result, status, (ball.center[0]-8, ball.center[1]-20), 
-                               self.font, 0.6, center_color, 2)
-            else:
-                # OTHER BALLS - simple display
-                cv2.circle(result, ball.center, ball.radius, color, 2)
-                cv2.circle(result, ball.center, 2, color, -1)
-            
-            # Ball type indicator
-            cv2.putText(result, ball_char, (ball.center[0]-5, ball.center[1]+5), 
-                       self.font, 0.5, color, 2)
-        
-        # 4. CENTER CROSSHAIR
-        if hasattr(vision_system, 'frame_center_x'):
-            cx, cy = vision_system.frame_center_x, vision_system.frame_center_y
-            cv2.line(result, (cx-10, cy), (cx+10, cy), self.text_color, 1)
-            cv2.line(result, (cx, cy-10), (cx, cy+10), self.text_color, 1)
-        
-        return result
     
     def _add_top_status_bar(self, robot_state, hardware):
         """Add top status bar with critical info"""
