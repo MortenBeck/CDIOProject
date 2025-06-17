@@ -345,7 +345,7 @@ class GolfBot:
     def execute_navigation_command(self, command):
         """Execute navigation with improved timing"""
         if command == "forward":
-            self.hardware.move_forward(duration=0.25)  # Shorter movements
+            self.hardware.move_forward(duration=0.50)  # Shorter movements
         elif command == "turn_left":
             self.hardware.turn_left(duration=0.15)
         elif command == "turn_right":
