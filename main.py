@@ -25,6 +25,7 @@ class RobotState(Enum):
     CENTERING_BALL = "centering_ball"  # Enhanced: Center ball X+Y before collection
     APPROACHING_BALL = "approaching_ball"
     COLLECTING_BALL = "collecting_ball"  # Enhanced: New servo sequence
+    BLIND_COLLECTION = "blind_collection"  # DEPRECATED: Redirects to COLLECTING_BALL
     AVOIDING_BOUNDARY = "avoiding_boundary"
     EMERGENCY_STOP = "emergency_stop"
 
@@ -268,7 +269,7 @@ class GolfBot:
         """Execute current state logic with enhanced ball centering and collection"""
         
         # Always check for boundary first (but allow collection to complete)
-        if near_boundary and self.state not in [RobotState.COLLECTING_BALL]:
+        if near_boundary and self.state not in [RobotState.COLLECTING_BALL, RobotState.BLIND_COLLECTION]:
             self.state = RobotState.AVOIDING_BOUNDARY
         
         if self.state == RobotState.SEARCHING:
@@ -282,6 +283,9 @@ class GolfBot:
             
         elif self.state == RobotState.COLLECTING_BALL:  # Enhanced sequence
             self.handle_collecting_ball()
+            
+        elif self.state == RobotState.BLIND_COLLECTION:  # DEPRECATED - redirects
+            self.handle_blind_collection()
             
         elif self.state == RobotState.AVOIDING_BOUNDARY:
             self.handle_avoiding_boundary(near_boundary)
@@ -417,37 +421,9 @@ class GolfBot:
         self.state = RobotState.SEARCHING
     
     def handle_blind_collection(self):
-        """NEW: Execute blind collection sequence"""
-        self.logger.info("Executing blind collection sequence...")
-        
-        # Execute the blind collection
-        success = self.hardware.blind_collection_sequence(self.blind_collection_drive_time)
-        
-        # Enhanced logging
-        ball_type = "unknown"
-        if self.vision.current_target:
-            ball_type = "orange" if self.vision.current_target.object_type == "orange_ball" else "regular"
-        
-        self.telemetry.log_collection_attempt(success, ball_type)
-        
-        if success:
-            total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ Blind collection successful! Total: {total_balls}")
-            
-            # Log collection success with details
-            collection_data = {
-                "ball_type": ball_type,
-                "collection_method": "blind_collection",
-                "drive_time": self.blind_collection_drive_time,
-                "total_collected": total_balls
-            }
-            self.telemetry.log_frame_data(action="successful_blind_collection", extra_data=collection_data)
-        else:
-            self.logger.warning(f"❌ Blind collection failed")
-            self.telemetry.log_error(f"Blind collection failed - {ball_type}", "collection")
-        
-        # Return to searching
-        self.state = RobotState.SEARCHING
+        """REMOVED: This method is no longer used - redirects to collection"""
+        self.logger.info("Redirecting to enhanced collection sequence...")
+        self.state = RobotState.COLLECTING_BALL
     
     def handle_avoiding_boundary(self, near_boundary):
         """Handle boundary avoidance with improved timing"""

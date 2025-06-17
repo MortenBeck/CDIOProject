@@ -248,9 +248,9 @@ class GolfBotDashboard:
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
             y += line_height * 2
         
-        # Centering info (both X and Y)
-        x_tolerance = getattr(config, 'CENTERING_TOLERANCE', 15)
-        y_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 20)
+        # Centering info (both X and Y) - Updated for more lenient tolerances
+        x_tolerance = getattr(config, 'CENTERING_TOLERANCE', 25)
+        y_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 30)
         cv2.putText(self.dashboard, f"Centering: ±{x_tolerance}px X, ±{y_tolerance}px Y", 
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.accent_color, 1)
         y += line_height

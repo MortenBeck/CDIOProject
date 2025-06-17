@@ -81,8 +81,8 @@ FORWARD_TIME_SHORT = 0.2    # Short forward movement
 BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 
 # === NEW: COLLECTION BEHAVIOR ===
-CENTERING_TOLERANCE = 15  # Pixels - how close to center before starting collection
-CENTERING_DISTANCE_TOLERANCE = 20  # Pixels - vertical centering tolerance for distance
+CENTERING_TOLERANCE = 25  # Pixels - more lenient X centering (was 15)
+CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
 COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
 MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
 MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
