@@ -222,79 +222,60 @@ class GolfBotHardware:
         except Exception as e:
             self.logger.error(f"Failed to prepare for collection: {e}")
 
-    def blind_collection_sequence(self, drive_time):
-        """Execute blind collection - drive forward for calculated time then catch"""
+    # === NEW: ENHANCED COLLECTION SEQUENCE ===
+    def enhanced_collection_sequence(self):
+        """New collection sequence with specific servo movements for blind collection"""
         try:
-            original_speed = self.current_speed
-            collection_start_time = time.time()
-            
             if config.DEBUG_COLLECTION:
-                self.logger.info("🚀 STARTING BLIND COLLECTION SEQUENCE")
-                self.logger.info(f"   Drive time: {drive_time:.2f}s")
-                self.logger.info(f"   Collection speed: {config.COLLECTION_SPEED}")
+                self.logger.info("Starting enhanced collection sequence...")
             
-            # Set collection speed
-            self.set_speed(config.COLLECTION_SPEED)
-            
-            # Prepare servos (cage up and ready)
-            self.prepare_for_collection()
-            
-            # Drive straight toward ball for calculated time
+            # Step 1: Set servo 1 to 90 degrees (ready position)
             if config.DEBUG_COLLECTION:
-                self.logger.info(f"🏁 Driving forward for {drive_time:.2f}s...")
+                self.logger.info("Step 1: Setting servo 1 to 90 degrees")
+            self.set_servo_angle_smooth(self.servo1, 90, duration=0.6)
+            time.sleep(0.2)
             
-            self.move_forward(duration=drive_time)
-            
-            # Quick pause to stabilize
+            # Step 2: Drive forward for 1 second
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 2: Driving forward for collection")
+            self.move_forward(duration=1.0, speed=config.COLLECTION_SPEED)
             time.sleep(0.1)
             
-            # Close cage to catch ball
+            # Step 3: Move servo 1 to 170 degrees (capture position)
             if config.DEBUG_COLLECTION:
-                self.logger.info("🔒 Closing cage to catch ball...")
-                
-            use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
+                self.logger.info("Step 3: Moving servo 1 to 170 degrees (capture)")
+            self.set_servo_angle_smooth(self.servo1, 170, duration=0.5)
+            time.sleep(0.3)
             
-            if use_gradual:
-                # Quick but smooth closure
-                self.set_servo_angle_smooth(self.servo1, config.SERVO_CATCH_POSITION, duration=0.3)
-                time.sleep(sequential_delay * 0.5)  # Faster sequential movement
-                self.set_servo_angle_smooth(self.servo2, config.SERVO_CATCH_POSITION, duration=0.3)
-                time.sleep(sequential_delay * 0.5)
-                self.set_servo_angle_smooth(self.servo3, config.SERVO_CATCH_POSITION, duration=0.3)
-                time.sleep(0.4)  # Time to secure ball
-            else:
-                self.set_servo_angle(self.servo1, config.SERVO_CATCH_POSITION)
-                self.set_servo_angle(self.servo2, config.SERVO_CATCH_POSITION)
-                self.set_servo_angle(self.servo3, config.SERVO_CATCH_POSITION)
-                time.sleep(0.6)
+            # Step 4: Move servo 1 to 20 degrees (secure position)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 4: Moving servo 1 to 20 degrees (secure)")
+            self.set_servo_angle_smooth(self.servo1, 20, duration=0.4)
+            time.sleep(0.3)
+            
+            # Step 5: Move servo 1 back to 170 degrees (hold position)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 5: Moving servo 1 back to 170 degrees (hold)")
+            self.set_servo_angle_smooth(self.servo1, 170, duration=0.4)
+            time.sleep(0.2)
             
             # Record collection
             self.collected_balls.append(time.time())
             
-            # Back up slightly
             if config.DEBUG_COLLECTION:
-                self.logger.info("⬅️ Backing up...")
-            self.move_backward(duration=0.3)
-            
-            # Restore original speed
-            self.set_speed(original_speed)
-            
-            total_time = time.time() - collection_start_time
-            total_balls = len(self.collected_balls)
-            
-            if config.DEBUG_COLLECTION:
-                self.logger.info("✅ BLIND COLLECTION SEQUENCE COMPLETED")
-                self.logger.info(f"   Total time: {total_time:.2f}s")
-                self.logger.info(f"   Total balls collected: {total_balls}")
+                self.logger.info(f"Enhanced collection complete! Total balls: {len(self.collected_balls)}")
             
             return True
             
         except Exception as e:
-            self.logger.error(f"❌ Blind collection failed: {e}")
+            self.logger.error(f"Enhanced collection sequence failed: {e}")
             self.stop_motors()
-            self.set_speed(original_speed)
             return False
+
+    def blind_collection_sequence(self, drive_time):
+        """Legacy method - now redirects to enhanced sequence"""
+        self.logger.info("Using enhanced collection sequence instead of blind collection")
+        return self.enhanced_collection_sequence()
     
     def grab_ball(self):
         """Close servos to grab a ball (legacy method)"""
@@ -616,7 +597,7 @@ class GolfBotHardware:
             'servo_angles': servo_angles,
             'motor_status': motor_status,
             'gradual_movement': use_gradual,
-            'collection_method': 'enhanced_blind_collection',
+            'collection_method': 'enhanced_collection_sequence',
             'hardware_ready': True
         }
     
