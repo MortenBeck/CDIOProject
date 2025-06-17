@@ -679,69 +679,71 @@ class VisionSystem:
             cv2.putText(result, f'{ball_char}', (ball.center[0]-5, ball.center[1]+5), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
-        # === CLEAN STATUS PANEL ===
+        # === CLEAN STATUS PANEL - RIGHT SIDE ONLY ===
         
-        # Create semi-transparent status panel at top
-        panel_height = 120
-        panel_overlay = np.zeros((panel_height, w, 3), dtype=np.uint8)
+        # Create compact status panel on the right
+        panel_width = 320
+        panel_height = 130
+        panel_x = w - panel_width - 10
+        panel_y = 10
+        
+        # Create semi-transparent panel background
+        panel_overlay = np.zeros((panel_height, panel_width, 3), dtype=np.uint8)
         panel_overlay[:, :] = (0, 0, 0)  # Black background
         
         # Apply panel with transparency
-        result[0:panel_height, 0:w] = cv2.addWeighted(
-            result[0:panel_height, 0:w], 0.3, 
+        result[panel_y:panel_y+panel_height, panel_x:panel_x+panel_width] = cv2.addWeighted(
+            result[panel_y:panel_y+panel_height, panel_x:panel_x+panel_width], 0.3, 
             panel_overlay, 0.7, 0
         )
         
         # Panel border
-        cv2.rectangle(result, (0, 0), (w, panel_height), (100, 100, 100), 2)
+        cv2.rectangle(result, (panel_x, panel_y), (panel_x+panel_width, panel_y+panel_height), (100, 100, 100), 2)
         
-        # === CLEAN STATUS TEXT - SPLIT BETWEEN LEFT AND RIGHT ===
+        # === ALL STATUS TEXT ON RIGHT SIDE ===
         
-        # LEFT SIDE STATUS
-        y_pos_left = 25
-        line_height = 22
+        y_pos = panel_y + 25
+        line_height = 18
+        text_x = panel_x + 10
         
         # System status
-        cv2.putText(result, f"GolfBot Vision System", (10, y_pos_left), 
+        cv2.putText(result, f"GolfBot Vision System", (text_x, y_pos), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-        y_pos_left += line_height
+        y_pos += line_height + 3
         
         # Ball status
         ball_count = len(balls)
         target_text = "TARGET" if self.current_target else "SEARCHING"
-        cv2.putText(result, f"Balls: {ball_count} | Status: {target_text}", (10, y_pos_left), 
+        cv2.putText(result, f"Balls: {ball_count} | Status: {target_text}", (text_x, y_pos), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
-        y_pos_left += line_height
-        
-        # Arena status
-        arena_status = "Detected" if self.arena_detected else "Fallback"
-        cv2.putText(result, f"Arena: {arena_status} | Method: HoughCircles+Color", (10, y_pos_left), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
-        
-        # RIGHT SIDE STATUS
-        y_pos_right = 25
-        right_x = w - 300  # Start from right side with margin
+        y_pos += line_height
         
         # Wall status
         wall_status = "DANGER" if triggered_walls > 0 else "SAFE"
         wall_color = (0, 0, 255) if triggered_walls > 0 else (0, 255, 0)
         cv2.putText(result, f"Walls: {len(self.detected_walls)} detected | Status: {wall_status}", 
-                (right_x, y_pos_right), cv2.FONT_HERSHEY_SIMPLEX, 0.5, wall_color, 1)
-        y_pos_right += line_height
+                (text_x, y_pos), cv2.FONT_HERSHEY_SIMPLEX, 0.5, wall_color, 1)
+        y_pos += line_height
         
         # Target info (if available)
         if self.current_target:
             ball_type = "ORANGE" if self.current_target.object_type == 'orange_ball' else "WHITE"
             zone_status = "IN ZONE" if self.current_target.in_collection_zone else "APPROACHING"
             confidence_text = f"Conf: {self.current_target.confidence:.2f}"
-            cv2.putText(result, f"Target: {ball_type} | {zone_status}", (right_x, y_pos_right), 
+            cv2.putText(result, f"Target: {ball_type} | {zone_status}", (text_x, y_pos), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
-            y_pos_right += line_height - 5
-            cv2.putText(result, confidence_text, (right_x, y_pos_right), 
+            y_pos += line_height - 2
+            cv2.putText(result, confidence_text, (text_x, y_pos), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
         else:
-            cv2.putText(result, "Target: SEARCHING FOR BALLS", (right_x, y_pos_right), 
+            cv2.putText(result, "Target: SEARCHING FOR BALLS", (text_x, y_pos), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        y_pos += line_height
+        
+        # Arena status
+        arena_status = "Detected" if self.arena_detected else "Fallback"
+        cv2.putText(result, f"Arena: {arena_status} | HoughCircles+Color", (text_x, y_pos), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
         
         # === MINIMAL RED MASK PREVIEW ===
         
