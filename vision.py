@@ -447,7 +447,8 @@ class VisionSystem:
         return hough_balls[:6]
     
     def detect_boundaries(self, frame) -> bool:
-        """Detect if robot is too close to red walls (danger zones)"""
+        """Detect if robot is too close to red walls (danger zones)
+        Now ignores walls in the collection zone (bottom 25% of frame)"""
         if frame is None:
             return False
         
@@ -473,19 +474,31 @@ class VisionSystem:
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
         
+        # NEW: Define collection zone boundary (bottom 25% of image)
+        collection_zone_y = int(h * 0.75)  # Top of collection zone (75% down from top)
+        
         # Smaller danger zones - only trigger when very close
         danger_distance = min(50, int(h * 0.1))
         bottom_danger_y = h - danger_distance
-        bottom_mask = red_mask[bottom_danger_y:h, :]
+        
+        # NEW: Only check bottom wall if it's ABOVE the collection zone
+        # This prevents boundary detection when approaching goals
+        if bottom_danger_y < collection_zone_y:
+            bottom_mask = red_mask[bottom_danger_y:collection_zone_y, :]  # Stop at collection zone
+        else:
+            # If danger zone extends into collection area, skip bottom wall detection entirely
+            bottom_mask = np.zeros((1, w), dtype=np.uint8)  # Empty mask
         
         edge_width = min(30, int(w * 0.06))
-        left_mask = red_mask[:, 0:edge_width]
-        right_mask = red_mask[:, w-edge_width:w]
+        
+        # NEW: For side walls, only check the area ABOVE the collection zone
+        left_mask = red_mask[0:collection_zone_y, 0:edge_width]  # Only upper 75%
+        right_mask = red_mask[0:collection_zone_y, w-edge_width:w]  # Only upper 75%
         
         danger_detected = False
-        min_wall_area = 120  # Reduced slightly for better detection
+        min_wall_area = 120
         
-        # Check bottom
+        # Check bottom (only if not in collection zone)
         contours, _ = cv2.findContours(bottom_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
             area = cv2.contourArea(contour)
@@ -502,9 +515,11 @@ class VisionSystem:
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"Bottom wall detected above collection zone: area={area}")
                     break
         
-        # Check left
+        # Check left (only upper portion)
         contours, _ = cv2.findContours(left_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
             area = cv2.contourArea(contour)
@@ -521,9 +536,11 @@ class VisionSystem:
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"Left wall detected above collection zone: area={area}")
                     break
         
-        # Check right
+        # Check right (only upper portion)
         contours, _ = cv2.findContours(right_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
             area = cv2.contourArea(contour)
@@ -540,7 +557,19 @@ class VisionSystem:
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"Right wall detected above collection zone: area={area}")
                     break
+        
+        # NEW: Debug logging for collection zone behavior
+        if config.DEBUG_VISION and not danger_detected:
+            # Check if there ARE walls in the collection zone that we're ignoring
+            collection_zone_mask = red_mask[collection_zone_y:h, :]
+            collection_walls = cv2.findContours(collection_zone_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+            
+            significant_collection_walls = [c for c in collection_walls if cv2.contourArea(c) > min_wall_area]
+            if significant_collection_walls:
+                self.logger.debug(f"Ignoring {len(significant_collection_walls)} wall(s) in collection zone")
         
         return danger_detected
     
