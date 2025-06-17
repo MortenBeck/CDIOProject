@@ -74,7 +74,7 @@ class Pi5Camera:
             os.remove(self.temp_file)
 
 class VisionSystem:
-    """Enhanced vision processing system with HoughCircles, arena detection, and ball centering"""
+    """SIMPLE vision processing system - no centering complexity!"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class VisionSystem:
         self.arena_detected = False
         self.arena_contour = None
         
-        # Collection zone boundaries
+        # Collection zone boundaries (kept for compatibility)
         self.collection_zone = self._calculate_collection_zone()
         
         # Store wall detection results for visualization
@@ -99,11 +99,8 @@ class VisionSystem:
         # Detection method tracking
         self.detection_method = "hybrid"
         
-        # Dashboard support - store recent detections
-        self._last_detected_balls = []
-        
     def _calculate_collection_zone(self):
-        """Calculate the collection zone boundaries"""
+        """Calculate the collection zone boundaries (kept for compatibility)"""
         horizontal_margin = config.CAMERA_WIDTH * 0.375
         left_boundary = int(horizontal_margin)
         right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
@@ -119,7 +116,7 @@ class VisionSystem:
         }
     
     def is_in_collection_zone(self, ball_center: Tuple[int, int]) -> bool:
-        """Check if ball center is in the collection zone"""
+        """Check if ball center is in the collection zone (kept for compatibility)"""
         x, y = ball_center
         zone = self.collection_zone
         
@@ -128,34 +125,30 @@ class VisionSystem:
         
         return horizontal_ok and vertical_ok
     
-    # === NEW: BALL CENTERING METHODS ===
-    def is_ball_centered(self, ball: DetectedObject) -> bool:
-        """Check if ball is centered enough to start collection"""
-        x_offset = abs(ball.center[0] - self.frame_center_x)
-        return x_offset <= config.CENTERING_TOLERANCE
+    # === SIMPLE DISTANCE CHECK (NO CENTERING) ===
+    def is_ball_close_enough(self, ball: DetectedObject) -> bool:
+        """Check if ball is close enough for blind collection"""
+        return ball.distance_from_center < config.COLLECTION_DISTANCE_THRESHOLD
     
     def calculate_drive_time_to_ball(self, ball: DetectedObject) -> float:
-        """Calculate how long to drive to reach the ball"""
-        # Get distance in pixels from ball to bottom center of collection zone
-        collection_zone_bottom_center = (
-            (self.collection_zone['left'] + self.collection_zone['right']) // 2,
-            self.collection_zone['bottom'] - 20  # Slightly above bottom edge
-        )
+        """Calculate drive time based on ball distance (SIMPLE calculation)"""
+        distance = ball.distance_from_center
         
-        # Calculate pixel distance
-        dx = ball.center[0] - collection_zone_bottom_center[0]
-        dy = ball.center[1] - collection_zone_bottom_center[1]
-        pixel_distance = np.sqrt(dx*dx + dy*dy)
-        
-        # Convert to drive time
-        drive_time = pixel_distance * config.COLLECTION_DRIVE_TIME_PER_PIXEL
+        # SIMPLE: The closer the ball, the less time we need to drive
+        if distance >= config.COLLECTION_DISTANCE_THRESHOLD:
+            # This shouldn't happen, but safety first
+            drive_time = config.COLLECTION_DRIVE_TIME_BASE
+        else:
+            # Calculate based on how far inside the threshold we are
+            pixels_inside_threshold = config.COLLECTION_DISTANCE_THRESHOLD - distance
+            drive_time = config.COLLECTION_DRIVE_TIME_BASE - (pixels_inside_threshold * config.COLLECTION_DRIVE_TIME_PER_PIXEL)
         
         # Apply bounds
         drive_time = max(config.MIN_COLLECTION_DRIVE_TIME, 
                         min(config.MAX_COLLECTION_DRIVE_TIME, drive_time))
         
         if config.DEBUG_COLLECTION:
-            self.logger.info(f"Ball distance: {pixel_distance:.1f} pixels -> {drive_time:.2f}s drive time")
+            self.logger.info(f"Ball distance: {distance:.0f}px (threshold: {config.COLLECTION_DISTANCE_THRESHOLD}) -> {drive_time:.2f}s drive time")
         
         return drive_time
     
@@ -478,16 +471,10 @@ class VisionSystem:
         hough_balls.sort(key=lambda x: (x.distance_from_center, -x.confidence))
         
         # Limit to reasonable number of balls
-        detected_balls = hough_balls[:6]
-        
-        # Store for dashboard access
-        self._last_detected_balls = detected_balls
-        
-        return detected_balls
+        return hough_balls[:6]
     
     def detect_boundaries(self, frame) -> bool:
-        """Detect if robot is too close to red walls (danger zones)
-        Now ignores walls in the collection zone (bottom 25% of frame)"""
+        """Detect if robot is too close to red walls (danger zones)"""
         if frame is None:
             return False
         
@@ -626,21 +613,13 @@ class VisionSystem:
         self.current_target = None
         return None
     
-    def should_activate_servo(self) -> bool:
-        """Check if servo should be activated"""
-        if not self.current_target:
-            return False
-        return self.current_target.in_collection_zone
-    
     def get_navigation_command(self, detected_objects: List[DetectedObject]) -> str:
         """Get navigation command based on detections"""
         target_ball = self.get_target_ball(detected_objects)
         
         if target_ball:
-            if target_ball.in_collection_zone:
-                return "collect_ball"
-            else:
-                return self._get_direction_to_object(target_ball)
+            # SIMPLE: Just move toward the ball
+            return self._get_direction_to_object(target_ball)
         
         return "search"
     
@@ -657,64 +636,26 @@ class VisionSystem:
             return "forward"
     
     def draw_detections(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Enhanced detection visualization with centering info"""
+        """SIMPLE detection visualization"""
         if not config.DEBUG_VISION:
             return frame
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # === WALL VISUALIZATION ===
-        if self.red_mask is not None:
-            # Create red overlay
-            wall_overlay = np.zeros_like(result)
-            wall_overlay[:, :, 2] = self.red_mask  # Red channel
-            cv2.addWeighted(result, 0.75, wall_overlay, 0.25, 0, result)
-            
-            # Add outlines around red walls
-            contours, _ = cv2.findContours(self.red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
-                if cv2.contourArea(contour) > 100:
-                    cv2.drawContours(result, [contour], -1, (0, 0, 255), 2)
+        # === SIMPLE DISTANCE CIRCLE ===
+        # Show the collection distance threshold as a circle
+        cv2.circle(result, (self.frame_center_x, self.frame_center_y), 
+                  config.COLLECTION_DISTANCE_THRESHOLD, (255, 255, 0), 2)
+        cv2.putText(result, f"Collection Threshold: {config.COLLECTION_DISTANCE_THRESHOLD}px", 
+                   (10, h - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
         
-        # === DANGER ZONES ===
-        danger_distance = min(50, int(h * 0.1))
-        danger_y = h - danger_distance
-        edge_width = min(30, int(w * 0.06))
-        
-        # Draw danger zone borders
-        cv2.rectangle(result, (0, danger_y), (w, h), (0, 100, 255), 2)  # Bottom
-        cv2.rectangle(result, (0, 0), (edge_width, h), (0, 100, 255), 2)  # Left
-        cv2.rectangle(result, (w - edge_width, 0), (w, h), (0, 100, 255), 2)  # Right
-        
-        # === TRIGGERED WALLS ===
-        triggered_walls = 0
-        for wall in self.detected_walls:
-            if wall['triggered']:
-                triggered_walls += 1
-                x, y, w_rect, h_rect = wall['bbox']
-                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 4)
-        
-        # === COLLECTION ZONE ===
-        zone = self.collection_zone
-        cv2.rectangle(result, (zone['left'], zone['top']), 
-                    (zone['right'], zone['bottom']), (0, 255, 0), 2)
-        
-        # === CENTERING TOLERANCE VISUALIZATION ===
-        # Draw centering tolerance lines
-        tolerance_color = (255, 255, 0)
-        left_line = self.frame_center_x - config.CENTERING_TOLERANCE
-        right_line = self.frame_center_x + config.CENTERING_TOLERANCE
-        
-        cv2.line(result, (left_line, 0), (left_line, h), tolerance_color, 1)
-        cv2.line(result, (right_line, 0), (right_line, h), tolerance_color, 1)
-        cv2.putText(result, "CENTERING ZONE", (left_line + 5, 20), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, tolerance_color, 1)
-        
-        # === BALL DETECTION WITH CENTERING INFO ===
+        # === BALL DETECTION ===
         for ball in balls:
             is_target = (self.current_target and 
                         self.current_target.center == ball.center)
+            
+            close_enough = self.is_ball_close_enough(ball)
             
             if ball.object_type == 'orange_ball':
                 color = (0, 165, 255)  # Orange
@@ -724,165 +665,82 @@ class VisionSystem:
                 ball_char = 'B'
             
             if is_target:
-                # Target ball - prominent with centering info
-                cv2.circle(result, ball.center, ball.radius + 2, color, 3)
-                cv2.circle(result, ball.center, 4, (255, 255, 0), -1)
+                # Target ball - show status
+                if close_enough:
+                    # Ready for collection - bright green
+                    cv2.circle(result, ball.center, ball.radius + 5, (0, 255, 0), 4)
+                    cv2.putText(result, "READY!", (ball.center[0]-25, ball.center[1]-30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                else:
+                    # Still approaching - yellow
+                    cv2.circle(result, ball.center, ball.radius + 3, (0, 255, 255), 3)
+                    cv2.putText(result, "APPROACHING", (ball.center[0]-40, ball.center[1]-30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+                
+                # Show distance
+                distance_text = f"{ball.distance_from_center:.0f}px"
+                cv2.putText(result, distance_text, (ball.center[0]-15, ball.center[1]+25), 
+                          cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
                 
                 # Arrow to target
                 cv2.arrowedLine(result, (self.frame_center_x, self.frame_center_y), 
                             ball.center, (255, 255, 0), 2)
-                
-                # Show centering status
-                centered = self.is_ball_centered(ball)
-                center_color = (0, 255, 0) if centered else (0, 0, 255)
-                center_text = "CENTERED" if centered else "CENTERING"
-                cv2.putText(result, center_text, (ball.center[0]-30, ball.center[1]-25), 
-                          cv2.FONT_HERSHEY_SIMPLEX, 0.4, center_color, 1)
-                
-                # Show drive time if centered
-                if centered:
-                    drive_time = self.calculate_drive_time_to_ball(ball)
-                    cv2.putText(result, f"{drive_time:.1f}s", (ball.center[0]-15, ball.center[1]+35), 
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
             else:
                 # Other balls - simple
                 cv2.circle(result, ball.center, ball.radius, color, 2)
-                cv2.circle(result, ball.center, 2, color, -1)
             
-            # Ball label
+            # Ball type label
             cv2.putText(result, f'{ball_char}', (ball.center[0]-5, ball.center[1]+5), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
-        # === STATUS PANEL ===
-        panel_height = 140  # Increased for centering info
+        # === SIMPLE STATUS PANEL ===
+        panel_height = 100
         panel_overlay = np.zeros((panel_height, w, 3), dtype=np.uint8)
         panel_overlay[:, :] = (0, 0, 0)  # Black background
         
         # Apply panel with transparency
         result[0:panel_height, 0:w] = cv2.addWeighted(
-            result[0:panel_height, 0:w], 0.3, 
-            panel_overlay, 0.7, 0
+            result[0:panel_height, 0:w], 0.4, 
+            panel_overlay, 0.6, 0
         )
         
         # Panel border
         cv2.rectangle(result, (0, 0), (w, panel_height), (100, 100, 100), 2)
         
         # === STATUS TEXT ===
-        # LEFT SIDE
-        y_pos_left = 25
-        line_height = 22
+        y_pos = 20
+        line_height = 20
         
         # System status
-        cv2.putText(result, f"GolfBot Enhanced Collection System", (10, y_pos_left), 
+        cv2.putText(result, f"GolfBot SIMPLE Collection System", (10, y_pos), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-        y_pos_left += line_height
+        y_pos += line_height
         
         # Ball status
         ball_count = len(balls)
         target_text = "TARGET" if self.current_target else "SEARCHING"
-        cv2.putText(result, f"Balls: {ball_count} | Status: {target_text}", (10, y_pos_left), 
+        cv2.putText(result, f"Balls: {ball_count} | Status: {target_text}", (10, y_pos), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
-        y_pos_left += line_height
+        y_pos += line_height
         
-        # Arena and method status
-        arena_status = "Detected" if self.arena_detected else "Fallback"
-        cv2.putText(result, f"Arena: {arena_status} | Method: HoughCircles+Color", (10, y_pos_left), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
-        y_pos_left += line_height
-        
-        # Centering info
-        cv2.putText(result, f"Centering Tolerance: ±{config.CENTERING_TOLERANCE}px", (10, y_pos_left), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
-        
-        # RIGHT SIDE
-        y_pos_right = 25
-        right_x = w - 350
-        
-        # Wall status
-        wall_status = "DANGER" if triggered_walls > 0 else "SAFE"
-        wall_color = (0, 0, 255) if triggered_walls > 0 else (0, 255, 0)
-        cv2.putText(result, f"Walls: {len(self.detected_walls)} detected | Status: {wall_status}", 
-                (right_x, y_pos_right), cv2.FONT_HERSHEY_SIMPLEX, 0.5, wall_color, 1)
-        y_pos_right += line_height
-        
-        # Target info (if available)
+        # Target info
         if self.current_target:
-            ball_type = "ORANGE" if self.current_target.object_type == 'orange_ball' else "WHITE"
-            centered = self.is_ball_centered(self.current_target)
-            center_status = "CENTERED" if centered else "CENTERING"
-            confidence_text = f"Conf: {self.current_target.confidence:.2f}"
+            target = self.current_target
+            distance = target.distance_from_center
+            close_enough = distance < config.COLLECTION_DISTANCE_THRESHOLD
+            ball_type = "ORANGE" if target.object_type == 'orange_ball' else "WHITE"
             
-            cv2.putText(result, f"Target: {ball_type} | {center_status}", (right_x, y_pos_right), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
-            y_pos_right += line_height - 5
-            cv2.putText(result, confidence_text, (right_x, y_pos_right), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
-            y_pos_right += line_height - 5
+            status = "READY FOR COLLECTION!" if close_enough else f"APPROACHING ({distance:.0f}px)"
+            color = (0, 255, 0) if close_enough else (0, 255, 255)
             
-            # Drive time calculation (if centered)
-            if centered:
-                drive_time = self.calculate_drive_time_to_ball(self.current_target)
-                cv2.putText(result, f"Drive Time: {drive_time:.2f}s", (right_x, y_pos_right), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
-        else:
-            cv2.putText(result, "Target: SEARCHING FOR BALLS", (right_x, y_pos_right), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        
-        # === RED MASK PREVIEW ===
-        if self.red_mask is not None:
-            # Small preview in bottom-right
-            mask_size = 120
-            mask_resized = cv2.resize(self.red_mask, (mask_size, int(mask_size * h / w)))
-            mask_colored = cv2.applyColorMap(mask_resized, cv2.COLORMAP_HOT)
+            cv2.putText(result, f"Target: {ball_type} - {status}", (10, y_pos), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
+            y_pos += line_height
             
-            # Position in bottom-right
-            start_x = w - mask_size - 10
-            start_y = h - mask_resized.shape[0] - 10
-            end_x = start_x + mask_size
-            end_y = start_y + mask_resized.shape[0]
-            
-            # Place mask preview
-            result[start_y:end_y, start_x:end_x] = mask_colored
-            cv2.rectangle(result, (start_x, start_y), (end_x, end_y), (255, 255, 255), 1)
-            
-            # Small label
-            cv2.putText(result, "Red Mask", (start_x, start_y - 5), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
-        
-        # === LEGEND ===
-        legend_x = 10
-        legend_y = h - 100
-        legend_bg_height = 90
-        
-        # Legend background
-        legend_overlay = np.zeros((legend_bg_height, 300, 3), dtype=np.uint8)
-        result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+300] = cv2.addWeighted(
-            result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+300], 0.3,
-            legend_overlay, 0.7, 0
-        )
-        
-        cv2.rectangle(result, (legend_x, legend_y-10), (legend_x+300, legend_y+legend_bg_height-10), 
-                    (100, 100, 100), 1)
-        
-        # Legend content
-        cv2.putText(result, "LEGEND", (legend_x+5, legend_y), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        cv2.putText(result, "Red: Wall areas", (legend_x+5, legend_y+15), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
-        cv2.putText(result, "Blue: Danger zones", (legend_x+5, legend_y+30), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 100, 0), 1)
-        cv2.putText(result, "Green: Collection zone", (legend_x+5, legend_y+45), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-        cv2.putText(result, "Yellow: Centering zone", (legend_x+5, legend_y+60), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
-        cv2.putText(result, "Yellow: Current target", (legend_x+160, legend_y+15), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
-        cv2.putText(result, "O: Orange ball", (legend_x+160, legend_y+30), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 165, 255), 1)
-        cv2.putText(result, "B: White ball", (legend_x+160, legend_y+45), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-        cv2.putText(result, "Arrow: Target direction", (legend_x+160, legend_y+60), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
+            if close_enough:
+                drive_time = self.calculate_drive_time_to_ball(target)
+                cv2.putText(result, f"Drive Time: {drive_time:.2f}s", (10, y_pos), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
         
         # === CENTER CROSSHAIR ===
         cv2.line(result, (self.frame_center_x-10, self.frame_center_y), 
@@ -890,7 +748,7 @@ class VisionSystem:
         cv2.line(result, (self.frame_center_x, self.frame_center_y-10), 
                 (self.frame_center_x, self.frame_center_y+10), (255, 255, 255), 1)
         
-        # === ARENA BOUNDARY ===
+        # === ARENA BOUNDARY (IF DETECTED) ===
         if self.arena_detected and self.arena_contour is not None:
             cv2.drawContours(result, [self.arena_contour], -1, (0, 255, 255), 1)
         
@@ -910,7 +768,7 @@ class VisionSystem:
         # Get navigation command
         nav_command = self.get_navigation_command(balls)
         
-        # Create enhanced debug visualization
+        # Create simple debug visualization
         debug_frame = self.draw_detections(frame, balls)
         
         return balls, orange_ball, near_boundary, nav_command, debug_frame
@@ -919,4 +777,4 @@ class VisionSystem:
         """Clean up vision system"""
         self.camera.release()
         cv2.destroyAllWindows()
-        self.logger.info("Enhanced vision system with ball centering cleanup completed")
+        self.logger.info("SIMPLE vision system cleanup completed")
