@@ -314,7 +314,7 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """NEW: Center the ball before starting collection sequence"""
+        """FIXED: Center the ball in both X and Y axes before collection"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
@@ -331,31 +331,54 @@ class GolfBot:
         # Target the closest confident ball
         target_ball = confident_balls[0]
         
-        # Check if ball is centered
+        # Check if ball is fully centered (both X and Y)
         if self.vision.is_ball_centered(target_ball):
-            # Ball is centered - calculate drive time and start blind collection
+            # Ball is centered - calculate drive time and start collection
             drive_time = self.vision.calculate_drive_time_to_ball(target_ball)
-            self.blind_collection_drive_time = drive_time
             
             ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.logger.info(f"Ball centered! Starting blind collection of {ball_type} ball (drive time: {drive_time:.2f}s)")
-            self.state = RobotState.BLIND_COLLECTION
+            self.logger.info(f"Ball fully centered! Starting collection of {ball_type} ball (drive time: {drive_time:.2f}s)")
+            self.state = RobotState.COLLECTING_BALL
             return
         
-        # Ball not centered - adjust position
-        x_offset = target_ball.center[0] - self.vision.frame_center_x
+        # Ball not fully centered - get centering adjustments for both axes
+        x_direction, y_direction = self.vision.get_centering_adjustment(target_ball)
         
-        if abs(x_offset) > config.CENTERING_TOLERANCE:
-            if x_offset > 0:
-                self.hardware.turn_right(duration=0.08)  # Small adjustments
+        # PRIORITY 1: X-axis centering (left/right) - FASTER
+        if x_direction != 'centered':
+            if x_direction == 'right':
+                self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
+                                        speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering: turning right (offset: {x_offset})")
-            else:
-                self.hardware.turn_left(duration=0.08)
+                    self.logger.info(f"Centering X: turning right (faster)")
+            elif x_direction == 'left':
+                self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
+                                       speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering: turning left (offset: {x_offset})")
+                    self.logger.info(f"Centering X: turning left (faster)")
+            
+            time.sleep(0.03)  # Short pause for stability
+            return  # Handle one axis at a time for stability
         
-        time.sleep(0.05)  # Small pause for stability
+        # PRIORITY 2: Y-axis centering (distance - forward/backward)
+        if y_direction != 'centered':
+            if y_direction == 'forward':
+                self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
+                                          speed=config.CENTERING_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"Centering Y: moving forward (closer)")
+            elif y_direction == 'backward':
+                self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
+                                           speed=config.CENTERING_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"Centering Y: moving backward (farther)")
+            
+            time.sleep(0.03)  # Short pause for stability
+            return
+        
+        # If we reach here, both axes should be centered
+        if config.DEBUG_MOVEMENT:
+            self.logger.info("Both X and Y axes centered!")
     
     def handle_approaching_ball(self, balls, nav_command):
         """Handle approaching with confidence tracking (legacy mode)"""
@@ -661,7 +684,8 @@ def main():
             print(f"   - X-centering tolerance: ±{config.CENTERING_TOLERANCE} pixels")
             print(f"   - Y-centering tolerance: ±{config.CENTERING_DISTANCE_TOLERANCE} pixels")
             print(f"   - Collection speed: {config.COLLECTION_SPEED}")
-            print(f"   - Centering turn speed: {config.CENTERING_TURN_DURATION}s (2x faster)")
+            print(f"   - Centering turn speed: {config.CENTERING_TURN_DURATION}s (FASTER)")
+            print(f"   - Centering drive speed: {config.CENTERING_DRIVE_DURATION}s")
             print(f"   - Interface mode: {interface_mode}")
             print("\nPress Enter to start competition...")
             input()
