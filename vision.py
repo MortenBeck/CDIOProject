@@ -130,9 +130,39 @@ class VisionSystem:
     
     # === NEW: BALL CENTERING METHODS ===
     def is_ball_centered(self, ball: DetectedObject) -> bool:
-        """Check if ball is centered enough to start collection"""
+        """Check if ball is centered enough to start collection (both X and Y)"""
         x_offset = abs(ball.center[0] - self.frame_center_x)
-        return x_offset <= config.CENTERING_TOLERANCE
+        y_offset = abs(ball.center[1] - self.frame_center_y)
+        
+        x_centered = x_offset <= config.CENTERING_TOLERANCE
+        y_centered = y_offset <= config.CENTERING_DISTANCE_TOLERANCE
+        
+        return x_centered and y_centered
+    
+    def get_centering_adjustment(self, ball: DetectedObject) -> tuple:
+        """Get centering adjustment directions (x_direction, y_direction)
+        Returns: ('left'/'right'/'centered', 'forward'/'backward'/'centered')"""
+        
+        x_offset = ball.center[0] - self.frame_center_x
+        y_offset = ball.center[1] - self.frame_center_y
+        
+        # X-axis centering (left/right)
+        if abs(x_offset) <= config.CENTERING_TOLERANCE:
+            x_direction = 'centered'
+        elif x_offset > 0:
+            x_direction = 'right'  # Ball is to the right, turn right
+        else:
+            x_direction = 'left'   # Ball is to the left, turn left
+        
+        # Y-axis centering (distance - forward/backward)
+        if abs(y_offset) <= config.CENTERING_DISTANCE_TOLERANCE:
+            y_direction = 'centered'
+        elif y_offset > 0:
+            y_direction = 'backward'  # Ball is below center, move back
+        else:
+            y_direction = 'forward'   # Ball is above center, move forward
+        
+        return x_direction, y_direction
     
     def calculate_drive_time_to_ball(self, ball: DetectedObject) -> float:
         """Calculate how long to drive to reach the ball"""
@@ -705,9 +735,16 @@ class VisionSystem:
         tolerance_color = (255, 255, 0)
         left_line = self.frame_center_x - config.CENTERING_TOLERANCE
         right_line = self.frame_center_x + config.CENTERING_TOLERANCE
+        top_line = self.frame_center_y - config.CENTERING_DISTANCE_TOLERANCE
+        bottom_line = self.frame_center_y + config.CENTERING_DISTANCE_TOLERANCE
         
+        # Vertical lines (left/right)
         cv2.line(result, (left_line, 0), (left_line, h), tolerance_color, 1)
         cv2.line(result, (right_line, 0), (right_line, h), tolerance_color, 1)
+        # Horizontal lines (distance)
+        cv2.line(result, (0, top_line), (w, top_line), tolerance_color, 1)
+        cv2.line(result, (0, bottom_line), (w, bottom_line), tolerance_color, 1)
+        
         cv2.putText(result, "CENTERING ZONE", (left_line + 5, 20), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, tolerance_color, 1)
         
@@ -912,12 +949,21 @@ class VisionSystem:
         
         # Centering tolerance lines
         tolerance = getattr(config, 'CENTERING_TOLERANCE', 15)
+        distance_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 20)
         center_x = self.frame_center_x
+        center_y = self.frame_center_y
+        
+        # Vertical lines (left/right centering)
         left_line = center_x - tolerance
         right_line = center_x + tolerance
-        
         cv2.line(result, (left_line, 0), (left_line, h), (0, 255, 255), 1)
         cv2.line(result, (right_line, 0), (right_line, h), (0, 255, 255), 1)
+        
+        # Horizontal lines (distance centering)
+        top_line = center_y - distance_tolerance
+        bottom_line = center_y + distance_tolerance
+        cv2.line(result, (0, top_line), (w, top_line), (0, 255, 255), 1)
+        cv2.line(result, (0, bottom_line), (w, bottom_line), (0, 255, 255), 1)
         
         # 2. WALL/BOUNDARY DETECTION (safety critical)
         if hasattr(self, 'detected_walls') and self.detected_walls:

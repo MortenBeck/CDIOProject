@@ -248,9 +248,10 @@ class GolfBotDashboard:
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
             y += line_height * 2
         
-        # Centering info
-        tolerance = getattr(config, 'CENTERING_TOLERANCE', 15)
-        cv2.putText(self.dashboard, f"Centering: ±{tolerance}px", 
+        # Centering info (both X and Y)
+        x_tolerance = getattr(config, 'CENTERING_TOLERANCE', 15)
+        y_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 20)
+        cv2.putText(self.dashboard, f"Centering: ±{x_tolerance}px X, ±{y_tolerance}px Y", 
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.accent_color, 1)
         y += line_height
         
@@ -287,7 +288,7 @@ class GolfBotDashboard:
         # Legend items
         legend_items = [
             ("Green Zone: Collection area", self.success_color),
-            ("Cyan Lines: Centering tolerance", self.accent_color),
+            ("Cyan Lines: Centering tolerance (X+Y)", self.accent_color),
             ("Cyan Arrow: Target direction", self.accent_color),
             ("O: Orange ball  B: White ball", self.text_color),
             ("Red Outline: Wall danger", self.danger_color),
@@ -341,10 +342,9 @@ class GolfBotDashboard:
         """Get detailed description of current state"""
         state_details = {
             'SEARCHING': "Looking for balls",
-            'CENTERING_BALL': "Aligning for collection",
+            'CENTERING_BALL': "Aligning X+Y for collection",
             'APPROACHING_BALL': "Moving toward target",
-            'COLLECTING_BALL': "Attempting collection",
-            'BLIND_COLLECTION': "Driving to ball",
+            'COLLECTING_BALL': "Enhanced collection sequence",
             'AVOIDING_BOUNDARY': "Avoiding walls",
             'EMERGENCY_STOP': "System stopped",
         }

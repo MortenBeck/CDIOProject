@@ -22,10 +22,9 @@ except ImportError:
 
 class RobotState(Enum):
     SEARCHING = "searching"
-    CENTERING_BALL = "centering_ball"  # NEW: Center ball before collection
+    CENTERING_BALL = "centering_ball"  # Enhanced: Center ball X+Y before collection
     APPROACHING_BALL = "approaching_ball"
-    COLLECTING_BALL = "collecting_ball"
-    BLIND_COLLECTION = "blind_collection"  # NEW: Drive to ball without vision
+    COLLECTING_BALL = "collecting_ball"  # Enhanced: New servo sequence
     AVOIDING_BOUNDARY = "avoiding_boundary"
     EMERGENCY_STOP = "emergency_stop"
 
@@ -60,8 +59,8 @@ class GolfBot:
         self.search_pattern_index = 0
         self.last_ball_seen_time = None
         
-        # NEW: Blind collection tracking
-        self.blind_collection_drive_time = 0.0
+        # NEW: Blind collection tracking (removed - using enhanced sequence)
+        # self.blind_collection_drive_time = 0.0
         
         # Performance tracking
         self.last_frame_time = time.time()
@@ -134,7 +133,7 @@ class GolfBot:
         
         self.logger.info("COMPETITION STARTED!")
         self.logger.info(f"Time limit: {config.COMPETITION_TIME} seconds")
-        self.logger.info("Using enhanced collection: Ball centering + Blind collection")
+        self.logger.info("Using enhanced collection: Ball centering (X+Y) + Enhanced sequence")
         
         try:
             self.main_loop()
@@ -265,26 +264,23 @@ class GolfBot:
         self.end_competition()
     
     def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute current state logic with enhanced ball centering and blind collection"""
+        """Execute current state logic with enhanced ball centering and collection"""
         
-        # Always check for boundary first
-        if near_boundary and self.state not in [RobotState.BLIND_COLLECTION]:
+        # Always check for boundary first (but allow collection to complete)
+        if near_boundary and self.state not in [RobotState.COLLECTING_BALL]:
             self.state = RobotState.AVOIDING_BOUNDARY
         
         if self.state == RobotState.SEARCHING:
             self.handle_searching(balls, nav_command)
             
-        elif self.state == RobotState.CENTERING_BALL:  # NEW
+        elif self.state == RobotState.CENTERING_BALL:  # Enhanced with X+Y centering
             self.handle_centering_ball(balls, nav_command)
             
         elif self.state == RobotState.APPROACHING_BALL:
             self.handle_approaching_ball(balls, nav_command)
             
-        elif self.state == RobotState.COLLECTING_BALL:
+        elif self.state == RobotState.COLLECTING_BALL:  # Enhanced sequence
             self.handle_collecting_ball()
-            
-        elif self.state == RobotState.BLIND_COLLECTION:  # NEW
-            self.handle_blind_collection()
             
         elif self.state == RobotState.AVOIDING_BOUNDARY:
             self.handle_avoiding_boundary(near_boundary)
@@ -383,37 +379,38 @@ class GolfBot:
         self.execute_navigation_command(nav_command)
     
     def handle_collecting_ball(self):
-        """Handle ball collection with improved logging (legacy mode)"""
+        """Handle ball collection with new enhanced sequence (vision-free)"""
         current_target = self.vision.current_target
         
         if current_target:
             ball_type = "orange" if current_target.object_type == "orange_ball" else "regular"
             confidence = current_target.confidence
-            self.logger.info(f"Attempting {ball_type} ball collection (confidence: {confidence:.2f})...")
+            self.logger.info(f"Starting enhanced collection of {ball_type} ball (confidence: {confidence:.2f})...")
         else:
             ball_type = "unknown"
-            self.logger.info("Attempting ball collection...")
+            self.logger.info("Starting enhanced ball collection...")
         
-        success = self.hardware.attempt_ball_collection()
+        # Execute new collection sequence (vision-free)
+        success = self.hardware.enhanced_collection_sequence()
         
         # Enhanced logging
         self.telemetry.log_collection_attempt(success, ball_type)
         
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ {ball_type.title()} ball collected! Total: {total_balls}")
+            self.logger.info(f"✅ {ball_type.title()} ball collected with enhanced sequence! Total: {total_balls}")
             
             # Log collection success with details
             collection_data = {
                 "ball_type": ball_type,
                 "confidence": confidence if current_target else 0.0,
                 "total_collected": total_balls,
-                "collection_method": "legacy_collection"
+                "collection_method": "enhanced_sequence"
             }
-            self.telemetry.log_frame_data(action="successful_collection", extra_data=collection_data)
+            self.telemetry.log_frame_data(action="successful_enhanced_collection", extra_data=collection_data)
         else:
-            self.logger.warning(f"❌ {ball_type.title()} ball collection failed")
-            self.telemetry.log_error(f"Ball collection failed - {ball_type}", "collection")
+            self.logger.warning(f"❌ {ball_type.title()} enhanced collection failed")
+            self.telemetry.log_error(f"Enhanced collection failed - {ball_type}", "collection")
         
         # Return to searching
         self.state = RobotState.SEARCHING
@@ -512,11 +509,12 @@ class GolfBot:
         
         # Current state with enhanced info
         state_text = f"State: {self.state.value}"
-        if self.state == RobotState.BLIND_COLLECTION and hasattr(self, 'blind_collection_drive_time'):
-            state_text += f" ({self.blind_collection_drive_time:.1f}s)"
+        if self.state == RobotState.COLLECTING_BALL:
+            state_text += " (Enhanced)"
         elif self.state == RobotState.CENTERING_BALL and self.vision.current_target:
+            x_dir, y_dir = self.vision.get_centering_adjustment(self.vision.current_target)
             centered = self.vision.is_ball_centered(self.vision.current_target)
-            state_text += f" ({'✓' if centered else '⊙'})"
+            state_text += f" ({'✓' if centered else f'{x_dir[:1].upper()}{y_dir[:1].upper()}'})"
         
         cv2.putText(frame, state_text, (10, y), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
@@ -564,7 +562,7 @@ class GolfBot:
         self.logger.info(f"Total time: {elapsed_time:.1f} seconds")
         self.logger.info(f"Balls collected: {self.hardware.get_ball_count()}")
         self.logger.info(f"Final state: {self.state.value}")
-        self.logger.info(f"Collection system: Enhanced (Centering + Blind Collection)")
+        self.logger.info(f"Collection system: Enhanced (X+Y Centering + Servo Sequence)")
         self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
         self.logger.info("=" * 60)
         
@@ -574,7 +572,7 @@ class GolfBot:
             "balls_collected": self.hardware.get_ball_count(),
             "final_state": self.state.value,
             "vision_system": "hough_circles_hybrid",
-            "collection_system": "enhanced_centering_blind",
+            "collection_system": "enhanced_xy_centering_servo_sequence",
             "arena_detected": self.vision.arena_detected
         }
         
@@ -613,9 +611,9 @@ def show_startup_menu():
     print("4. Exit")
     print("="*60)
     print("NEW FEATURES:")
-    print("• Ball centering before collection")
-    print("• Blind drive to ball (no vision occlusion)")
-    print("• Enhanced servo control for precision")
+    print("• Ball centering before collection (X+Y axis)")
+    print("• Enhanced servo collection sequence")
+    print("• Faster centering adjustments (2x speed)")
     print("• Clean dashboard interface (option 1) - Camera + Side panels")
     print("• Legacy overlay mode (option 2) - All info on camera")
     print("="*60)
@@ -677,15 +675,16 @@ def main():
                 return 1
             
             print("\n🚀 Robot ready with enhanced collection system!")
-            print("   - Ball centering for precision targeting")
-            print("   - Blind collection to avoid vision occlusion") 
+            print("   - Ball centering for precision targeting (X+Y axis)")
+            print("   - Enhanced servo collection sequence") 
             print("   - HoughCircles + Arena boundary detection")
             print("   - Enhanced servo control with gradual movement")
             print(f"   - {interface_mode} interface for monitoring")
             print(f"\n⚙️  Configuration:")
-            print(f"   - Centering tolerance: ±{config.CENTERING_TOLERANCE} pixels")
+            print(f"   - X-centering tolerance: ±{config.CENTERING_TOLERANCE} pixels")
+            print(f"   - Y-centering tolerance: ±{config.CENTERING_DISTANCE_TOLERANCE} pixels")
             print(f"   - Collection speed: {config.COLLECTION_SPEED}")
-            print(f"   - Drive time calculation: {config.COLLECTION_DRIVE_TIME_PER_PIXEL:.3f}s/pixel")
+            print(f"   - Centering turn speed: {config.CENTERING_TURN_DURATION}s (2x faster)")
             print(f"   - Interface mode: {interface_mode}")
             print("\nPress Enter to start competition...")
             input()
