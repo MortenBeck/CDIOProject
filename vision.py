@@ -126,19 +126,45 @@ class VisionSystem:
         return ret, frame
     
     def detect_balls(self, frame) -> List[DetectedObject]:
-        """Detect white ping pong balls in frame"""
+        """Detect white ping pong balls in frame with improved filtering"""
         detected_objects = []
         
         # Convert to HSV for better color filtering
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        # Create mask for white/light colors
-        mask = cv2.inRange(hsv, config.BALL_HSV_LOWER, config.BALL_HSV_UPPER)
+        # More restrictive white/light color detection to reduce false positives
+        # Focus on bright whites, not just light colors
+        ball_lower = np.array([0, 0, 200])    # Higher value threshold (brighter whites)
+        ball_upper = np.array([180, 40, 255]) # Lower saturation (more white, less colored)
         
-        # Clean up noise
-        kernel = np.ones((5,5), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+        # Create mask for white/light colors
+        mask = cv2.inRange(hsv, ball_lower, ball_upper)
+        
+        # More aggressive noise cleanup
+        kernel = np.ones((7,7), np.uint8)  # Larger kernel
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+        
+        # Additional: Remove small noise blobs
+        mask = cv2.medianBlur(mask, 5)
+        
+        # Define arena boundaries (exclude areas outside the red boundary)
+        h, w = frame.shape[:2]
+        
+        # Create arena mask - exclude top 15% and outer edges where non-arena objects appear
+        arena_mask = np.zeros((h, w), dtype=np.uint8)
+        
+        # Define "safe arena area" - exclude top portion and outer edges
+        top_margin = int(h * 0.15)      # Exclude top 15% where ceiling/wall objects appear
+        bottom_margin = int(h * 0.05)   # Small bottom margin
+        left_margin = int(w * 0.05)     # Small left margin  
+        right_margin = int(w * 0.05)    # Small right margin
+        
+        # Create rectangular arena region
+        arena_mask[top_margin:h-bottom_margin, left_margin:w-right_margin] = 255
+        
+        # Apply arena mask to ball detection mask
+        mask = cv2.bitwise_and(mask, arena_mask)
         
         # Find contours
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -146,40 +172,82 @@ class VisionSystem:
         for contour in contours:
             area = cv2.contourArea(contour)
             
+            # More restrictive area filtering
             if config.BALL_MIN_AREA < area < config.BALL_MAX_AREA:
-                # Check circularity
+                # Enhanced circularity check
                 perimeter = cv2.arcLength(contour, True)
                 if perimeter > 0:
                     circularity = 4 * np.pi * area / (perimeter * perimeter)
                     
-                    if circularity > 0.3:  # Reasonably circular
+                    # Much stricter circularity requirement (ping pong balls are very round)
+                    if circularity > 0.6:  # Increased from 0.3 to 0.6
                         (x, y), radius = cv2.minEnclosingCircle(contour)
                         center = (int(x), int(y))
                         radius = int(radius)
                         
                         if config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS:
-                            distance_from_center = np.sqrt(
-                                (center[0] - self.frame_center_x)**2 + 
-                                (center[1] - self.frame_center_y)**2
-                            )
                             
-                            # Check if ball is in collection zone
-                            in_collection_zone = self.is_in_collection_zone(center)
+                            # Additional validation: check if the detected circle matches the contour well
+                            # Create a mask of the perfect circle and compare with contour
+                            circle_mask = np.zeros((h, w), dtype=np.uint8)
+                            cv2.circle(circle_mask, center, radius, 255, -1)
+                            contour_mask = np.zeros((h, w), dtype=np.uint8)
+                            cv2.fillPoly(contour_mask, [contour], 255)
                             
-                            ball = DetectedObject(
-                                object_type='ball',
-                                center=center,
-                                radius=radius,
-                                area=area,
-                                confidence=circularity,
-                                distance_from_center=distance_from_center,
-                                in_collection_zone=in_collection_zone
-                            )
-                            detected_objects.append(ball)
+                            # Calculate overlap between perfect circle and actual contour
+                            intersection = cv2.bitwise_and(circle_mask, contour_mask)
+                            union = cv2.bitwise_or(circle_mask, contour_mask)
+                            overlap_ratio = np.sum(intersection) / max(1, np.sum(union))
+                            
+                            # Only accept if the shape closely matches a circle
+                            if overlap_ratio > 0.7:  # Must be at least 70% circle-like
+                                
+                                # Additional check: verify the object is actually white/bright in the original image
+                                # Sample the center region and check brightness
+                                sample_radius = max(3, radius // 3)
+                                y1, y2 = max(0, center[1] - sample_radius), min(h, center[1] + sample_radius)
+                                x1, x2 = max(0, center[0] - sample_radius), min(w, center[0] + sample_radius)
+                                
+                                center_region = frame[y1:y2, x1:x2]
+                                if center_region.size > 0:
+                                    # Convert to grayscale and check brightness
+                                    gray_region = cv2.cvtColor(center_region, cv2.COLOR_BGR2GRAY)
+                                    mean_brightness = np.mean(gray_region)
+                                    
+                                    # Only accept if the center is actually bright (white ball)
+                                    if mean_brightness > 180:  # Bright threshold
+                                        
+                                        distance_from_center = np.sqrt(
+                                            (center[0] - self.frame_center_x)**2 + 
+                                            (center[1] - self.frame_center_y)**2
+                                        )
+                                        
+                                        # Check if ball is in collection zone
+                                        in_collection_zone = self.is_in_collection_zone(center)
+                                        
+                                        ball = DetectedObject(
+                                            object_type='ball',
+                                            center=center,
+                                            radius=radius,
+                                            area=area,
+                                            confidence=circularity * overlap_ratio,  # Combined confidence score
+                                            distance_from_center=distance_from_center,
+                                            in_collection_zone=in_collection_zone
+                                        )
+                                        detected_objects.append(ball)
         
         # Sort by distance from center (closest first)
         detected_objects.sort(key=lambda x: x.distance_from_center)
+        
+        # Limit to maximum reasonable number of balls to prevent false positive spam
+        max_balls = 6  # Arena shouldn't have more than 6 balls visible at once
+        if len(detected_objects) > max_balls:
+            # Keep only the closest and most confident detections
+            detected_objects.sort(key=lambda x: (x.distance_from_center, -x.confidence))
+            detected_objects = detected_objects[:max_balls]
+        
         return detected_objects
+
     
     def detect_orange_ball(self, frame) -> Optional[DetectedObject]:
         """Detect orange VIP ball specifically"""
