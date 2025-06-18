@@ -65,6 +65,17 @@ SERVO_COLLECT_OPEN = 45   # Open position for collection
 SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
 SERVO_RELEASE = 0         # Release position
 
+# === SERVO 1 FOUR-STATE SYSTEM ===
+SERVO_1_STORE = 0        # Store position
+SERVO_1_PRE_COLLECT = 120 # Pre-collect position
+SERVO_1_DRIVING = 150     # Driving position (default/start position)
+SERVO_1_COLLECT = 180     # Collect position
+SERVO_1_STEP_SIZE = 5     # Incremental movement step size
+
+# === ENHANCED COLLECTION POSITIONS ===
+SERVO_READY_POSITION = 90  # Servos up and ready to catch
+SERVO_CATCH_POSITION = 135  # Close position to secure ball
+
 # === SERVO MOVEMENT SETTINGS ===
 SERVO_GRADUAL_MOVEMENT = True  # Enable gradual servo movement to reduce current draw
 SERVO_STEP_DELAY = 0.02  # Seconds between angle steps for gradual movement
@@ -75,6 +86,19 @@ SERVO_SEQUENTIAL_DELAY = 0.1  # Delay between multiple servo movements (seconds)
 TURN_TIME_90_DEGREES = 0.6  # Time to turn 90 degrees
 FORWARD_TIME_SHORT = 0.2    # Short forward movement
 BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
+
+# === COLLECTION BEHAVIOR ===
+CENTERING_TOLERANCE = 25  # Pixels - more lenient X centering (was 15)
+CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
+COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
+MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
+MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
+COLLECTION_SPEED = 0.4  # Slower speed for precise collection
+
+# === ENHANCED CENTERING BEHAVIOR (FASTER) ===
+CENTERING_TURN_DURATION = 0.25  # Faster horizontal centering (was 0.16)
+CENTERING_DRIVE_DURATION = 0.15  # Duration for forward/backward centering adjustments
+CENTERING_SPEED = 0.4  # Speed for centering movements
 
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [

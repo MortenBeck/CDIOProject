@@ -1,0 +1,3475 @@
+{
+  "session_summary": {
+    "session_metadata": {
+      "session_dir": "logs/golfbot_20250617_141457",
+      "start_time": "2025-06-17T14:14:57.462147",
+      "duration_seconds": 92.80935549736023,
+      "total_frames": 166,
+      "average_fps": 1.788612787045176
+    },
+    "detection_stats": {
+      "total_balls_detected": 53,
+      "total_collections": 1,
+      "collection_rate": 0.018867924528301886,
+      "errors_logged": 0
+    },
+    "competition_result": {},
+    "files": {
+      "telemetry_log": "logs/golfbot_20250617_141457/telemetry.jsonl",
+      "summary": "logs/golfbot_20250617_141457/session_summary.json"
+    }
+  },
+  "telemetry_data": [
+    {
+      "timestamp": "2025-06-17T14:14:59.860862",
+      "frame_number": 0,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:14:59.860913",
+      "frame_number": 1,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.4196485752942955,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 843.9102172851562,
+      "frames_processed": 1
+    },
+    {
+      "timestamp": "2025-06-17T14:15:01.293323",
+      "frame_number": 2,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:01.293356",
+      "frame_number": 3,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.6981078719855501,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 823.7724304199219,
+      "frames_processed": 3
+    },
+    {
+      "timestamp": "2025-06-17T14:15:03.106239",
+      "frame_number": 4,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:03.106273",
+      "frame_number": 5,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5515973794053411,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 798.6907958984375,
+      "frames_processed": 5
+    },
+    {
+      "timestamp": "2025-06-17T14:15:04.502424",
+      "frame_number": 6,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:04.502460",
+      "frame_number": 7,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.7162381132984712,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 790.6744480133057,
+      "frames_processed": 7
+    },
+    {
+      "timestamp": "2025-06-17T14:15:06.332195",
+      "frame_number": 8,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:06.332229",
+      "frame_number": 9,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.54651682020105,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 825.9680271148682,
+      "frames_processed": 9
+    },
+    {
+      "timestamp": "2025-06-17T14:15:07.736585",
+      "frame_number": 10,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:07.736616",
+      "frame_number": 11,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.7120551675432312,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 796.6005802154541,
+      "frames_processed": 11
+    },
+    {
+      "timestamp": "2025-06-17T14:15:09.527527",
+      "frame_number": 12,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:09.527561",
+      "frame_number": 13,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5583646453263648,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 787.4436378479004,
+      "frames_processed": 13
+    },
+    {
+      "timestamp": "2025-06-17T14:15:10.432834",
+      "frame_number": 14,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_avoiding_boundary",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "avoiding_boundary",
+      "reason": "search"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:11.370171",
+      "frame_number": 15,
+      "ball_positions": [
+        [
+          220,
+          236
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            220,
+            236
+          ],
+          "radius": 19,
+          "area": 1078.5,
+          "confidence": 0.8463476477562322,
+          "distance_from_center": 100.07996802557443
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:11.370204",
+      "frame_number": 16,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5426990658075201,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 837.2542858123779,
+      "frames_processed": 16
+    },
+    {
+      "timestamp": "2025-06-17T14:15:11.372933",
+      "frame_number": 17,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_avoiding_boundary_to_searching",
+      "errors": [],
+      "old_state": "avoiding_boundary",
+      "new_state": "searching",
+      "reason": "turn_left"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:12.260624",
+      "frame_number": 18,
+      "ball_positions": [
+        [
+          224,
+          236
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            224,
+            236
+          ],
+          "radius": 19,
+          "area": 1078.0,
+          "confidence": 0.8904356015942165,
+          "distance_from_center": 96.08329719571451
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:12.260657",
+      "frame_number": 19,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.1230237726954713,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 787.6291275024414,
+      "frames_processed": 19
+    },
+    {
+      "timestamp": "2025-06-17T14:15:12.265699",
+      "frame_number": 20,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_approaching_ball",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "approaching_ball",
+      "reason": "turn_left"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:13.166583",
+      "frame_number": 21,
+      "ball_positions": [
+        [
+          223,
+          236
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            223,
+            236
+          ],
+          "radius": 19,
+          "area": 1076.0,
+          "confidence": 0.857802880727167,
+          "distance_from_center": 97.082439194738
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:13.166615",
+      "frame_number": 22,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.103804877021785,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 800.806999206543,
+      "frames_processed": 22
+    },
+    {
+      "timestamp": "2025-06-17T14:15:14.255818",
+      "frame_number": 23,
+      "ball_positions": [
+        [
+          247,
+          234
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            247,
+            234
+          ],
+          "radius": 19,
+          "area": 1055.0,
+          "confidence": 0.860531577773362,
+          "distance_from_center": 73.24616030891995
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:14.255850",
+      "frame_number": 24,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9180762771093594,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 785.9156131744385,
+      "frames_processed": 24
+    },
+    {
+      "timestamp": "2025-06-17T14:15:15.351944",
+      "frame_number": 25,
+      "ball_positions": [
+        [
+          263,
+          235
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            263,
+            235
+          ],
+          "radius": 19,
+          "area": 1072.0,
+          "confidence": 0.8682667798811424,
+          "distance_from_center": 57.21887800367987
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:15.351973",
+      "frame_number": 26,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.912307184670522,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 791.1477088928223,
+      "frames_processed": 26
+    },
+    {
+      "timestamp": "2025-06-17T14:15:16.497509",
+      "frame_number": 27,
+      "ball_positions": [
+        [
+          273,
+          234
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            273,
+            234
+          ],
+          "radius": 19,
+          "area": 1067.5,
+          "confidence": 0.8613709803829014,
+          "distance_from_center": 47.38143096192854
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:16.497540",
+      "frame_number": 28,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8729311273127929,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 842.3783779144287,
+      "frames_processed": 28
+    },
+    {
+      "timestamp": "2025-06-17T14:15:17.588732",
+      "frame_number": 29,
+      "ball_positions": [
+        [
+          274,
+          235
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            274,
+            235
+          ],
+          "radius": 19,
+          "area": 1055.0,
+          "confidence": 0.8792020324912235,
+          "distance_from_center": 46.2709412050371
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:17.597716",
+      "frame_number": 30,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 180,
+        "s2": 89,
+        "s3": 89
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 0,
+      "has_balls": false
+    },
+    {
+      "timestamp": "2025-06-17T14:15:17.597734",
+      "frame_number": 31,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9089308224620964,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 795.1853275299072,
+      "frames_processed": 31
+    },
+    {
+      "timestamp": "2025-06-17T14:15:18.684887",
+      "frame_number": 32,
+      "ball_positions": [
+        [
+          288,
+          234
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            288,
+            234
+          ],
+          "radius": 19,
+          "area": 1070.0,
+          "confidence": 0.8543660384936936,
+          "distance_from_center": 32.55764119219941
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:18.684919",
+      "frame_number": 33,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.919807744728649,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 783.9570045471191,
+      "frames_processed": 33
+    },
+    {
+      "timestamp": "2025-06-17T14:15:19.786132",
+      "frame_number": 34,
+      "ball_positions": [
+        [
+          301,
+          235
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            301,
+            235
+          ],
+          "radius": 19,
+          "area": 1073.0,
+          "confidence": 0.8576064889545,
+          "distance_from_center": 19.6468827043885
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:19.786164",
+      "frame_number": 35,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9080634039517597,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 796.2746620178223,
+      "frames_processed": 35
+    },
+    {
+      "timestamp": "2025-06-17T14:15:21.000421",
+      "frame_number": 36,
+      "ball_positions": [
+        [
+          297,
+          258
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            297,
+            258
+          ],
+          "radius": 20,
+          "area": 1236.5,
+          "confidence": 0.8824384669970121,
+          "distance_from_center": 29.206163733020468
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:21.000460",
+      "frame_number": 37,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8235238217531972,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 811.018705368042,
+      "frames_processed": 37
+    },
+    {
+      "timestamp": "2025-06-17T14:15:22.220409",
+      "frame_number": 38,
+      "ball_positions": [
+        [
+          300,
+          279
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            300,
+            279
+          ],
+          "radius": 22,
+          "area": 1434.0,
+          "confidence": 0.8696135422347329,
+          "distance_from_center": 43.829214001622255
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:22.220438",
+      "frame_number": 39,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8196871695423666,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 814.4338130950928,
+      "frames_processed": 39
+    },
+    {
+      "timestamp": "2025-06-17T14:15:23.419406",
+      "frame_number": 40,
+      "ball_positions": [
+        [
+          297,
+          310
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            297,
+            310
+          ],
+          "radius": 24,
+          "area": 1749.5,
+          "confidence": 0.8667760982653264,
+          "distance_from_center": 73.68174807915459
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:23.419503",
+      "frame_number": 41,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8339834977087,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 795.3715324401855,
+      "frames_processed": 41
+    },
+    {
+      "timestamp": "2025-06-17T14:15:24.612710",
+      "frame_number": 42,
+      "ball_positions": [
+        [
+          297,
+          341
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            297,
+            341
+          ],
+          "radius": 26,
+          "area": 2076.0,
+          "confidence": 0.8785842016459677,
+          "distance_from_center": 103.58571330062848
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:24.612742",
+      "frame_number": 43,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8380555961831871,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 787.9869937896729,
+      "frames_processed": 43
+    },
+    {
+      "timestamp": "2025-06-17T14:15:25.799957",
+      "frame_number": 44,
+      "ball_positions": [
+        [
+          295,
+          382
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            295,
+            382
+          ],
+          "radius": 28,
+          "area": 2004.0,
+          "confidence": 0.686695941142322,
+          "distance_from_center": 144.183910336764
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:25.799989",
+      "frame_number": 45,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8422857021219683,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 783.9419841766357,
+      "frames_processed": 45
+    },
+    {
+      "timestamp": "2025-06-17T14:15:27.017320",
+      "frame_number": 46,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:27.017359",
+      "frame_number": 47,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8214445330110987,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 812.4196529388428,
+      "frames_processed": 47
+    },
+    {
+      "timestamp": "2025-06-17T14:15:27.020556",
+      "frame_number": 48,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_approaching_ball_to_searching",
+      "errors": [],
+      "old_state": "approaching_ball",
+      "new_state": "searching",
+      "reason": "search"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:27.942235",
+      "frame_number": 49,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:27.951160",
+      "frame_number": 50,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 180,
+        "s2": 89,
+        "s3": 89
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 0,
+      "has_balls": false
+    },
+    {
+      "timestamp": "2025-06-17T14:15:27.951186",
+      "frame_number": 51,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.0708611560887857,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 830.5175304412842,
+      "frames_processed": 51
+    },
+    {
+      "timestamp": "2025-06-17T14:15:29.353269",
+      "frame_number": 52,
+      "ball_positions": [
+        [
+          369,
+          352
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            369,
+            352
+          ],
+          "radius": 26,
+          "area": 2021.5,
+          "confidence": 0.7928836373903103,
+          "distance_from_center": 122.24974437601087
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:29.353298",
+      "frame_number": 53,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.7132099040229163,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 797.9965209960938,
+      "frames_processed": 53
+    },
+    {
+      "timestamp": "2025-06-17T14:15:29.356085",
+      "frame_number": 54,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_approaching_ball",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "approaching_ball",
+      "reason": "turn_right"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:30.249287",
+      "frame_number": 55,
+      "ball_positions": [
+        [
+          351,
+          368
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            351,
+            368
+          ],
+          "radius": 27,
+          "area": 1990.5,
+          "confidence": 0.7443491644845701,
+          "distance_from_center": 131.70041761513136
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:30.249318",
+      "frame_number": 56,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.1160477848828794,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 793.1318283081055,
+      "frames_processed": 56
+    },
+    {
+      "timestamp": "2025-06-17T14:15:31.344373",
+      "frame_number": 57,
+      "ball_positions": [
+        [
+          349,
+          355
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            349,
+            355
+          ],
+          "radius": 26,
+          "area": 1618.5,
+          "confidence": 0.6201646981265696,
+          "distance_from_center": 118.6001686339442
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:31.344403",
+      "frame_number": 58,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9131716000267357,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 790.0700569152832,
+      "frames_processed": 58
+    },
+    {
+      "timestamp": "2025-06-17T14:15:32.558471",
+      "frame_number": 59,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:32.567526",
+      "frame_number": 60,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 180,
+        "s2": 89,
+        "s3": 89
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 0,
+      "has_balls": false
+    },
+    {
+      "timestamp": "2025-06-17T14:15:32.567549",
+      "frame_number": 61,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8175645515357755,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 819.866418838501,
+      "frames_processed": 61
+    },
+    {
+      "timestamp": "2025-06-17T14:15:32.572143",
+      "frame_number": 62,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_approaching_ball_to_searching",
+      "errors": [],
+      "old_state": "approaching_ball",
+      "new_state": "searching",
+      "reason": "search"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:33.482941",
+      "frame_number": 63,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:33.482974",
+      "frame_number": 64,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.092390129509429,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 810.7190132141113,
+      "frames_processed": 64
+    },
+    {
+      "timestamp": "2025-06-17T14:15:35.276831",
+      "frame_number": 65,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:35.276861",
+      "frame_number": 66,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5574487444157825,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 790.5838489532471,
+      "frames_processed": 66
+    },
+    {
+      "timestamp": "2025-06-17T14:15:36.669124",
+      "frame_number": 67,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:36.669154",
+      "frame_number": 68,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.7182401275682844,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 787.2300148010254,
+      "frames_processed": 68
+    },
+    {
+      "timestamp": "2025-06-17T14:15:38.508921",
+      "frame_number": 69,
+      "ball_positions": [
+        [
+          211,
+          407
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            211,
+            407
+          ],
+          "radius": 31,
+          "area": 2053.5,
+          "confidence": 0.5763185094788422,
+          "distance_from_center": 199.42417105255822
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:38.517736",
+      "frame_number": 70,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 180,
+        "s2": 89,
+        "s3": 89
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 0,
+      "has_balls": false
+    },
+    {
+      "timestamp": "2025-06-17T14:15:38.517753",
+      "frame_number": 71,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5409502132303685,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 845.3269004821777,
+      "frames_processed": 71
+    },
+    {
+      "timestamp": "2025-06-17T14:15:38.522306",
+      "frame_number": 72,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_approaching_ball",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "approaching_ball",
+      "reason": "turn_left"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:39.408083",
+      "frame_number": 73,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:39.408115",
+      "frame_number": 74,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.123141354527051,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 785.6874465942383,
+      "frames_processed": 74
+    },
+    {
+      "timestamp": "2025-06-17T14:15:39.410990",
+      "frame_number": 75,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_approaching_ball_to_searching",
+      "errors": [],
+      "old_state": "approaching_ball",
+      "new_state": "searching",
+      "reason": "search"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:40.305673",
+      "frame_number": 76,
+      "ball_positions": [
+        [
+          210,
+          407
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            210,
+            407
+          ],
+          "radius": 31,
+          "area": 2070.0,
+          "confidence": 0.5778737303070614,
+          "distance_from_center": 199.972498109115
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:40.305704",
+      "frame_number": 77,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.114094801161507,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 794.6116924285889,
+      "frames_processed": 77
+    },
+    {
+      "timestamp": "2025-06-17T14:15:40.310307",
+      "frame_number": 78,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_approaching_ball",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "approaching_ball",
+      "reason": "turn_left"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:41.198747",
+      "frame_number": 79,
+      "ball_positions": [
+        [
+          212,
+          408
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            212,
+            408
+          ],
+          "radius": 31,
+          "area": 2088.0,
+          "confidence": 0.576303141159754,
+          "distance_from_center": 199.71980372511885
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:41.207568",
+      "frame_number": 80,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 180,
+        "s2": 89,
+        "s3": 89
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 0,
+      "has_balls": false
+    },
+    {
+      "timestamp": "2025-06-17T14:15:41.207586",
+      "frame_number": 81,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.1087928780157166,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 797.1723079681396,
+      "frames_processed": 81
+    },
+    {
+      "timestamp": "2025-06-17T14:15:42.302052",
+      "frame_number": 82,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:42.302085",
+      "frame_number": 83,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9136627334528807,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 791.1748886108398,
+      "frames_processed": 83
+    },
+    {
+      "timestamp": "2025-06-17T14:15:42.306606",
+      "frame_number": 84,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_approaching_ball_to_searching",
+      "errors": [],
+      "old_state": "approaching_ball",
+      "new_state": "searching",
+      "reason": "search"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:43.220135",
+      "frame_number": 85,
+      "ball_positions": [
+        [
+          475,
+          151
+        ],
+        [
+          513,
+          151
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 2,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            475,
+            151
+          ],
+          "radius": 12,
+          "area": 331.5,
+          "confidence": 0.6218544134585262,
+          "distance_from_center": 178.73443988218946
+        },
+        {
+          "id": 1,
+          "center": [
+            513,
+            151
+          ],
+          "radius": 12,
+          "area": 310.0,
+          "confidence": 0.6424451084627235,
+          "distance_from_center": 212.5323504786977
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:43.220171",
+      "frame_number": 86,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.0892225166539764,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 813.4584426879883,
+      "frames_processed": 86
+    },
+    {
+      "timestamp": "2025-06-17T14:15:43.223359",
+      "frame_number": 87,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_approaching_ball",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "approaching_ball",
+      "reason": "turn_right"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:44.131149",
+      "frame_number": 88,
+      "ball_positions": [
+        [
+          485,
+          151
+        ],
+        [
+          600,
+          151
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 2,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            485,
+            151
+          ],
+          "radius": 11,
+          "area": 278.5,
+          "confidence": 0.6854267325038248,
+          "distance_from_center": 187.47266467407988
+        },
+        {
+          "id": 1,
+          "center": [
+            600,
+            151
+          ],
+          "radius": 11,
+          "area": 239.0,
+          "confidence": 0.5439361104685172,
+          "distance_from_center": 293.8043566729398
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:44.131179",
+      "frame_number": 89,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.0976853446335608,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 807.7056407928467,
+      "frames_processed": 89
+    },
+    {
+      "timestamp": "2025-06-17T14:15:45.221931",
+      "frame_number": 90,
+      "ball_positions": [
+        [
+          215,
+          407
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            215,
+            407
+          ],
+          "radius": 31,
+          "area": 2115.5,
+          "confidence": 0.5770347893241699,
+          "distance_from_center": 197.2663174492797
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:45.221962",
+      "frame_number": 91,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9167737324237661,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 785.862922668457,
+      "frames_processed": 91
+    },
+    {
+      "timestamp": "2025-06-17T14:15:46.318534",
+      "frame_number": 92,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:46.318566",
+      "frame_number": 93,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.911907311362033,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 793.215274810791,
+      "frames_processed": 93
+    },
+    {
+      "timestamp": "2025-06-17T14:15:46.323190",
+      "frame_number": 94,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_approaching_ball_to_searching",
+      "errors": [],
+      "old_state": "approaching_ball",
+      "new_state": "searching",
+      "reason": "search"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:47.214264",
+      "frame_number": 95,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:47.214297",
+      "frame_number": 96,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.1164084172264719,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 790.999174118042,
+      "frames_processed": 96
+    },
+    {
+      "timestamp": "2025-06-17T14:15:48.628107",
+      "frame_number": 97,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:15:48.628147",
+      "frame_number": 98,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.7072892902004702,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 810.5804920196533,
+      "frames_processed": 98
+    },
+    {
+      "timestamp": "2025-06-17T14:15:50.442263",
+      "frame_number": 99,
+      "ball_positions": [
+        [
+          150,
+          412
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            150,
+            412
+          ],
+          "radius": 25,
+          "area": 1419.5,
+          "confidence": 0.6158459099074663,
+          "distance_from_center": 241.83465425782137
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:50.451195",
+      "frame_number": 100,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 180,
+        "s2": 89,
+        "s3": 89
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 0,
+      "has_balls": false
+    },
+    {
+      "timestamp": "2025-06-17T14:15:50.451212",
+      "frame_number": 101,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5485263509621074,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 817.5907135009766,
+      "frames_processed": 101
+    },
+    {
+      "timestamp": "2025-06-17T14:15:50.454016",
+      "frame_number": 102,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_approaching_ball",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "approaching_ball",
+      "reason": "turn_left"
+    },
+    {
+      "timestamp": "2025-06-17T14:15:51.338403",
+      "frame_number": 103,
+      "ball_positions": [
+        [
+          157,
+          421
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            157,
+            421
+          ],
+          "radius": 23,
+          "area": 1282.0,
+          "confidence": 0.6877468513441154,
+          "distance_from_center": 243.57750306627253
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:51.338434",
+      "frame_number": 104,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.1271150686565945,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 784.3179702758789,
+      "frames_processed": 104
+    },
+    {
+      "timestamp": "2025-06-17T14:15:52.427033",
+      "frame_number": 105,
+      "ball_positions": [
+        [
+          600,
+          139
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            600,
+            139
+          ],
+          "radius": 11,
+          "area": 257.0,
+          "confidence": 0.5845265301874291,
+          "distance_from_center": 297.65920110085625
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:52.427063",
+      "frame_number": 106,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.918587186528014,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 783.6596965789795,
+      "frames_processed": 106
+    },
+    {
+      "timestamp": "2025-06-17T14:15:53.537622",
+      "frame_number": 107,
+      "ball_positions": [
+        [
+          157,
+          417
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            157,
+            417
+          ],
+          "radius": 25,
+          "area": 1539.5,
+          "confidence": 0.684877325478077,
+          "distance_from_center": 240.6200324162558
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:53.537651",
+      "frame_number": 108,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9004250196108402,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 807.3949813842773,
+      "frames_processed": 108
+    },
+    {
+      "timestamp": "2025-06-17T14:15:54.646793",
+      "frame_number": 109,
+      "ball_positions": [
+        [
+          426,
+          149
+        ],
+        [
+          183,
+          414
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 2,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            426,
+            149
+          ],
+          "radius": 11,
+          "area": 312.5,
+          "confidence": 0.7549867336156372,
+          "distance_from_center": 139.70325694127536
+        },
+        {
+          "id": 1,
+          "center": [
+            183,
+            414
+          ],
+          "radius": 32,
+          "area": 2210.0,
+          "confidence": 0.611848028829725,
+          "distance_from_center": 221.46105752479374
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:54.655648",
+      "frame_number": 110,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 180,
+        "s2": 89,
+        "s3": 89
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 0,
+      "has_balls": false
+    },
+    {
+      "timestamp": "2025-06-17T14:15:54.655667",
+      "frame_number": 111,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8944413878404026,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 813.04931640625,
+      "frames_processed": 111
+    },
+    {
+      "timestamp": "2025-06-17T14:15:55.765464",
+      "frame_number": 112,
+      "ball_positions": [
+        [
+          163,
+          414
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            163,
+            414
+          ],
+          "radius": 28,
+          "area": 1929.5,
+          "confidence": 0.7001042902728446,
+          "distance_from_center": 234.3608329051593
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:55.765495",
+      "frame_number": 113,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9010414932402081,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 806.633710861206,
+      "frames_processed": 113
+    },
+    {
+      "timestamp": "2025-06-17T14:15:56.863184",
+      "frame_number": 114,
+      "ball_positions": [
+        [
+          362,
+          152
+        ],
+        [
+          185,
+          409
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 2,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            362,
+            152
+          ],
+          "radius": 14,
+          "area": 399.5,
+          "confidence": 0.5719757509296101,
+          "distance_from_center": 97.50897394599124
+        },
+        {
+          "id": 1,
+          "center": [
+            185,
+            409
+          ],
+          "radius": 31,
+          "area": 2192.5,
+          "confidence": 0.649531038346289,
+          "distance_from_center": 216.3007165961315
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:56.863212",
+      "frame_number": 115,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9109821648093592,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 792.7272319793701,
+      "frames_processed": 115
+    },
+    {
+      "timestamp": "2025-06-17T14:15:57.965142",
+      "frame_number": 116,
+      "ball_positions": [
+        [
+          164,
+          410
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            164,
+            410
+          ],
+          "radius": 28,
+          "area": 1973.5,
+          "confidence": 0.7194990617047186,
+          "distance_from_center": 230.72927859289987
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:57.965172",
+      "frame_number": 117,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9074745908222327,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 798.7680435180664,
+      "frames_processed": 117
+    },
+    {
+      "timestamp": "2025-06-17T14:15:59.060240",
+      "frame_number": 118,
+      "ball_positions": [
+        [
+          186,
+          405
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            186,
+            405
+          ],
+          "radius": 31,
+          "area": 2165.5,
+          "confidence": 0.6394895739442791,
+          "distance_from_center": 212.55822731665788
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:15:59.060271",
+      "frame_number": 119,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9131608642482503,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 791.1398410797119,
+      "frames_processed": 119
+    },
+    {
+      "timestamp": "2025-06-17T14:16:00.166959",
+      "frame_number": 120,
+      "ball_positions": [
+        [
+          200,
+          398
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            200,
+            398
+          ],
+          "radius": 30,
+          "area": 2136.5,
+          "confidence": 0.6658068798558527,
+          "distance_from_center": 198.40362899906847
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:00.166995",
+      "frame_number": 121,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9035689896228508,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 803.2233715057373,
+      "frames_processed": 121
+    },
+    {
+      "timestamp": "2025-06-17T14:16:01.304046",
+      "frame_number": 122,
+      "ball_positions": [
+        [
+          203,
+          396
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            203,
+            396
+          ],
+          "radius": 30,
+          "area": 2097.0,
+          "confidence": 0.6589425106143559,
+          "distance_from_center": 195.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:01.304077",
+      "frame_number": 123,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8794443421692143,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 831.721305847168,
+      "frames_processed": 123
+    },
+    {
+      "timestamp": "2025-06-17T14:16:02.406538",
+      "frame_number": 124,
+      "ball_positions": [
+        [
+          216,
+          395
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            216,
+            395
+          ],
+          "radius": 30,
+          "area": 2025.0,
+          "confidence": 0.6521036908029644,
+          "distance_from_center": 186.65744024817226
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:02.406569",
+      "frame_number": 125,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9070361789080283,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 799.3457317352295,
+      "frames_processed": 125
+    },
+    {
+      "timestamp": "2025-06-17T14:16:03.491130",
+      "frame_number": 126,
+      "ball_positions": [
+        [
+          220,
+          394
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            220,
+            394
+          ],
+          "radius": 29,
+          "area": 1945.5,
+          "confidence": 0.6460625518984794,
+          "distance_from_center": 183.61917111238685
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:03.491159",
+      "frame_number": 127,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.922008848796892,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 779.5772552490234,
+      "frames_processed": 127
+    },
+    {
+      "timestamp": "2025-06-17T14:16:04.571128",
+      "frame_number": 128,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:16:04.571161",
+      "frame_number": 129,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9259255825248076,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 776.836633682251,
+      "frames_processed": 129
+    },
+    {
+      "timestamp": "2025-06-17T14:16:04.576056",
+      "frame_number": 130,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_approaching_ball_to_searching",
+      "errors": [],
+      "old_state": "approaching_ball",
+      "new_state": "searching",
+      "reason": "search"
+    },
+    {
+      "timestamp": "2025-06-17T14:16:05.472342",
+      "frame_number": 131,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:16:05.472374",
+      "frame_number": 132,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.1096165618771425,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 796.2174415588379,
+      "frames_processed": 132
+    },
+    {
+      "timestamp": "2025-06-17T14:16:06.879060",
+      "frame_number": 133,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:16:06.879090",
+      "frame_number": 134,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.7108760904309861,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 803.4036159515381,
+      "frames_processed": 134
+    },
+    {
+      "timestamp": "2025-06-17T14:16:08.678228",
+      "frame_number": 135,
+      "ball_positions": [
+        [
+          148,
+          408
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            148,
+            408
+          ],
+          "radius": 24,
+          "area": 1441.5,
+          "confidence": 0.6749583352526185,
+          "distance_from_center": 240.4329428343795
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:08.678259",
+      "frame_number": 136,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5558119149009477,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 794.1622734069824,
+      "frames_processed": 136
+    },
+    {
+      "timestamp": "2025-06-17T14:16:08.681125",
+      "frame_number": 137,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_searching_to_approaching_ball",
+      "errors": [],
+      "old_state": "searching",
+      "new_state": "approaching_ball",
+      "reason": "turn_left"
+    },
+    {
+      "timestamp": "2025-06-17T14:16:09.566960",
+      "frame_number": 138,
+      "ball_positions": [
+        [
+          148,
+          411
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            148,
+            411
+          ],
+          "radius": 25,
+          "area": 1463.0,
+          "confidence": 0.6253160565150929,
+          "distance_from_center": 242.53865671269807
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:09.566991",
+      "frame_number": 139,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.1252004637829212,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 785.7582569122314,
+      "frames_processed": 139
+    },
+    {
+      "timestamp": "2025-06-17T14:16:10.663219",
+      "frame_number": 140,
+      "ball_positions": [
+        [
+          170,
+          411
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            170,
+            411
+          ],
+          "radius": 32,
+          "area": 2229.5,
+          "confidence": 0.6121393773673426,
+          "distance_from_center": 227.46648104720836
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:10.663248",
+      "frame_number": 141,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.912195676801657,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 791.3253307342529,
+      "frames_processed": 141
+    },
+    {
+      "timestamp": "2025-06-17T14:16:11.794920",
+      "frame_number": 142,
+      "ball_positions": [
+        [
+          180,
+          404
+        ],
+        [
+          599,
+          138
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 2,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            180,
+            404
+          ],
+          "radius": 31,
+          "area": 2182.5,
+          "confidence": 0.6514668485356967,
+          "distance_from_center": 215.62931155109686
+        },
+        {
+          "id": 1,
+          "center": [
+            599,
+            138
+          ],
+          "radius": 11,
+          "area": 267.5,
+          "confidence": 0.6582356484118868,
+          "distance_from_center": 297.0605998782067
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:11.794950",
+      "frame_number": 143,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8836256277521763,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 828.4509181976318,
+      "frames_processed": 143
+    },
+    {
+      "timestamp": "2025-06-17T14:16:12.880462",
+      "frame_number": 144,
+      "ball_positions": [
+        [
+          195,
+          400
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            195,
+            400
+          ],
+          "radius": 31,
+          "area": 2130.0,
+          "confidence": 0.6291478067055823,
+          "distance_from_center": 203.03940504246953
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:12.880493",
+      "frame_number": 145,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9211984375463284,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 780.5345058441162,
+      "frames_processed": 145
+    },
+    {
+      "timestamp": "2025-06-17T14:16:13.971856",
+      "frame_number": 146,
+      "ball_positions": [
+        [
+          209,
+          395
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            209,
+            395
+          ],
+          "radius": 30,
+          "area": 2119.5,
+          "confidence": 0.6754957734907366,
+          "distance_from_center": 190.64626930522402
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:13.971886",
+      "frame_number": 147,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9162610346401959,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 788.2070541381836,
+      "frames_processed": 147
+    },
+    {
+      "timestamp": "2025-06-17T14:16:15.089674",
+      "frame_number": 148,
+      "ball_positions": [
+        [
+          222,
+          390
+        ],
+        [
+          571,
+          146
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 2,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            222,
+            390
+          ],
+          "radius": 30,
+          "area": 2105.0,
+          "confidence": 0.6702194061357931,
+          "distance_from_center": 179.17589123540031
+        },
+        {
+          "id": 1,
+          "center": [
+            571,
+            146
+          ],
+          "radius": 12,
+          "area": 354.5,
+          "confidence": 0.6468939529014816,
+          "distance_from_center": 268.0242526339734
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:15.089705",
+      "frame_number": 149,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8945997308290338,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 812.8542900085449,
+      "frames_processed": 149
+    },
+    {
+      "timestamp": "2025-06-17T14:16:16.205434",
+      "frame_number": 150,
+      "ball_positions": [
+        [
+          233,
+          385
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            233,
+            385
+          ],
+          "radius": 29,
+          "area": 1921.0,
+          "confidence": 0.65154958250431,
+          "distance_from_center": 169.09760495051373
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:16.205466",
+      "frame_number": 151,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.8962504019906685,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 806.5967559814453,
+      "frames_processed": 151
+    },
+    {
+      "timestamp": "2025-06-17T14:16:17.316351",
+      "frame_number": 152,
+      "ball_positions": [
+        [
+          246,
+          386
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 1,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            246,
+            386
+          ],
+          "radius": 29,
+          "area": 1793.0,
+          "confidence": 0.5873318682546347,
+          "distance_from_center": 163.682619724881
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:17.316381",
+      "frame_number": 153,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.9001595016817212,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 805.8607578277588,
+      "frames_processed": 153
+    },
+    {
+      "timestamp": "2025-06-17T14:16:17.319284",
+      "frame_number": 154,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_approaching_ball_to_collecting_ball",
+      "errors": [],
+      "old_state": "approaching_ball",
+      "new_state": "collecting_ball",
+      "reason": "collect_ball"
+    },
+    {
+      "timestamp": "2025-06-17T14:16:18.251940",
+      "frame_number": 155,
+      "ball_positions": [
+        [
+          246,
+          386
+        ],
+        [
+          600,
+          153
+        ]
+      ],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 2,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": [
+        {
+          "id": 0,
+          "center": [
+            246,
+            386
+          ],
+          "radius": 29,
+          "area": 1800.0,
+          "confidence": 0.5918486501349527,
+          "distance_from_center": 163.682619724881
+        },
+        {
+          "id": 1,
+          "center": [
+            600,
+            153
+          ],
+          "radius": 11,
+          "area": 279.0,
+          "confidence": 0.671419478356452,
+          "distance_from_center": 293.2047066470796
+        }
+      ]
+    },
+    {
+      "timestamp": "2025-06-17T14:16:18.251971",
+      "frame_number": 156,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 1.0688458601024478,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 832.5846195220947,
+      "frames_processed": 156
+    },
+    {
+      "timestamp": "2025-06-17T14:16:23.828862",
+      "frame_number": 157,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "collection_regular_success",
+      "errors": [],
+      "collection_success": true,
+      "ball_type": "regular",
+      "total_collections": 1
+    },
+    {
+      "timestamp": "2025-06-17T14:16:23.828965",
+      "frame_number": 158,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "state_change_collecting_ball_to_searching",
+      "errors": [],
+      "old_state": "collecting_ball",
+      "new_state": "searching",
+      "reason": "collect_ball"
+    },
+    {
+      "timestamp": "2025-06-17T14:16:24.770701",
+      "frame_number": 159,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:16:24.779570",
+      "frame_number": 160,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {
+        "s1": 134,
+        "s2": 134,
+        "s3": 134
+      },
+      "motor_speeds": {
+        "in1": 0,
+        "in2": 0,
+        "in3": 0,
+        "in4": 0,
+        "current_speed": 0.3
+      },
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "hardware_state",
+      "errors": [],
+      "collected_balls": 1,
+      "has_balls": true
+    },
+    {
+      "timestamp": "2025-06-17T14:16:24.779590",
+      "frame_number": 161,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.15319522947960934,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 850.5196571350098,
+      "frames_processed": 161
+    },
+    {
+      "timestamp": "2025-06-17T14:16:26.172067",
+      "frame_number": 162,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:16:26.172100",
+      "frame_number": 163,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.718128467535207,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 778.9795398712158,
+      "frames_processed": 163
+    },
+    {
+      "timestamp": "2025-06-17T14:16:27.972855",
+      "frame_number": 164,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": null,
+      "power_levels": {},
+      "action": "vision_detection",
+      "errors": [],
+      "ball_count": 0,
+      "orange_ball_detected": false,
+      "goals_detected": 0,
+      "ball_details": []
+    },
+    {
+      "timestamp": "2025-06-17T14:16:27.972887",
+      "frame_number": 165,
+      "ball_positions": [],
+      "robot_position": null,
+      "servo_states": {},
+      "motor_speeds": {},
+      "camera_fps": 0.5553129896617854,
+      "power_levels": {},
+      "action": "performance_metrics",
+      "errors": [],
+      "processing_time_ms": 797.3573207855225,
+      "frames_processed": 165
+    }
+  ],
+  "analysis_ready": true,
+  "export_timestamp": "2025-06-17T14:16:30.271829"
+}

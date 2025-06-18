@@ -1,0 +1,20 @@
+{
+  "session_metadata": {
+    "session_dir": "logs/golfbot_20250617_134038",
+    "start_time": "2025-06-17T13:40:38.381558",
+    "duration_seconds": 125.07028245925903,
+    "total_frames": 220,
+    "average_fps": 1.759010979060224
+  },
+  "detection_stats": {
+    "total_balls_detected": 123,
+    "total_collections": 2,
+    "collection_rate": 0.016260162601626018,
+    "errors_logged": 0
+  },
+  "competition_result": {},
+  "files": {
+    "telemetry_log": "logs/golfbot_20250617_134038/telemetry.jsonl",
+    "summary": "logs/golfbot_20250617_134038/session_summary.json"
+  }
+}
