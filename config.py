@@ -67,8 +67,13 @@ SERVO_RELEASE = 0         # Release position
 # === SERVO SS (SERVO 1) FOUR-STATE SYSTEM ===
 SERVO_SS_STORE = 100        # Store position
 SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
+<<<<<<< HEAD
 SERVO_SS_DRIVING = 10       # Driving position (default/start position)
 SERVO_SS_COLLECT = 2        # Collect position
+=======
+SERVO_SS_DRIVING = 20       # Driving position (default/start position)
+SERVO_SS_COLLECT = 13        # Collect position
+>>>>>>> 80ea3e4a43bd3dd4f877b5350e490ccda52035a4
 SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 
 # === SERVO SF (SERVO 2) POSITIONS ===
