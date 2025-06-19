@@ -164,6 +164,8 @@ class GolfBotDashboard:
             cv2.putText(self.dashboard, "Target: SEARCHING", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
     
+        # In dashboard.py, find this section in _add_robot_status_panel method and replace it:
+
     def _add_robot_status_panel(self, robot_state, hardware):
         """Add robot hardware status panel"""
         panel_y = self.right_panel_y + 130
@@ -171,14 +173,14 @@ class GolfBotDashboard:
         
         # Panel background
         cv2.rectangle(self.dashboard, 
-                     (self.right_panel_x, panel_y), 
-                     (self.right_panel_x + self.panel_width, panel_y + panel_height), 
-                     self.panel_color, -1)
+                    (self.right_panel_x, panel_y), 
+                    (self.right_panel_x + self.panel_width, panel_y + panel_height), 
+                    self.panel_color, -1)
         
         # Panel title
         cv2.putText(self.dashboard, "ROBOT STATUS", 
-                   (self.right_panel_x + 5, panel_y + 20), 
-                   self.font, self.font_scale_medium, self.accent_color, 1)
+                (self.right_panel_x + 5, panel_y + 20), 
+                self.font, self.font_scale_medium, self.accent_color, 1)
         
         y = panel_y + 40
         line_height = 18
@@ -186,29 +188,32 @@ class GolfBotDashboard:
         # Current speed
         speed = getattr(hardware, 'current_speed', 0) if hardware else 0
         cv2.putText(self.dashboard, f"Speed: {speed*100:.0f}%", 
-                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+                (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         y += line_height
         
-        # Servo status
+        # Servo status - FIXED TO USE CORRECT NAMES
         if hardware and hasattr(hardware, 'get_servo_angles'):
             angles = hardware.get_servo_angles()
-            cv2.putText(self.dashboard, f"Servos: S1 {angles['servo1']:.0f}° S2 {angles['servo2']:.0f}°", 
-                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+            # Use the correct keys: 'servo_ss' and 'servo_sf'
+            ss_angle = angles.get('servo_ss', 90)
+            sf_angle = angles.get('servo_sf', 90)
+            cv2.putText(self.dashboard, f"Servos: SS {ss_angle:.0f}° SF {sf_angle:.0f}°", 
+                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         else:
             cv2.putText(self.dashboard, "Servos: N/A", 
-                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
+                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
         y += line_height
         
         # Collection status (WHITE BALLS ONLY)
         ball_count = hardware.get_ball_count() if hardware else 0
         cv2.putText(self.dashboard, f"White Balls Collected: {ball_count}", 
-                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.success_color, 1)
+                (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.success_color, 1)
         y += line_height
         
         # State details
         state_details = self._get_state_details(robot_state)
         cv2.putText(self.dashboard, f"Action: {state_details}", 
-                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+                (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
     
     def _add_detection_details_panel(self, vision_system):
         """Add detailed detection information panel - WHITE BALLS ONLY"""
