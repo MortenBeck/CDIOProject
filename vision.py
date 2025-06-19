@@ -11,7 +11,7 @@ import config
 @dataclass
 class DetectedObject:
     """Class to store detected object information"""
-    object_type: str  # 'ball', 'orange_ball', 'boundary'
+    object_type: str  # 'ball', 'boundary' (orange_ball removed)
     center: Tuple[int, int]
     radius: int
     area: int
@@ -74,7 +74,7 @@ class Pi5Camera:
             os.remove(self.temp_file)
 
 class VisionSystem:
-    """Enhanced vision processing system with HoughCircles, arena detection, and ball centering"""
+    """Enhanced vision processing system with HoughCircles, arena detection, and ball centering - WHITE BALLS ONLY"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -128,7 +128,7 @@ class VisionSystem:
         
         return horizontal_ok and vertical_ok
     
-    # === NEW: BALL CENTERING METHODS ===
+    # === BALL CENTERING METHODS ===
     def is_ball_centered(self, ball: DetectedObject) -> bool:
         """Check if ball is centered enough to start collection (both X and Y)"""
         x_offset = abs(ball.center[0] - self.frame_center_x)
@@ -258,7 +258,7 @@ class VisionSystem:
         return False
     
     def detect_balls_hough_circles(self, frame) -> List[DetectedObject]:
-        """Primary detection method using HoughCircles for robust shape detection"""
+        """Primary detection method using HoughCircles for robust shape detection - WHITE BALLS ONLY"""
         detected_objects = []
         
         if frame is None:
@@ -303,8 +303,8 @@ class VisionSystem:
                     0 <= y < h and 0 <= x < w and
                     self.arena_mask[y, x] > 0):
                     
-                    # Color verification to determine ball type and confidence
-                    ball_type, confidence = self._verify_ball_color_advanced(frame, center, radius)
+                    # Color verification to determine confidence (white balls only)
+                    confidence = self._verify_white_ball_color(frame, center, radius)
                     
                     if confidence > 0.3:  # Confidence threshold
                         distance_from_center = np.sqrt(
@@ -316,7 +316,7 @@ class VisionSystem:
                         area = int(np.pi * radius * radius)
                         
                         ball = DetectedObject(
-                            object_type=ball_type,
+                            object_type='ball',  # Only white balls now
                             center=center,
                             radius=radius,
                             area=area,
@@ -329,7 +329,7 @@ class VisionSystem:
         return detected_objects
     
     def detect_balls_color_contours(self, frame) -> List[DetectedObject]:
-        """Fallback detection using color+contour method"""
+        """Fallback detection using color+contour method - WHITE BALLS ONLY"""
         detected_objects = []
         
         if frame is None:
@@ -342,29 +342,23 @@ class VisionSystem:
         h, w = frame.shape[:2]
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        # Color detection ranges
+        # White ball detection only
         ball_lower = np.array([0, 0, 200])
         ball_upper = np.array([180, 40, 255])
         white_mask = cv2.inRange(hsv, ball_lower, ball_upper)
         
-        orange_lower = np.array([10, 100, 100])
-        orange_upper = np.array([25, 255, 255])
-        orange_mask = cv2.inRange(hsv, orange_lower, orange_upper)
-        
-        combined_mask = cv2.bitwise_or(white_mask, orange_mask)
-        
         # Apply arena mask to restrict detection to arena only
         if self.arena_mask is not None:
-            combined_mask = cv2.bitwise_and(combined_mask, self.arena_mask)
+            white_mask = cv2.bitwise_and(white_mask, self.arena_mask)
         
         # Morphological operations
         kernel = np.ones((7, 7), np.uint8)
-        combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel, iterations=2)
-        combined_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
-        combined_mask = cv2.medianBlur(combined_mask, 5)
+        white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+        white_mask = cv2.medianBlur(white_mask, 5)
         
         # Find contours
-        contours, _ = cv2.findContours(combined_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         for contour in contours:
             area = cv2.contourArea(contour)
@@ -394,8 +388,8 @@ class VisionSystem:
                             overlap_ratio = np.sum(intersection) / max(1, np.sum(union))
                             
                             if overlap_ratio > 0.7:
-                                # Enhanced color verification
-                                ball_type, confidence = self._verify_ball_color_advanced(frame, center, radius)
+                                # White ball color verification
+                                confidence = self._verify_white_ball_color(frame, center, radius)
                                 
                                 if confidence > 0.4:
                                     distance_from_center = np.sqrt(
@@ -406,7 +400,7 @@ class VisionSystem:
                                     in_collection_zone = self.is_in_collection_zone(center)
                                     
                                     ball = DetectedObject(
-                                        object_type=ball_type,
+                                        object_type='ball',  # Only white balls
                                         center=center,
                                         radius=radius,
                                         area=area,
@@ -418,8 +412,8 @@ class VisionSystem:
         
         return detected_objects
     
-    def _verify_ball_color_advanced(self, frame, center, radius) -> Tuple[str, float]:
-        """Enhanced color verification for better ball type classification"""
+    def _verify_white_ball_color(self, frame, center, radius) -> float:
+        """Simplified color verification for white balls only"""
         h, w = frame.shape[:2]
         
         # Extract region of interest around the ball
@@ -429,7 +423,7 @@ class VisionSystem:
         roi = frame[y1:y2, x1:x2]
         
         if roi.size == 0:
-            return "ball", 0.0
+            return 0.0
         
         # Create circular mask for the ball area
         roi_h, roi_w = roi.shape[:2]
@@ -438,17 +432,10 @@ class VisionSystem:
         mask_radius = min(radius, min(roi_w//2, roi_h//2))
         cv2.circle(mask, roi_center, mask_radius, 255, -1)
         
-        # Convert ROI to HSV
+        # Convert ROI to HSV for saturation check
         hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         
-        # Orange detection (VIP ball)
-        orange_lower = np.array([10, 80, 80])  # Slightly relaxed thresholds
-        orange_upper = np.array([25, 255, 255])
-        orange_mask = cv2.inRange(hsv_roi, orange_lower, orange_upper)
-        orange_pixels = cv2.bitwise_and(orange_mask, mask)
-        orange_ratio = np.sum(orange_pixels > 0) / max(1, np.sum(mask > 0))
-        
-        # White detection (regular ping pong ball)
+        # White ball detection (high brightness, low saturation)
         gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
         masked_gray = cv2.bitwise_and(gray_roi, mask)
         
@@ -460,13 +447,8 @@ class VisionSystem:
             masked_saturation = cv2.bitwise_and(s_channel, mask)
             mean_saturation = np.mean(masked_saturation[mask > 0])
             
-            # Enhanced orange ball detection
-            if orange_ratio > 0.15:  # Lower threshold for better orange detection
-                confidence = min(1.0, orange_ratio * 3.0)  # Boost orange confidence
-                return "orange_ball", confidence
-            
-            # Enhanced white ball detection
-            elif mean_brightness > 150 and mean_saturation < 80:
+            # White ball detection: high brightness + low saturation
+            if mean_brightness > 150 and mean_saturation < 80:
                 # Calculate confidence based on brightness and low saturation
                 brightness_conf = min(1.0, (mean_brightness - 150) / 105)  # 150-255 range
                 saturation_conf = min(1.0, (80 - mean_saturation) / 80)   # Lower saturation = higher confidence
@@ -476,12 +458,12 @@ class VisionSystem:
                 if mean_brightness > 200 and mean_saturation < 40:
                     combined_conf = min(1.0, combined_conf * 1.2)  # Boost for very white objects
                 
-                return "ball", combined_conf
+                return combined_conf
         
-        return "ball", 0.0
+        return 0.0
     
     def detect_balls(self, frame) -> List[DetectedObject]:
-        """Main detection method using hybrid approach"""
+        """Main detection method using hybrid approach - WHITE BALLS ONLY"""
         # Primary: HoughCircles detection
         hough_balls = self.detect_balls_hough_circles(frame)
         
@@ -687,7 +669,7 @@ class VisionSystem:
             return "forward"
     
     def draw_detections_legacy(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Enhanced detection visualization with centering info (LEGACY MODE)"""
+        """Enhanced detection visualization with centering info (LEGACY MODE) - WHITE BALLS ONLY"""
         if not config.DEBUG_VISION:
             return frame
         
@@ -748,17 +730,14 @@ class VisionSystem:
         cv2.putText(result, "CENTERING ZONE", (left_line + 5, 20), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, tolerance_color, 1)
         
-        # === BALL DETECTION WITH CENTERING INFO ===
+        # === BALL DETECTION WITH CENTERING INFO (WHITE BALLS ONLY) ===
         for ball in balls:
             is_target = (self.current_target and 
                         self.current_target.center == ball.center)
             
-            if ball.object_type == 'orange_ball':
-                color = (0, 165, 255)  # Orange
-                ball_char = 'O'
-            else:
-                color = (0, 255, 0)    # Green for white balls
-                ball_char = 'B'
+            # All balls are white now
+            color = (0, 255, 0)    # Green for white balls
+            ball_char = 'B'
             
             if is_target:
                 # Target ball - prominent with centering info
@@ -810,14 +789,14 @@ class VisionSystem:
         line_height = 22
         
         # System status
-        cv2.putText(result, f"GolfBot Enhanced Collection System", (10, y_pos_left), 
+        cv2.putText(result, f"GolfBot White Ball Collection System", (10, y_pos_left), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         y_pos_left += line_height
         
         # Ball status
         ball_count = len(balls)
         target_text = "TARGET" if self.current_target else "SEARCHING"
-        cv2.putText(result, f"Balls: {ball_count} | Status: {target_text}", (10, y_pos_left), 
+        cv2.putText(result, f"White Balls: {ball_count} | Status: {target_text}", (10, y_pos_left), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
         y_pos_left += line_height
         
@@ -844,12 +823,11 @@ class VisionSystem:
         
         # Target info (if available)
         if self.current_target:
-            ball_type = "ORANGE" if self.current_target.object_type == 'orange_ball' else "WHITE"
             centered = self.is_ball_centered(self.current_target)
             center_status = "CENTERED" if centered else "CENTERING"
             confidence_text = f"Conf: {self.current_target.confidence:.2f}"
             
-            cv2.putText(result, f"Target: {ball_type} | {center_status}", (right_x, y_pos_right), 
+            cv2.putText(result, f"Target: WHITE | {center_status}", (right_x, y_pos_right), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
             y_pos_right += line_height - 5
             cv2.putText(result, confidence_text, (right_x, y_pos_right), 
@@ -862,43 +840,22 @@ class VisionSystem:
                 cv2.putText(result, f"Drive Time: {drive_time:.2f}s", (right_x, y_pos_right), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
         else:
-            cv2.putText(result, "Target: SEARCHING FOR BALLS", (right_x, y_pos_right), 
+            cv2.putText(result, "Target: SEARCHING FOR WHITE BALLS", (right_x, y_pos_right), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        
-        # === RED MASK PREVIEW ===
-        if self.red_mask is not None:
-            # Small preview in bottom-right
-            mask_size = 120
-            mask_resized = cv2.resize(self.red_mask, (mask_size, int(mask_size * h / w)))
-            mask_colored = cv2.applyColorMap(mask_resized, cv2.COLORMAP_HOT)
-            
-            # Position in bottom-right
-            start_x = w - mask_size - 10
-            start_y = h - mask_resized.shape[0] - 10
-            end_x = start_x + mask_size
-            end_y = start_y + mask_resized.shape[0]
-            
-            # Place mask preview
-            result[start_y:end_y, start_x:end_x] = mask_colored
-            cv2.rectangle(result, (start_x, start_y), (end_x, end_y), (255, 255, 255), 1)
-            
-            # Small label
-            cv2.putText(result, "Red Mask", (start_x, start_y - 5), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
         
         # === LEGEND ===
         legend_x = 10
-        legend_y = h - 100
-        legend_bg_height = 90
+        legend_y = h - 80
+        legend_bg_height = 70
         
         # Legend background
-        legend_overlay = np.zeros((legend_bg_height, 300, 3), dtype=np.uint8)
-        result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+300] = cv2.addWeighted(
-            result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+300], 0.3,
+        legend_overlay = np.zeros((legend_bg_height, 280, 3), dtype=np.uint8)
+        result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+280] = cv2.addWeighted(
+            result[legend_y-10:legend_y+legend_bg_height-10, legend_x:legend_x+280], 0.3,
             legend_overlay, 0.7, 0
         )
         
-        cv2.rectangle(result, (legend_x, legend_y-10), (legend_x+300, legend_y+legend_bg_height-10), 
+        cv2.rectangle(result, (legend_x, legend_y-10), (legend_x+280, legend_y+legend_bg_height-10), 
                     (100, 100, 100), 1)
         
         # Legend content
@@ -906,20 +863,14 @@ class VisionSystem:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         cv2.putText(result, "Red: Wall areas", (legend_x+5, legend_y+15), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
-        cv2.putText(result, "Blue: Danger zones", (legend_x+5, legend_y+30), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 100, 0), 1)
-        cv2.putText(result, "Green: Collection zone", (legend_x+5, legend_y+45), 
+        cv2.putText(result, "Green: Collection zone", (legend_x+5, legend_y+30), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-        cv2.putText(result, "Yellow: Centering zone", (legend_x+5, legend_y+60), 
+        cv2.putText(result, "Yellow: Centering zone", (legend_x+5, legend_y+45), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
-        cv2.putText(result, "Yellow: Current target", (legend_x+160, legend_y+15), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
-        cv2.putText(result, "O: Orange ball", (legend_x+160, legend_y+30), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 165, 255), 1)
-        cv2.putText(result, "B: White ball", (legend_x+160, legend_y+45), 
+        cv2.putText(result, "B: White ball", (legend_x+150, legend_y+15), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-        cv2.putText(result, "Arrow: Target direction", (legend_x+160, legend_y+60), 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
+        cv2.putText(result, "Yellow: Current target", (legend_x+150, legend_y+30), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
         
         # === CENTER CROSSHAIR ===
         cv2.line(result, (self.frame_center_x-10, self.frame_center_y), 
@@ -934,7 +885,7 @@ class VisionSystem:
         return result
     
     def draw_detections_clean(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Clean detection visualization for dashboard (essential overlays only)"""
+        """Clean detection visualization for dashboard (essential overlays only) - WHITE BALLS ONLY"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
@@ -972,18 +923,14 @@ class VisionSystem:
                     x, y, w_rect, h_rect = wall['bbox']
                     cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 3)
         
-        # 3. BALL DETECTIONS (core functionality)
+        # 3. BALL DETECTIONS (WHITE BALLS ONLY)
         for ball in balls:
             is_target = (self.current_target and 
                         self.current_target.center == ball.center)
             
-            # Ball color
-            if ball.object_type == 'orange_ball':
-                color = (0, 165, 255)  # Orange
-                ball_char = 'O'
-            else:
-                color = (0, 255, 0)  # Green for white balls
-                ball_char = 'B'
+            # All balls are white now
+            color = (0, 255, 0)  # Green for white balls
+            ball_char = 'B'
             
             if is_target:
                 # TARGET BALL - prominent display
@@ -1017,14 +964,14 @@ class VisionSystem:
         return result
     
     def process_frame(self, dashboard_mode=False):
-        """Process current frame and return detection results"""
+        """Process current frame and return detection results - WHITE BALLS ONLY"""
         ret, frame = self.get_frame()
         if not ret:
             return None, None, None, None, None
         
-        # Detect all balls using hybrid method
+        # Detect all balls using hybrid method (white balls only)
         balls = self.detect_balls(frame)
-        orange_ball = None  # Deprecated - handled in unified detection
+        orange_ball = None  # Removed - no orange ball detection
         near_boundary = self.detect_boundaries(frame)
         
         # Get navigation command
@@ -1044,4 +991,4 @@ class VisionSystem:
         """Clean up vision system"""
         self.camera.release()
         cv2.destroyAllWindows()
-        self.logger.info("Enhanced vision system with ball centering cleanup completed")
+        self.logger.info("Enhanced vision system (white balls only) cleanup completed")
