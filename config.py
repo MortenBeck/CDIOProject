@@ -47,8 +47,8 @@ BALL_MIN_RADIUS = 10
 BALL_MAX_RADIUS = 50
 
 # Orange VIP ball detection
-ORANGE_HSV_LOWER = np.array([10, 100, 100])
-ORANGE_HSV_UPPER = np.array([25, 255, 255])
+##ORANGE_HSV_LOWER = np.array([10, 100, 100])
+##ORANGE_HSV_UPPER = np.array([25, 255, 255])
 
 # Goal detection (red tape - smaller=A, larger=B)
 GOAL_HSV_LOWER = np.array([0, 100, 100])
