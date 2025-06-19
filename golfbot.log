@@ -8518,3 +8518,427 @@
 2025-06-19 15:10:22,009 - hardware - INFO - ✅ Hardware cleanup completed
 2025-06-19 15:10:22,010 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
 2025-06-19 15:10:22,010 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-19 15:12:32,587 - __main__ - INFO - Using new dashboard interface
+2025-06-19 15:12:32,587 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-19 15:12:32,604 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-19 15:12:32,604 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-19 15:12:32,605 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-19 15:12:32,605 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-19 15:12:32,605 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-19 15:12:32,605 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-19 15:12:32,605 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-19 15:12:32,605 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-19 15:12:32,605 - __main__ - INFO - Detecting arena boundaries...
+2025-06-19 15:12:33,405 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-19 15:12:33,405 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-19 15:12:33,405 - __main__ - INFO - All systems initialized successfully
+2025-06-19 15:12:34,753 - __main__ - INFO - COMPETITION STARTED!
+2025-06-19 15:12:34,754 - __main__ - INFO - Time limit: 480 seconds
+2025-06-19 15:12:34,763 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-19 15:12:35,648 - __main__ - INFO - Found 6 confident ball(s) - 1 white, 5 orange (avg conf: 0.93)
+2025-06-19 15:12:36,774 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 15:12:37,947 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 15:12:38,853 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:12:39,784 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 15:12:40,688 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:12:41,659 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 15:12:42,855 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:12:43,775 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:12:46,126 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 15:12:46,998 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:12:47,958 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 15:12:49,089 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:12:49,982 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:13:00,375 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 15:13:01,272 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:13:07,131 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 15:13:08,307 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:09,471 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:10,653 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:11,813 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:13,006 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:13,928 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:13:16,240 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 15:13:17,367 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:18,556 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:19,636 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 15:13:20,700 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 15:13:21,627 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:13:22,573 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 0.73)
+2025-06-19 15:13:23,465 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:13:43,226 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 0.59)
+2025-06-19 15:13:44,350 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 15:13:45,279 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:13:55,512 - vision - INFO - Left wall detected above collection zone: area=2513.0
+2025-06-19 15:13:55,542 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:13:57,186 - vision - INFO - Left wall detected above collection zone: area=3118.0
+2025-06-19 15:13:57,216 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:13:58,874 - vision - INFO - Left wall detected above collection zone: area=1337.5
+2025-06-19 15:13:58,905 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:14:01,484 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.69)
+2025-06-19 15:14:02,523 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 15:14:03,463 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 15:14:07,480 - vision - INFO - Left wall detected above collection zone: area=2984.0
+2025-06-19 15:14:07,504 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:14:09,157 - vision - INFO - Left wall detected above collection zone: area=2592.5
+2025-06-19 15:14:09,187 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:14:10,819 - vision - INFO - Left wall detected above collection zone: area=2210.5
+2025-06-19 15:14:10,844 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:14:12,473 - vision - INFO - Left wall detected above collection zone: area=2132.5
+2025-06-19 15:14:12,503 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:14:14,156 - vision - INFO - Left wall detected above collection zone: area=2365.0
+2025-06-19 15:14:14,184 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:14:15,836 - vision - INFO - Left wall detected above collection zone: area=2870.5
+2025-06-19 15:14:15,866 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 15:14:18,436 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.44)
+2025-06-19 15:14:19,326 - vision - INFO - Ball distance: 218.0 pixels -> 0.65s drive time
+2025-06-19 15:14:19,326 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 0.65s)
+2025-06-19 15:14:20,257 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 0.67)...
+2025-06-19 15:14:20,257 - hardware - INFO - 🚀 Starting enhanced collection sequence with four-state system...
+2025-06-19 15:14:20,257 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-19 15:14:20,258 - hardware - INFO - Step 1: Moving servo 1 from DRIVING to PRE-COLLECT
+2025-06-19 15:14:20,258 - hardware - INFO - 🎯 Moving servo 1 to PRE-COLLECT position (50°)
+2025-06-19 15:14:20,867 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-19 15:14:22,018 - hardware - INFO - Step 3: Moving servo 1 to COLLECT position (capture)
+2025-06-19 15:14:22,018 - hardware - INFO - 🤏 Moving servo 1 to COLLECT position (0°)
+2025-06-19 15:14:22,778 - hardware - INFO - Step 4: Moving servo 1 to STORE position (secure)
+2025-06-19 15:14:22,778 - hardware - INFO - 📦 Moving servo 1 to STORE position (100°)
+2025-06-19 15:14:24,095 - hardware - INFO - Step 5: Moving servo 1 to DRIVING position (ready)
+2025-06-19 15:14:24,095 - hardware - INFO - 🚗 Moving servo 1 to DRIVING position (10°)
+2025-06-19 15:14:25,162 - hardware - INFO - ✅ Enhanced collection complete! Servo 1 state: DRIVING, Total balls: 1
+2025-06-19 15:14:25,162 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 1
+2025-06-19 15:14:30,973 - __main__ - INFO - ============================================================
+2025-06-19 15:14:30,973 - __main__ - INFO - COMPETITION ENDED!
+2025-06-19 15:14:30,973 - __main__ - INFO - ============================================================
+2025-06-19 15:14:30,973 - __main__ - INFO - Total time: 116.2 seconds
+2025-06-19 15:14:30,973 - __main__ - INFO - Balls collected: 1
+2025-06-19 15:14:30,973 - __main__ - INFO - Final state: searching
+2025-06-19 15:14:30,973 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-19 15:14:30,973 - __main__ - INFO - Arena detection: Fallback
+2025-06-19 15:14:30,973 - __main__ - INFO - ============================================================
+2025-06-19 15:14:30,974 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-19 15:14:30,974 - hardware - INFO - 🔧 Centering servos...
+2025-06-19 15:14:30,974 - hardware - INFO - 🚗 Moving servo 1 to DRIVING position (10°)
+2025-06-19 15:14:31,485 - hardware - INFO - ✅ Servos centered - servo 1 at driving position
+2025-06-19 15:14:31,485 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-19 15:14:31,486 - vision - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-19 15:14:31,486 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-19 15:14:31,486 - hardware - INFO - 🔧 Centering servos...
+2025-06-19 15:14:31,487 - hardware - INFO - 🚗 Moving servo 1 to DRIVING position (10°)
+2025-06-19 15:14:31,998 - hardware - INFO - ✅ Servos centered - servo 1 at driving position
+2025-06-19 15:14:31,999 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-19 15:14:31,999 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-19 15:14:31,999 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-19 17:03:49,496 - __main__ - INFO - Using new dashboard interface
+2025-06-19 17:03:49,497 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-19 17:03:49,513 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-19 17:03:49,513 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-19 17:03:49,514 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-19 17:03:49,514 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-19 17:03:49,514 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-19 17:03:49,514 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-19 17:03:49,514 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-19 17:03:49,514 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-19 17:03:49,514 - __main__ - INFO - Detecting arena boundaries...
+2025-06-19 17:03:50,623 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-19 17:03:50,623 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-19 17:03:50,624 - __main__ - INFO - All systems initialized successfully
+2025-06-19 17:03:52,157 - __main__ - INFO - COMPETITION STARTED!
+2025-06-19 17:03:52,157 - __main__ - INFO - Time limit: 480 seconds
+2025-06-19 17:03:52,157 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-19 17:03:53,050 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.99)
+2025-06-19 17:03:54,308 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:03:55,474 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:03:56,657 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:03:57,844 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:03:58,921 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:03:59,975 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:01,045 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:01,953 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:04:02,881 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 1.00)
+2025-06-19 17:04:03,933 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:05,006 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:06,054 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:06,955 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:04:07,896 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 1.00)
+2025-06-19 17:04:08,965 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:10,092 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:11,146 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:12,194 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:13,238 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:14,394 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:04:15,473 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:16,525 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:17,590 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:18,643 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:19,706 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:20,788 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:21,853 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:22,919 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:23,972 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:25,029 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:26,225 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:04:27,280 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:28,336 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:29,404 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:30,497 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:31,650 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:32,728 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:33,773 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:34,835 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:35,905 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:37,005 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:38,066 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:39,133 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:40,179 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:41,340 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:04:42,418 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:43,487 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:44,527 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:04:45,450 - vision - INFO - Ball distance: 249.0 pixels -> 0.75s drive time
+2025-06-19 17:04:45,450 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 0.75s)
+2025-06-19 17:04:46,354 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 1.00)...
+2025-06-19 17:04:46,355 - hardware - INFO - 🚀 Starting enhanced collection sequence with four-state system...
+2025-06-19 17:04:46,355 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-19 17:04:46,355 - hardware - INFO - Step 1: Moving servo 1 from DRIVING to PRE-COLLECT
+2025-06-19 17:04:46,355 - hardware - INFO - 🎯 Moving servo 1 to PRE-COLLECT position (50°)
+2025-06-19 17:04:47,014 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-19 17:04:48,165 - hardware - INFO - Step 3: Moving servo 1 to COLLECT position (capture)
+2025-06-19 17:04:48,165 - hardware - INFO - 🤏 Moving servo 1 to COLLECT position (5°)
+2025-06-19 17:04:48,874 - hardware - INFO - Step 4: Moving servo 1 to STORE position (secure)
+2025-06-19 17:04:48,874 - hardware - INFO - 📦 Moving servo 1 to STORE position (100°)
+2025-06-19 17:04:50,141 - hardware - INFO - Step 5: Moving servo 1 to DRIVING position (ready)
+2025-06-19 17:04:50,141 - hardware - INFO - 🚗 Moving servo 1 to DRIVING position (10°)
+2025-06-19 17:04:51,209 - hardware - INFO - ✅ Enhanced collection complete! Servo 1 state: DRIVING, Total balls: 1
+2025-06-19 17:04:51,209 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 1
+2025-06-19 17:04:52,146 - __main__ - INFO - ============================================================
+2025-06-19 17:04:52,147 - __main__ - INFO - COMPETITION ENDED!
+2025-06-19 17:04:52,147 - __main__ - INFO - ============================================================
+2025-06-19 17:04:52,147 - __main__ - INFO - Total time: 60.0 seconds
+2025-06-19 17:04:52,147 - __main__ - INFO - Balls collected: 1
+2025-06-19 17:04:52,147 - __main__ - INFO - Final state: searching
+2025-06-19 17:04:52,147 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-19 17:04:52,147 - __main__ - INFO - Arena detection: Fallback
+2025-06-19 17:04:52,147 - __main__ - INFO - ============================================================
+2025-06-19 17:04:52,147 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-19 17:04:52,147 - hardware - INFO - 🔧 Centering servos...
+2025-06-19 17:04:52,148 - hardware - INFO - 🚗 Moving servo 1 to DRIVING position (10°)
+2025-06-19 17:04:52,658 - hardware - INFO - ✅ Servos centered - servo 1 at driving position
+2025-06-19 17:04:52,658 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-19 17:04:52,659 - vision - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-19 17:04:52,660 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-19 17:04:52,660 - hardware - INFO - 🔧 Centering servos...
+2025-06-19 17:04:52,660 - hardware - INFO - 🚗 Moving servo 1 to DRIVING position (10°)
+2025-06-19 17:04:53,170 - hardware - INFO - ✅ Servos centered - servo 1 at driving position
+2025-06-19 17:04:53,171 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-19 17:04:53,171 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-19 17:04:53,171 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-19 17:08:19,469 - __main__ - INFO - Using new dashboard interface
+2025-06-19 17:08:19,469 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-19 17:08:19,486 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-19 17:08:19,486 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-19 17:08:19,486 - hardware - INFO - ✓ Servo 1 on channel 0
+2025-06-19 17:08:19,486 - hardware - INFO - ✓ Servo 2 on channel 1
+2025-06-19 17:08:19,486 - hardware - INFO - ✓ Servo 3 on channel 2
+2025-06-19 17:08:19,486 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-19 17:08:19,486 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-19 17:08:19,486 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-19 17:08:19,486 - __main__ - INFO - Detecting arena boundaries...
+2025-06-19 17:08:20,259 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-19 17:08:20,259 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-19 17:08:20,259 - __main__ - INFO - All systems initialized successfully
+2025-06-19 17:08:22,760 - __main__ - INFO - COMPETITION STARTED!
+2025-06-19 17:08:22,760 - __main__ - INFO - Time limit: 480 seconds
+2025-06-19 17:08:22,760 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-19 17:08:23,620 - __main__ - INFO - Found 4 confident ball(s) - 2 white, 2 orange (avg conf: 0.66)
+2025-06-19 17:08:24,714 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-19 17:08:25,871 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:08:26,754 - vision - INFO - Left wall detected above collection zone: area=925.5
+2025-06-19 17:08:26,773 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:08:29,277 - __main__ - INFO - Found 5 confident ball(s) - 3 white, 2 orange (avg conf: 0.74)
+2025-06-19 17:08:30,393 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:08:31,278 - vision - INFO - Left wall detected above collection zone: area=947.0
+2025-06-19 17:08:31,300 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:08:33,822 - __main__ - INFO - Found 4 confident ball(s) - 2 white, 2 orange (avg conf: 0.80)
+2025-06-19 17:08:34,950 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:08:36,150 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:08:37,043 - vision - INFO - Left wall detected above collection zone: area=1017.0
+2025-06-19 17:08:37,079 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:08:39,679 - __main__ - INFO - Found 5 confident ball(s) - 1 white, 4 orange (avg conf: 0.89)
+2025-06-19 17:08:40,803 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:08:41,737 - vision - INFO - Ball distance: 194.6 pixels -> 0.58s drive time
+2025-06-19 17:08:41,738 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 0.58s)
+2025-06-19 17:08:42,608 - vision - INFO - Left wall detected above collection zone: area=1054.5
+2025-06-19 17:08:42,633 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 1.00)...
+2025-06-19 17:08:42,633 - hardware - INFO - 🚀 Starting enhanced collection sequence with four-state system...
+2025-06-19 17:08:42,633 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-19 17:08:42,633 - hardware - INFO - Step 1: Moving servo 1 from DRIVING to PRE-COLLECT
+2025-06-19 17:08:42,633 - hardware - INFO - 🎯 Moving servo 1 to PRE-COLLECT position (50°)
+2025-06-19 17:08:43,243 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-19 17:08:44,393 - hardware - INFO - Step 3: Moving servo 1 to COLLECT position (capture)
+2025-06-19 17:08:44,393 - hardware - INFO - 🤏 Moving servo 1 to COLLECT position (5°)
+2025-06-19 17:08:45,102 - hardware - INFO - Step 4: Moving servo 1 to STORE position (secure)
+2025-06-19 17:08:45,107 - hardware - INFO - 📦 Moving servo 1 to STORE position (100°)
+2025-06-19 17:08:46,373 - hardware - INFO - Step 5: Moving servo 1 to DRIVING position (ready)
+2025-06-19 17:08:46,373 - hardware - INFO - 🚗 Moving servo 1 to DRIVING position (10°)
+2025-06-19 17:08:47,441 - hardware - INFO - ✅ Enhanced collection complete! Servo 1 state: DRIVING, Total balls: 1
+2025-06-19 17:08:47,442 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 1
+2025-06-19 17:08:48,373 - __main__ - INFO - Found 5 confident ball(s) - 3 white, 2 orange (avg conf: 0.65)
+2025-06-19 17:08:49,216 - vision - INFO - Left wall detected above collection zone: area=920.5
+2025-06-19 17:08:49,241 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:08:51,804 - __main__ - INFO - Found 4 confident ball(s) - 2 white, 2 orange (avg conf: 0.71)
+2025-06-19 17:08:52,955 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:08:53,834 - vision - INFO - Left wall detected above collection zone: area=1612.5
+2025-06-19 17:08:53,859 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:08:55,490 - vision - INFO - Left wall detected above collection zone: area=1670.5
+2025-06-19 17:08:55,535 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:08:58,126 - __main__ - INFO - Found 3 confident ball(s) - 1 white, 2 orange (avg conf: 0.76)
+2025-06-19 17:08:59,241 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:00,115 - vision - INFO - Left wall detected above collection zone: area=1811.5
+2025-06-19 17:09:00,160 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:09:01,782 - vision - INFO - Left wall detected above collection zone: area=2075.5
+2025-06-19 17:09:01,807 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:09:03,432 - vision - INFO - Left wall detected above collection zone: area=773.0
+2025-06-19 17:09:03,483 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:09:05,975 - vision - INFO - Left wall detected above collection zone: area=718.0
+2025-06-19 17:09:06,018 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-19 17:09:13,053 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 0.60)
+2025-06-19 17:09:14,184 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:09:15,091 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:09:19,153 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 0.54)
+2025-06-19 17:09:20,027 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:09:22,748 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.77)
+2025-06-19 17:09:23,869 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:24,758 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:09:28,817 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 1.00)
+2025-06-19 17:09:29,934 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:09:31,111 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:32,258 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:09:33,418 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:34,343 - __main__ - INFO - No confident ball detections during centering - returning to search
+2025-06-19 17:09:35,255 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.62)
+2025-06-19 17:09:36,367 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:37,532 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:09:38,688 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:39,619 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:09:41,857 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 0.66)
+2025-06-19 17:09:42,726 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:09:46,794 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.58)
+2025-06-19 17:09:47,909 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:48,833 - __main__ - INFO - No confident ball detections during centering - returning to search
+2025-06-19 17:09:51,433 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 1.00)
+2025-06-19 17:09:52,545 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:09:53,455 - __main__ - INFO - No confident ball detections during centering - returning to search
+2025-06-19 17:09:54,344 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.61)
+2025-06-19 17:09:55,486 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:09:56,683 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:09:57,858 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:09:58,988 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:00,137 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:01,043 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:02,023 - __main__ - INFO - Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.70)
+2025-06-19 17:10:03,154 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:10:04,050 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:05,000 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 1.00)
+2025-06-19 17:10:05,889 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:06,839 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.52)
+2025-06-19 17:10:08,008 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:08,894 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:14,322 - __main__ - INFO - Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.63)
+2025-06-19 17:10:15,197 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:16,138 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.99)
+2025-06-19 17:10:17,261 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:18,322 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:19,382 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:20,546 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:21,714 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:10:22,783 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:23,693 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:26,358 - __main__ - INFO - Found 3 confident ball(s) - 1 white, 2 orange (avg conf: 0.73)
+2025-06-19 17:10:27,501 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:28,416 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:32,475 - __main__ - INFO - Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 1.00)
+2025-06-19 17:10:33,379 - __main__ - INFO - Lost sight of ball during centering - returning to search
+2025-06-19 17:10:34,355 - __main__ - INFO - Found 1 confident ball(s) - 0 white, 1 orange (avg conf: 0.78)
+2025-06-19 17:10:35,486 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:36,533 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:37,585 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:38,630 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:39,705 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:40,767 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:41,807 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:42,858 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:43,905 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:45,067 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:10:46,214 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:47,376 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:10:48,514 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:10:49,687 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:10:50,793 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:51,841 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:52,895 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:53,962 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:55,000 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:56,117 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:57,160 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:10:58,303 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:10:59,440 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:00,604 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:01,796 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:02,935 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:03,985 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:05,044 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:06,095 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:07,162 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:08,217 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:09,266 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:10,405 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:11,553 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:12,704 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:13,852 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:14,901 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:16,072 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:17,239 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:18,426 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:19,578 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:20,741 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:21,894 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:23,055 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:24,205 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:25,342 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:26,487 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:27,631 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:28,823 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:29,970 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:31,026 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:32,083 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:33,139 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:34,201 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:35,296 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:36,343 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:37,517 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:38,657 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:39,828 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:40,993 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:42,146 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:43,306 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:11:44,392 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:45,474 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:46,547 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:47,708 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:11:48,763 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:49,824 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:50,872 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:51,932 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:52,982 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:54,034 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:55,105 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:56,186 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:57,245 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:58,294 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:11:59,439 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:12:00,579 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:12:01,644 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-19 17:12:02,823 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-19 17:12:04,001 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-19 17:12:05,054 - __main__ - INFO - Centering Y: moving forward (closer)

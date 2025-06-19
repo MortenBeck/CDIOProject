@@ -69,7 +69,7 @@ SERVO_RELEASE = 0         # Release position
 SERVO_1_STORE = 100        # Store position
 SERVO_1_PRE_COLLECT = 50 # Pre-collect position
 SERVO_1_DRIVING = 10     # Driving position (default/start position)
-SERVO_1_COLLECT = 0     # Collect position
+SERVO_1_COLLECT = 5     # Collect position
 SERVO_1_STEP_SIZE = 5     # Incremental movement step size
 
 # === ENHANCED COLLECTION POSITIONS ===
