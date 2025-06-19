@@ -192,7 +192,7 @@ class GolfBotDashboard:
         # Servo status
         if hardware and hasattr(hardware, 'get_servo_angles'):
             angles = hardware.get_servo_angles()
-            cv2.putText(self.dashboard, f"Servos: SS {angles['servo_ss']:.0f}° SF {angles['servo_sf']:.0f}°", 
+            cv2.putText(self.dashboard, f"Servos: S1 {angles['servo1']:.0f}° S2 {angles['servo2']:.0f}°", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         else:
             cv2.putText(self.dashboard, "Servos: N/A", 
