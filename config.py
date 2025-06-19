@@ -17,9 +17,8 @@ EGG_MOVE_PENALTY = -300
 # === PCA9685 SERVO SETTINGS ===
 PCA9685_ADDRESS = 0x40
 PCA9685_FREQUENCY = 50
-SERVO_1_CHANNEL = 0  # PCA9685 Channel 0
-SERVO_2_CHANNEL = 1  # PCA9685 Channel 1
-SERVO_3_CHANNEL = 2  # PCA9685 Channel 2
+SERVO_SS_CHANNEL = 0  # PCA9685 Channel 0 - "ss" servo
+SERVO_SF_CHANNEL = 1  # PCA9685 Channel 1 - "SF" servo
 
 # === DC MOTOR GPIO PINS ===
 MOTOR_IN1 = 19  # GPIO 19 (Pin 35) - Motor A
@@ -65,12 +64,17 @@ SERVO_COLLECT_OPEN = 45   # Open position for collection
 SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
 SERVO_RELEASE = 0         # Release position
 
-# === SERVO 1 FOUR-STATE SYSTEM ===
-SERVO_1_STORE = 100        # Store position
-SERVO_1_PRE_COLLECT = 50 # Pre-collect position
-SERVO_1_DRIVING = 10     # Driving position (default/start position)
-SERVO_1_COLLECT = 5     # Collect position
-SERVO_1_STEP_SIZE = 5     # Incremental movement step size
+# === SERVO SS (SERVO 1) FOUR-STATE SYSTEM ===
+SERVO_SS_STORE = 100        # Store position
+SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
+SERVO_SS_DRIVING = 10       # Driving position (default/start position)
+SERVO_SS_COLLECT = 5        # Collect position
+SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
+
+# === SERVO SF (SERVO 2) POSITIONS ===
+SERVO_SF_READY = 90         # Ready position
+SERVO_SF_CATCH = 135        # Catch position
+SERVO_SF_RELEASE = 0        # Release position
 
 # === ENHANCED COLLECTION POSITIONS ===
 SERVO_READY_POSITION = 90  # Servos up and ready to catch
