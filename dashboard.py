@@ -5,7 +5,7 @@ from typing import List, Optional
 import config
 
 class GolfBotDashboard:
-    """Clean dashboard interface for GolfBot with organized data panels"""
+    """Clean dashboard interface for GolfBot with organized data panels - WHITE BALLS ONLY"""
     
     def __init__(self, camera_width=640, camera_height=480):
         self.camera_width = camera_width
@@ -43,7 +43,7 @@ class GolfBotDashboard:
                                 self.bg_color, dtype=np.uint8)
     
     def create_dashboard(self, camera_frame, robot_state, vision_system, hardware, telemetry=None):
-        """Create complete dashboard with camera and data panels"""
+        """Create complete dashboard with camera and data panels - WHITE BALLS ONLY"""
         
         # Create fresh dashboard
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
@@ -86,13 +86,13 @@ class GolfBotDashboard:
                          self.accent_color, 2)
     
     def _add_top_status_bar(self, robot_state, hardware):
-        """Add top status bar with critical info"""
+        """Add top status bar with critical info - WHITE BALLS ONLY"""
         # Background
         cv2.rectangle(self.dashboard, (0, 0), (self.dashboard_width, self.top_panel_height), 
                      self.panel_color, -1)
         
         # Title
-        cv2.putText(self.dashboard, "GolfBot Enhanced Collection Dashboard", 
+        cv2.putText(self.dashboard, "GolfBot White Ball Collection Dashboard", 
                    (10, 30), self.font, self.font_scale_large, self.accent_color, 2)
         
         # Time and state info
@@ -109,9 +109,9 @@ class GolfBotDashboard:
         cv2.putText(self.dashboard, state_text, (200, y_pos), 
                    self.font, self.font_scale_medium, state_color, 1)
         
-        # Balls collected
+        # White balls collected
         ball_count = hardware.get_ball_count() if hardware else 0
-        balls_text = f"Balls: {ball_count}"
+        balls_text = f"White Balls: {ball_count}"
         cv2.putText(self.dashboard, balls_text, (400, y_pos), 
                    self.font, self.font_scale_medium, self.success_color, 1)
         
@@ -120,7 +120,7 @@ class GolfBotDashboard:
                    self.font, self.font_scale_small, (180, 180, 180), 1)
     
     def _add_vision_status_panel(self, vision_system):
-        """Add vision system status panel"""
+        """Add vision system status panel - WHITE BALLS ONLY"""
         panel_y = self.right_panel_y
         panel_height = 120
         
@@ -150,11 +150,10 @@ class GolfBotDashboard:
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         y += line_height
         
-        # Current target
+        # Current target (WHITE BALLS ONLY)
         if hasattr(vision_system, 'current_target') and vision_system.current_target:
             target = vision_system.current_target
-            ball_type = "ORANGE" if target.object_type == 'orange_ball' else "WHITE"
-            cv2.putText(self.dashboard, f"Target: {ball_type}", 
+            cv2.putText(self.dashboard, f"Target: WHITE BALL", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.warning_color, 1)
             y += line_height
             
@@ -172,14 +171,14 @@ class GolfBotDashboard:
         
         # Panel background
         cv2.rectangle(self.dashboard, 
-                    (self.right_panel_x, panel_y), 
-                    (self.right_panel_x + self.panel_width, panel_y + panel_height), 
-                    self.panel_color, -1)
+                     (self.right_panel_x, panel_y), 
+                     (self.right_panel_x + self.panel_width, panel_y + panel_height), 
+                     self.panel_color, -1)
         
         # Panel title
         cv2.putText(self.dashboard, "ROBOT STATUS", 
-                (self.right_panel_x + 5, panel_y + 20), 
-                self.font, self.font_scale_medium, self.accent_color, 1)
+                   (self.right_panel_x + 5, panel_y + 20), 
+                   self.font, self.font_scale_medium, self.accent_color, 1)
         
         y = panel_y + 40
         line_height = 18
@@ -187,39 +186,32 @@ class GolfBotDashboard:
         # Current speed
         speed = getattr(hardware, 'current_speed', 0) if hardware else 0
         cv2.putText(self.dashboard, f"Speed: {speed*100:.0f}%", 
-                (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         y += line_height
         
-        # Servo status - FIXED
+        # Servo status
         if hardware and hasattr(hardware, 'get_servo_angles'):
-            try:
-                angles = hardware.get_servo_angles()
-                # Use the correct keys from hardware.py
-                servo_ss = angles.get('servo_ss', 90)
-                servo_sf = angles.get('servo_sf', 90)
-                cv2.putText(self.dashboard, f"Servos: SS={servo_ss:.0f}° SF={servo_sf:.0f}°", 
-                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
-            except Exception as e:
-                cv2.putText(self.dashboard, f"Servos: Error ({str(e)[:20]})", 
-                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
+            angles = hardware.get_servo_angles()
+            cv2.putText(self.dashboard, f"Servos: SS {angles['servo_ss']:.0f}° SF {angles['servo_sf']:.0f}°", 
+                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         else:
             cv2.putText(self.dashboard, "Servos: N/A", 
-                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
+                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
         y += line_height
         
-        # Collection status
+        # Collection status (WHITE BALLS ONLY)
         ball_count = hardware.get_ball_count() if hardware else 0
-        cv2.putText(self.dashboard, f"Balls Collected: {ball_count}", 
-                (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.success_color, 1)
+        cv2.putText(self.dashboard, f"White Balls Collected: {ball_count}", 
+                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.success_color, 1)
         y += line_height
         
         # State details
         state_details = self._get_state_details(robot_state)
         cv2.putText(self.dashboard, f"Action: {state_details}", 
-                (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
     
     def _add_detection_details_panel(self, vision_system):
-        """Add detailed detection information panel"""
+        """Add detailed detection information panel - WHITE BALLS ONLY"""
         panel_y = self.right_panel_y + 280
         panel_height = 120
         
@@ -237,21 +229,16 @@ class GolfBotDashboard:
         y = panel_y + 40
         line_height = 16
         
-        # Ball count and types
+        # Ball count (WHITE BALLS ONLY)
         if hasattr(vision_system, '_last_detected_balls'):
             balls = getattr(vision_system, '_last_detected_balls', [])
-            orange_count = sum(1 for b in balls if b.object_type == 'orange_ball')
-            white_count = len(balls) - orange_count
+            white_count = len(balls)  # All balls are white now
             
-            cv2.putText(self.dashboard, f"Balls Found: {len(balls)}", 
+            cv2.putText(self.dashboard, f"White Balls Found: {white_count}", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
-            y += line_height
-            
-            cv2.putText(self.dashboard, f"  White: {white_count}  Orange: {orange_count}", 
-                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, (200, 200, 200), 1)
-            y += line_height
+            y += line_height * 2
         else:
-            cv2.putText(self.dashboard, "Balls Found: 0", 
+            cv2.putText(self.dashboard, "White Balls Found: 0", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
             y += line_height * 2
         
@@ -274,7 +261,7 @@ class GolfBotDashboard:
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, wall_color, 1)
     
     def _add_controls_legend_panel(self):
-        """Add controls and legend panel"""
+        """Add controls and legend panel - WHITE BALLS ONLY"""
         panel_y = self.right_panel_y + 410
         panel_height = 100
         
@@ -292,12 +279,12 @@ class GolfBotDashboard:
         y = panel_y + 40
         line_height = 14
         
-        # Legend items
+        # Legend items (WHITE BALLS ONLY)
         legend_items = [
             ("Green Zone: Collection area", self.success_color),
             ("Cyan Lines: Centering tolerance (X+Y)", self.accent_color),
             ("Cyan Arrow: Target direction", self.accent_color),
-            ("O: Orange ball  B: White ball", self.text_color),
+            ("B: White ball", self.text_color),
             ("Red Outline: Wall danger", self.danger_color),
         ]
         
@@ -348,7 +335,7 @@ class GolfBotDashboard:
     def _get_state_details(self, robot_state):
         """Get detailed description of current state"""
         state_details = {
-            'SEARCHING': "Looking for balls",
+            'SEARCHING': "Looking for white balls",
             'CENTERING_BALL': "Aligning X+Y for collection",
             'APPROACHING_BALL': "Moving toward target",
             'COLLECTING_BALL': "Enhanced collection sequence",

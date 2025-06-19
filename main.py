@@ -61,9 +61,6 @@ class GolfBot:
         self.search_pattern_index = 0
         self.last_ball_seen_time = None
         
-        # NEW: Blind collection tracking (removed - using enhanced sequence)
-        # self.blind_collection_drive_time = 0.0
-        
         # Performance tracking
         self.last_frame_time = time.time()
         self.frame_skip_counter = 0  # Skip frames for performance
@@ -102,7 +99,7 @@ class GolfBot:
     
     def initialize(self) -> bool:
         """Initialize all systems"""
-        self.logger.info("Initializing GolfBot with enhanced collection system...")
+        self.logger.info("Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...")
         
         try:
             # Start vision system
@@ -120,7 +117,7 @@ class GolfBot:
                 else:
                     self.logger.info("⚠️  Using fallback arena boundaries")
             
-            self.logger.info("All systems initialized successfully")
+            self.logger.info("All systems initialized successfully - WHITE BALLS ONLY")
             return True
             
         except Exception as e:
@@ -133,7 +130,7 @@ class GolfBot:
         self.competition_active = True
         self.state = RobotState.SEARCHING
         
-        self.logger.info("COMPETITION STARTED!")
+        self.logger.info("COMPETITION STARTED - WHITE BALLS ONLY!")
         self.logger.info(f"Time limit: {config.COMPETITION_TIME} seconds")
         self.logger.info("Using enhanced collection: Ball centering (X+Y) + Enhanced sequence")
         
@@ -155,7 +152,7 @@ class GolfBot:
         return self.get_time_remaining() <= 0
     
     def main_loop(self):
-        """Main competition control loop with enhanced collection"""
+        """Main competition control loop with enhanced collection - WHITE BALLS ONLY"""
         while self.competition_active and not self.is_time_up():
             try:
                 frame_start = time.time()
@@ -170,47 +167,22 @@ class GolfBot:
                 balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame(dashboard_mode=self.use_dashboard)
                 
                 if balls is None:  # Frame capture failed
-                    # self.telemetry.log_error("Frame capture failed", "vision")  # DISABLED
                     continue
                 
                 # Store detected balls for dashboard access
                 self.vision._last_detected_balls = balls if balls else []
-                
-                # Enhanced logging with detection method info (DISABLED)
-                # detection_info = {
-                #     "detection_method": "hough_circles_hybrid",
-                #     "arena_detected": self.vision.arena_detected,
-                #     "balls_found": len(balls) if balls else 0,
-                #     "current_state": self.state.value
-                # }
-                
-                # Log ball detections with enhanced info (DISABLED)
-                # if balls:
-                #     for i, ball in enumerate(balls):
-                #         detection_info[f"ball_{i}_confidence"] = ball.confidence
-                #         detection_info[f"ball_{i}_type"] = ball.object_type
-                #         detection_info[f"ball_{i}_centered"] = self.vision.is_ball_centered(ball)
-                #         detection_info[f"ball_{i}_in_zone"] = ball.in_collection_zone
-                
-                # self.telemetry.log_ball_detection(balls, None, None)
-                # self.telemetry.log_frame_data(extra_data=detection_info)
                 
                 # Update ball tracking
                 if balls:
                     self.last_ball_seen_time = time.time()
                     high_confidence_balls = [b for b in balls if b.confidence > 0.5]
                     if high_confidence_balls:
-                        self.logger.debug(f"High confidence balls: {len(high_confidence_balls)}")
+                        self.logger.debug(f"High confidence white balls: {len(high_confidence_balls)}")
                 
-                # Log hardware state periodically (DISABLED)
-                # if self.telemetry and self.telemetry.frame_count % 20 == 0:  # Less frequent logging
-                #     self.telemetry.log_hardware_state(self.hardware)
-                
-                # Performance tracking (DISABLED)
+                # Performance tracking
                 frame_time = time.time() - frame_start
                 fps = 1.0 / (time.time() - self.last_frame_time) if self.last_frame_time else 0
                 self.last_frame_time = time.time()
-                # self.telemetry.log_performance_metrics(fps, frame_time)
                 
                 # Show display based on mode
                 if config.SHOW_CAMERA_FEED and self.display_available:
@@ -220,12 +192,12 @@ class GolfBot:
                             dashboard_frame = self.dashboard.create_dashboard(
                                 debug_frame, self.state, self.vision, self.hardware, None  # No telemetry
                             )
-                            key = self.dashboard.show("GolfBot Dashboard - Enhanced Collection")
+                            key = self.dashboard.show("GolfBot Dashboard - White Ball Collection")
                         else:
                             # LEGACY OVERLAY MODE  
                             if debug_frame is not None and debug_frame.size > 0:
                                 self.add_status_overlay(debug_frame)
-                                cv2.imshow('GolfBot Debug - Enhanced Collection', debug_frame)
+                                cv2.imshow('GolfBot Debug - White Ball Collection', debug_frame)
                                 key = cv2.waitKey(1) & 0xFF
                             else:
                                 key = -1
@@ -241,14 +213,6 @@ class GolfBot:
                 old_state = self.state
                 self.execute_state_machine(balls, near_boundary, nav_command)
                 
-                # Log state transitions with enhanced info (DISABLED)
-                # if old_state != self.state:
-                #     reason = f"{nav_command} | balls={len(balls) if balls else 0} | boundary={near_boundary}"
-                #     if self.vision.current_target:
-                #         centered = self.vision.is_ball_centered(self.vision.current_target)
-                #         reason += f" | centered={centered}"
-                #     self.telemetry.log_state_transition(old_state, self.state, reason)
-                
                 # Adaptive sleep based on detection results and state
                 if self.state == RobotState.CENTERING_BALL:
                     time.sleep(0.03)  # Faster when centering
@@ -259,14 +223,13 @@ class GolfBot:
                 
             except Exception as e:
                 self.logger.error(f"Main loop iteration error: {e}")
-                # self.telemetry.log_error(f"Main loop error: {str(e)}", "main_loop")  # DISABLED
                 self.hardware.stop_motors()
                 time.sleep(0.5)
         
         self.end_competition()
     
     def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute current state logic with enhanced ball centering and collection"""
+        """Execute current state logic with enhanced ball centering and collection - WHITE BALLS ONLY"""
         
         # Always check for boundary first (but allow collection to complete)
         if near_boundary and self.state not in [RobotState.COLLECTING_BALL, RobotState.BLIND_COLLECTION]:
@@ -294,19 +257,16 @@ class GolfBot:
             self.hardware.emergency_stop()
     
     def handle_searching(self, balls, nav_command):
-        """Handle searching with centering requirement"""
+        """Handle searching with centering requirement - WHITE BALLS ONLY"""
         if balls:
             # Filter for high confidence balls only
             confident_balls = [ball for ball in balls if ball.confidence > 0.4]
             
             if confident_balls:
                 ball_count = len(confident_balls)
-                orange_count = sum(1 for ball in confident_balls if ball.object_type == 'orange_ball')
-                white_count = ball_count - orange_count
-                
                 avg_confidence = sum(ball.confidence for ball in confident_balls) / ball_count
                 
-                self.logger.info(f"Found {ball_count} confident ball(s) - {white_count} white, {orange_count} orange (avg conf: {avg_confidence:.2f})")
+                self.logger.info(f"Found {ball_count} confident white ball(s) (avg conf: {avg_confidence:.2f})")
                 self.state = RobotState.CENTERING_BALL  # NEW: Go to centering first
                 return
         
@@ -314,7 +274,7 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """FIXED: Center the ball in both X and Y axes before collection"""
+        """FIXED: Center the ball in both X and Y axes before collection - WHITE BALLS ONLY"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
@@ -336,8 +296,7 @@ class GolfBot:
             # Ball is centered - calculate drive time and start collection
             drive_time = self.vision.calculate_drive_time_to_ball(target_ball)
             
-            ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.logger.info(f"Ball fully centered! Starting collection of {ball_type} ball (drive time: {drive_time:.2f}s)")
+            self.logger.info(f"White ball fully centered! Starting collection (drive time: {drive_time:.2f}s)")
             self.state = RobotState.COLLECTING_BALL
             return
         
@@ -381,9 +340,9 @@ class GolfBot:
             self.logger.info("Both X and Y axes centered!")
     
     def handle_approaching_ball(self, balls, nav_command):
-        """Handle approaching with confidence tracking (legacy mode)"""
+        """Handle approaching with confidence tracking (legacy mode) - WHITE BALLS ONLY"""
         if not balls:
-            self.logger.info("Lost sight of all balls - returning to search")
+            self.logger.info("Lost sight of all white balls - returning to search")
             self.state = RobotState.SEARCHING
             return
         
@@ -391,7 +350,7 @@ class GolfBot:
         confident_balls = [ball for ball in balls if ball.confidence > 0.4]
         
         if not confident_balls:
-            self.logger.info("No confident ball detections - returning to search")
+            self.logger.info("No confident white ball detections - returning to search")
             self.state = RobotState.SEARCHING
             return
         
@@ -399,7 +358,7 @@ class GolfBot:
         target_ball = confident_balls[0]
         
         if target_ball.in_collection_zone:
-            self.logger.info(f"Ball in collection zone - attempting collection (confidence: {target_ball.confidence:.2f})")
+            self.logger.info(f"White ball in collection zone - attempting collection (confidence: {target_ball.confidence:.2f})")
             self.state = RobotState.COLLECTING_BALL
             return
         
@@ -407,38 +366,23 @@ class GolfBot:
         self.execute_navigation_command(nav_command)
     
     def handle_collecting_ball(self):
-        """Handle ball collection with new enhanced sequence (vision-free)"""
+        """Handle ball collection with new enhanced sequence (vision-free) - WHITE BALLS ONLY"""
         current_target = self.vision.current_target
         
         if current_target:
-            ball_type = "orange" if current_target.object_type == "orange_ball" else "regular"
             confidence = current_target.confidence
-            self.logger.info(f"Starting enhanced collection of {ball_type} ball (confidence: {confidence:.2f})...")
+            self.logger.info(f"Starting enhanced collection of white ball (confidence: {confidence:.2f})...")
         else:
-            ball_type = "unknown"
-            self.logger.info("Starting enhanced ball collection...")
+            self.logger.info("Starting enhanced white ball collection...")
         
         # Execute new collection sequence (vision-free)
         success = self.hardware.enhanced_collection_sequence()
         
-        # Enhanced logging (DISABLED)
-        # self.telemetry.log_collection_attempt(success, ball_type)
-        
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ {ball_type.title()} ball collected with enhanced sequence! Total: {total_balls}")
-            
-            # Log collection success with details (DISABLED)
-            # collection_data = {
-            #     "ball_type": ball_type,
-            #     "confidence": confidence if current_target else 0.0,
-            #     "total_collected": total_balls,
-            #     "collection_method": "enhanced_sequence"
-            # }
-            # self.telemetry.log_frame_data(action="successful_enhanced_collection", extra_data=collection_data)
+            self.logger.info(f"✅ White ball collected with enhanced sequence! Total: {total_balls}")
         else:
-            self.logger.warning(f"❌ {ball_type.title()} enhanced collection failed")
-            # self.telemetry.log_error(f"Enhanced collection failed - {ball_type}", "collection")  # DISABLED
+            self.logger.warning(f"❌ White ball enhanced collection failed")
         
         # Return to searching
         self.state = RobotState.SEARCHING
@@ -497,7 +441,7 @@ class GolfBot:
         time.sleep(0.2)  # Shorter pause
     
     def add_status_overlay(self, frame):
-        """LEGACY: Enhanced status overlay with new collection states"""
+        """LEGACY: Enhanced status overlay with new collection states - WHITE BALLS ONLY"""
         y = 30
         line_height = 25
         
@@ -522,7 +466,7 @@ class GolfBot:
         
         # Ball count
         ball_count = self.hardware.get_ball_count()
-        cv2.putText(frame, f"Balls Collected: {ball_count}", (10, y), 
+        cv2.putText(frame, f"White Balls Collected: {ball_count}", (10, y), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
         y += line_height
         
@@ -537,8 +481,7 @@ class GolfBot:
             target = self.vision.current_target
             centered = self.vision.is_ball_centered(target)
             center_status = "CENTERED" if centered else "CENTERING"
-            ball_type = "ORANGE" if target.object_type == 'orange_ball' else "WHITE"
-            target_info = f"Target: {ball_type} ({center_status})"
+            target_info = f"Target: WHITE ({center_status})"
             
             color = (0, 255, 0) if centered else (0, 255, 255)
             cv2.putText(frame, target_info, (10, y), 
@@ -552,15 +495,15 @@ class GolfBot:
                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
     
     def end_competition(self):
-        """End competition with enhanced results"""
+        """End competition with enhanced results - WHITE BALLS ONLY"""
         self.competition_active = False
         elapsed_time = time.time() - self.start_time if self.start_time else 0
         
         self.logger.info("=" * 60)
-        self.logger.info("COMPETITION ENDED!")
+        self.logger.info("COMPETITION ENDED - WHITE BALLS ONLY!")
         self.logger.info("=" * 60)
         self.logger.info(f"Total time: {elapsed_time:.1f} seconds")
-        self.logger.info(f"Balls collected: {self.hardware.get_ball_count()}")
+        self.logger.info(f"White balls collected: {self.hardware.get_ball_count()}")
         self.logger.info(f"Final state: {self.state.value}")
         self.logger.info(f"Collection system: Enhanced (X+Y Centering + Servo Sequence)")
         self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
@@ -571,13 +514,10 @@ class GolfBot:
             "elapsed_time": elapsed_time,
             "balls_collected": self.hardware.get_ball_count(),
             "final_state": self.state.value,
-            "vision_system": "hough_circles_hybrid",
+            "vision_system": "hough_circles_hybrid_white_only",
             "collection_system": "enhanced_xy_centering_servo_sequence",
             "arena_detected": self.vision.arena_detected
         }
-        
-        # summary = self.telemetry.create_session_summary(competition_result)  # DISABLED
-        # self.logger.info(f"Session data saved to: {summary['session_metadata']['session_dir']}")  # DISABLED
         
         self.emergency_stop()
     
@@ -591,11 +531,6 @@ class GolfBot:
         try:
             self.hardware.emergency_stop()
             self.vision.cleanup()
-            
-            # export_file = self.telemetry.export_for_analysis()  # DISABLED
-            # self.logger.info(f"📊 Telemetry exported: {export_file}")  # DISABLED
-            
-            # self.telemetry.cleanup()  # DISABLED
             self.hardware.cleanup()
         except Exception as e:
             self.logger.error(f"Emergency stop error: {e}")
@@ -603,14 +538,15 @@ class GolfBot:
 def show_startup_menu():
     """Show startup menu with options"""
     print("\n" + "="*60)
-    print("🤖 GOLFBOT CONTROL SYSTEM - ENHANCED COLLECTION")
+    print("🤖 GOLFBOT CONTROL SYSTEM - WHITE BALL COLLECTION ONLY")
     print("="*60)
     print("1. Start Competition (Dashboard Mode)")
     print("2. Start Competition (Legacy Overlay Mode)")
     print("3. Hardware Testing") 
     print("4. Exit")
     print("="*60)
-    print("NEW FEATURES:")
+    print("FEATURES:")
+    print("• White ball detection and collection only")
     print("• Ball centering before collection (X+Y axis)")
     print("• Enhanced servo collection sequence")
     print("• Faster centering adjustments (2x speed)")
@@ -674,7 +610,8 @@ def main():
                 print("❌ Failed to initialize robot - exiting")
                 return 1
             
-            print("\n🚀 Robot ready with enhanced collection system!")
+            print("\n🚀 Robot ready with enhanced white ball collection system!")
+            print("   - White ball detection and collection only")
             print("   - Ball centering for precision targeting (X+Y axis)")
             print("   - Enhanced servo collection sequence") 
             print("   - HoughCircles + Arena boundary detection")
@@ -687,6 +624,7 @@ def main():
             print(f"   - Centering turn speed: {config.CENTERING_TURN_DURATION}s (FASTER)")
             print(f"   - Centering drive speed: {config.CENTERING_DRIVE_DURATION}s")
             print(f"   - Interface mode: {interface_mode}")
+            print(f"   - Target: WHITE BALLS ONLY")
             print("\nPress Enter to start competition...")
             input()
             
