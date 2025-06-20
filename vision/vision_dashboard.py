@@ -301,10 +301,9 @@ class GolfBotDashboard:
         """Get color for robot state"""
         state_colors = {
             'SEARCHING': self.accent_color,
-            'CENTERING_BALL': self.warning_color,
-            'APPROACHING_BALL': self.success_color,
+            'CENTERING_1': self.warning_color,
+            'CENTERING_2': self.warning_color,
             'COLLECTING_BALL': self.success_color,
-            'BLIND_COLLECTION': self.warning_color,
             'AVOIDING_BOUNDARY': self.danger_color,
             'EMERGENCY_STOP': self.danger_color,
         }
@@ -314,8 +313,8 @@ class GolfBotDashboard:
         """Get detailed description of current state"""
         state_details = {
             'SEARCHING': "Looking for balls",
-            'CENTERING_BALL': "Aligning X+Y for collection",
-            'APPROACHING_BALL': "Moving toward target",
+            'CENTERING_1': "Aligning X+Y for collection",
+            'CENTERING_2': "Collection zone positioning",
             'COLLECTING_BALL': "Enhanced collection sequence",
             'AVOIDING_BOUNDARY': "Avoiding walls",
             'EMERGENCY_STOP': "System stopped",
