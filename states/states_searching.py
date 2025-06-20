@@ -32,7 +32,7 @@ class SearchingState(BaseState):
         
         # Look for balls
         if balls:
-            confident_balls = [ball for ball in balls if ball.confidence > 0.4]
+            confident_balls = [ball for ball in balls if ball.confidence > 0.7]
             
             if confident_balls:
                 ball_count = len(confident_balls)

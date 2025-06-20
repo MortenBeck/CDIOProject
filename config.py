@@ -93,8 +93,8 @@ BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 # Phase 1 - Initial Ball Centering (X+Y alignment to frame center)
 CENTERING_1_TOLERANCE = 25  # Pixels - X-axis centering tolerance
 CENTERING_1_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance
-CENTERING_1_TURN_DURATION = 0.6  # Duration for horizontal centering turns
-CENTERING_1_DRIVE_DURATION = 0.6  # Duration for forward/backward centering adjustments
+CENTERING_1_TURN_DURATION = 0.4  # Duration for horizontal centering turns
+CENTERING_1_DRIVE_DURATION = 0.4  # Duration for forward/backward centering adjustments
 CENTERING_1_SPEED = 0.5  # Speed for initial centering movements
 
 # Phase 2 - Collection Zone Centering (identical system, different Y target)

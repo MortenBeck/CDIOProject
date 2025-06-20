@@ -181,10 +181,15 @@ class GolfBot:
                 if balls is None:
                     continue
                 
-                # Check for wall avoidance (higher priority than boundary detection)
+                # Check for wall avoidance (but don't interrupt ball pursuit unless critical)
                 wall_danger = self.boundary_avoidance.detect_boundaries(raw_frame)
-                if wall_danger and self.state_machine.get_current_state() != RobotState.AVOIDING_BOUNDARY:
-                    self.logger.info("Wall danger detected - switching to boundary avoidance")
+                current_state = self.state_machine.get_current_state()
+                
+                # Only force boundary avoidance during SEARCHING state or if already avoiding
+                # Don't interrupt ball centering/collection unless it's a critical wall danger
+                if (wall_danger and current_state == RobotState.SEARCHING and 
+                    current_state != RobotState.AVOIDING_BOUNDARY):
+                    self.logger.info("Wall danger detected during search - switching to boundary avoidance")
                     self.state_machine.transition_to(RobotState.AVOIDING_BOUNDARY)
                 
                 # Update context with all data including current frame

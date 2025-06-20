@@ -26,8 +26,8 @@ class BoundaryAvoidanceState(BaseState):
         
         if frame is None:
             self.log_state_info("No camera frame available - basic avoidance")
-            hardware.move_backward(duration=0.8)
-            hardware.turn_right(duration=0.6)
+            hardware.move_backward(duration=0.4, speed=0.3)  # Slower basic backing
+            hardware.turn_right(duration=0.6, speed=0.4)  # Slower basic turn
             return RobotState.SEARCHING
         
         # Get avoidance command from boundary system
@@ -51,17 +51,17 @@ class BoundaryAvoidanceState(BaseState):
                 hardware.turn_right(duration=1.5)
                 self.log_state_info("Turned right away from left wall")
             elif avoidance_command == 'move_backward':
-                hardware.move_backward(duration=0.8)
-                hardware.turn_right(duration=1.0)  # Add turn after backing up
-                self.log_state_info("Moved backward and turned away from wall")
+                hardware.move_backward(duration=0.5, speed=0.3)  # Slower backing
+                hardware.turn_right(duration=0.8, speed=0.4)  # Slower turn after backing
+                self.log_state_info("Moved backward slowly and turned away from wall")
             
             # Brief pause to stabilize
             time.sleep(0.2)
         
         # Check if we've been avoiding for too long
         elapsed_time = time.time() - self.avoidance_start_time
-        if elapsed_time > 3.0:  # Max 3 seconds in avoidance
-            self.log_state_info("Avoidance timeout - returning to search")
+        if elapsed_time > 2.0:  # Max 2 seconds in avoidance
+            self.log_state_info("Avoidance timeout - forcing exit to search")
             return RobotState.SEARCHING
         
         # Check if walls are still detected
