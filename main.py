@@ -9,6 +9,7 @@ from typing import Optional
 import config
 from hardware import GolfBotHardware
 from vision import VisionSystem
+from boundary_avoidance import BoundaryAvoidanceSystem
 from telemetry import TelemetryLogger
 from hardware_test import run_hardware_test
 
@@ -110,8 +111,8 @@ class GolfBot:
             self.logger.info("Detecting arena boundaries...")
             ret, frame = self.vision.get_frame()
             if ret:
-                self.vision.detect_arena_boundaries(frame)
-                if self.vision.arena_detected:
+                self.vision.boundary_system.detect_arena_boundaries(frame)
+                if self.vision.boundary_system.arena_detected:
                     self.logger.info("✅ Arena boundaries detected successfully")
                 else:
                     self.logger.info("⚠️  Using fallback arena boundaries")
@@ -388,15 +389,24 @@ class GolfBot:
         if near_boundary:
             self.logger.warning("⚠️  Near arena boundary - executing avoidance")
             
+            # Get specific avoidance command from boundary system
+            avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
+            
             # Immediate stop
             self.hardware.stop_motors()
             time.sleep(0.1)
             
-            # Quick backup
-            self.hardware.move_backward(duration=0.25)
-            
-            # Small turn to avoid
-            self.hardware.turn_right(duration=0.25)
+            # Execute specific avoidance based on boundary system recommendation
+            if avoidance_command == 'move_backward':
+                self.hardware.move_backward(duration=0.25)
+            elif avoidance_command == 'turn_right':
+                self.hardware.turn_right(duration=0.25)
+            elif avoidance_command == 'turn_left':
+                self.hardware.turn_left(duration=0.25)
+            else:
+                # Default fallback
+                self.hardware.move_backward(duration=0.25)
+                self.hardware.turn_right(duration=0.25)
             
             time.sleep(0.15)
         else:
@@ -498,6 +508,7 @@ class GolfBot:
         self.logger.info(f"Final state: {self.state.value}")
         self.logger.info(f"Collection system: Enhanced (X+Y Centering + Servo Sequence)")
         self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
+        self.logger.info(f"Boundary avoidance: Modular system")
         self.logger.info("=" * 60)
         
         # Enhanced competition results
@@ -507,6 +518,7 @@ class GolfBot:
             "final_state": self.state.value,
             "vision_system": "hough_circles_hybrid_white_only",
             "collection_system": "enhanced_xy_centering_servo_sequence",
+            "boundary_system": "modular_avoidance_system",
             "arena_detected": self.vision.arena_detected
         }
         
@@ -541,6 +553,7 @@ def show_startup_menu():
     print("• Ball centering before collection (X+Y axis)")
     print("• Enhanced servo collection sequence")
     print("• Faster centering adjustments (2x speed)")
+    print("• Modular boundary avoidance system")
     print("• Clean dashboard interface (option 1) - Camera + Side panels")
     print("• Legacy overlay mode (option 2) - All info on camera")
     print("="*60)
@@ -607,6 +620,7 @@ def main():
             print("   - Enhanced servo collection sequence") 
             print("   - HoughCircles + Arena boundary detection")
             print("   - Enhanced servo control with gradual movement")
+            print("   - Modular boundary avoidance system")
             print(f"   - {interface_mode} interface for monitoring")
             print(f"\n⚙️  Configuration:")
             print(f"   - X-centering tolerance: ±{config.CENTERING_TOLERANCE} pixels")
@@ -616,6 +630,7 @@ def main():
             print(f"   - Centering drive speed: {config.CENTERING_DRIVE_DURATION}s")
             print(f"   - Interface mode: {interface_mode}")
             print(f"   - Target: WHITE BALLS ONLY")
+            print(f"   - Boundary system: Modular avoidance")
             print("\nPress Enter to start competition...")
             input()
             
