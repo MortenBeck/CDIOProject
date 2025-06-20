@@ -2300,3 +2300,149 @@
 2025-06-20 22:33:19,252 - core.core_state_machine - WARNING - Emergency stop activated
 2025-06-20 22:33:19,252 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
 2025-06-20 22:33:19,252 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-20 22:37:26,372 - core.core_robot - INFO - Using new dashboard interface
+2025-06-20 22:37:26,372 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-20 22:37:26,387 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-20 22:37:26,387 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 22:37:26,387 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-20 22:37:26,387 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-20 22:37:26,388 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-20 22:37:26,388 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-20 22:37:26,388 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-20 22:37:26,388 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 22:37:26,388 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-20 22:37:27,185 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-20 22:37:27,186 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-20 22:37:27,186 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-20 22:37:27,186 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 22:37:27,690 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-20 22:37:27,690 - core.core_robot - INFO - All systems initialized successfully
+2025-06-20 22:37:28,597 - core.core_competition - INFO - COMPETITION STARTED!
+2025-06-20 22:37:28,597 - core.core_competition - INFO - Time limit: 480 seconds (8:00)
+2025-06-20 22:37:28,597 - core.core_competition - INFO - Using two-phase collection: Centering_1 + Centering_2 + Collection
+2025-06-20 22:37:30,276 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1812.0, width=126
+2025-06-20 22:37:30,276 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1083.5, height=50
+2025-06-20 22:37:30,276 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:37:30,276 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:37:30,276 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:37:30,276 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:37:30,279 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1812.0, width=126
+2025-06-20 22:37:30,279 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1083.5, height=50
+2025-06-20 22:37:30,279 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Setting preferred avoidance direction: left
+2025-06-20 22:37:30,279 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left (raw: turn_left)
+2025-06-20 22:37:31,880 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:37:32,082 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1812.0, width=126
+2025-06-20 22:37:32,082 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1083.5, height=50
+2025-06-20 22:37:33,844 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=357.5, width=36
+2025-06-20 22:37:33,844 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1061.0, height=56
+2025-06-20 22:37:33,847 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=357.5, width=36
+2025-06-20 22:37:33,848 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1061.0, height=56
+2025-06-20 22:37:33,848 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left (raw: turn_left)
+2025-06-20 22:37:35,448 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:37:35,649 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:37:35,649 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:37:35,649 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:37:37,439 - vision.vision_wall_avoidance - INFO - Right wall detected: area=856.5, height=59
+2025-06-20 22:37:37,440 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:37:37,440 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:37:37,440 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:37:37,440 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:37:37,442 - vision.vision_wall_avoidance - INFO - Right wall detected: area=856.5, height=59
+2025-06-20 22:37:37,442 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Setting preferred avoidance direction: left
+2025-06-20 22:37:37,442 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left (raw: turn_left)
+2025-06-20 22:37:39,043 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:37:39,245 - vision.vision_wall_avoidance - INFO - Right wall detected: area=856.5, height=59
+2025-06-20 22:37:40,988 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:37:40,989 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:37:40,989 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:37:42,768 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-20 22:37:43,168 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-20 22:37:45,920 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-20 22:37:47,881 - vision.vision_wall_avoidance - INFO - Right wall detected: area=838.5, height=56
+2025-06-20 22:37:47,881 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:37:47,881 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:37:47,881 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:37:47,881 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:37:47,884 - vision.vision_wall_avoidance - INFO - Right wall detected: area=838.5, height=56
+2025-06-20 22:37:47,884 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Setting preferred avoidance direction: left
+2025-06-20 22:37:47,884 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left (raw: turn_left)
+2025-06-20 22:37:49,485 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:37:49,687 - vision.vision_wall_avoidance - INFO - Right wall detected: area=838.5, height=56
+2025-06-20 22:37:51,437 - vision.vision_wall_avoidance - INFO - Right wall detected: area=319.5, height=57
+2025-06-20 22:37:51,440 - vision.vision_wall_avoidance - INFO - Right wall detected: area=319.5, height=57
+2025-06-20 22:37:51,441 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left (raw: turn_left)
+2025-06-20 22:37:53,041 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:37:53,241 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:37:53,242 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:37:53,242 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:37:55,076 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-20 22:37:55,076 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.77)
+2025-06-20 22:37:55,076 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-20 22:37:55,076 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-20 22:37:55,076 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-20 22:37:56,767 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-20 22:37:57,167 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -150)
+2025-06-20 22:37:59,317 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -132)
+2025-06-20 22:37:59,379 - core.core_competition - INFO - ⏱️  Time: 31s elapsed, 449s remaining | Balls: 0
+2025-06-20 22:37:59,379 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-20 22:37:59,379 - core.core_state_machine - INFO -    Current: centering_1
+2025-06-20 22:37:59,380 - core.core_state_machine - INFO -    Previous: searching
+2025-06-20 22:37:59,380 - core.core_state_machine - INFO -    State entered: True
+2025-06-20 22:38:01,460 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -130)
+2025-06-20 22:38:03,593 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -130)
+2025-06-20 22:38:05,752 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -130)
+2025-06-20 22:38:07,879 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -130)
+2025-06-20 22:38:10,005 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -130)
+2025-06-20 22:38:12,155 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -130)
+2025-06-20 22:38:14,286 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -124)
+2025-06-20 22:38:16,407 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -105)
+2025-06-20 22:38:18,170 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-20 22:38:18,171 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-20 22:38:18,171 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-20 22:38:19,909 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-20 22:38:19,910 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.81)
+2025-06-20 22:38:19,910 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-20 22:38:19,910 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-20 22:38:19,910 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-20 22:38:21,621 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-20 22:38:22,021 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -90)
+2025-06-20 22:38:24,145 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -89)
+2025-06-20 22:38:26,280 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -89)
+2025-06-20 22:38:26,341 - core.core_competition - INFO - ============================================================
+2025-06-20 22:38:26,342 - core.core_competition - INFO - COMPETITION ENDED!
+2025-06-20 22:38:26,342 - core.core_competition - INFO - ============================================================
+2025-06-20 22:38:26,342 - core.core_competition - INFO - Total time: 57.7 seconds (0:58)
+2025-06-20 22:38:26,342 - core.core_competition - INFO - Balls collected: 0
+2025-06-20 22:38:26,342 - core.core_competition - INFO - Basic score: 1266 points
+2025-06-20 22:38:26,342 - core.core_competition - INFO - Collection system: Two-Phase (Centering_1 + Centering_2 + Optimized Collection)
+2025-06-20 22:38:26,342 - core.core_competition - INFO - ============================================================
+2025-06-20 22:38:26,342 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 22:38:26,342 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-20 22:38:26,342 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-20 22:38:26,342 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-20 22:38:26,342 - core.core_state_machine - INFO - State transition: centering_1 → emergency_stop
+2025-06-20 22:38:26,342 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-20 22:38:26,342 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 22:38:26,750 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 22:38:26,750 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-20 22:38:26,751 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-20 22:38:26,751 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-20 22:38:26,751 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-20 22:38:26,751 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 22:38:27,159 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 22:38:27,159 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-20 22:38:27,160 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 22:38:27,160 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-20 22:38:27,160 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-20 22:38:27,160 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-20 22:40:44,438 - core.core_robot - INFO - Using new dashboard interface
+2025-06-20 22:40:44,438 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-20 22:40:44,454 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-20 22:40:44,454 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 22:40:44,454 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-20 22:40:44,454 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-20 22:40:44,454 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-20 22:40:44,454 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-20 22:40:44,455 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-20 22:40:44,455 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 22:40:44,455 - core.core_robot - INFO - Detecting arena boundaries...
