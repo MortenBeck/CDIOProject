@@ -249,7 +249,7 @@ class BoundaryAvoidanceSystem:
         elif 'right' in triggered_zones:
             return 'turn_left'       # Turn away from right wall
         elif 'center_forward' in triggered_zones:
-            return 'turn_right'      # Turn when wall directly ahead
+            return 'move_backward'      # Turn when wall directly ahead
         elif 'bottom' in triggered_zones:
             return 'move_backward'   # Only back up if no side options
         else:
