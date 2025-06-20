@@ -422,11 +422,11 @@ class GolfBot:
         action = pattern[self.search_pattern_index % len(pattern)]
         
         if action == "forward":
-            self.hardware.forward_step()
+            self.hardware.move_forward(duration=config.FORWARD_TIME_SHORT)
         elif action == "turn_right":
-            self.hardware.turn_90_right()
+            self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)
         elif action == "turn_left":
-            self.hardware.turn_90_left()
+            self.hardware.turn_left(duration=config.TURN_TIME_90_DEGREES)
         
         self.search_pattern_index += 1
         time.sleep(0.2)  # Shorter pause

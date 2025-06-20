@@ -527,38 +527,6 @@ class GolfBotHardware:
         self.current_speed = max(0.0, min(1.0, speed))
         if config.DEBUG_MOVEMENT:
             self.logger.debug(f"⚡ Speed set to {self.current_speed*100:.0f}%")
-    
-    # === HIGH-LEVEL MOVEMENT FUNCTIONS ===
-    def turn_90_right(self):
-        """Turn exactly 90 degrees right"""
-        if config.DEBUG_MOVEMENT:
-            self.logger.debug("🔄 Turning 90° right")
-        self.turn_right(duration=config.TURN_TIME_90_DEGREES)
-    
-    def turn_90_left(self):
-        """Turn exactly 90 degrees left"""
-        if config.DEBUG_MOVEMENT:
-            self.logger.debug("🔄 Turning 90° left")
-        self.turn_left(duration=config.TURN_TIME_90_DEGREES)
-    
-    def turn_180(self):
-        """Turn around 180 degrees"""
-        if config.DEBUG_MOVEMENT:
-            self.logger.debug("🔄 Turning 180°")
-        self.turn_right(duration=config.TURN_TIME_90_DEGREES * 2)
-    
-    def forward_step(self):
-        """Move forward a short distance"""
-        if config.DEBUG_MOVEMENT:
-            self.logger.debug("👣 Forward step")
-        self.move_forward(duration=config.FORWARD_TIME_SHORT)
-    
-    def backward_step(self):
-        """Move backward a short distance"""
-        if config.DEBUG_MOVEMENT:
-            self.logger.debug("👣 Backward step")
-        self.move_backward(duration=config.FORWARD_TIME_SHORT)
-    
 
     # === SERVO ANGLE GETTERS ===
     def get_servo_angles(self):
