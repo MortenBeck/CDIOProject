@@ -97,10 +97,15 @@ CENTERING_1_TURN_DURATION = 0.25  # Duration for horizontal centering turns
 CENTERING_1_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments
 CENTERING_1_SPEED = 0.4  # Speed for initial centering movements
 
-# Phase 2 - Collection Zone Positioning
-CENTERING_2_APPROACH_SPEED = 0.25  # Slower speed for approaching collection zone
-CENTERING_2_APPROACH_TIME = 0.3   # Time to drive forward into collection zone
-CENTERING_2_COLLECTION_SPEED = 0.2  # Very slow speed during final collection
+# Phase 2 - Collection Zone Centering (same as Phase 1 but in green zone)
+CENTERING_2_TOLERANCE = 25  # Pixels - X-axis centering tolerance (same as Phase 1)
+CENTERING_2_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance (same as Phase 1)
+CENTERING_2_TURN_DURATION = 0.25  # Duration for horizontal centering turns
+CENTERING_2_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments
+CENTERING_2_SPEED = 0.4  # Speed for centering movements in green zone
+
+# Final Collection Settings
+CENTERING_2_COLLECTION_SPEED = 0.3  # Speed during final collection sequence
 CENTERING_2_COLLECTION_TIME = 0.8   # Reduced time for final collection sequence
 
 # === LEGACY SETTINGS (maintained for compatibility) ===

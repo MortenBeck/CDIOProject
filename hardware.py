@@ -398,18 +398,32 @@ class GolfBotHardware:
             self.logger.debug("🛑 Motors stopped")
     
     def move_forward(self, duration=None, speed=None):
-        """Move robot forward"""
+        """Move robot forward with motor compensation for slow speeds"""
         if speed is None:
             speed = self.current_speed
+        
+        # Apply motor compensation for slow speeds to prevent drift
+        if speed <= getattr(config, 'SLOW_SPEED_THRESHOLD', 0.3):
+            left_speed = speed * getattr(config, 'MOTOR_LEFT_COMPENSATION', 1.0)
+            right_speed = speed * getattr(config, 'MOTOR_RIGHT_COMPENSATION', 1.0)
             
-        self.motor_in1.value = speed
+            # Ensure speeds don't exceed 1.0
+            left_speed = min(1.0, left_speed)
+            right_speed = min(1.0, right_speed)
+            
+            if config.DEBUG_MOVEMENT:
+                self.logger.debug(f"⬆️ Moving forward with compensation: L={left_speed:.3f}, R={right_speed:.3f}")
+        else:
+            left_speed = right_speed = speed
+            if config.DEBUG_MOVEMENT:
+                self.logger.debug(f"⬆️ Moving forward at {speed*100:.0f}% speed")
+        
+        # Left motors (IN1, IN4), Right motors (IN3)  
+        self.motor_in1.value = left_speed   # Left motor A
         self.motor_in2.off()
         self.motor_in3.off() 
-        self.motor_in4.value = speed
+        self.motor_in4.value = right_speed  # Right motor B
         
-        if config.DEBUG_MOVEMENT:
-            self.logger.debug(f"⬆️ Moving forward at {speed*100:.0f}% speed")
-            
         if duration:
             time.sleep(duration)
             self.stop_motors()
