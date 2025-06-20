@@ -6,8 +6,8 @@ Autonomous Golf Ball Collection Robot with Two-Phase Collection System
 
 import sys
 import logging
-from ui.menu import show_startup_menu
-from core.robot import GolfBot
+from ui.ui_menu import show_startup_menu
+from core.core_robot import GolfBot
 from hardware.test import run_hardware_test
 
 
