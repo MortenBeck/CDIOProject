@@ -360,7 +360,7 @@ class GolfBot:
         self.execute_navigation_command(nav_command)
     
     def handle_collecting_ball(self):
-        """Handle ball collection with FIXED drive distance from target zone"""
+        """Handle ball collection with PROPER sequence: servo up -> drive -> servo down"""
         current_target = self.vision.current_target
         
         if current_target:
@@ -371,20 +371,28 @@ class GolfBot:
         
         # Get the fixed drive time from vision system
         drive_time = self.vision.get_drive_time_to_collection()
-        self.logger.info(f"Using FIXED drive time: {drive_time:.2f}s from target zone to collection")
+        self.logger.info(f"Using collection sequence: servo up -> drive {drive_time:.2f}s -> servo down")
         
-        # Drive forward for the fixed amount (this replaces the variable drive in enhanced_collection_sequence)
-        self.logger.info("Step 1: Driving forward with FIXED distance")
+        # STEP 1: PREPARE SERVOS FOR COLLECTION (SERVO UP)
+        self.logger.info("Step 1: Preparing servos for collection (UP)")
+        success = self.prepare_servos_for_collection()
+        if not success:
+            self.logger.warning("Failed to prepare servos - aborting collection")
+            self.state = RobotState.SEARCHING
+            return
+        
+        # STEP 2: DRIVE FORWARD TO BALL
+        self.logger.info("Step 2: Driving forward to ball")
         self.hardware.move_forward(duration=drive_time, speed=config.COLLECTION_SPEED)
         time.sleep(0.1)
         
-        # Now execute the servo collection sequence (without the variable drive part)
-        self.logger.info("Step 2: Executing servo collection sequence")
-        success = self.execute_servo_collection_only()
+        # STEP 3: COMPLETE COLLECTION (SERVO DOWN/GRAB)
+        self.logger.info("Step 3: Completing collection (DOWN)")
+        success = self.complete_servo_collection()
         
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ White ball collected with FIXED drive method! Total: {total_balls}")
+            self.logger.info(f"✅ White ball collected with proper sequence! Total: {total_balls}")
         else:
             self.logger.warning(f"❌ White ball collection failed")
         
@@ -442,6 +450,81 @@ class GolfBot:
             
         except Exception as e:
             self.logger.error(f"Servo collection sequence failed: {e}")
+            self.hardware.stop_motors()
+            # Ensure we return to ready positions on error
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_ready()
+            return False
+        
+    def prepare_servos_for_collection(self):
+        """Prepare servos for collection - put them in position to catch ball"""
+        try:
+            if config.DEBUG_COLLECTION:
+                self.logger.info("🚀 Preparing servos for collection...")
+            
+            # Step 1: Prepare SF for catching
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Preparing SF for catching")
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Step 2: Move SS from driving to pre-collect position
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Moving SS from DRIVING to PRE-COLLECT")
+            self.hardware.servo_ss_to_pre_collect()
+            time.sleep(0.2)
+            
+            if config.DEBUG_COLLECTION:
+                self.logger.info("✅ Servos prepared for collection")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to prepare servos for collection: {e}")
+            # Ensure we return to safe positions on error
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_ready()
+            return False
+        
+    def complete_servo_collection(self):
+        """Complete the servo collection sequence after driving"""
+        try:
+            if config.DEBUG_COLLECTION:
+                self.logger.info("🤏 Completing servo collection sequence...")
+            
+            # Step 1: Coordinate collection - SS captures, SF assists
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Coordinated collection - SS collect, SF catch")
+            self.hardware.servo_ss_to_collect()
+            time.sleep(0.15)
+            self.hardware.servo_sf_to_catch()
+            time.sleep(0.3)
+            
+            # Step 2: Move SS to store position (secure ball)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Moving SS to STORE position (secure)")
+            self.hardware.servo_ss_to_store()
+            time.sleep(0.3)
+            
+            # Step 3: Return both servos to ready positions
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Returning servos to ready positions")
+            self.hardware.servo_ss_to_driving()
+            time.sleep(0.1)
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Record collection
+            self.hardware.collected_balls.append(time.time())
+            
+            if config.DEBUG_COLLECTION:
+                ss_state = self.hardware.get_servo_ss_state()
+                self.logger.info(f"✅ Collection sequence complete! SS state: {ss_state.upper()}")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Collection sequence failed: {e}")
             self.hardware.stop_motors()
             # Ensure we return to ready positions on error
             self.hardware.servo_ss_to_driving()
