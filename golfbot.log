@@ -2083,3 +2083,220 @@
 2025-06-20 22:26:48,586 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
 2025-06-20 22:26:48,586 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
 2025-06-20 22:26:48,586 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-20 22:32:33,537 - core.core_robot - INFO - Using new dashboard interface
+2025-06-20 22:32:33,537 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-20 22:32:33,553 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-20 22:32:33,553 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 22:32:33,553 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-20 22:32:33,553 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-20 22:32:33,553 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-20 22:32:33,554 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-20 22:32:33,554 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-20 22:32:33,554 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 22:32:33,554 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-20 22:32:34,370 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-20 22:32:34,371 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-20 22:32:34,371 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-20 22:32:34,371 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 22:32:34,875 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-20 22:32:34,875 - core.core_robot - INFO - All systems initialized successfully
+2025-06-20 22:32:35,495 - core.core_competition - INFO - COMPETITION STARTED!
+2025-06-20 22:32:35,495 - core.core_competition - INFO - Time limit: 480 seconds (8:00)
+2025-06-20 22:32:35,495 - core.core_competition - INFO - Using two-phase collection: Centering_1 + Centering_2 + Collection
+2025-06-20 22:32:37,139 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=2077.5, width=114
+2025-06-20 22:32:37,139 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1141.0, height=50
+2025-06-20 22:32:37,139 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:32:37,139 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:32:37,139 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:32:37,139 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:32:37,142 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=2077.5, width=114
+2025-06-20 22:32:37,142 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1141.0, height=50
+2025-06-20 22:32:37,142 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:32:38,042 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:32:38,245 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=2077.5, width=114
+2025-06-20 22:32:38,245 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1141.0, height=50
+2025-06-20 22:32:39,996 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1756.5, width=78
+2025-06-20 22:32:39,996 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1687.0, height=82
+2025-06-20 22:32:39,999 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1756.5, width=78
+2025-06-20 22:32:39,999 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1687.0, height=82
+2025-06-20 22:32:39,999 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:32:40,899 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:32:41,100 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:32:41,100 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:32:41,100 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:32:42,889 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1664.0, width=76
+2025-06-20 22:32:42,889 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1675.0, height=84
+2025-06-20 22:32:42,889 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:32:42,889 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:32:42,889 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:32:42,890 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:32:42,892 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1664.0, width=76
+2025-06-20 22:32:42,892 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1675.0, height=84
+2025-06-20 22:32:42,892 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:32:43,793 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:32:43,995 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1664.0, width=76
+2025-06-20 22:32:43,996 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1675.0, height=84
+2025-06-20 22:32:45,751 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1657.0, width=76
+2025-06-20 22:32:45,751 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1672.5, height=85
+2025-06-20 22:32:45,754 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1657.0, width=76
+2025-06-20 22:32:45,754 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1672.5, height=85
+2025-06-20 22:32:45,754 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:32:46,655 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:32:46,855 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:32:46,855 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:32:46,855 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:32:48,601 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1631.0, width=116
+2025-06-20 22:32:48,601 - vision.vision_wall_avoidance - INFO - Left wall detected: area=473.0, height=59
+2025-06-20 22:32:48,602 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1084.5, height=45
+2025-06-20 22:32:48,602 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:32:48,602 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:32:48,602 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:32:48,602 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:32:48,605 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1631.0, width=116
+2025-06-20 22:32:48,605 - vision.vision_wall_avoidance - INFO - Left wall detected: area=473.0, height=59
+2025-06-20 22:32:48,605 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1084.5, height=45
+2025-06-20 22:32:48,605 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_right
+2025-06-20 22:32:49,505 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned right away from left wall
+2025-06-20 22:32:49,708 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1631.0, width=116
+2025-06-20 22:32:49,709 - vision.vision_wall_avoidance - INFO - Left wall detected: area=473.0, height=59
+2025-06-20 22:32:49,709 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1084.5, height=45
+2025-06-20 22:32:51,441 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=2061.5, width=144
+2025-06-20 22:32:51,441 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1160.0, height=45
+2025-06-20 22:32:51,444 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=2061.5, width=144
+2025-06-20 22:32:51,444 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1160.0, height=45
+2025-06-20 22:32:51,444 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:32:52,345 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:32:52,545 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:32:52,545 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:32:52,545 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:32:54,292 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1702.5, width=118
+2025-06-20 22:32:54,292 - vision.vision_wall_avoidance - INFO - Left wall detected: area=476.0, height=61
+2025-06-20 22:32:54,292 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1072.5, height=46
+2025-06-20 22:32:54,293 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:32:54,293 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:32:54,293 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:32:54,293 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:32:54,295 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1702.5, width=118
+2025-06-20 22:32:54,295 - vision.vision_wall_avoidance - INFO - Left wall detected: area=476.0, height=61
+2025-06-20 22:32:54,295 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1072.5, height=46
+2025-06-20 22:32:54,296 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_right
+2025-06-20 22:32:55,196 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned right away from left wall
+2025-06-20 22:32:55,398 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1702.5, width=118
+2025-06-20 22:32:55,399 - vision.vision_wall_avoidance - INFO - Left wall detected: area=476.0, height=61
+2025-06-20 22:32:55,399 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1072.5, height=46
+2025-06-20 22:32:57,138 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=2110.0, width=152
+2025-06-20 22:32:57,139 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1113.5, height=55
+2025-06-20 22:32:57,141 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=2110.0, width=152
+2025-06-20 22:32:57,141 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1113.5, height=55
+2025-06-20 22:32:57,142 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:32:58,042 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:32:58,242 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:32:58,242 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:32:58,243 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:33:00,035 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1821.0, width=130
+2025-06-20 22:33:00,035 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1062.0, height=44
+2025-06-20 22:33:00,036 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:33:00,036 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:33:00,036 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:33:00,036 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:33:00,038 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1821.0, width=130
+2025-06-20 22:33:00,038 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1062.0, height=44
+2025-06-20 22:33:00,039 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:33:00,939 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:33:01,142 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1821.0, width=130
+2025-06-20 22:33:01,142 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1062.0, height=44
+2025-06-20 22:33:02,880 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1817.0, width=128
+2025-06-20 22:33:02,881 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1084.0, height=45
+2025-06-20 22:33:02,883 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1817.0, width=128
+2025-06-20 22:33:02,883 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1084.0, height=45
+2025-06-20 22:33:02,884 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:33:03,784 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:33:03,984 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:33:03,985 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:33:03,985 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:33:05,763 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1825.5, width=127
+2025-06-20 22:33:05,763 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1057.5, height=45
+2025-06-20 22:33:05,764 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:33:05,764 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:33:05,764 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:33:05,764 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:33:05,766 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1825.5, width=127
+2025-06-20 22:33:05,767 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1057.5, height=45
+2025-06-20 22:33:05,767 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:33:06,667 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:33:06,870 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1825.5, width=127
+2025-06-20 22:33:06,870 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1057.5, height=45
+2025-06-20 22:33:06,888 - core.core_competition - INFO - ⏱️  Time: 31s elapsed, 449s remaining | Balls: 0
+2025-06-20 22:33:06,888 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-20 22:33:06,888 - core.core_state_machine - INFO -    Current: avoiding_boundary
+2025-06-20 22:33:06,888 - core.core_state_machine - INFO -    Previous: searching
+2025-06-20 22:33:06,888 - core.core_state_machine - INFO -    State entered: True
+2025-06-20 22:33:08,641 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1798.5, width=129
+2025-06-20 22:33:08,641 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1059.5, height=45
+2025-06-20 22:33:08,644 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1798.5, width=129
+2025-06-20 22:33:08,644 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1059.5, height=45
+2025-06-20 22:33:08,644 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:33:09,544 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:33:09,745 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:33:09,745 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:33:09,745 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:33:11,516 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1842.0, width=130
+2025-06-20 22:33:11,516 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1109.0, height=60
+2025-06-20 22:33:11,516 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:33:11,516 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:33:11,516 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:33:11,516 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:33:11,518 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1842.0, width=130
+2025-06-20 22:33:11,519 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1109.0, height=60
+2025-06-20 22:33:11,519 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:33:12,419 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:33:12,622 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1842.0, width=130
+2025-06-20 22:33:12,622 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1109.0, height=60
+2025-06-20 22:33:14,366 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1843.5, width=128
+2025-06-20 22:33:14,366 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1094.0, height=50
+2025-06-20 22:33:14,369 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1843.5, width=128
+2025-06-20 22:33:14,369 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1094.0, height=50
+2025-06-20 22:33:14,369 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:33:15,270 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:33:15,470 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Avoidance timeout - returning to search
+2025-06-20 22:33:15,470 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:33:15,470 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-20 22:33:17,308 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1815.0, width=128
+2025-06-20 22:33:17,308 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1078.5, height=50
+2025-06-20 22:33:17,308 - core.core_robot - INFO - Wall danger detected - switching to boundary avoidance
+2025-06-20 22:33:17,308 - core.core_state_machine - INFO - Requested transition to avoiding_boundary
+2025-06-20 22:33:17,308 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-20 22:33:17,309 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Wall/boundary detected - executing smart avoidance
+2025-06-20 22:33:17,311 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1815.0, width=128
+2025-06-20 22:33:17,312 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1078.5, height=50
+2025-06-20 22:33:17,312 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing avoidance command: turn_left
+2025-06-20 22:33:18,212 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned left away from right wall
+2025-06-20 22:33:18,415 - vision.vision_wall_avoidance - INFO - Bottom wall detected: area=1815.0, width=128
+2025-06-20 22:33:18,415 - vision.vision_wall_avoidance - INFO - Right wall detected: area=1078.5, height=50
+2025-06-20 22:33:18,432 - core.core_competition - INFO - ============================================================
+2025-06-20 22:33:18,432 - core.core_competition - INFO - COMPETITION ENDED!
+2025-06-20 22:33:18,432 - core.core_competition - INFO - ============================================================
+2025-06-20 22:33:18,432 - core.core_competition - INFO - Total time: 42.9 seconds (0:43)
+2025-06-20 22:33:18,432 - core.core_competition - INFO - Balls collected: 0
+2025-06-20 22:33:18,432 - core.core_competition - INFO - Basic score: 1311 points
+2025-06-20 22:33:18,432 - core.core_competition - INFO - Collection system: Two-Phase (Centering_1 + Centering_2 + Optimized Collection)
+2025-06-20 22:33:18,432 - core.core_competition - INFO - ============================================================
+2025-06-20 22:33:18,432 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 22:33:18,432 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-20 22:33:18,433 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-20 22:33:18,433 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-20 22:33:18,433 - core.core_state_machine - INFO - State transition: avoiding_boundary → emergency_stop
+2025-06-20 22:33:18,433 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-20 22:33:18,433 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 22:33:18,840 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 22:33:18,841 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-20 22:33:18,842 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-20 22:33:18,842 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-20 22:33:18,842 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-20 22:33:18,842 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 22:33:19,251 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 22:33:19,252 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-20 22:33:19,252 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 22:33:19,252 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-20 22:33:19,252 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-20 22:33:19,252 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
