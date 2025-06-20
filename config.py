@@ -32,6 +32,12 @@ MOTOR_SPEED_MEDIUM = 0.5
 MOTOR_SPEED_FAST = 0.8
 DEFAULT_SPEED = MOTOR_SPEED_SLOW
 
+# === MOTOR CALIBRATION ===
+# Motor balance adjustment for slow speeds (to compensate for motor differences)
+MOTOR_LEFT_COMPENSATION = 1.0   # Multiplier for left motors (adjust if drifting right)
+MOTOR_RIGHT_COMPENSATION = 1.05  # Multiplier for right motors (adjust if drifting left)
+SLOW_SPEED_THRESHOLD = 0.3       # Below this speed, use compensation
+
 # === CAMERA SETTINGS ===
 CAMERA_WIDTH = 640
 CAMERA_HEIGHT = 480
