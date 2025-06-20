@@ -1,6 +1,6 @@
 import time
 from typing import Optional
-from .base import BaseState, RobotState
+from .states_base import BaseState, RobotState
 
 class BoundaryAvoidanceState(BaseState):
     """State for avoiding arena boundaries and walls"""
