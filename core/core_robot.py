@@ -8,7 +8,7 @@ from typing import Optional
 
 import config
 from hardware import GolfBotHardware
-from vision import VisionSystem, GolfBotDashboard
+from vision import VisionSystem, GolfBotDashboard, BoundaryAvoidanceSystem
 from .core_state_machine import StateMachine
 from .core_competition import CompetitionManager
 from states import RobotState
@@ -42,6 +42,7 @@ class GolfBot:
         # Initialize subsystems
         self.hardware = GolfBotHardware()
         self.vision = VisionSystem()
+        self.boundary_avoidance = BoundaryAvoidanceSystem()
         self.state_machine = StateMachine()
         self.competition = CompetitionManager()
         
@@ -49,11 +50,13 @@ class GolfBot:
         self.context = {
             'hardware': self.hardware,
             'vision': self.vision,
+            'boundary_avoidance': self.boundary_avoidance,
             'competition': self.competition,
             'current_state': RobotState.SEARCHING,
             'locked_target': None,
             'balls': [],
             'near_boundary': False,
+            'current_frame': None,
         }
         
         # Performance tracking
@@ -165,6 +168,11 @@ class GolfBot:
                     time.sleep(0.05)
                     continue
                 
+                # Get current raw frame for wall avoidance
+                ret, raw_frame = self.vision.get_frame()
+                if not ret:
+                    continue
+                
                 # Get current vision data
                 balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame(
                     dashboard_mode=self.use_dashboard
@@ -173,11 +181,19 @@ class GolfBot:
                 if balls is None:
                     continue
                 
-                # Update context
+                # Check for wall avoidance (higher priority than boundary detection)
+                wall_danger = self.boundary_avoidance.detect_boundaries(raw_frame)
+                if wall_danger and self.state_machine.get_current_state() != RobotState.AVOIDING_BOUNDARY:
+                    self.logger.info("Wall danger detected - switching to boundary avoidance")
+                    self.state_machine.transition_to(RobotState.AVOIDING_BOUNDARY)
+                
+                # Update context with all data including current frame
                 self.context.update({
                     'balls': balls,
                     'near_boundary': near_boundary,
-                    'current_state': self.state_machine.get_current_state()
+                    'current_state': self.state_machine.get_current_state(),
+                    'current_frame': raw_frame,
+                    'wall_danger': wall_danger
                 })
                 
                 # Execute state machine
@@ -191,10 +207,16 @@ class GolfBot:
                 # Show display based on mode
                 if config.SHOW_CAMERA_FEED and self.display_available:
                     try:
+                        # Add wall avoidance visualization to debug frame
+                        if debug_frame is not None and debug_frame.size > 0:
+                            debug_frame = self.boundary_avoidance.draw_boundary_visualization(debug_frame)
+                        
                         if self.use_dashboard and self.dashboard:
+                            # Get wall status for dashboard
+                            wall_status = self.boundary_avoidance.get_status()
                             dashboard_frame = self.dashboard.create_dashboard(
                                 debug_frame, self.state_machine.get_current_state(), 
-                                self.vision, self.hardware
+                                self.vision, self.hardware, wall_status
                             )
                             key = self.dashboard.show("GolfBot Dashboard - Two-Phase Collection")
                         else:
