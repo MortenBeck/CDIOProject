@@ -199,33 +199,36 @@ class BoundaryAvoidanceSystem:
                     break
         
         # === NEW: REGION 4: CENTER FORWARD DANGER ZONE ===
-        # This is KEY - detect walls directly in front of robot (center of frame)
+        # This detects walls directly in front of robot - BUT ONLY IN BOTTOM 40%
         center_width = int(w * 0.6)  # Check center 60% of frame width
         center_start_x = int(w * 0.2)  # Start at 20% from left
-        center_height = int(h * 0.4)   # Check top 40% of frame (above robot)
         
-        center_region = red_mask[0:center_height, center_start_x:center_start_x + center_width]
+        # KEY CHANGE: Only check BOTTOM 40% of frame (close to robot)
+        center_start_y = int(h * 0.6)   # Start at 60% down from top
+        center_end_y = int(h * 0.9)     # End at 90% down (avoid collection zone)
+        
+        # Only check the region where walls are actually dangerous (close to robot)
+        center_region = red_mask[center_start_y:center_end_y, center_start_x:center_start_x + center_width]
         contours, _ = cv2.findContours(center_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_wall_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                # Check if this wall is close enough to be dangerous
-                wall_bottom = y + h_rect
-                if wall_bottom > center_height * 0.5:  # Wall extends into lower half of center region
+                # Wall is in the danger zone if it has significant size
+                if w_rect > 40 or h_rect > 20:  # Must be substantial wall segment
                     danger_detected = True
                     wall_info = {
                         'zone': 'center_forward',
                         'contour': contour,
                         'area': area,
-                        'bbox': (center_start_x + x, y, w_rect, h_rect),
+                        'bbox': (center_start_x + x, center_start_y + y, w_rect, h_rect),
                         'length': max(w_rect, h_rect),
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
-                        self.logger.info(f"CENTER wall detected: area={area}, size={w_rect}x{h_rect}")
+                        self.logger.info(f"CENTER wall in danger zone: area={area}, pos=({center_start_x + x}, {center_start_y + y})")
                     break
         
         return danger_detected
