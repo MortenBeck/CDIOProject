@@ -57,9 +57,8 @@ class GolfBot:
         self.search_pattern_index = 0
         self.last_ball_seen_time = None
         
-        # Performance tracking
-        self.last_frame_time = time.time()
-        self.frame_skip_counter = 0
+        # Target persistence
+        self.locked_target = None  # Persist target between centering phases
         
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -259,29 +258,49 @@ class GolfBot:
                 
                 avg_confidence = sum(ball.confidence for ball in confident_balls) / ball_count
                 
+                # Lock onto the closest ball to prevent switching
+                closest_ball = min(confident_balls, key=lambda x: x.distance_from_center)
+                self.locked_target = closest_ball
+                
                 self.logger.info(f"Found {ball_count} confident ball(s) - {white_count} white, {orange_count} orange (avg conf: {avg_confidence:.2f})")
-                self.logger.info("Starting CENTERING_1 (Initial X+Y alignment)")
+                self.logger.info(f"Locked onto {'orange' if closest_ball.object_type == 'orange_ball' else 'white'} ball for centering sequence")
                 self.state = RobotState.CENTERING_1
                 return
         
-        # No confident balls found
+        # No confident balls found - clear any locked target
+        self.locked_target = None
         self.execute_search_pattern()
     
+    def find_locked_target_in_balls(self, balls):
+        """Find the locked target ball in current detections"""
+        if not self.locked_target or not balls:
+            return None
+        
+        # Find ball closest to locked target position
+        target_pos = self.locked_target.center
+        for ball in balls:
+            if ball.confidence > 0.3:  # Lower threshold for locked target
+                distance = ((ball.center[0] - target_pos[0])**2 + (ball.center[1] - target_pos[1])**2)**0.5
+                if distance < 50:  # Same ball if within 50 pixels
+                    return ball
+        return None
+    
     def handle_centering_1(self, balls, nav_command):
-        """Phase 1: Center the ball in both X and Y axes for initial alignment"""
+        """Phase 1: Center the locked target ball in both X and Y axes for initial alignment"""
         if not balls:
             self.logger.info("Lost sight of ball during CENTERING_1 - returning to search")
+            self.locked_target = None
             self.state = RobotState.SEARCHING
             return
         
-        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
+        # Use locked target instead of recalculating
+        target_ball = self.find_locked_target_in_balls(balls)
         
-        if not confident_balls:
-            self.logger.info("No confident ball detections during CENTERING_1 - returning to search")
+        if not target_ball:
+            self.logger.info("Lost locked target during CENTERING_1 - returning to search")
+            self.locked_target = None
             self.state = RobotState.SEARCHING
             return
-        
-        target_ball = confident_balls[0]
         
         # Check if ball is fully centered for Phase 1 (using Phase 1 tolerances)
         x_offset = abs(target_ball.center[0] - self.vision.frame_center_x)
@@ -292,7 +311,7 @@ class GolfBot:
         
         if x_centered and y_centered:
             ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.logger.info(f"CENTERING_1 complete! Ball aligned. Starting CENTERING_2 (Collection zone positioning) for {ball_type} ball")
+            self.logger.info(f"CENTERING_1 complete! Locked {ball_type} ball aligned. Starting CENTERING_2")
             self.state = RobotState.CENTERING_2
             return
         
@@ -332,26 +351,27 @@ class GolfBot:
             return
     
     def handle_centering_2(self, balls, nav_command):
-        """Phase 2: IDENTICAL to Phase 1 centering, but targets upper green zone"""
+        """Phase 2: IDENTICAL to Phase 1 centering, but targets upper green zone using locked target"""
         if not balls:
             self.logger.info("Lost sight of ball during CENTERING_2 - returning to search")
+            self.locked_target = None
             self.state = RobotState.SEARCHING
             return
         
-        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
+        # Use locked target instead of recalculating
+        target_ball = self.find_locked_target_in_balls(balls)
         
-        if not confident_balls:
-            self.logger.info("No confident ball detections during CENTERING_2 - returning to search")
+        if not target_ball:
+            self.logger.info("Lost locked target during CENTERING_2 - returning to search")
+            self.locked_target = None
             self.state = RobotState.SEARCHING
             return
-        
-        target_ball = confident_balls[0]
         
         # Set servo to pre-collection position (only on first entry to this state)
         current_servo_state = self.hardware.get_servo_ss_state()
         if current_servo_state != "pre-collect":
             ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.logger.info(f"CENTERING_2: Setting servo SS to PRE-COLLECT position for {ball_type} ball")
+            self.logger.info(f"CENTERING_2: Setting servo SS to PRE-COLLECT for locked {ball_type} ball")
             self.hardware.servo_ss_to_pre_collect()
             time.sleep(0.2)
         
@@ -368,7 +388,7 @@ class GolfBot:
         
         if x_centered and y_centered:
             ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.logger.info(f"CENTERING_2 complete! Ball centered in upper green zone. Starting collection of {ball_type} ball")
+            self.logger.info(f"CENTERING_2 complete! Locked {ball_type} ball centered in upper green zone. Starting collection")
             self.state = RobotState.COLLECTING_BALL
             return
         
