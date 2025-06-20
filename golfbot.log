@@ -1,0 +1,403 @@
+2025-06-20 19:29:49,001 - __main__ - INFO - Using new dashboard interface
+2025-06-20 19:29:49,002 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-20 19:29:49,016 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-20 19:29:49,016 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 19:29:49,016 - hardware - INFO - ✓ Servo SS on channel 0
+2025-06-20 19:29:49,016 - hardware - INFO - ✓ Servo SF on channel 1
+2025-06-20 19:29:49,016 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-20 19:29:49,017 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-20 19:29:49,017 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 19:29:49,017 - __main__ - INFO - Detecting arena boundaries...
+2025-06-20 19:29:49,802 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-20 19:29:49,802 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-20 19:29:49,802 - __main__ - INFO - All systems initialized successfully
+2025-06-20 19:29:50,631 - __main__ - INFO - COMPETITION STARTED!
+2025-06-20 19:29:50,631 - __main__ - INFO - Time limit: 480 seconds
+2025-06-20 19:29:50,631 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-20 19:29:51,456 - __main__ - WARNING - Display error: GolfBotDashboard.create_dashboard() takes 5 positional arguments but 6 were given
+2025-06-20 19:29:51,456 - __main__ - INFO - Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 1.00)
+2025-06-20 19:29:52,587 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:29:53,703 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:29:54,603 - vision - INFO - Ball distance: 243.3 pixels -> 0.73s drive time
+2025-06-20 19:29:54,603 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 0.73s)
+2025-06-20 19:29:55,477 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 0.96)...
+2025-06-20 19:29:55,478 - hardware - INFO - 🚀 Starting enhanced collection sequence with SS/SF system...
+2025-06-20 19:29:55,478 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-20 19:29:55,478 - hardware - INFO - Step 1: Moving servo SS from DRIVING to PRE-COLLECT
+2025-06-20 19:29:55,478 - hardware - INFO - 🎯 Moving servo SS to PRE-COLLECT position (50°)
+2025-06-20 19:29:55,935 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-20 19:29:57,085 - hardware - INFO - Step 3: Moving servo SS to COLLECT position (capture)
+2025-06-20 19:29:57,085 - hardware - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-20 19:29:57,694 - hardware - INFO - Step 4: Moving servo SS to STORE position (secure)
+2025-06-20 19:29:57,694 - hardware - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-20 19:29:58,963 - hardware - INFO - Step 5: Moving servo SS to DRIVING position (ready)
+2025-06-20 19:29:58,963 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:29:59,982 - hardware - INFO - ✅ Enhanced collection complete! Servo SS state: DRIVING, Total balls: 1
+2025-06-20 19:29:59,982 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 1
+2025-06-20 19:30:00,854 - __main__ - INFO - Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.98)
+2025-06-20 19:30:01,963 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:30:02,791 - __main__ - INFO - Shutdown signal received
+2025-06-20 19:30:02,791 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:30:02,791 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:30:02,791 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:30:03,199 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:30:03,199 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-20 19:30:03,199 - vision - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-20 19:30:03,199 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-20 19:30:03,199 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:30:03,199 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:30:03,606 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:30:03,607 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-20 19:30:03,607 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:30:03,607 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-20 19:31:42,137 - __main__ - INFO - Using new dashboard interface
+2025-06-20 19:31:42,137 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-20 19:31:42,153 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-20 19:31:42,153 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 19:31:42,153 - hardware - INFO - ✓ Servo SS on channel 0
+2025-06-20 19:31:42,153 - hardware - INFO - ✓ Servo SF on channel 1
+2025-06-20 19:31:42,153 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-20 19:31:42,153 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-20 19:31:42,153 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 19:31:42,153 - __main__ - INFO - Detecting arena boundaries...
+2025-06-20 19:31:42,933 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-20 19:31:42,933 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-20 19:31:42,933 - __main__ - INFO - All systems initialized successfully
+2025-06-20 19:31:45,837 - __main__ - INFO - COMPETITION STARTED!
+2025-06-20 19:31:45,837 - __main__ - INFO - Time limit: 480 seconds
+2025-06-20 19:31:45,837 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-20 19:31:46,699 - __main__ - INFO - Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.99)
+2025-06-20 19:31:47,813 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:31:48,723 - vision - INFO - Ball distance: 200.5 pixels -> 0.60s drive time
+2025-06-20 19:31:48,723 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 0.60s)
+2025-06-20 19:31:49,616 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 0.98)...
+2025-06-20 19:31:49,616 - hardware - INFO - 🚀 Starting enhanced collection sequence with SS/SF system...
+2025-06-20 19:31:49,616 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-20 19:31:49,616 - hardware - INFO - Step 1: Moving servo SS from DRIVING to PRE-COLLECT
+2025-06-20 19:31:49,616 - hardware - INFO - 🎯 Moving servo SS to PRE-COLLECT position (50°)
+2025-06-20 19:31:50,073 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-20 19:31:51,224 - hardware - INFO - Step 3: Moving servo SS to COLLECT position (capture)
+2025-06-20 19:31:51,233 - hardware - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-20 19:31:51,841 - hardware - INFO - Step 4: Moving servo SS to STORE position (secure)
+2025-06-20 19:31:51,841 - hardware - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-20 19:31:53,108 - hardware - INFO - Step 5: Moving servo SS to DRIVING position (ready)
+2025-06-20 19:31:53,108 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:31:54,126 - hardware - INFO - ✅ Enhanced collection complete! Servo SS state: DRIVING, Total balls: 1
+2025-06-20 19:31:54,126 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 1
+2025-06-20 19:31:55,044 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.83)
+2025-06-20 19:31:56,157 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-20 19:31:57,309 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-20 19:31:58,461 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:31:59,615 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:32:00,774 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:32:01,968 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:32:03,120 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:32:04,021 - __main__ - INFO - ============================================================
+2025-06-20 19:32:04,022 - __main__ - INFO - COMPETITION ENDED!
+2025-06-20 19:32:04,022 - __main__ - INFO - ============================================================
+2025-06-20 19:32:04,022 - __main__ - INFO - Total time: 18.2 seconds
+2025-06-20 19:32:04,022 - __main__ - INFO - Balls collected: 1
+2025-06-20 19:32:04,022 - __main__ - INFO - Final state: centering_ball
+2025-06-20 19:32:04,022 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-20 19:32:04,022 - __main__ - INFO - Arena detection: Fallback
+2025-06-20 19:32:04,022 - __main__ - INFO - ============================================================
+2025-06-20 19:32:04,022 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:32:04,022 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:32:04,022 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:32:04,429 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:32:04,430 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-20 19:32:04,430 - vision - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-20 19:32:04,431 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-20 19:32:04,431 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:32:04,431 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:32:04,838 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:32:04,839 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-20 19:32:04,839 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:32:04,839 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-20 19:33:53,143 - __main__ - INFO - Using new dashboard interface
+2025-06-20 19:33:53,144 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-20 19:33:53,158 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-20 19:33:53,158 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 19:33:53,158 - hardware - INFO - ✓ Servo SS on channel 0
+2025-06-20 19:33:53,158 - hardware - INFO - ✓ Servo SF on channel 1
+2025-06-20 19:33:53,158 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-20 19:33:53,159 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-20 19:33:53,159 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 19:33:53,159 - __main__ - INFO - Detecting arena boundaries...
+2025-06-20 19:33:53,954 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-20 19:33:53,954 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-20 19:33:53,954 - __main__ - INFO - All systems initialized successfully
+2025-06-20 19:33:55,194 - __main__ - INFO - COMPETITION STARTED!
+2025-06-20 19:33:55,194 - __main__ - INFO - Time limit: 480 seconds
+2025-06-20 19:33:55,194 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-20 19:33:56,061 - __main__ - INFO - Found 4 confident ball(s) - 4 white, 0 orange (avg conf: 0.77)
+2025-06-20 19:33:57,196 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:33:58,361 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:33:59,582 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-20 19:34:00,793 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:01,968 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:03,123 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:04,282 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:05,429 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:06,602 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-20 19:34:07,774 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:08,933 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:10,077 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:11,233 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:12,400 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:13,577 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-20 19:34:14,742 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:15,891 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:17,060 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:18,236 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:19,434 - __main__ - INFO - Centering X: turning left (faster)
+2025-06-20 19:34:20,588 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:21,742 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:22,892 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:24,058 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:25,236 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:26,385 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:27,545 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:28,701 - __main__ - INFO - Centering X: turning right (faster)
+2025-06-20 19:34:29,898 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:34:30,811 - vision - INFO - Ball distance: 247.0 pixels -> 0.74s drive time
+2025-06-20 19:34:30,811 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 0.74s)
+2025-06-20 19:34:31,721 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 1.00)...
+2025-06-20 19:34:31,722 - hardware - INFO - 🚀 Starting enhanced collection sequence with SS/SF system...
+2025-06-20 19:34:31,722 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-20 19:34:31,722 - hardware - INFO - Step 1: Moving servo SS from DRIVING to PRE-COLLECT
+2025-06-20 19:34:31,722 - hardware - INFO - 🎯 Moving servo SS to PRE-COLLECT position (50°)
+2025-06-20 19:34:32,179 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-20 19:34:33,330 - hardware - INFO - Step 3: Moving servo SS to COLLECT position (capture)
+2025-06-20 19:34:33,330 - hardware - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-20 19:34:33,937 - hardware - INFO - Step 4: Moving servo SS to STORE position (secure)
+2025-06-20 19:34:33,938 - hardware - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-20 19:34:35,204 - hardware - INFO - Step 5: Moving servo SS to DRIVING position (ready)
+2025-06-20 19:34:35,204 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:34:36,221 - hardware - INFO - ✅ Enhanced collection complete! Servo SS state: DRIVING, Total balls: 1
+2025-06-20 19:34:36,222 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 1
+2025-06-20 19:34:37,140 - __main__ - INFO - ============================================================
+2025-06-20 19:34:37,140 - __main__ - INFO - COMPETITION ENDED!
+2025-06-20 19:34:37,140 - __main__ - INFO - ============================================================
+2025-06-20 19:34:37,140 - __main__ - INFO - Total time: 41.9 seconds
+2025-06-20 19:34:37,140 - __main__ - INFO - Balls collected: 1
+2025-06-20 19:34:37,140 - __main__ - INFO - Final state: searching
+2025-06-20 19:34:37,140 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-20 19:34:37,140 - __main__ - INFO - Arena detection: Fallback
+2025-06-20 19:34:37,140 - __main__ - INFO - ============================================================
+2025-06-20 19:34:37,140 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:34:37,140 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:34:37,141 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:34:37,548 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:34:37,548 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-20 19:34:37,549 - vision - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-20 19:34:37,549 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-20 19:34:37,549 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:34:37,549 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:34:37,956 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:34:37,957 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-20 19:34:37,957 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:34:37,957 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-20 19:43:38,242 - __main__ - INFO - Using new dashboard interface
+2025-06-20 19:43:38,242 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-20 19:43:38,257 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-20 19:43:38,257 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 19:43:38,257 - hardware - INFO - ✓ Servo SS on channel 0
+2025-06-20 19:43:38,257 - hardware - INFO - ✓ Servo SF on channel 1
+2025-06-20 19:43:38,257 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-20 19:43:38,258 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-20 19:43:38,258 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 19:43:38,258 - __main__ - INFO - Detecting arena boundaries...
+2025-06-20 19:43:39,038 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-20 19:43:39,039 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-20 19:43:39,039 - __main__ - INFO - All systems initialized successfully
+2025-06-20 19:43:40,393 - __main__ - INFO - COMPETITION STARTED!
+2025-06-20 19:43:40,394 - __main__ - INFO - Time limit: 480 seconds
+2025-06-20 19:43:40,394 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-20 19:43:41,244 - __main__ - INFO - Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.97)
+2025-06-20 19:43:42,376 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:43:43,551 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:43:44,697 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:43:45,918 - __main__ - INFO - Centering X: turning left
+2025-06-20 19:43:47,113 - __main__ - INFO - Centering X: turning left
+2025-06-20 19:43:48,275 - __main__ - INFO - Centering X: turning left
+2025-06-20 19:43:49,457 - __main__ - INFO - Centering X: turning left
+2025-06-20 19:43:50,612 - __main__ - INFO - Centering X: turning left
+2025-06-20 19:43:51,514 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:43:52,855 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:43:54,210 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:43:55,577 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:43:56,914 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:43:58,250 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:43:59,610 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:00,980 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:02,316 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:03,656 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:05,015 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:06,388 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:07,747 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:09,091 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:10,436 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:11,794 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:13,150 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:14,576 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:15,951 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:17,322 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:18,672 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:20,014 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:21,392 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:22,752 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:24,116 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:25,533 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:26,918 - __main__ - ERROR - Main loop iteration error: module 'config' has no attribute 'COLLECTION_DRIVE_TIME_PER_PIXEL'
+2025-06-20 19:44:28,250 - __main__ - INFO - ============================================================
+2025-06-20 19:44:28,250 - __main__ - INFO - COMPETITION ENDED!
+2025-06-20 19:44:28,250 - __main__ - INFO - ============================================================
+2025-06-20 19:44:28,250 - __main__ - INFO - Total time: 47.9 seconds
+2025-06-20 19:44:28,250 - __main__ - INFO - Balls collected: 0
+2025-06-20 19:44:28,250 - __main__ - INFO - Final state: centering_ball
+2025-06-20 19:44:28,250 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-20 19:44:28,250 - __main__ - INFO - Arena detection: Fallback
+2025-06-20 19:44:28,250 - __main__ - INFO - ============================================================
+2025-06-20 19:44:28,250 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:44:28,250 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:44:28,250 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:44:28,658 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:44:28,658 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-20 19:44:28,659 - vision - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-20 19:44:28,659 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-20 19:44:28,659 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:44:28,659 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:44:29,066 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:44:29,067 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-20 19:44:29,067 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:44:29,067 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-20 19:47:37,332 - __main__ - INFO - Using new dashboard interface
+2025-06-20 19:47:37,333 - hardware - INFO - Initializing PCA9685 for servo control...
+2025-06-20 19:47:37,347 - hardware - INFO - ✅ Hardware initialized successfully
+2025-06-20 19:47:37,347 - hardware - INFO - ✓ PCA9685 ready for servo control
+2025-06-20 19:47:37,347 - hardware - INFO - ✓ Servo SS on channel 0
+2025-06-20 19:47:37,347 - hardware - INFO - ✓ Servo SF on channel 1
+2025-06-20 19:47:37,347 - hardware - INFO - ✓ Motors configured with PWM control
+2025-06-20 19:47:37,348 - __main__ - INFO - Initializing GolfBot with enhanced collection system...
+2025-06-20 19:47:37,348 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-20 19:47:37,348 - __main__ - INFO - Detecting arena boundaries...
+2025-06-20 19:47:38,129 - vision - INFO - Using fallback arena mask (conservative edges)
+2025-06-20 19:47:38,130 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-20 19:47:38,130 - __main__ - INFO - All systems initialized successfully
+2025-06-20 19:47:39,121 - __main__ - INFO - COMPETITION STARTED!
+2025-06-20 19:47:39,121 - __main__ - INFO - Time limit: 480 seconds
+2025-06-20 19:47:39,121 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-20 19:47:39,992 - __main__ - INFO - Found 3 confident ball(s) - 3 white, 0 orange (avg conf: 0.98)
+2025-06-20 19:47:41,113 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:47:42,289 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:47:43,468 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:47:44,636 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:47:45,791 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:47:46,942 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:47:48,099 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:47:49,263 - __main__ - INFO - Centering Y: moving forward (closer)
+2025-06-20 19:47:50,193 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 1.05s)
+2025-06-20 19:47:51,102 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 0.99)...
+2025-06-20 19:47:51,102 - hardware - INFO - 🚀 Starting enhanced collection sequence with SS/SF system...
+2025-06-20 19:47:51,102 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-20 19:47:51,102 - hardware - INFO - Step 1: Moving servo SS from DRIVING to PRE-COLLECT
+2025-06-20 19:47:51,103 - hardware - INFO - 🎯 Moving servo SS to PRE-COLLECT position (50°)
+2025-06-20 19:47:51,560 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-20 19:47:52,710 - hardware - INFO - Step 3: Moving servo SS to COLLECT position (capture)
+2025-06-20 19:47:52,711 - hardware - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-20 19:47:53,319 - hardware - INFO - Step 4: Moving servo SS to STORE position (secure)
+2025-06-20 19:47:53,319 - hardware - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-20 19:47:54,586 - hardware - INFO - Step 5: Moving servo SS to DRIVING position (ready)
+2025-06-20 19:47:54,586 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:47:55,603 - hardware - INFO - ✅ Enhanced collection complete! Servo SS state: DRIVING, Total balls: 1
+2025-06-20 19:47:55,603 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 1
+2025-06-20 19:47:56,517 - __main__ - INFO - Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.85)
+2025-06-20 19:47:57,636 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:47:58,808 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:47:59,710 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 1.05s)
+2025-06-20 19:48:00,610 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 1.00)...
+2025-06-20 19:48:00,610 - hardware - INFO - 🚀 Starting enhanced collection sequence with SS/SF system...
+2025-06-20 19:48:00,610 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-20 19:48:00,610 - hardware - INFO - Step 1: Moving servo SS from DRIVING to PRE-COLLECT
+2025-06-20 19:48:00,610 - hardware - INFO - 🎯 Moving servo SS to PRE-COLLECT position (50°)
+2025-06-20 19:48:01,067 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-20 19:48:02,218 - hardware - INFO - Step 3: Moving servo SS to COLLECT position (capture)
+2025-06-20 19:48:02,218 - hardware - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-20 19:48:02,826 - hardware - INFO - Step 4: Moving servo SS to STORE position (secure)
+2025-06-20 19:48:02,826 - hardware - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-20 19:48:04,092 - hardware - INFO - Step 5: Moving servo SS to DRIVING position (ready)
+2025-06-20 19:48:04,092 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:48:05,110 - hardware - INFO - ✅ Enhanced collection complete! Servo SS state: DRIVING, Total balls: 2
+2025-06-20 19:48:05,110 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 2
+2025-06-20 19:48:15,385 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.89)
+2025-06-20 19:48:16,510 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:17,700 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:18,860 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:20,029 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:21,183 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:22,357 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:23,523 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:24,704 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:25,858 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:27,024 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:48:27,964 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 1.05s)
+2025-06-20 19:48:28,884 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 0.97)...
+2025-06-20 19:48:28,884 - hardware - INFO - 🚀 Starting enhanced collection sequence with SS/SF system...
+2025-06-20 19:48:28,885 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-20 19:48:28,885 - hardware - INFO - Step 1: Moving servo SS from DRIVING to PRE-COLLECT
+2025-06-20 19:48:28,885 - hardware - INFO - 🎯 Moving servo SS to PRE-COLLECT position (50°)
+2025-06-20 19:48:29,343 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-20 19:48:30,493 - hardware - INFO - Step 3: Moving servo SS to COLLECT position (capture)
+2025-06-20 19:48:30,493 - hardware - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-20 19:48:31,101 - hardware - INFO - Step 4: Moving servo SS to STORE position (secure)
+2025-06-20 19:48:31,101 - hardware - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-20 19:48:32,367 - hardware - INFO - Step 5: Moving servo SS to DRIVING position (ready)
+2025-06-20 19:48:32,367 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:48:33,385 - hardware - INFO - ✅ Enhanced collection complete! Servo SS state: DRIVING, Total balls: 3
+2025-06-20 19:48:33,385 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 3
+2025-06-20 19:48:34,315 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.86)
+2025-06-20 19:48:35,446 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:36,600 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:48:37,793 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:48:38,970 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:48:40,161 - __main__ - INFO - Centering Y: moving backward (farther)
+2025-06-20 19:48:41,076 - __main__ - INFO - Ball fully centered! Starting collection of white ball (drive time: 1.05s)
+2025-06-20 19:48:41,993 - __main__ - INFO - Starting enhanced collection of regular ball (confidence: 1.00)...
+2025-06-20 19:48:41,993 - hardware - INFO - 🚀 Starting enhanced collection sequence with SS/SF system...
+2025-06-20 19:48:41,993 - hardware - INFO -    Flow: driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-20 19:48:41,993 - hardware - INFO - Step 1: Moving servo SS from DRIVING to PRE-COLLECT
+2025-06-20 19:48:41,993 - hardware - INFO - 🎯 Moving servo SS to PRE-COLLECT position (50°)
+2025-06-20 19:48:42,451 - hardware - INFO - Step 2: Driving forward for collection
+2025-06-20 19:48:43,601 - hardware - INFO - Step 3: Moving servo SS to COLLECT position (capture)
+2025-06-20 19:48:43,602 - hardware - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-20 19:48:44,209 - hardware - INFO - Step 4: Moving servo SS to STORE position (secure)
+2025-06-20 19:48:44,210 - hardware - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-20 19:48:45,476 - hardware - INFO - Step 5: Moving servo SS to DRIVING position (ready)
+2025-06-20 19:48:45,476 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:48:46,494 - hardware - INFO - ✅ Enhanced collection complete! Servo SS state: DRIVING, Total balls: 4
+2025-06-20 19:48:46,494 - __main__ - INFO - ✅ Regular ball collected with enhanced sequence! Total: 4
+2025-06-20 19:48:47,440 - __main__ - INFO - Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.73)
+2025-06-20 19:48:48,588 - __main__ - INFO - Centering X: turning right
+2025-06-20 19:48:49,511 - __main__ - INFO - ============================================================
+2025-06-20 19:48:49,511 - __main__ - INFO - COMPETITION ENDED!
+2025-06-20 19:48:49,511 - __main__ - INFO - ============================================================
+2025-06-20 19:48:49,511 - __main__ - INFO - Total time: 70.4 seconds
+2025-06-20 19:48:49,511 - __main__ - INFO - Balls collected: 4
+2025-06-20 19:48:49,511 - __main__ - INFO - Final state: centering_ball
+2025-06-20 19:48:49,511 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-20 19:48:49,511 - __main__ - INFO - Arena detection: Fallback
+2025-06-20 19:48:49,511 - __main__ - INFO - ============================================================
+2025-06-20 19:48:49,511 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:48:49,511 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:48:49,511 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:48:49,919 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:48:49,919 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-20 19:48:49,920 - vision - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-20 19:48:49,920 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-20 19:48:49,920 - hardware - INFO - 🔧 Centering servos...
+2025-06-20 19:48:49,920 - hardware - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-20 19:48:50,327 - hardware - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-20 19:48:50,328 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-20 19:48:50,329 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-20 19:48:50,329 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
