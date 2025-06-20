@@ -398,15 +398,15 @@ class GolfBot:
             
             # Execute specific avoidance based on boundary system recommendation
             if avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.25)
+                self.hardware.move_backward(duration=0.4)  # 0.4 seconds
             elif avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=0.25)
+                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
             elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=0.25)
+                self.hardware.turn_left(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
             else:
                 # Default fallback
                 self.hardware.move_backward(duration=0.25)
-                self.hardware.turn_right(duration=0.25)
+                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
             
             time.sleep(0.15)
         else:
