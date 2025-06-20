@@ -66,11 +66,11 @@ SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
 SERVO_RELEASE = 0         # Release position
 
 # === SERVO 1 FOUR-STATE SYSTEM ===
-SERVO_1_STORE = 0        # Store position
-SERVO_1_PRE_COLLECT = 120 # Pre-collect position
-SERVO_1_DRIVING = 150     # Driving position (default/start position)
-SERVO_1_COLLECT = 180     # Collect position
-SERVO_1_STEP_SIZE = 5     # Incremental movement step size
+SERVO_SS_STORE = 110        # Store position
+SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
+SERVO_SS_DRIVING = 25       # Driving position (default/start position)
+SERVO_SS_COLLECT = 14        # Collect position
+SERVO_SS_STEP_SIZE = 5     # Incremental movement step size
 
 # === ENHANCED COLLECTION POSITIONS ===
 SERVO_READY_POSITION = 90  # Servos up and ready to catch
