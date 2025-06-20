@@ -762,24 +762,31 @@ class VisionSystem:
         return result
     
     def draw_detections_clean(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Clean detection visualization for dashboard (essential overlays only) - WHITE BALLS ONLY"""
+        """Clean detection visualization with target zone"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # 1. ZONE BOUNDARIES (keep these visible)
-        # Collection zone
+        # 1. ZONE BOUNDARIES
         zone = self.collection_zone
+        
+        # General collection zone (green)
         cv2.rectangle(result, (zone['left'], zone['top']), 
-                     (zone['right'], zone['bottom']), (0, 255, 0), 2)
+                    (zone['right'], zone['bottom']), (0, 255, 0), 2)
+        
+        # TARGET ZONE for precise collection (bright cyan)
+        cv2.rectangle(result, (zone['left'], zone['target_top']), 
+                    (zone['right'], zone['target_bottom']), (255, 255, 0), 3)
+        
+        # Add target zone label
+        cv2.putText(result, "TARGET ZONE", (zone['left'] + 5, zone['target_top'] - 5), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
         
         # Centering tolerance lines
-        tolerance = getattr(config, 'CENTERING_TOLERANCE', 15)
-        distance_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 20)
+        tolerance = getattr(config, 'CENTERING_TOLERANCE', 25)
         center_x = self.frame_center_x
-        center_y = self.frame_center_y
         
         # Vertical lines (left/right centering)
         left_line = center_x - tolerance
@@ -787,51 +794,62 @@ class VisionSystem:
         cv2.line(result, (left_line, 0), (left_line, h), (0, 255, 255), 1)
         cv2.line(result, (right_line, 0), (right_line, h), (0, 255, 255), 1)
         
-        # Horizontal lines (distance centering)
-        top_line = center_y - distance_tolerance
-        bottom_line = center_y + distance_tolerance
-        cv2.line(result, (0, top_line), (w, top_line), (0, 255, 255), 1)
-        cv2.line(result, (0, bottom_line), (w, bottom_line), (0, 255, 255), 1)
-        
-        # 2. WALL/BOUNDARY DETECTION (safety critical)
+        # 2. WALL/BOUNDARY DETECTION
         if hasattr(self.boundary_system, 'detected_walls') and self.boundary_system.detected_walls:
             for wall in self.boundary_system.detected_walls:
                 if wall.get('triggered', False):
                     x, y, w_rect, h_rect = wall['bbox']
                     cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 3)
         
-        # 3. BALL DETECTIONS (WHITE BALLS ONLY)
+        # 3. BALL DETECTIONS
         for ball in balls:
             is_target = (self.current_target and 
                         self.current_target.center == ball.center)
             
-            # All balls are white now
             color = (0, 255, 0)  # Green for white balls
             ball_char = 'B'
             
             if is_target:
-                # TARGET BALL - prominent display
-                cv2.circle(result, ball.center, ball.radius + 3, color, 3)
-                cv2.circle(result, ball.center, 3, (0, 255, 255), -1)
+                # Check if ball is ready for collection
+                ready_for_collection = self.is_ball_centered_for_collection(ball)
+                
+                if ready_for_collection:
+                    # Ball is perfectly positioned - use bright green
+                    cv2.circle(result, ball.center, ball.radius + 3, (0, 255, 0), 4)
+                    cv2.circle(result, ball.center, 3, (0, 255, 0), -1)
+                    cv2.putText(result, "READY!", (ball.center[0]-25, ball.center[1]-25), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                else:
+                    # Ball being centered - use cyan
+                    cv2.circle(result, ball.center, ball.radius + 3, (255, 255, 0), 3)
+                    cv2.circle(result, ball.center, 3, (0, 255, 255), -1)
+                    
+                    # Show what needs adjustment
+                    in_target_zone = self.is_ball_in_target_zone(ball.center)
+                    x_offset = abs(ball.center[0] - self.frame_center_x)
+                    x_centered = x_offset <= config.CENTERING_TOLERANCE
+                    
+                    if not x_centered:
+                        status = "X"
+                    elif not in_target_zone:
+                        status = "Y"
+                    else:
+                        status = "✓"
+                    
+                    cv2.putText(result, status, (ball.center[0]-8, ball.center[1]-20), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
                 
                 # Arrow to target
                 cv2.arrowedLine(result, (self.frame_center_x, self.frame_center_y), 
-                               ball.center, (0, 255, 255), 2)
-                
-                # Centering status (minimal indicator)
-                centered = self.is_ball_centered(ball)
-                center_color = (0, 255, 0) if centered else (0, 0, 255)
-                status = "✓" if centered else "⊙"
-                cv2.putText(result, status, (ball.center[0]-8, ball.center[1]-20), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, center_color, 2)
+                            ball.center, (0, 255, 255), 2)
             else:
-                # OTHER BALLS - simple display
+                # OTHER BALLS
                 cv2.circle(result, ball.center, ball.radius, color, 2)
                 cv2.circle(result, ball.center, 2, color, -1)
             
             # Ball type indicator
             cv2.putText(result, ball_char, (ball.center[0]-5, ball.center[1]+5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
         # 4. CENTER CROSSHAIR
         cx, cy = self.frame_center_x, self.frame_center_y
@@ -865,6 +883,81 @@ class VisionSystem:
             debug_frame = self.draw_detections_legacy(frame, balls)
         
         return balls, orange_ball, near_boundary, nav_command, debug_frame
+    
+
+    def _calculate_collection_zone(self):
+        """Calculate the collection zone boundaries with specific target area"""
+        horizontal_margin = config.CAMERA_WIDTH * 0.3
+        left_boundary = int(horizontal_margin)
+        right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
+        
+        # Define specific target zone for consistent drive distance
+        target_zone_top = int(config.CAMERA_HEIGHT * 0.7)  # 70% down from top
+        target_zone_bottom = int(config.CAMERA_HEIGHT * 0.85)  # 85% down from top
+        
+        return {
+            'left': left_boundary,
+            'right': right_boundary, 
+            'top': int(config.CAMERA_HEIGHT * 0.4),  # General collection starts at 40%
+            'bottom': config.CAMERA_HEIGHT,
+            # NEW: Specific target zone for precise drive distance
+            'target_top': target_zone_top,
+            'target_bottom': target_zone_bottom
+        }
+
+    def is_ball_in_target_zone(self, ball_center: Tuple[int, int]) -> bool:
+        """Check if ball is in the specific target zone for collection"""
+        x, y = ball_center
+        zone = self.collection_zone
+        
+        horizontal_ok = zone['left'] <= x <= zone['right']
+        vertical_ok = zone['target_top'] <= y <= zone['target_bottom']
+        
+        return horizontal_ok and vertical_ok
+
+    def is_ball_centered_for_collection(self, ball: DetectedObject) -> bool:
+        """Check if ball is perfectly positioned for collection (in target zone + centered)"""
+        x_offset = abs(ball.center[0] - self.frame_center_x)
+        x_centered = x_offset <= config.CENTERING_TOLERANCE
+        
+        in_target_zone = self.is_ball_in_target_zone(ball.center)
+        
+        return x_centered and in_target_zone
+
+    def get_drive_time_to_collection(self) -> float:
+        """Get fixed drive time from target zone to collection point"""
+        # This should be calibrated based on your robot's speed and the distance
+        # from the target zone to where the ball needs to be for servo collection
+        return getattr(config, 'FIXED_COLLECTION_DRIVE_TIME', 1.0)  # 1 second default
+
+    def get_centering_adjustment_v2(self, ball: DetectedObject) -> tuple:
+        """Enhanced centering that gets ball to target zone, not just frame center"""
+        x_offset = ball.center[0] - self.frame_center_x
+        
+        # X-axis centering (same as before)
+        if abs(x_offset) <= config.CENTERING_TOLERANCE:
+            x_direction = 'centered'
+        elif x_offset > 0:
+            x_direction = 'right'
+        else:
+            x_direction = 'left'
+        
+        # Y-axis: Get ball into target zone
+        zone = self.collection_zone
+        target_y = (zone['target_top'] + zone['target_bottom']) // 2  # Middle of target zone
+        y_offset = ball.center[1] - target_y
+        
+        # More lenient Y tolerance since we have a target zone range
+        y_tolerance = (zone['target_bottom'] - zone['target_top']) // 2
+        
+        if abs(y_offset) <= y_tolerance:
+            y_direction = 'centered'
+        elif y_offset > 0:
+            y_direction = 'backward'  # Ball is below target zone
+        else:
+            y_direction = 'forward'   # Ball is above target zone
+        
+        return x_direction, y_direction
     
     # === DELEGATE PROPERTIES FOR COMPATIBILITY ===
     @property

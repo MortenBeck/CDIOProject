@@ -271,7 +271,7 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """FIXED: Center the ball in both X and Y axes before collection - WHITE BALLS ONLY"""
+        """UPDATED: Center ball to target zone + X-center before collection"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
@@ -288,53 +288,53 @@ class GolfBot:
         # Target the closest confident ball
         target_ball = confident_balls[0]
         
-        # Check if ball is fully centered (both X and Y)
-        if self.vision.is_ball_centered(target_ball):
-            # Ball is centered - calculate drive time and start collection
-            drive_time = self.vision.calculate_drive_time_to_ball(target_ball)
+        # NEW: Check if ball is ready for collection (in target zone + X-centered)
+        if self.vision.is_ball_centered_for_collection(target_ball):
+            # Ball is perfectly positioned - start collection with FIXED drive time
+            drive_time = self.vision.get_drive_time_to_collection()
             
-            self.logger.info(f"White ball fully centered! Starting collection (drive time: {drive_time:.2f}s)")
+            self.logger.info(f"White ball in TARGET ZONE and X-centered! Collection starting (fixed drive: {drive_time:.2f}s)")
             self.state = RobotState.COLLECTING_BALL
             return
         
-        # Ball not fully centered - get centering adjustments for both axes
-        x_direction, y_direction = self.vision.get_centering_adjustment(target_ball)
+        # Ball not ready - get centering adjustments using new method
+        x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
         
-        # PRIORITY 1: X-axis centering (left/right) - FASTER
+        # PRIORITY 1: X-axis centering (left/right)
         if x_direction != 'centered':
             if x_direction == 'right':
                 self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering X: turning right (faster)")
+                    self.logger.info(f"X-centering: turning right")
             elif x_direction == 'left':
                 self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
-                                       speed=config.CENTERING_SPEED)
+                                    speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering X: turning left (faster)")
+                    self.logger.info(f"X-centering: turning left")
             
-            time.sleep(0.03)  # Short pause for stability
-            return  # Handle one axis at a time for stability
+            time.sleep(0.03)
+            return
         
-        # PRIORITY 2: Y-axis centering (distance - forward/backward)
+        # PRIORITY 2: Y-axis positioning (get to target zone)
         if y_direction != 'centered':
             if y_direction == 'forward':
                 self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
-                                          speed=config.CENTERING_SPEED)
+                                        speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering Y: moving forward (closer)")
+                    self.logger.info(f"Y-positioning: moving toward target zone")
             elif y_direction == 'backward':
                 self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
-                                           speed=config.CENTERING_SPEED)
+                                        speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering Y: moving backward (farther)")
+                    self.logger.info(f"Y-positioning: backing away from target zone")
             
-            time.sleep(0.03)  # Short pause for stability
+            time.sleep(0.03)
             return
         
-        # If we reach here, both axes should be centered
+        # If we reach here, both should be positioned correctly
         if config.DEBUG_MOVEMENT:
-            self.logger.info("Both X and Y axes centered!")
+            self.logger.info("Ball should be in target zone and X-centered!")
     
     def handle_approaching_ball(self, balls, nav_command):
         """Handle approaching with confidence tracking (legacy mode) - WHITE BALLS ONLY"""
@@ -363,26 +363,93 @@ class GolfBot:
         self.execute_navigation_command(nav_command)
     
     def handle_collecting_ball(self):
-        """Handle ball collection with new enhanced sequence (vision-free) - WHITE BALLS ONLY"""
+        """Handle ball collection with FIXED drive distance from target zone"""
         current_target = self.vision.current_target
         
         if current_target:
             confidence = current_target.confidence
-            self.logger.info(f"Starting enhanced collection of white ball (confidence: {confidence:.2f})...")
+            self.logger.info(f"Starting collection: white ball (confidence: {confidence:.2f})")
         else:
-            self.logger.info("Starting enhanced white ball collection...")
+            self.logger.info("Starting collection: white ball")
         
-        # Execute new collection sequence (vision-free)
-        success = self.hardware.enhanced_collection_sequence()
+        # Get the fixed drive time from vision system
+        drive_time = self.vision.get_drive_time_to_collection()
+        self.logger.info(f"Using FIXED drive time: {drive_time:.2f}s from target zone to collection")
+        
+        # Drive forward for the fixed amount (this replaces the variable drive in enhanced_collection_sequence)
+        self.logger.info("Step 1: Driving forward with FIXED distance")
+        self.hardware.move_forward(duration=drive_time, speed=config.COLLECTION_SPEED)
+        time.sleep(0.1)
+        
+        # Now execute the servo collection sequence (without the variable drive part)
+        self.logger.info("Step 2: Executing servo collection sequence")
+        success = self.execute_servo_collection_only()
         
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ White ball collected with enhanced sequence! Total: {total_balls}")
+            self.logger.info(f"✅ White ball collected with FIXED drive method! Total: {total_balls}")
         else:
-            self.logger.warning(f"❌ White ball enhanced collection failed")
+            self.logger.warning(f"❌ White ball collection failed")
         
         # Return to searching
         self.state = RobotState.SEARCHING
+
+    def execute_servo_collection_only(self):
+        """Execute just the servo collection sequence without driving"""
+        try:
+            if config.DEBUG_COLLECTION:
+                self.logger.info("🚀 Executing servo-only collection sequence...")
+            
+            # Step 1: Prepare SF for catching
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 1: Preparing SF for catching")
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Step 2: Move SS from driving to pre-collect position
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 2: Moving SS from DRIVING to PRE-COLLECT")
+            self.hardware.servo_ss_to_pre_collect()
+            time.sleep(0.2)
+            
+            # Step 3: Coordinate collection - SS captures, SF assists
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 3: Coordinated collection - SS collect, SF catch")
+            self.hardware.servo_ss_to_collect()
+            time.sleep(0.15)
+            self.hardware.servo_sf_to_catch()
+            time.sleep(0.3)
+            
+            # Step 4: Move SS to store position (secure ball)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 4: Moving SS to STORE position (secure)")
+            self.hardware.servo_ss_to_store()
+            time.sleep(0.3)
+            
+            # Step 5: Return both servos to ready positions
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 5: Returning servos to ready positions")
+            self.hardware.servo_ss_to_driving()
+            time.sleep(0.1)
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Record collection
+            self.hardware.collected_balls.append(time.time())
+            
+            if config.DEBUG_COLLECTION:
+                ss_state = self.hardware.get_servo_ss_state()
+                self.logger.info(f"✅ Servo collection complete! SS state: {ss_state.upper()}")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Servo collection sequence failed: {e}")
+            self.hardware.stop_motors()
+            # Ensure we return to ready positions on error
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_ready()
+            return False    
     
     def handle_avoiding_boundary(self, near_boundary):
         """Handle boundary avoidance with improved timing"""

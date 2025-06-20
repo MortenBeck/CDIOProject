@@ -125,3 +125,13 @@ SHOW_CAMERA_FEED = True
 MOTOR_TIMEOUT = 5.0  # Max time for any single movement
 VISION_TIMEOUT = 1.0  # Max time to wait for camera frame
 RESTART_THRESHOLD = 5  # Number of consecutive errors before restart
+
+
+# === FIXED COLLECTION BEHAVIOR (NEW APPROACH) ===
+FIXED_COLLECTION_DRIVE_TIME = 1.05  # Fixed time to drive from target zone to collection point
+TARGET_ZONE_TOP_PERCENT = 0.7       # Target zone starts at 70% down from top
+TARGET_ZONE_BOTTOM_PERCENT = 0.85   # Target zone ends at 85% down from top
+
+# Enhanced centering - ball must be in target zone AND X-centered before collection
+CENTERING_TOLERANCE = 25  # X-axis centering tolerance (pixels)
+REQUIRE_TARGET_ZONE_FOR_COLLECTION = True  # Ball must be in target zone, not just centered
