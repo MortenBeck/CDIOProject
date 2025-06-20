@@ -21,7 +21,8 @@ except ImportError:
 
 class RobotState(Enum):
     SEARCHING = "searching"
-    CENTERING_BALL = "centering_ball"
+    CENTERING_1 = "centering_1"  # Initial X+Y centering
+    CENTERING_2 = "centering_2"  # Collection zone positioning
     COLLECTING_BALL = "collecting_ball"
     AVOIDING_BOUNDARY = "avoiding_boundary"
     EMERGENCY_STOP = "emergency_stop"
@@ -94,7 +95,7 @@ class GolfBot:
     
     def initialize(self) -> bool:
         """Initialize all systems"""
-        self.logger.info("Initializing GolfBot with enhanced collection system...")
+        self.logger.info("Initializing GolfBot with two-phase collection system...")
         
         try:
             # Start vision system
@@ -127,7 +128,7 @@ class GolfBot:
         
         self.logger.info("COMPETITION STARTED!")
         self.logger.info(f"Time limit: {config.COMPETITION_TIME} seconds")
-        self.logger.info("Using enhanced collection: Ball centering (X+Y) + Enhanced sequence")
+        self.logger.info("Using two-phase collection: Centering_1 + Centering_2 + Collection")
         
         try:
             self.main_loop()
@@ -147,7 +148,7 @@ class GolfBot:
         return self.get_time_remaining() <= 0
     
     def main_loop(self):
-        """Main competition control loop with enhanced collection"""
+        """Main competition control loop with two-phase collection"""
         while self.competition_active and not self.is_time_up():
             try:
                 frame_start = time.time()
@@ -186,11 +187,11 @@ class GolfBot:
                             dashboard_frame = self.dashboard.create_dashboard(
                                 debug_frame, self.state, self.vision, self.hardware
                             )
-                            key = self.dashboard.show("GolfBot Dashboard - Enhanced Collection")
+                            key = self.dashboard.show("GolfBot Dashboard - Two-Phase Collection")
                         else:
                             if debug_frame is not None and debug_frame.size > 0:
                                 self.add_status_overlay(debug_frame)
-                                cv2.imshow('GolfBot Debug - Enhanced Collection', debug_frame)
+                                cv2.imshow('GolfBot Debug - Two-Phase Collection', debug_frame)
                                 key = cv2.waitKey(1) & 0xFF
                             else:
                                 key = -1
@@ -207,7 +208,7 @@ class GolfBot:
                 self.execute_state_machine(balls, near_boundary, nav_command)
                 
                 # Adaptive sleep based on detection results and state
-                if self.state == RobotState.CENTERING_BALL:
+                if self.state in [RobotState.CENTERING_1, RobotState.CENTERING_2]:
                     time.sleep(0.03)
                 elif balls and len(balls) > 0:
                     time.sleep(0.05)
@@ -222,17 +223,20 @@ class GolfBot:
         self.end_competition()
     
     def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute current state logic with enhanced ball centering and collection"""
+        """Execute current state logic with two-phase collection"""
         
         # Always check for boundary first (but allow collection to complete)
-        if near_boundary and self.state != RobotState.COLLECTING_BALL:
+        if near_boundary and self.state not in [RobotState.CENTERING_2, RobotState.COLLECTING_BALL]:
             self.state = RobotState.AVOIDING_BOUNDARY
         
         if self.state == RobotState.SEARCHING:
             self.handle_searching(balls, nav_command)
             
-        elif self.state == RobotState.CENTERING_BALL:
-            self.handle_centering_ball(balls, nav_command)
+        elif self.state == RobotState.CENTERING_1:
+            self.handle_centering_1(balls, nav_command)
+            
+        elif self.state == RobotState.CENTERING_2:
+            self.handle_centering_2(balls, nav_command)
             
         elif self.state == RobotState.COLLECTING_BALL:
             self.handle_collecting_ball()
@@ -256,94 +260,139 @@ class GolfBot:
                 avg_confidence = sum(ball.confidence for ball in confident_balls) / ball_count
                 
                 self.logger.info(f"Found {ball_count} confident ball(s) - {white_count} white, {orange_count} orange (avg conf: {avg_confidence:.2f})")
-                self.state = RobotState.CENTERING_BALL
+                self.logger.info("Starting CENTERING_1 (Initial X+Y alignment)")
+                self.state = RobotState.CENTERING_1
                 return
         
         # No confident balls found
         self.execute_search_pattern()
     
-    def handle_centering_ball(self, balls, nav_command):
-        """Center the ball in both X and Y axes before collection"""
+    def handle_centering_1(self, balls, nav_command):
+        """Phase 1: Center the ball in both X and Y axes for initial alignment"""
         if not balls:
-            self.logger.info("Lost sight of ball during centering - returning to search")
+            self.logger.info("Lost sight of ball during CENTERING_1 - returning to search")
             self.state = RobotState.SEARCHING
             return
         
         confident_balls = [ball for ball in balls if ball.confidence > 0.4]
         
         if not confident_balls:
-            self.logger.info("No confident ball detections during centering - returning to search")
+            self.logger.info("No confident ball detections during CENTERING_1 - returning to search")
             self.state = RobotState.SEARCHING
             return
         
         target_ball = confident_balls[0]
         
-        # Check if ball is fully centered (both X and Y)
-        if self.vision.is_ball_centered(target_ball):
-            drive_time = self.vision.calculate_drive_time_to_ball(target_ball)
-            
+        # Check if ball is fully centered for Phase 1 (using Phase 1 tolerances)
+        x_offset = abs(target_ball.center[0] - self.vision.frame_center_x)
+        y_offset = abs(target_ball.center[1] - self.vision.frame_center_y)
+        
+        x_centered = x_offset <= config.CENTERING_1_TOLERANCE
+        y_centered = y_offset <= config.CENTERING_1_DISTANCE_TOLERANCE
+        
+        if x_centered and y_centered:
             ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.logger.info(f"Ball fully centered! Starting collection of {ball_type} ball (drive time: {drive_time:.2f}s)")
-            self.state = RobotState.COLLECTING_BALL
+            self.logger.info(f"CENTERING_1 complete! Ball aligned. Starting CENTERING_2 (Collection zone positioning) for {ball_type} ball")
+            self.state = RobotState.CENTERING_2
             return
         
         # Ball not fully centered - get centering adjustments for both axes
-        x_direction, y_direction = self.vision.get_centering_adjustment(target_ball)
-        
         # X-axis centering (left/right)
-        if x_direction != 'centered':
-            if x_direction == 'right':
-                self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
-                                        speed=config.CENTERING_SPEED)
+        if not x_centered:
+            x_offset_signed = target_ball.center[0] - self.vision.frame_center_x
+            if x_offset_signed > 0:
+                self.hardware.turn_right(duration=config.CENTERING_1_TURN_DURATION, 
+                                        speed=config.CENTERING_1_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering X: turning right")
-            elif x_direction == 'left':
-                self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
-                                       speed=config.CENTERING_SPEED)
+                    self.logger.info(f"CENTERING_1 X: turning right (offset: {x_offset_signed})")
+            else:
+                self.hardware.turn_left(duration=config.CENTERING_1_TURN_DURATION, 
+                                       speed=config.CENTERING_1_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering X: turning left")
+                    self.logger.info(f"CENTERING_1 X: turning left (offset: {x_offset_signed})")
             
             time.sleep(0.03)
             return
         
         # Y-axis centering (distance - forward/backward)
-        if y_direction != 'centered':
-            if y_direction == 'forward':
-                self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
-                                          speed=config.CENTERING_SPEED)
+        if not y_centered:
+            y_offset_signed = target_ball.center[1] - self.vision.frame_center_y
+            if y_offset_signed > 0:
+                self.hardware.move_backward(duration=config.CENTERING_1_DRIVE_DURATION, 
+                                          speed=config.CENTERING_1_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering Y: moving forward (closer)")
-            elif y_direction == 'backward':
-                self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
-                                           speed=config.CENTERING_SPEED)
+                    self.logger.info(f"CENTERING_1 Y: moving backward (offset: {y_offset_signed})")
+            else:
+                self.hardware.move_forward(duration=config.CENTERING_1_DRIVE_DURATION, 
+                                         speed=config.CENTERING_1_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering Y: moving backward (farther)")
+                    self.logger.info(f"CENTERING_1 Y: moving forward (offset: {y_offset_signed})")
             
             time.sleep(0.03)
             return
+    
+    def handle_centering_2(self, balls, nav_command):
+        """Phase 2: Move to pre-collection position and approach collection zone"""
+        if not balls:
+            self.logger.info("Lost sight of ball during CENTERING_2 - returning to search")
+            self.state = RobotState.SEARCHING
+            return
         
+        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
+        
+        if not confident_balls:
+            self.logger.info("No confident ball detections during CENTERING_2 - returning to search")
+            self.state = RobotState.SEARCHING
+            return
+        
+        target_ball = confident_balls[0]
+        
+        # Check if ball is in the green collection zone
+        if self.vision.is_in_collection_zone(target_ball.center):
+            ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
+            self.logger.info(f"CENTERING_2 complete! {ball_type.title()} ball is in collection zone. Starting final collection.")
+            self.state = RobotState.COLLECTING_BALL
+            return
+        
+        # Ball not yet in collection zone
+        ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
+        
+        # Set servo to pre-collection position (only on first entry to this state)
+        current_servo_state = self.hardware.get_servo_ss_state()
+        if current_servo_state != "pre-collect":
+            self.logger.info(f"CENTERING_2: Setting servo SS to PRE-COLLECT position for {ball_type} ball")
+            self.hardware.servo_ss_to_pre_collect()
+            time.sleep(0.2)
+        
+        # Drive forward slowly to bring ball into collection zone
         if config.DEBUG_MOVEMENT:
-            self.logger.info("Both X and Y axes centered!")
+            self.logger.info(f"CENTERING_2: Approaching collection zone (speed: {config.CENTERING_2_APPROACH_SPEED})")
+        
+        self.hardware.move_forward(duration=config.CENTERING_2_APPROACH_TIME, 
+                                 speed=config.CENTERING_2_APPROACH_SPEED)
+        
+        time.sleep(0.1)
     
     def handle_collecting_ball(self):
-        """Handle ball collection with enhanced sequence"""
+        """Handle ball collection with optimized sequence for collection zone"""
         current_target = self.vision.current_target
         
         if current_target:
             ball_type = "orange" if current_target.object_type == "orange_ball" else "regular"
             confidence = current_target.confidence
-            self.logger.info(f"Starting enhanced collection of {ball_type} ball (confidence: {confidence:.2f})...")
+            self.logger.info(f"Starting optimized collection of {ball_type} ball in collection zone (confidence: {confidence:.2f})...")
         else:
             ball_type = "unknown"
-            self.logger.info("Starting enhanced ball collection...")
+            self.logger.info("Starting optimized ball collection in collection zone...")
         
-        success = self.hardware.enhanced_collection_sequence()
+        # Use optimized collection sequence with collection zone settings
+        success = self.hardware.optimized_collection_sequence()
         
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ {ball_type.title()} ball collected with enhanced sequence! Total: {total_balls}")
+            self.logger.info(f"✅ {ball_type.title()} ball collected with optimized sequence! Total: {total_balls}")
         else:
-            self.logger.warning(f"❌ {ball_type.title()} enhanced collection failed")
+            self.logger.warning(f"❌ {ball_type.title()} optimized collection failed")
         
         self.state = RobotState.SEARCHING
     
@@ -372,7 +421,7 @@ class GolfBot:
         elif command == "turn_right":
             self.hardware.turn_right(duration=0.15)
         elif command == "collect_ball":
-            self.state = RobotState.COLLECTING_BALL
+            self.state = RobotState.CENTERING_1  # Start with Phase 1 centering
         else:
             self.execute_search_pattern()
     
@@ -392,7 +441,7 @@ class GolfBot:
         time.sleep(0.2)
     
     def add_status_overlay(self, frame):
-        """Enhanced status overlay"""
+        """Enhanced status overlay with two-phase collection info"""
         y = 30
         line_height = 25
         
@@ -401,13 +450,27 @@ class GolfBot:
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
         y += line_height
         
-        state_text = f"State: {self.state.value}"
-        if self.state == RobotState.COLLECTING_BALL:
-            state_text += " (Enhanced)"
-        elif self.state == RobotState.CENTERING_BALL and self.vision.current_target:
-            x_dir, y_dir = self.vision.get_centering_adjustment(self.vision.current_target)
-            centered = self.vision.is_ball_centered(self.vision.current_target)
-            state_text += f" ({'✓' if centered else f'{x_dir[:1].upper()}{y_dir[:1].upper()}'})"
+        # Enhanced state display with phase info
+        state_text = f"State: {self.state.value.replace('_', ' ').title()}"
+        if self.state == RobotState.CENTERING_1:
+            state_text += " (X+Y Align)"
+        elif self.state == RobotState.CENTERING_2:
+            state_text += " (Zone Position)"
+        elif self.state == RobotState.COLLECTING_BALL:
+            state_text += " (Optimized)"
+        
+        # Add centering info if in centering states
+        if self.state in [RobotState.CENTERING_1, RobotState.CENTERING_2] and self.vision.current_target:
+            if self.state == RobotState.CENTERING_1:
+                x_offset = abs(self.vision.current_target.center[0] - self.vision.frame_center_x)
+                y_offset = abs(self.vision.current_target.center[1] - self.vision.frame_center_y)
+                x_ok = x_offset <= config.CENTERING_1_TOLERANCE
+                y_ok = y_offset <= config.CENTERING_1_DISTANCE_TOLERANCE
+                status_char = f"{'✓' if x_ok else 'X'}{'✓' if y_ok else 'Y'}"
+                state_text += f" ({status_char})"
+            elif self.state == RobotState.CENTERING_2:
+                in_zone = self.vision.is_in_collection_zone(self.vision.current_target.center)
+                state_text += f" ({'✓' if in_zone else '→'})"
         
         cv2.putText(frame, state_text, (10, y), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
@@ -423,22 +486,29 @@ class GolfBot:
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
         y += line_height
         
+        # Two-phase collection info
+        cv2.putText(frame, f"Collection: Two-Phase (C1→C2→Collect)", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        y += line_height - 5
+        
         if self.vision.current_target:
             target = self.vision.current_target
-            centered = self.vision.is_ball_centered(target)
-            center_status = "CENTERED" if centered else "CENTERING"
             ball_type = "ORANGE" if target.object_type == 'orange_ball' else "WHITE"
-            target_info = f"Target: {ball_type} ({center_status})"
             
-            color = (0, 255, 0) if centered else (0, 255, 255)
+            # Phase-specific info
+            if self.state == RobotState.CENTERING_1:
+                x_offset = abs(target.center[0] - self.vision.frame_center_x)
+                y_offset = abs(target.center[1] - self.vision.frame_center_y)
+                target_info = f"Target: {ball_type} | Phase1: X±{x_offset} Y±{y_offset}"
+            elif self.state == RobotState.CENTERING_2:
+                in_zone = self.vision.is_in_collection_zone(target.center)
+                target_info = f"Target: {ball_type} | Phase2: {'IN ZONE' if in_zone else 'APPROACHING'}"
+            else:
+                target_info = f"Target: {ball_type} | Conf: {target.confidence:.2f}"
+            
+            color = (0, 255, 0) if self.state == RobotState.COLLECTING_BALL else (0, 255, 255)
             cv2.putText(frame, target_info, (10, y), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-            y += line_height - 5
-            
-            if centered:
-                drive_time = self.vision.calculate_drive_time_to_ball(target)
-                cv2.putText(frame, f"Drive Time: {drive_time:.2f}s", (10, y), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
     
     def end_competition(self):
         """End competition"""
@@ -451,7 +521,7 @@ class GolfBot:
         self.logger.info(f"Total time: {elapsed_time:.1f} seconds")
         self.logger.info(f"Balls collected: {self.hardware.get_ball_count()}")
         self.logger.info(f"Final state: {self.state.value}")
-        self.logger.info(f"Collection system: Enhanced (X+Y Centering + Servo Sequence)")
+        self.logger.info(f"Collection system: Two-Phase (Centering_1 + Centering_2 + Optimized Collection)")
         self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
         self.logger.info("=" * 60)
         
@@ -474,7 +544,7 @@ class GolfBot:
 def show_startup_menu():
     """Show startup menu with options"""
     print("\n" + "="*60)
-    print("🤖 GOLFBOT CONTROL SYSTEM - ENHANCED COLLECTION")
+    print("🤖 GOLFBOT CONTROL SYSTEM - TWO-PHASE COLLECTION")
     print("="*60)
     print("1. Start Competition (Dashboard Mode)")
     print("2. Start Competition (Legacy Overlay Mode)")
@@ -482,8 +552,9 @@ def show_startup_menu():
     print("4. Exit")
     print("="*60)
     print("FEATURES:")
-    print("• Ball centering before collection (X+Y axis)")
-    print("• Enhanced servo collection sequence")
+    print("• Phase 1: X+Y centering for ball alignment")
+    print("• Phase 2: Collection zone positioning with servo pre-collect")
+    print("• Optimized collection sequence in green zone")
     print("• Clean dashboard interface (option 1)")
     print("• Legacy overlay mode (option 2)")
     print("="*60)
@@ -544,16 +615,16 @@ def main():
                 print("❌ Failed to initialize robot - exiting")
                 return 1
             
-            print("\n🚀 Robot ready with enhanced collection system!")
-            print("   - Ball centering for precision targeting (X+Y axis)")
-            print("   - Enhanced servo collection sequence") 
-            print("   - HoughCircles + Arena boundary detection")
+            print("\n🚀 Robot ready with two-phase collection system!")
+            print("   - Phase 1: X+Y centering for ball alignment")
+            print("   - Phase 2: Collection zone positioning with servo pre-collect") 
+            print("   - Optimized collection sequence in green zone")
             print(f"   - {interface_mode} interface for monitoring")
             print(f"\n⚙️  Configuration:")
-            print(f"   - X-centering tolerance: ±{config.CENTERING_TOLERANCE} pixels")
-            print(f"   - Y-centering tolerance: ±{config.CENTERING_DISTANCE_TOLERANCE} pixels")
-            print(f"   - Collection drive time: {config.ENHANCED_COLLECTION_DRIVE_TIME}s")
-            print(f"   - Collection speed: {config.COLLECTION_SPEED}")
+            print(f"   - Phase 1 tolerances: ±{config.CENTERING_1_TOLERANCE}px X, ±{config.CENTERING_1_DISTANCE_TOLERANCE}px Y")
+            print(f"   - Phase 2 approach: {config.CENTERING_2_APPROACH_SPEED} speed, {config.CENTERING_2_APPROACH_TIME}s time")
+            print(f"   - Collection: {config.CENTERING_2_COLLECTION_SPEED} speed, {config.CENTERING_2_COLLECTION_TIME}s time")
+            print(f"   - Servo pre-collect: {config.SERVO_SS_PRE_COLLECT}°")
             print(f"   - Interface mode: {interface_mode}")
             print("\nPress Enter to start competition...")
             input()

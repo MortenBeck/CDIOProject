@@ -58,12 +58,12 @@ GOAL_HSV_UPPER = np.array([10, 255, 255])
 BOUNDARY_HSV_LOWER = np.array([0, 0, 0])    # Dark boundaries
 BOUNDARY_HSV_UPPER = np.array([180, 255, 50])
 
-# === SERVO SS (MAIN COLLECTION) FOUR-STATE SYSTEM ===
-SERVO_SS_STORE = 110        # Store position
-SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
-SERVO_SS_DRIVING = 25       # Driving position (default/start position)
-SERVO_SS_COLLECT = 15       # Collect position
-SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
+# === SERVO SS (MAIN COLLECTION) POSITIONS ===
+SERVO_SS_STORE = 110          # Store position
+SERVO_SS_PRE_COLLECT = 130    # Pre-collect position (UPDATED to 130)
+SERVO_SS_DRIVING = 25         # Driving position (default/start position)
+SERVO_SS_COLLECT = 15         # Collect position
+SERVO_SS_STEP_SIZE = 5        # Incremental movement step size
 
 # === SERVO SF (SECONDARY) POSITIONS ===
 SERVO_SF_READY_POSITION = 90  # Ready to catch
@@ -83,16 +83,28 @@ TURN_TIME_90_DEGREES = 0.6  # Time to turn 90 degrees
 FORWARD_TIME_SHORT = 0.2    # Short forward movement
 BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 
-# === ENHANCED COLLECTION BEHAVIOR ===
-CENTERING_TOLERANCE = 25  # Pixels - X-axis centering tolerance
-CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance
-ENHANCED_COLLECTION_DRIVE_TIME = 1.05  # Drive time for enhanced collection sequence
-COLLECTION_SPEED = 0.4  # Speed for collection movements
+# === TWO-PHASE COLLECTION SETTINGS ===
+# Phase 1 - Initial Ball Centering (X+Y alignment)
+CENTERING_1_TOLERANCE = 25  # Pixels - X-axis centering tolerance
+CENTERING_1_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance
+CENTERING_1_TURN_DURATION = 0.25  # Duration for horizontal centering turns
+CENTERING_1_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments
+CENTERING_1_SPEED = 0.4  # Speed for initial centering movements
 
-# === CENTERING BEHAVIOR ===
-CENTERING_TURN_DURATION = 0.25  # Duration for horizontal centering turns
-CENTERING_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments
-CENTERING_SPEED = 0.4  # Speed for centering movements
+# Phase 2 - Collection Zone Positioning
+CENTERING_2_APPROACH_SPEED = 0.25  # Slower speed for approaching collection zone
+CENTERING_2_APPROACH_TIME = 0.3   # Time to drive forward into collection zone
+CENTERING_2_COLLECTION_SPEED = 0.2  # Very slow speed during final collection
+CENTERING_2_COLLECTION_TIME = 0.8   # Reduced time for final collection sequence
+
+# === LEGACY SETTINGS (maintained for compatibility) ===
+CENTERING_TOLERANCE = CENTERING_1_TOLERANCE  # Backward compatibility
+CENTERING_DISTANCE_TOLERANCE = CENTERING_1_DISTANCE_TOLERANCE  # Backward compatibility
+CENTERING_TURN_DURATION = CENTERING_1_TURN_DURATION
+CENTERING_DRIVE_DURATION = CENTERING_1_DRIVE_DURATION
+CENTERING_SPEED = CENTERING_1_SPEED
+ENHANCED_COLLECTION_DRIVE_TIME = CENTERING_2_COLLECTION_TIME  # Backward compatibility
+COLLECTION_SPEED = CENTERING_2_COLLECTION_SPEED
 
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [

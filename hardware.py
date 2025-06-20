@@ -243,9 +243,9 @@ class GolfBotHardware:
         except Exception as e:
             self.logger.error(f"Failed to center servos: {e}")
     
-    # === ENHANCED COLLECTION SEQUENCE ===
+    # === ENHANCED COLLECTION SEQUENCE (LEGACY) ===
     def enhanced_collection_sequence(self):
-        """Enhanced collection sequence using servo SS four-state system"""
+        """Enhanced collection sequence using servo SS four-state system (LEGACY)"""
         try:
             if config.DEBUG_COLLECTION:
                 self.logger.info("🚀 Starting enhanced collection sequence with SS/SF system...")
@@ -292,6 +292,62 @@ class GolfBotHardware:
             
         except Exception as e:
             self.logger.error(f"Enhanced collection sequence failed: {e}")
+            self.stop_motors()
+            self.servo_ss_to_driving()
+            return False
+    
+    # === NEW: OPTIMIZED COLLECTION SEQUENCE FOR COLLECTION ZONE ===
+    def optimized_collection_sequence(self):
+        """Optimized collection sequence for when ball is already in collection zone"""
+        try:
+            if config.DEBUG_COLLECTION:
+                self.logger.info("🚀 Starting OPTIMIZED collection sequence for collection zone...")
+                self.logger.info(f"   Using: Speed={config.CENTERING_2_COLLECTION_SPEED}, Time={config.CENTERING_2_COLLECTION_TIME}s")
+                self.logger.info("   Flow: (pre-collect already set) -> slow drive -> collect -> store -> driving")
+            
+            # Servo SS should already be in pre-collect position from CENTERING_2
+            current_state = self.get_servo_ss_state()
+            if current_state != "pre-collect":
+                if config.DEBUG_COLLECTION:
+                    self.logger.info("Setting servo SS to PRE-COLLECT position")
+                self.servo_ss_to_pre_collect()
+                time.sleep(0.15)
+            
+            # Step 1: Slow, precise drive into collection zone
+            if config.DEBUG_COLLECTION:
+                self.logger.info(f"Step 1: Slow drive for precise collection (speed: {config.CENTERING_2_COLLECTION_SPEED})")
+            self.move_forward(duration=config.CENTERING_2_COLLECTION_TIME, speed=config.CENTERING_2_COLLECTION_SPEED)
+            time.sleep(0.05)
+            
+            # Step 2: Quick collect movement
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 2: Moving servo SS to COLLECT position (capture)")
+            self.servo_ss_to_collect()
+            time.sleep(0.2)
+            
+            # Step 3: Secure ball in store position
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 3: Moving servo SS to STORE position (secure)")
+            self.servo_ss_to_store()
+            time.sleep(0.25)
+            
+            # Step 4: Return to driving position
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 4: Moving servo SS to DRIVING position (ready)")
+            self.servo_ss_to_driving()
+            time.sleep(0.15)
+            
+            # Record collection
+            self.collected_balls.append(time.time())
+            
+            if config.DEBUG_COLLECTION:
+                current_state = self.get_servo_ss_state()
+                self.logger.info(f"✅ Optimized collection complete! Servo SS state: {current_state.upper()}, Total balls: {len(self.collected_balls)}")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Optimized collection sequence failed: {e}")
             self.stop_motors()
             self.servo_ss_to_driving()
             return False
@@ -538,7 +594,7 @@ class GolfBotHardware:
             'servo_ss_state': servo_ss_state,
             'motor_status': motor_status,
             'gradual_movement': use_gradual,
-            'collection_method': 'enhanced_ss_sf_collection',
+            'collection_method': 'two_phase_optimized_collection',
             'hardware_ready': True
         }
     
