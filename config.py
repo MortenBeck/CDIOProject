@@ -27,8 +27,8 @@ MOTOR_IN3 = 20  # GPIO 20 (Pin 38) - Motor B
 MOTOR_IN4 = 21  # GPIO 21 (Pin 40) - Motor B
 
 # === MOTOR SETTINGS ===
-MOTOR_SPEED_SLOW = 0.3
-MOTOR_SPEED_MEDIUM = 0.5
+MOTOR_SPEED_SLOW = 0.4
+MOTOR_SPEED_MEDIUM = 0.6
 MOTOR_SPEED_FAST = 0.8
 DEFAULT_SPEED = MOTOR_SPEED_SLOW
 
@@ -85,28 +85,28 @@ SERVO_SMOOTH_DURATION = 0.5  # Duration for smooth movements (seconds)
 SERVO_SEQUENTIAL_DELAY = 0.1  # Delay between multiple servo movements (seconds)
 
 # === MOVEMENT PARAMETERS ===
-TURN_TIME_90_DEGREES = 0.6  # Time to turn 90 degrees
-FORWARD_TIME_SHORT = 0.2    # Short forward movement
+TURN_TIME_90_DEGREES = 0.8  # Time to turn 90 degrees
+FORWARD_TIME_SHORT = 0.4    # Short forward movement
 BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 
 # === TWO-PHASE COLLECTION SETTINGS ===
 # Phase 1 - Initial Ball Centering (X+Y alignment to frame center)
 CENTERING_1_TOLERANCE = 25  # Pixels - X-axis centering tolerance
 CENTERING_1_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance
-CENTERING_1_TURN_DURATION = 0.25  # Duration for horizontal centering turns
-CENTERING_1_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments
+CENTERING_1_TURN_DURATION = 0.4  # Duration for horizontal centering turns
+CENTERING_1_DRIVE_DURATION = 0.4  # Duration for forward/backward centering adjustments
 CENTERING_1_SPEED = 0.4  # Speed for initial centering movements
 
 # Phase 2 - Collection Zone Centering (identical system, different Y target)
 CENTERING_2_TOLERANCE = 25  # Pixels - X-axis centering tolerance (same as Phase 1)
 CENTERING_2_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance (same as Phase 1)
-CENTERING_2_TURN_DURATION = 0.25  # Duration for horizontal centering turns (same)
-CENTERING_2_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments (same)
+CENTERING_2_TURN_DURATION = 0.4  # Duration for horizontal centering turns (same)
+CENTERING_2_DRIVE_DURATION = 0.4  # Duration for forward/backward centering adjustments (same)
 CENTERING_2_SPEED = 0.4  # Speed for centering movements (same)
 CENTERING_2_Y_TARGET_OFFSET = 100  # Pixels below frame center to target upper green zone
 
 # Final Collection Settings
-CENTERING_2_COLLECTION_SPEED = 0.3  # Speed during final collection sequence
+CENTERING_2_COLLECTION_SPEED = 0.4  # Speed during final collection sequence
 CENTERING_2_COLLECTION_TIME = 0.8   # Reduced time for final collection sequence
 
 # === LEGACY SETTINGS (maintained for compatibility) ===

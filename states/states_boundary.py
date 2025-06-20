@@ -24,8 +24,8 @@ class BoundaryAvoidanceState(BaseState):
         
         if frame is None:
             self.log_state_info("No camera frame available - basic avoidance")
-            hardware.move_backward(duration=0.3)
-            hardware.turn_right(duration=0.3)
+            hardware.move_backward(duration=0.8)
+            hardware.turn_right(duration=0.6)
             return RobotState.SEARCHING
         
         # Get avoidance command from boundary system
@@ -40,14 +40,14 @@ class BoundaryAvoidanceState(BaseState):
             
             # Execute the appropriate avoidance maneuver
             if avoidance_command == 'turn_left':
-                hardware.turn_left(duration=0.4)
+                hardware.turn_left(duration=0.8)
                 self.log_state_info("Turned left away from right wall")
             elif avoidance_command == 'turn_right':
-                hardware.turn_right(duration=0.4)
+                hardware.turn_right(duration=0.8)
                 self.log_state_info("Turned right away from left wall")
             elif avoidance_command == 'move_backward':
-                hardware.move_backward(duration=0.4)
-                hardware.turn_right(duration=0.3)  # Add turn after backing up
+                hardware.move_backward(duration=0.8)
+                hardware.turn_right(duration=0.6)  # Add turn after backing up
                 self.log_state_info("Moved backward and turned away from wall")
             
             # Brief pause to stabilize

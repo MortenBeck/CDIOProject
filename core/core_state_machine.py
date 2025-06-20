@@ -97,6 +97,17 @@ class StateMachine:
         # Update context with new state
         context['current_state'] = new_state
     
+    def transition_to(self, new_state: RobotState):
+        """Transition to a new state (used by main loop)"""
+        # This method is called from main loop without context, 
+        # so we need to handle it differently
+        self.logger.info(f"Requested transition to {new_state.value}")
+        old_state = self.current_state
+        self.previous_state = self.current_state
+        self.current_state = new_state
+        self._state_entered = False  # Will trigger enter() on next execute
+        self.logger.info(f"State transition: {old_state.value} → {new_state.value}")
+    
     def force_state(self, new_state: RobotState, context: dict):
         """Force transition to a specific state (for emergency situations)"""
         self.logger.warning(f"Forcing state transition to {new_state.value}")

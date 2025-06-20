@@ -216,7 +216,7 @@ class GolfBot:
                             wall_status = self.boundary_avoidance.get_status()
                             dashboard_frame = self.dashboard.create_dashboard(
                                 debug_frame, self.state_machine.get_current_state(), 
-                                self.vision, self.hardware, wall_status
+                                self.vision, self.hardware
                             )
                             key = self.dashboard.show("GolfBot Dashboard - Two-Phase Collection")
                         else:
