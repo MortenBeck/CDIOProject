@@ -401,3 +401,1388 @@
 2025-06-20 19:48:50,328 - hardware - INFO - ✅ Hardware cleanup completed
 2025-06-20 19:48:50,329 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
 2025-06-20 19:48:50,329 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 00:43:08,805 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:43:08,822 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:43:08,822 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:43:08,823 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:43:08,823 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:43:08,823 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:45:06,520 - core.core_robot - INFO - No display detected - running in headless mode
+2025-06-21 00:45:06,520 - core.core_robot - INFO - Using legacy overlay interface
+2025-06-21 00:45:06,520 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:45:06,534 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:45:06,534 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:45:06,534 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:45:06,535 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:45:06,535 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:45:06,535 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-21 00:45:06,535 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-21 00:45:06,535 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 00:45:06,535 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-21 00:45:07,359 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 00:45:07,360 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 00:45:07,360 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-21 00:45:07,360 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 00:45:07,915 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-21 00:45:07,915 - core.core_robot - INFO - All systems initialized successfully
+2025-06-21 00:45:09,817 - core.core_robot - INFO - Shutdown signal received
+2025-06-21 00:45:09,817 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:45:09,817 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:45:09,817 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:45:09,817 - core.core_state_machine - INFO - State transition: searching → emergency_stop
+2025-06-21 00:45:09,817 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:45:09,817 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 00:45:10,225 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:45:10,225 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 00:45:10,249 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-21 00:45:10,250 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 00:45:10,250 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:45:10,250 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 00:45:10,657 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:45:10,658 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-21 00:45:10,658 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:45:10,658 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:45:10,658 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:45:10,658 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 00:45:20,124 - core.core_robot - INFO - Using new dashboard interface
+2025-06-21 00:45:20,125 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:45:20,139 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:45:20,139 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:45:20,140 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:45:20,140 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:45:20,140 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:45:20,140 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-21 00:45:20,140 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-21 00:45:20,140 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 00:45:20,140 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-21 00:45:20,938 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 00:45:20,938 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 00:45:20,938 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-21 00:45:20,938 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 00:45:21,442 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-21 00:45:21,443 - core.core_robot - INFO - All systems initialized successfully
+2025-06-21 00:45:22,859 - core.core_competition - INFO - COMPETITION STARTED!
+2025-06-21 00:45:22,859 - core.core_competition - INFO - Time limit: 480 seconds (8:00)
+2025-06-21 00:45:22,859 - core.core_competition - INFO - Using two-phase collection: Centering_1 + Centering_2 + Collection
+2025-06-21 00:45:23,722 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:45:23,722 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.77)
+2025-06-21 00:45:23,722 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:45:23,722 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:45:23,722 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:45:24,632 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:45:24,882 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 96)
+2025-06-21 00:45:26,117 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 80)
+2025-06-21 00:45:27,313 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 69)
+2025-06-21 00:45:28,534 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 71)
+2025-06-21 00:45:29,758 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 69)
+2025-06-21 00:45:30,940 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 71)
+2025-06-21 00:45:32,117 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 69)
+2025-06-21 00:45:33,292 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 69)
+2025-06-21 00:45:34,489 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 71)
+2025-06-21 00:45:35,699 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 71)
+2025-06-21 00:45:36,877 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 72)
+2025-06-21 00:45:38,069 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 73)
+2025-06-21 00:45:39,271 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 66)
+2025-06-21 00:45:40,250 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:45:40,250 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:45:40,250 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:45:41,184 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:45:41,184 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.87)
+2025-06-21 00:45:41,184 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:45:41,184 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:45:41,184 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:45:42,081 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:45:42,331 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 67)
+2025-06-21 00:45:42,381 - core.core_competition - INFO - ============================================================
+2025-06-21 00:45:42,381 - core.core_competition - INFO - COMPETITION ENDED!
+2025-06-21 00:45:42,381 - core.core_competition - INFO - ============================================================
+2025-06-21 00:45:42,381 - core.core_competition - INFO - Total time: 19.5 seconds (0:20)
+2025-06-21 00:45:42,382 - core.core_competition - INFO - Balls collected: 0
+2025-06-21 00:45:42,382 - core.core_competition - INFO - Basic score: 1381 points
+2025-06-21 00:45:42,382 - core.core_competition - INFO - Collection system: Two-Phase (Centering_1 + Centering_2 + Optimized Collection)
+2025-06-21 00:45:42,382 - core.core_competition - INFO - ============================================================
+2025-06-21 00:45:42,382 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:45:42,382 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:45:42,382 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:45:42,382 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:45:42,382 - core.core_state_machine - INFO - State transition: centering_1 → emergency_stop
+2025-06-21 00:45:42,382 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:45:42,382 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 00:45:42,790 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:45:42,790 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 00:45:42,791 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-21 00:45:42,791 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 00:45:42,791 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:45:42,791 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 00:45:43,198 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:45:43,199 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-21 00:45:43,199 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:45:43,199 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:45:43,199 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:45:43,199 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 00:45:48,357 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:45:48,374 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:45:48,375 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:45:48,375 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:45:48,375 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:45:48,375 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:47:07,867 - core.core_robot - INFO - Using new dashboard interface
+2025-06-21 00:47:07,868 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:47:07,882 - hardware.hardware_control - ERROR - Hardware initialization failed: 'GPIO busy'
+2025-06-21 00:47:21,927 - core.core_robot - INFO - Using new dashboard interface
+2025-06-21 00:47:21,927 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:47:21,942 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:47:21,942 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:47:21,942 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:47:21,942 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:47:21,942 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:47:21,942 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-21 00:47:21,942 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-21 00:47:21,942 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 00:47:21,942 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-21 00:47:22,760 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 00:47:22,760 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 00:47:22,760 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-21 00:47:22,760 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:47:23,265 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-21 00:47:23,265 - core.core_robot - INFO - All systems initialized successfully
+2025-06-21 00:47:25,434 - core.core_competition - INFO - COMPETITION STARTED!
+2025-06-21 00:47:25,434 - core.core_competition - INFO - Time limit: 480 seconds (8:00)
+2025-06-21 00:47:25,434 - core.core_competition - INFO - Using two-phase collection: Centering_1 + Centering_2 + Collection
+2025-06-21 00:47:26,275 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:47:26,275 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.86)
+2025-06-21 00:47:26,275 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:47:26,275 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:47:26,275 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:47:27,183 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:47:27,433 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:28,710 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:29,900 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:31,104 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:32,307 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:33,543 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:34,733 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:35,929 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:37,120 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:38,312 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:39,523 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:40,737 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:41,908 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:43,081 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:44,260 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:45,567 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:46,792 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:47,966 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:48,898 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:47:48,898 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:47:48,898 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:47:49,889 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:47:49,889 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.77)
+2025-06-21 00:47:49,890 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:47:49,890 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:47:49,890 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:47:50,784 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:47:50,784 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:47:50,784 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:47:50,784 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:47:51,718 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:47:51,718 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.81)
+2025-06-21 00:47:51,718 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:47:51,718 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:47:51,718 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:47:52,615 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:47:52,865 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:54,061 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 63)
+2025-06-21 00:47:55,252 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:56,468 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:56,525 - core.core_competition - INFO - ⏱️  Time: 31s elapsed, 449s remaining | Balls: 0
+2025-06-21 00:47:56,525 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:47:56,525 - core.core_state_machine - INFO -    Current: centering_1
+2025-06-21 00:47:56,525 - core.core_state_machine - INFO -    Previous: searching
+2025-06-21 00:47:56,525 - core.core_state_machine - INFO -    State entered: True
+2025-06-21 00:47:57,663 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:58,861 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:47:58,911 - core.core_competition - INFO - ============================================================
+2025-06-21 00:47:58,912 - core.core_competition - INFO - COMPETITION ENDED!
+2025-06-21 00:47:58,912 - core.core_competition - INFO - ============================================================
+2025-06-21 00:47:58,912 - core.core_competition - INFO - Total time: 33.5 seconds (0:33)
+2025-06-21 00:47:58,912 - core.core_competition - INFO - Balls collected: 0
+2025-06-21 00:47:58,912 - core.core_competition - INFO - Basic score: 1339 points
+2025-06-21 00:47:58,912 - core.core_competition - INFO - Collection system: Two-Phase (Centering_1 + Centering_2 + Optimized Collection)
+2025-06-21 00:47:58,912 - core.core_competition - INFO - ============================================================
+2025-06-21 00:47:58,912 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:47:58,912 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:47:58,912 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:47:58,912 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:47:58,912 - core.core_state_machine - INFO - State transition: centering_1 → emergency_stop
+2025-06-21 00:47:58,912 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:47:58,912 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:47:59,319 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:47:59,319 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 00:47:59,320 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-21 00:47:59,321 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 00:47:59,321 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:47:59,321 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:47:59,728 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:47:59,729 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-21 00:47:59,729 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:47:59,729 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:47:59,729 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:47:59,729 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 00:49:17,613 - core.core_robot - INFO - Using new dashboard interface
+2025-06-21 00:49:17,613 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:49:17,628 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:49:17,629 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:49:17,629 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:49:17,629 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:49:17,629 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:49:17,630 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-21 00:49:17,630 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-21 00:49:17,630 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 00:49:17,630 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-21 00:49:18,421 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 00:49:18,421 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 00:49:18,421 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-21 00:49:18,421 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:49:18,926 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-21 00:49:18,926 - core.core_robot - INFO - All systems initialized successfully
+2025-06-21 00:49:21,870 - core.core_competition - INFO - COMPETITION STARTED!
+2025-06-21 00:49:21,870 - core.core_competition - INFO - Time limit: 480 seconds (8:00)
+2025-06-21 00:49:21,870 - core.core_competition - INFO - Using two-phase collection: Centering_1 + Centering_2 + Collection
+2025-06-21 00:49:22,751 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:49:22,752 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.83)
+2025-06-21 00:49:22,752 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:49:22,752 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:49:22,752 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:49:23,668 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:49:23,919 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:25,161 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:26,373 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:27,562 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:28,790 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:29,987 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:31,183 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:32,357 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:33,565 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 62)
+2025-06-21 00:49:34,528 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:49:34,528 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:49:34,528 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:49:35,509 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:49:35,710 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:49:36,885 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.42)
+2025-06-21 00:49:36,886 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:49:36,886 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:49:36,886 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:49:37,786 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:49:37,787 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:49:37,787 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:49:37,787 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:49:38,711 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:49:39,312 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:49:40,727 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:49:42,498 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:49:43,861 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:49:45,039 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.40)
+2025-06-21 00:49:45,039 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:49:45,039 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:49:45,039 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:49:45,971 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:49:45,972 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:49:45,972 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:49:45,972 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:49:46,941 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:49:47,542 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:49:47,762 - core.core_competition - INFO - ============================================================
+2025-06-21 00:49:47,762 - core.core_competition - INFO - COMPETITION ENDED!
+2025-06-21 00:49:47,762 - core.core_competition - INFO - ============================================================
+2025-06-21 00:49:47,762 - core.core_competition - INFO - Total time: 25.9 seconds (0:26)
+2025-06-21 00:49:47,762 - core.core_competition - INFO - Balls collected: 0
+2025-06-21 00:49:47,762 - core.core_competition - INFO - Basic score: 1362 points
+2025-06-21 00:49:47,762 - core.core_competition - INFO - Collection system: Two-Phase (Centering_1 + Centering_2 + Optimized Collection)
+2025-06-21 00:49:47,762 - core.core_competition - INFO - ============================================================
+2025-06-21 00:49:47,763 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:49:47,763 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:49:47,763 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:49:47,763 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:49:47,763 - core.core_state_machine - INFO - State transition: searching → emergency_stop
+2025-06-21 00:49:47,763 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:49:47,763 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:49:48,170 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:49:48,170 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 00:49:48,171 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-21 00:49:48,171 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 00:49:48,171 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:49:48,171 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:49:48,578 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:49:48,579 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-21 00:49:48,579 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:49:48,579 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:49:48,579 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:49:48,579 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 00:50:54,826 - core.core_robot - INFO - Using new dashboard interface
+2025-06-21 00:50:54,826 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:50:54,841 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:50:54,841 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:50:54,841 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:50:54,841 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:50:54,841 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:50:54,841 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-21 00:50:54,841 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-21 00:50:54,841 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 00:50:54,841 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-21 00:50:55,641 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 00:50:55,641 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 00:50:55,641 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-21 00:50:55,641 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:50:56,145 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-21 00:50:56,146 - core.core_robot - INFO - All systems initialized successfully
+2025-06-21 00:50:57,495 - core.core_competition - INFO - COMPETITION STARTED!
+2025-06-21 00:50:57,495 - core.core_competition - INFO - Time limit: 480 seconds (8:00)
+2025-06-21 00:50:57,495 - core.core_competition - INFO - Using two-phase collection: Centering_1 + Centering_2 + Collection
+2025-06-21 00:50:58,350 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:50:58,750 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:51:00,534 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:51:02,148 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:51:03,924 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:51:05,496 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:51:06,692 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.54)
+2025-06-21 00:51:06,693 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:06,693 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:06,693 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:07,610 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:08,010 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -159)
+2025-06-21 00:51:08,933 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:08,933 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:08,933 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:09,898 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:10,498 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:51:12,094 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:51:13,894 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:51:15,057 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.49)
+2025-06-21 00:51:15,057 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:15,057 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:15,057 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:15,959 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:15,959 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:15,959 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:15,959 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:16,927 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:16,928 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.50)
+2025-06-21 00:51:16,928 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:16,928 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:16,928 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:17,854 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:18,255 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -207)
+2025-06-21 00:51:19,202 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:19,202 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:19,202 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:20,170 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:20,570 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:51:21,750 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.48)
+2025-06-21 00:51:21,750 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:21,750 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:21,750 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:22,648 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:22,648 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:51:22,649 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:22,649 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:23,593 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:23,593 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.50)
+2025-06-21 00:51:23,593 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:23,593 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:23,593 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:24,509 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:24,509 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:24,509 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:24,509 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:25,498 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:26,098 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:51:27,658 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:51:27,885 - core.core_competition - INFO - ⏱️  Time: 30s elapsed, 450s remaining | Balls: 0
+2025-06-21 00:51:27,885 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:51:27,885 - core.core_state_machine - INFO -    Current: searching
+2025-06-21 00:51:27,885 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:51:27,886 - core.core_state_machine - INFO -    State entered: True
+2025-06-21 00:51:28,845 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.51)
+2025-06-21 00:51:28,846 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:28,846 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:28,846 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:29,758 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:30,159 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -190)
+2025-06-21 00:51:31,497 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -155)
+2025-06-21 00:51:32,418 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:32,418 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:32,418 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:33,381 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:33,981 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:51:35,177 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.55)
+2025-06-21 00:51:35,177 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:35,177 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:35,177 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:36,069 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:36,070 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:36,070 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:36,070 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:37,037 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:37,037 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.55)
+2025-06-21 00:51:37,037 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:37,037 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:37,037 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:37,941 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:38,342 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -211)
+2025-06-21 00:51:39,678 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -168)
+2025-06-21 00:51:40,627 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:51:40,627 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:40,627 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:41,541 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:41,541 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.48)
+2025-06-21 00:51:41,541 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:41,542 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:41,542 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:42,437 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:42,437 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:42,437 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:42,437 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:43,402 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:43,803 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:51:44,973 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.53)
+2025-06-21 00:51:44,974 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:44,974 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:44,974 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:45,881 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:46,281 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -148)
+2025-06-21 00:51:47,212 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:51:47,212 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:47,212 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:48,124 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:48,124 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.50)
+2025-06-21 00:51:48,124 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:48,124 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:48,124 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:49,021 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:49,022 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:51:49,022 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:49,022 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:49,943 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:49,944 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.84)
+2025-06-21 00:51:49,944 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:49,944 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:49,944 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:50,867 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:50,868 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:50,868 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:50,868 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:51,827 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:51,827 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.75)
+2025-06-21 00:51:51,827 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:51,827 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:51,827 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:52,724 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:52,724 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:52,725 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:52,725 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:53,696 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:53,696 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.88)
+2025-06-21 00:51:53,696 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:53,696 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:53,696 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:54,598 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:54,598 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost sight of ball during CENTERING_1 - returning to search
+2025-06-21 00:51:54,598 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:54,598 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:51:55,578 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:51:56,179 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:51:57,369 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.81)
+2025-06-21 00:51:57,369 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:51:57,369 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:51:57,369 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:51:58,260 - vision.vision_processing - INFO - Right wall detected above collection zone: area=1966.0
+2025-06-21 00:51:58,261 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:51:58,261 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:51:58,261 - core.core_state_machine - INFO - State transition: centering_1 → avoiding_boundary
+2025-06-21 00:51:58,288 - core.core_competition - INFO - ⏱️  Time: 61s elapsed, 419s remaining | Balls: 0
+2025-06-21 00:51:58,288 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:51:58,288 - core.core_state_machine - INFO -    Current: avoiding_boundary
+2025-06-21 00:51:58,288 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:51:58,288 - core.core_state_machine - INFO -    State entered: False
+2025-06-21 00:51:59,186 - vision.vision_processing - INFO - Right wall detected above collection zone: area=2098.5
+2025-06-21 00:51:59,186 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Near arena boundary - executing avoidance maneuver
+2025-06-21 00:51:59,186 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Executing boundary avoidance sequence
+2025-06-21 00:51:59,537 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Moved backward to avoid boundary
+2025-06-21 00:51:59,787 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Turned right to change direction
+2025-06-21 00:51:59,937 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Boundary avoidance complete
+2025-06-21 00:52:00,839 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Boundary cleared - returning to search
+2025-06-21 00:52:00,839 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-21 00:52:00,839 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-21 00:52:01,759 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:52:01,759 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 3 white, 0 orange (avg conf: 0.86)
+2025-06-21 00:52:01,759 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:52:01,759 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:52:01,759 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:52:02,677 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:52:03,078 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -69)
+2025-06-21 00:52:04,412 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -30)
+2025-06-21 00:52:05,741 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:52:07,061 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:52:08,426 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:52:09,754 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:52:11,072 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:52:12,410 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:52:13,765 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:52:13,815 - core.core_competition - INFO - ============================================================
+2025-06-21 00:52:13,816 - core.core_competition - INFO - COMPETITION ENDED!
+2025-06-21 00:52:13,816 - core.core_competition - INFO - ============================================================
+2025-06-21 00:52:13,816 - core.core_competition - INFO - Total time: 76.3 seconds (1:16)
+2025-06-21 00:52:13,816 - core.core_competition - INFO - Balls collected: 0
+2025-06-21 00:52:13,816 - core.core_competition - INFO - Basic score: 1211 points
+2025-06-21 00:52:13,816 - core.core_competition - INFO - Collection system: Two-Phase (Centering_1 + Centering_2 + Optimized Collection)
+2025-06-21 00:52:13,816 - core.core_competition - INFO - ============================================================
+2025-06-21 00:52:13,816 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:52:13,816 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:52:13,816 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:52:13,817 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:52:13,817 - core.core_state_machine - INFO - State transition: centering_1 → emergency_stop
+2025-06-21 00:52:13,817 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:52:13,817 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:52:14,224 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:52:14,224 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 00:52:14,225 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-21 00:52:14,225 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 00:52:14,225 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:52:14,225 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:52:14,633 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:52:14,633 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-21 00:52:14,633 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:52:14,633 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:52:14,634 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:52:14,634 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 00:53:07,228 - core.core_robot - INFO - Using new dashboard interface
+2025-06-21 00:53:07,229 - hardware.hardware_control - INFO - Initializing PCA9685 for servo control...
+2025-06-21 00:53:07,244 - hardware.hardware_control - INFO - ✅ Hardware initialized successfully
+2025-06-21 00:53:07,244 - hardware.hardware_control - INFO - ✓ PCA9685 ready for servo control
+2025-06-21 00:53:07,244 - hardware.hardware_control - INFO - ✓ Servo SS on channel 0
+2025-06-21 00:53:07,244 - hardware.hardware_control - INFO - ✓ Servo SF on channel 1
+2025-06-21 00:53:07,244 - hardware.hardware_control - INFO - ✓ Motors configured with PWM control
+2025-06-21 00:53:07,244 - core.core_state_machine - INFO - State machine initialized with two-phase collection system
+2025-06-21 00:53:07,244 - core.core_robot - INFO - Initializing GolfBot with two-phase collection system...
+2025-06-21 00:53:07,244 - vision.vision_processing - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 00:53:07,244 - core.core_robot - INFO - Detecting arena boundaries...
+2025-06-21 00:53:08,054 - vision.vision_processing - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 00:53:08,054 - core.core_robot - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 00:53:08,054 - hardware.hardware_control - INFO - 🚀 Initializing servos for competition start...
+2025-06-21 00:53:08,054 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:53:08,558 - hardware.hardware_control - INFO - ✅ Servos initialized - SS at driving, SF at ready
+2025-06-21 00:53:08,558 - core.core_robot - INFO - All systems initialized successfully
+2025-06-21 00:53:12,115 - core.core_competition - INFO - COMPETITION STARTED!
+2025-06-21 00:53:12,115 - core.core_competition - INFO - Time limit: 480 seconds (8:00)
+2025-06-21 00:53:12,116 - core.core_competition - INFO - Using two-phase collection: Centering_1 + Centering_2 + Collection
+2025-06-21 00:53:12,986 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:12,986 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.58)
+2025-06-21 00:53:12,986 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:12,986 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:12,986 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:53:13,954 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:53:14,655 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:53:16,298 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:53:17,941 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:53:19,602 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:53:21,238 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -29)
+2025-06-21 00:53:22,868 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -28)
+2025-06-21 00:53:24,513 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving forward (offset: -83)
+2025-06-21 00:53:26,149 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -31)
+2025-06-21 00:53:27,769 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving forward (offset: -70)
+2025-06-21 00:53:29,397 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -27)
+2025-06-21 00:53:30,382 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:53:30,383 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:53:30,383 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:53:31,335 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:31,335 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 3 white, 0 orange (avg conf: 0.94)
+2025-06-21 00:53:31,335 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:31,335 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:31,335 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:53:32,238 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:53:32,939 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving forward (offset: -59)
+2025-06-21 00:53:33,871 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:53:33,871 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:53:33,871 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:53:34,757 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:53:34,760 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2: Setting servo SS to PRE-COLLECT for locked white ball
+2025-06-21 00:53:34,761 - hardware.hardware_control - INFO - 🎯 Moving servo SS to PRE-COLLECT position (130°)
+2025-06-21 00:53:36,678 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -134)
+2025-06-21 00:53:38,315 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -116)
+2025-06-21 00:53:39,238 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:53:39,238 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:53:39,238 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:53:40,154 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:40,155 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.65)
+2025-06-21 00:53:40,155 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:40,155 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:40,155 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:53:41,039 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:53:41,740 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -55)
+2025-06-21 00:53:42,684 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:53:42,685 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:53:42,685 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:53:42,706 - core.core_competition - INFO - ⏱️  Time: 31s elapsed, 449s remaining | Balls: 0
+2025-06-21 00:53:42,706 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:53:42,706 - core.core_state_machine - INFO -    Current: searching
+2025-06-21 00:53:42,706 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:53:42,706 - core.core_state_machine - INFO -    State entered: False
+2025-06-21 00:53:43,582 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:43,582 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 3 white, 0 orange (avg conf: 0.80)
+2025-06-21 00:53:43,582 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:43,582 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:43,582 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:53:44,479 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:53:44,479 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:53:44,479 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:53:44,479 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:53:45,366 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:53:46,070 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -85)
+2025-06-21 00:53:47,696 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 31)
+2025-06-21 00:53:48,653 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:53:48,654 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:53:48,654 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:53:49,580 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:49,580 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.96)
+2025-06-21 00:53:49,580 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:49,580 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:49,580 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:53:50,474 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:53:51,174 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -27)
+2025-06-21 00:53:52,091 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:53:52,091 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:53:52,091 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:53:53,016 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:53,017 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 3 white, 0 orange (avg conf: 0.94)
+2025-06-21 00:53:53,017 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:53,017 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:53,017 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:53:53,940 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:53:54,641 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 26)
+2025-06-21 00:53:55,570 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:53:55,570 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:53:55,570 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:53:56,495 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:56,495 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 2 white, 1 orange (avg conf: 0.96)
+2025-06-21 00:53:56,495 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:56,495 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:56,495 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:53:57,398 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:53:58,098 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -34)
+2025-06-21 00:53:59,045 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:53:59,045 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:53:59,046 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:53:59,948 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:53:59,948 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.92)
+2025-06-21 00:53:59,948 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:53:59,948 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:53:59,948 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:00,847 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:01,547 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 32)
+2025-06-21 00:54:02,482 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:54:02,482 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:02,483 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:54:03,375 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:54:04,079 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -116)
+2025-06-21 00:54:05,716 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -87)
+2025-06-21 00:54:07,332 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 43)
+2025-06-21 00:54:08,946 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -69)
+2025-06-21 00:54:10,579 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -43)
+2025-06-21 00:54:11,506 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:54:11,506 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:54:11,506 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:54:12,422 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:12,422 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.95)
+2025-06-21 00:54:12,422 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:12,422 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:12,423 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:13,333 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:14,034 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -36)
+2025-06-21 00:54:14,091 - core.core_competition - INFO - ⏱️  Time: 62s elapsed, 418s remaining | Balls: 0
+2025-06-21 00:54:14,091 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:54:14,092 - core.core_state_machine - INFO -    Current: centering_1
+2025-06-21 00:54:14,092 - core.core_state_machine - INFO -    Previous: searching
+2025-06-21 00:54:14,092 - core.core_state_machine - INFO -    State entered: True
+2025-06-21 00:54:14,955 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:14,955 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:14,955 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:15,858 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:15,859 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 4 confident ball(s) - 3 white, 1 orange (avg conf: 0.93)
+2025-06-21 00:54:15,859 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:15,859 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:15,859 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:16,778 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:17,478 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving forward (offset: -52)
+2025-06-21 00:54:19,105 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 27)
+2025-06-21 00:54:20,037 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:20,037 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:20,037 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:20,957 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:20,958 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.73)
+2025-06-21 00:54:20,958 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:20,958 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:20,958 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:21,894 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:22,595 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -31)
+2025-06-21 00:54:23,524 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:23,524 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:23,524 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:24,430 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:24,430 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.93)
+2025-06-21 00:54:24,430 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:24,430 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:24,431 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:25,310 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:26,010 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 31)
+2025-06-21 00:54:26,964 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:26,964 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:26,964 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:27,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:27,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 4 confident ball(s) - 2 white, 2 orange (avg conf: 0.62)
+2025-06-21 00:54:27,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:27,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:27,880 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:28,780 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:29,481 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -42)
+2025-06-21 00:54:31,104 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving forward (offset: -39)
+2025-06-21 00:54:32,060 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:32,060 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:32,060 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:32,975 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:32,975 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.79)
+2025-06-21 00:54:32,975 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:32,975 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:32,975 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:33,908 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:33,908 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:54:33,908 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:33,908 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:54:34,812 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:54:35,515 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -122)
+2025-06-21 00:54:37,155 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -99)
+2025-06-21 00:54:38,814 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -78)
+2025-06-21 00:54:39,746 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:54:39,746 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:54:39,746 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:54:40,665 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:40,665 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 2 white, 1 orange (avg conf: 0.90)
+2025-06-21 00:54:40,665 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:40,666 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:40,666 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:41,567 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:42,267 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 36)
+2025-06-21 00:54:43,204 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:43,204 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:43,204 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:44,130 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:44,131 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.83)
+2025-06-21 00:54:44,131 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:44,131 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:44,131 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:44,152 - core.core_competition - INFO - ⏱️  Time: 92s elapsed, 388s remaining | Balls: 0
+2025-06-21 00:54:44,152 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:54:44,152 - core.core_state_machine - INFO -    Current: centering_1
+2025-06-21 00:54:44,152 - core.core_state_machine - INFO -    Previous: searching
+2025-06-21 00:54:44,152 - core.core_state_machine - INFO -    State entered: False
+2025-06-21 00:54:45,015 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:45,715 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -27)
+2025-06-21 00:54:46,628 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:46,628 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:46,628 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:47,533 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:47,533 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 2 white, 1 orange (avg conf: 0.76)
+2025-06-21 00:54:47,533 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:47,534 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:47,534 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:48,448 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:49,148 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 33)
+2025-06-21 00:54:50,066 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:50,066 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:50,066 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:50,966 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:50,967 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.81)
+2025-06-21 00:54:50,967 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:50,967 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:50,967 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:51,858 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:52,559 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -28)
+2025-06-21 00:54:53,505 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:53,505 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:53,505 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:54,414 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:54,415 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.87)
+2025-06-21 00:54:54,415 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:54,415 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:54,415 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:54:55,304 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:54:56,004 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 44)
+2025-06-21 00:54:57,615 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 35)
+2025-06-21 00:54:58,556 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:54:58,557 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:54:58,557 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:54:59,496 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:54:59,496 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.89)
+2025-06-21 00:54:59,496 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:54:59,496 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:54:59,496 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:00,398 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:00,398 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:55:00,398 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:00,398 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:55:01,280 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:55:01,983 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -116)
+2025-06-21 00:55:03,601 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 48)
+2025-06-21 00:55:05,260 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -99)
+2025-06-21 00:55:06,889 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 37)
+2025-06-21 00:55:08,503 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -85)
+2025-06-21 00:55:09,455 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:55:09,456 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:55:09,456 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:55:10,370 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:10,370 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.85)
+2025-06-21 00:55:10,370 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:10,370 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:10,370 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:11,255 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:11,956 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 33)
+2025-06-21 00:55:12,876 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:55:12,876 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:12,876 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:55:13,797 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:13,797 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.77)
+2025-06-21 00:55:13,797 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:13,797 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:13,797 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:14,701 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:14,701 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:55:14,701 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:14,701 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:55:14,728 - core.core_competition - INFO - ⏱️  Time: 123s elapsed, 357s remaining | Balls: 0
+2025-06-21 00:55:14,728 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:55:14,728 - core.core_state_machine - INFO -    Current: centering_2
+2025-06-21 00:55:14,728 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:55:14,728 - core.core_state_machine - INFO -    State entered: False
+2025-06-21 00:55:15,602 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:55:16,306 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -119)
+2025-06-21 00:55:17,920 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 47)
+2025-06-21 00:55:19,554 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -108)
+2025-06-21 00:55:21,196 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -86)
+2025-06-21 00:55:22,117 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:55:22,117 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:55:22,117 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:55:23,020 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:23,020 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 3 white, 0 orange (avg conf: 0.84)
+2025-06-21 00:55:23,020 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:23,020 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:23,020 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:23,917 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:24,618 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 32)
+2025-06-21 00:55:25,544 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:55:25,544 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:25,544 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:55:26,438 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:55:27,141 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -71)
+2025-06-21 00:55:28,763 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 32)
+2025-06-21 00:55:29,673 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:55:29,673 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:55:29,674 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:55:30,626 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:30,626 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 2 white, 1 orange (avg conf: 0.73)
+2025-06-21 00:55:30,626 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:30,626 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:30,626 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:31,517 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:32,217 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -30)
+2025-06-21 00:55:33,837 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 59)
+2025-06-21 00:55:34,757 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:55:34,758 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:34,758 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:55:35,664 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:55:36,367 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -93)
+2025-06-21 00:55:38,002 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -67)
+2025-06-21 00:55:39,613 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -47)
+2025-06-21 00:55:40,551 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:55:40,551 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:55:40,551 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:55:41,475 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:41,476 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 3 white, 0 orange (avg conf: 0.68)
+2025-06-21 00:55:41,476 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:41,476 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:41,476 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:42,365 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:43,065 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 38)
+2025-06-21 00:55:44,669 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 59)
+2025-06-21 00:55:45,579 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:55:45,579 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:45,579 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:55:45,601 - core.core_competition - INFO - ⏱️  Time: 153s elapsed, 327s remaining | Balls: 0
+2025-06-21 00:55:45,601 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:55:45,601 - core.core_state_machine - INFO -    Current: searching
+2025-06-21 00:55:45,601 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:55:45,601 - core.core_state_machine - INFO -    State entered: False
+2025-06-21 00:55:46,517 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:46,518 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 2 white, 1 orange (avg conf: 0.79)
+2025-06-21 00:55:46,518 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:46,518 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:46,518 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:47,407 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:47,408 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:55:47,408 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:47,408 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:55:48,293 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:55:48,997 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -86)
+2025-06-21 00:55:50,622 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -59)
+2025-06-21 00:55:51,554 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:55:51,554 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:55:51,554 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:55:52,482 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:52,482 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 5 confident ball(s) - 3 white, 2 orange (avg conf: 0.64)
+2025-06-21 00:55:52,482 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:52,482 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:52,482 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:53,360 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:54,061 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 69)
+2025-06-21 00:55:54,989 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:55:54,989 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:54,989 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:55:55,881 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:55:55,881 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.45)
+2025-06-21 00:55:55,882 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:55:55,882 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:55:55,882 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:55:56,793 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:55:56,793 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:55:56,793 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:55:56,793 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:55:57,690 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:55:58,393 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -95)
+2025-06-21 00:56:00,000 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -63)
+2025-06-21 00:56:00,924 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:56:00,925 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:56:00,925 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:56:01,856 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:01,856 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 4 confident ball(s) - 3 white, 1 orange (avg conf: 0.76)
+2025-06-21 00:56:01,856 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:01,856 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:01,856 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:02,735 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:03,435 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 42)
+2025-06-21 00:56:05,040 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 47)
+2025-06-21 00:56:05,941 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:56:05,941 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:05,942 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:56:06,885 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:06,886 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 4 confident ball(s) - 3 white, 1 orange (avg conf: 0.58)
+2025-06-21 00:56:06,886 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:06,886 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:06,886 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:07,776 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:07,776 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:56:07,776 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:07,776 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:56:08,652 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:56:09,355 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -89)
+2025-06-21 00:56:10,978 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -51)
+2025-06-21 00:56:11,915 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:56:11,915 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:56:11,915 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:56:12,853 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:12,853 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 2 white, 1 orange (avg conf: 0.68)
+2025-06-21 00:56:12,853 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:12,854 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:12,854 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:12,880 - core.core_competition - WARNING - ⚠️  5 minutes remaining!
+2025-06-21 00:56:13,734 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:14,434 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 79)
+2025-06-21 00:56:15,342 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:56:15,342 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:15,342 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:56:16,259 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:16,960 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:56:17,186 - core.core_competition - INFO - ⏱️  Time: 185s elapsed, 295s remaining | Balls: 0
+2025-06-21 00:56:17,186 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:56:17,186 - core.core_state_machine - INFO -    Current: searching
+2025-06-21 00:56:17,186 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:56:17,186 - core.core_state_machine - INFO -    State entered: True
+2025-06-21 00:56:18,116 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 4 confident ball(s) - 3 white, 1 orange (avg conf: 0.64)
+2025-06-21 00:56:18,117 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:18,117 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:18,117 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:19,002 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:19,702 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 73)
+2025-06-21 00:56:20,608 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:56:20,608 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:20,608 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:56:21,521 - vision.vision_processing - INFO - Right wall detected above collection zone: area=1386.5
+2025-06-21 00:56:21,522 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:21,522 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:21,522 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-21 00:56:22,415 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Near arena boundary - executing avoidance maneuver
+2025-06-21 00:56:22,416 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Boundary cleared - returning to search
+2025-06-21 00:56:22,416 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-21 00:56:22,416 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-21 00:56:23,363 - vision.vision_processing - INFO - Left wall detected above collection zone: area=1392.0
+2025-06-21 00:56:23,363 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:23,363 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:23,363 - core.core_state_machine - INFO - State transition: searching → avoiding_boundary
+2025-06-21 00:56:24,291 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] ⚠️  Near arena boundary - executing avoidance maneuver
+2025-06-21 00:56:24,291 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Boundary cleared - returning to search
+2025-06-21 00:56:24,291 - states.states_base.AVOIDING_BOUNDARY - INFO - [AVOIDING_BOUNDARY] Exiting boundary avoidance - resuming normal operation
+2025-06-21 00:56:24,291 - core.core_state_machine - INFO - State transition: avoiding_boundary → searching
+2025-06-21 00:56:25,208 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:25,208 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.87)
+2025-06-21 00:56:25,208 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:25,208 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:25,208 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:26,104 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:26,804 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 48)
+2025-06-21 00:56:27,740 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:56:27,740 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:27,741 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:56:28,668 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:56:29,371 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -78)
+2025-06-21 00:56:30,980 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -47)
+2025-06-21 00:56:31,884 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:56:31,884 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:56:31,884 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:56:32,782 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:32,782 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.56)
+2025-06-21 00:56:32,782 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:32,782 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:32,783 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:33,695 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:34,395 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 45)
+2025-06-21 00:56:35,307 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:56:35,307 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:35,307 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:56:36,212 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:36,213 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.56)
+2025-06-21 00:56:36,213 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:36,213 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:36,213 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:37,097 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:37,798 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 77)
+2025-06-21 00:56:38,739 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:56:38,739 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:38,739 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:56:39,644 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:39,644 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.46)
+2025-06-21 00:56:39,644 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:39,644 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:39,644 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:40,515 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:40,515 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:56:40,515 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:40,515 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:56:41,422 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:56:42,125 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -78)
+2025-06-21 00:56:43,046 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 complete! Locked white ball centered in upper green zone. Starting collection
+2025-06-21 00:56:43,046 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:56:43,046 - core.core_state_machine - INFO - State transition: centering_2 → collecting_ball
+2025-06-21 00:56:44,009 - states.states_base.COLLECTING_BALL - INFO - [COLLECTING_BALL] Starting optimized collection of regular ball in collection zone (confidence: 0.59)...
+2025-06-21 00:56:44,009 - hardware.hardware_control - INFO - 🚀 Starting OPTIMIZED collection sequence for collection zone...
+2025-06-21 00:56:44,009 - hardware.hardware_control - INFO -    Using: Speed=0.45, Time=0.8s
+2025-06-21 00:56:44,009 - hardware.hardware_control - INFO -    Flow: (pre-collect already set) -> slow drive -> collect -> store -> driving
+2025-06-21 00:56:44,012 - hardware.hardware_control - INFO - Step 1: Slow drive for precise collection (speed: 0.45)
+2025-06-21 00:56:44,862 - hardware.hardware_control - INFO - Step 2: Moving servo SS to COLLECT position (capture)
+2025-06-21 00:56:44,863 - hardware.hardware_control - INFO - 🤏 Moving servo SS to COLLECT position (20°)
+2025-06-21 00:56:46,130 - hardware.hardware_control - INFO - Step 3: Moving servo SS to STORE position (secure)
+2025-06-21 00:56:46,130 - hardware.hardware_control - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-21 00:56:47,296 - hardware.hardware_control - INFO - Step 4: Moving servo SS to DRIVING position (ready)
+2025-06-21 00:56:47,296 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:56:48,263 - hardware.hardware_control - INFO - ✅ Optimized collection complete! Servo SS state: DRIVING, Total balls: 1
+2025-06-21 00:56:48,263 - states.states_base.COLLECTING_BALL - INFO - [COLLECTING_BALL] ✅ Regular ball collected with optimized sequence! Total: 1
+2025-06-21 00:56:48,263 - states.states_base.COLLECTING_BALL - INFO - [COLLECTING_BALL] Collection sequence complete - returning to search
+2025-06-21 00:56:48,263 - core.core_state_machine - INFO - State transition: collecting_ball → searching
+2025-06-21 00:56:48,284 - core.core_competition - INFO - ⏱️  Time: 216s elapsed, 264s remaining | Balls: 1
+2025-06-21 00:56:48,285 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:56:48,285 - core.core_state_machine - INFO -    Current: searching
+2025-06-21 00:56:48,285 - core.core_state_machine - INFO -    Previous: collecting_ball
+2025-06-21 00:56:48,285 - core.core_state_machine - INFO -    State entered: False
+2025-06-21 00:56:49,196 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:49,197 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.40)
+2025-06-21 00:56:49,197 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:49,197 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:49,197 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:50,116 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:50,116 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:56:50,116 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:50,116 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:56:51,032 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:51,632 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:56:52,756 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.51)
+2025-06-21 00:56:52,756 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:52,756 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:52,756 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:53,660 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:54,361 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -30)
+2025-06-21 00:56:56,025 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 113)
+2025-06-21 00:56:56,955 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:56:56,955 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:56:56,955 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:56:57,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:56:57,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 1.00)
+2025-06-21 00:56:57,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:56:57,880 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:56:57,880 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:56:58,772 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:56:59,472 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 50)
+2025-06-21 00:57:00,435 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:57:00,435 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:00,436 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:57:01,342 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:57:01,345 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2: Setting servo SS to PRE-COLLECT for locked white ball
+2025-06-21 00:57:01,345 - hardware.hardware_control - INFO - 🎯 Moving servo SS to PRE-COLLECT position (130°)
+2025-06-21 00:57:03,262 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -96)
+2025-06-21 00:57:04,891 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -61)
+2025-06-21 00:57:06,554 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 41)
+2025-06-21 00:57:08,164 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -41)
+2025-06-21 00:57:09,076 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:57:09,076 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:57:09,076 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:57:09,980 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:09,981 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.54)
+2025-06-21 00:57:09,981 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:09,981 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:09,981 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:10,913 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:11,614 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 98)
+2025-06-21 00:57:12,542 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:57:12,542 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:12,542 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:57:13,445 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:13,445 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.51)
+2025-06-21 00:57:13,445 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:13,445 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:13,445 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:14,325 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:15,026 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 31)
+2025-06-21 00:57:15,972 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:57:15,973 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:15,973 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:57:16,890 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:16,890 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 1 white, 2 orange (avg conf: 0.68)
+2025-06-21 00:57:16,890 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:16,890 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:16,890 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:17,772 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:17,772 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:57:17,772 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:17,772 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:57:18,658 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:57:19,361 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -120)
+2025-06-21 00:57:19,412 - core.core_competition - INFO - ⏱️  Time: 247s elapsed, 233s remaining | Balls: 1
+2025-06-21 00:57:19,412 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:57:19,412 - core.core_state_machine - INFO -    Current: centering_2
+2025-06-21 00:57:19,412 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:57:19,412 - core.core_state_machine - INFO -    State entered: True
+2025-06-21 00:57:20,979 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 31)
+2025-06-21 00:57:22,603 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -96)
+2025-06-21 00:57:23,519 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:57:23,519 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:57:23,519 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:57:24,427 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:24,427 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.51)
+2025-06-21 00:57:24,427 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:24,427 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:24,427 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:25,310 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:26,010 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 32)
+2025-06-21 00:57:26,949 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:57:26,949 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:26,949 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:57:27,832 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:57:28,535 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -116)
+2025-06-21 00:57:30,173 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -90)
+2025-06-21 00:57:31,086 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:57:31,086 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:57:31,086 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:57:32,030 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:32,030 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.59)
+2025-06-21 00:57:32,030 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:32,030 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:32,030 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:32,915 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:33,615 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 41)
+2025-06-21 00:57:34,541 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:57:34,541 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:34,541 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:57:35,432 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:35,433 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.44)
+2025-06-21 00:57:35,433 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:35,433 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:35,433 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:36,328 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:36,329 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:57:36,329 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:36,329 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:57:37,249 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:57:37,952 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -77)
+2025-06-21 00:57:39,572 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -51)
+2025-06-21 00:57:40,471 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:57:40,472 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:57:40,472 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:57:41,381 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:41,381 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.72)
+2025-06-21 00:57:41,381 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:41,381 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:41,381 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:42,284 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:42,985 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 70)
+2025-06-21 00:57:43,921 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:57:43,922 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:43,922 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:57:44,838 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:44,838 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.55)
+2025-06-21 00:57:44,838 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:44,838 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:44,838 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:45,721 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:46,421 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 35)
+2025-06-21 00:57:47,395 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:57:47,395 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:47,395 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:57:48,282 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:57:48,985 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -97)
+2025-06-21 00:57:50,594 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 X: turning right (offset: 27)
+2025-06-21 00:57:50,651 - core.core_competition - INFO - ⏱️  Time: 279s elapsed, 201s remaining | Balls: 1
+2025-06-21 00:57:50,652 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:57:50,652 - core.core_state_machine - INFO -    Current: centering_2
+2025-06-21 00:57:50,652 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:57:50,652 - core.core_state_machine - INFO -    State entered: True
+2025-06-21 00:57:52,202 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -75)
+2025-06-21 00:57:53,878 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -45)
+2025-06-21 00:57:54,796 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:57:54,796 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:57:54,797 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:57:55,701 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:57:55,701 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.43)
+2025-06-21 00:57:55,701 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:57:55,701 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:57:55,701 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:57:56,591 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:57:57,291 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 45)
+2025-06-21 00:57:58,951 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 89)
+2025-06-21 00:57:59,876 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:57:59,876 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:57:59,876 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:58:00,776 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:58:00,776 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 1 white, 2 orange (avg conf: 0.58)
+2025-06-21 00:58:00,776 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:58:00,776 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:58:00,776 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:58:01,661 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:58:01,661 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:58:01,661 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:58:01,661 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:58:02,552 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:58:03,255 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -73)
+2025-06-21 00:58:04,212 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 complete! Locked white ball centered in upper green zone. Starting collection
+2025-06-21 00:58:04,212 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:58:04,212 - core.core_state_machine - INFO - State transition: centering_2 → collecting_ball
+2025-06-21 00:58:05,110 - states.states_base.COLLECTING_BALL - INFO - [COLLECTING_BALL] Starting optimized collection of regular ball in collection zone (confidence: 0.73)...
+2025-06-21 00:58:05,111 - hardware.hardware_control - INFO - 🚀 Starting OPTIMIZED collection sequence for collection zone...
+2025-06-21 00:58:05,111 - hardware.hardware_control - INFO -    Using: Speed=0.45, Time=0.8s
+2025-06-21 00:58:05,111 - hardware.hardware_control - INFO -    Flow: (pre-collect already set) -> slow drive -> collect -> store -> driving
+2025-06-21 00:58:05,114 - hardware.hardware_control - INFO - Step 1: Slow drive for precise collection (speed: 0.45)
+2025-06-21 00:58:05,964 - hardware.hardware_control - INFO - Step 2: Moving servo SS to COLLECT position (capture)
+2025-06-21 00:58:05,964 - hardware.hardware_control - INFO - 🤏 Moving servo SS to COLLECT position (20°)
+2025-06-21 00:58:07,231 - hardware.hardware_control - INFO - Step 3: Moving servo SS to STORE position (secure)
+2025-06-21 00:58:07,232 - hardware.hardware_control - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-21 00:58:08,397 - hardware.hardware_control - INFO - Step 4: Moving servo SS to DRIVING position (ready)
+2025-06-21 00:58:08,397 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:58:09,364 - hardware.hardware_control - INFO - ✅ Optimized collection complete! Servo SS state: DRIVING, Total balls: 2
+2025-06-21 00:58:09,364 - states.states_base.COLLECTING_BALL - INFO - [COLLECTING_BALL] ✅ Regular ball collected with optimized sequence! Total: 2
+2025-06-21 00:58:09,365 - states.states_base.COLLECTING_BALL - INFO - [COLLECTING_BALL] Collection sequence complete - returning to search
+2025-06-21 00:58:09,365 - core.core_state_machine - INFO - State transition: collecting_ball → searching
+2025-06-21 00:58:10,333 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:58:11,033 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: forward step
+2025-06-21 00:58:12,146 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.76)
+2025-06-21 00:58:12,147 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:58:12,147 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:58:12,147 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:58:12,173 - core.core_competition - WARNING - ⚠️  3 minutes remaining!
+2025-06-21 00:58:13,055 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:58:13,755 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 33)
+2025-06-21 00:58:14,701 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:58:14,701 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:58:14,701 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:58:15,660 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:58:15,660 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 2 white, 0 orange (avg conf: 0.67)
+2025-06-21 00:58:15,660 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:58:15,660 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:58:15,660 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:58:16,559 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:58:17,259 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 46)
+2025-06-21 00:58:18,186 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:58:18,186 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:58:18,186 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:58:19,094 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:58:19,097 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2: Setting servo SS to PRE-COLLECT for locked white ball
+2025-06-21 00:58:19,097 - hardware.hardware_control - INFO - 🎯 Moving servo SS to PRE-COLLECT position (130°)
+2025-06-21 00:58:21,014 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -99)
+2025-06-21 00:58:21,077 - core.core_competition - INFO - ⏱️  Time: 309s elapsed, 171s remaining | Balls: 2
+2025-06-21 00:58:21,077 - core.core_state_machine - INFO - 🔧 STATE MACHINE SUMMARY:
+2025-06-21 00:58:21,077 - core.core_state_machine - INFO -    Current: centering_2
+2025-06-21 00:58:21,077 - core.core_state_machine - INFO -    Previous: centering_1
+2025-06-21 00:58:21,077 - core.core_state_machine - INFO -    State entered: True
+2025-06-21 00:58:22,657 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -61)
+2025-06-21 00:58:23,558 - vision.vision_processing - INFO - Left wall detected above collection zone: area=1278.0
+2025-06-21 00:58:23,559 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Lost locked target during CENTERING_2 - returning to search
+2025-06-21 00:58:23,559 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:58:23,559 - core.core_state_machine - INFO - State transition: centering_2 → searching
+2025-06-21 00:58:24,480 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:58:25,080 - states.states_base.SEARCHING - INFO - [SEARCHING] Search pattern: turn right 90°
+2025-06-21 00:58:26,182 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 1 confident ball(s) - 1 white, 0 orange (avg conf: 0.53)
+2025-06-21 00:58:26,182 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:58:26,182 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:58:26,182 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:58:27,094 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:58:27,795 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -31)
+2025-06-21 00:58:28,715 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:58:28,716 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:58:28,716 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:58:29,627 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:58:29,628 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 2 confident ball(s) - 1 white, 1 orange (avg conf: 0.67)
+2025-06-21 00:58:29,628 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:58:29,628 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:58:29,628 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:58:30,512 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:58:31,212 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning right (offset: 27)
+2025-06-21 00:58:32,848 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 X: turning left (offset: -28)
+2025-06-21 00:58:34,459 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 Y: moving backward (offset: 63)
+2025-06-21 00:58:35,383 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Lost locked target during CENTERING_1 - returning to search
+2025-06-21 00:58:35,383 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:58:35,383 - core.core_state_machine - INFO - State transition: centering_1 → searching
+2025-06-21 00:58:36,300 - states.states_base.SEARCHING - INFO - [SEARCHING] Entering search mode - looking for balls
+2025-06-21 00:58:36,300 - states.states_base.SEARCHING - INFO - [SEARCHING] Found 3 confident ball(s) - 1 white, 2 orange (avg conf: 0.53)
+2025-06-21 00:58:36,300 - states.states_base.SEARCHING - INFO - [SEARCHING] Locked onto white ball for centering sequence
+2025-06-21 00:58:36,300 - states.states_base.SEARCHING - INFO - [SEARCHING] Exiting search mode - target acquired
+2025-06-21 00:58:36,300 - core.core_state_machine - INFO - State transition: searching → centering_1
+2025-06-21 00:58:37,240 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Starting Phase 1 centering for locked white ball
+2025-06-21 00:58:37,240 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] CENTERING_1 complete! Locked white ball aligned. Starting CENTERING_2
+2025-06-21 00:58:37,240 - states.states_base.CENTERING_1 - INFO - [CENTERING_1] Phase 1 centering complete
+2025-06-21 00:58:37,240 - core.core_state_machine - INFO - State transition: centering_1 → centering_2
+2025-06-21 00:58:38,180 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Starting Phase 2 centering for locked white ball - targeting collection zone
+2025-06-21 00:58:38,883 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] CENTERING_2 Y: moving forward (offset: -83)
+2025-06-21 00:58:40,200 - core.core_robot - INFO - Shutdown signal received
+2025-06-21 00:58:40,200 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:58:40,200 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:58:40,201 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:58:40,201 - states.states_base.CENTERING_2 - INFO - [CENTERING_2] Phase 2 centering complete - ready for collection
+2025-06-21 00:58:40,201 - core.core_state_machine - INFO - State transition: centering_2 → emergency_stop
+2025-06-21 00:58:40,201 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:58:40,201 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:58:41,622 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:58:41,622 - hardware.hardware_control - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 00:58:41,624 - vision.vision_processing - INFO - Enhanced vision system with ball centering cleanup completed
+2025-06-21 00:58:41,624 - hardware.hardware_control - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 00:58:41,624 - hardware.hardware_control - INFO - 🔧 Centering servos...
+2025-06-21 00:58:41,624 - hardware.hardware_control - INFO - 🚗 Moving servo SS to DRIVING position (28°)
+2025-06-21 00:58:42,031 - hardware.hardware_control - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 00:58:42,032 - hardware.hardware_control - INFO - ✅ Hardware cleanup completed
+2025-06-21 00:58:42,033 - core.core_robot - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 00:58:42,033 - core.core_state_machine - WARNING - Emergency stop activated
+2025-06-21 00:58:42,033 - core.core_state_machine - WARNING - Forcing state transition to emergency_stop
+2025-06-21 00:58:42,033 - core.core_robot - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
