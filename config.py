@@ -67,8 +67,8 @@ BOUNDARY_HSV_UPPER = np.array([180, 255, 50])
 # === SERVO SS (MAIN COLLECTION) POSITIONS ===
 SERVO_SS_STORE = 110          # Store position
 SERVO_SS_PRE_COLLECT = 130    # Pre-collect position (UPDATED to 130)
-SERVO_SS_DRIVING = 25         # Driving position (default/start position)
-SERVO_SS_COLLECT = 15         # Collect position
+SERVO_SS_DRIVING = 28         # Driving position (default/start position)
+SERVO_SS_COLLECT = 18         # Collect position
 SERVO_SS_STEP_SIZE = 5        # Incremental movement step size
 
 # === SERVO SF (SECONDARY) POSITIONS ===
