@@ -395,11 +395,6 @@ class GolfBotHardware:
             self.servo_ss_to_driving()
             self.servo_sf_to_ready()
             return False
-
-    def blind_collection_sequence(self, drive_time):
-        """Legacy method - now redirects to enhanced sequence"""
-        self.logger.info("Using enhanced two-servo collection sequence instead of blind collection")
-        return self.enhanced_collection_sequence()
     
     def grab_ball(self):
         """Close servos to grab a ball (legacy method)"""

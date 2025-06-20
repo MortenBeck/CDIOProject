@@ -336,7 +336,6 @@ class GolfBotDashboard:
             'CENTERING_BALL': self.warning_color,
             'APPROACHING_BALL': self.success_color,
             'COLLECTING_BALL': self.success_color,
-            'BLIND_COLLECTION': self.warning_color,
             'AVOIDING_BOUNDARY': self.danger_color,
             'EMERGENCY_STOP': self.danger_color,
         }

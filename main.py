@@ -25,7 +25,6 @@ class RobotState(Enum):
     CENTERING_BALL = "centering_ball"  # Enhanced: Center ball X+Y before collection
     APPROACHING_BALL = "approaching_ball"
     COLLECTING_BALL = "collecting_ball"  # Enhanced: New servo sequence
-    BLIND_COLLECTION = "blind_collection"  # DEPRECATED: Redirects to COLLECTING_BALL
     AVOIDING_BOUNDARY = "avoiding_boundary"
     EMERGENCY_STOP = "emergency_stop"
 
@@ -232,7 +231,7 @@ class GolfBot:
         """Execute current state logic with enhanced ball centering and collection - WHITE BALLS ONLY"""
         
         # Always check for boundary first (but allow collection to complete)
-        if near_boundary and self.state not in [RobotState.COLLECTING_BALL, RobotState.BLIND_COLLECTION]:
+        if near_boundary and self.state not in [RobotState.COLLECTING_BALL]:
             self.state = RobotState.AVOIDING_BOUNDARY
         
         if self.state == RobotState.SEARCHING:
@@ -246,9 +245,6 @@ class GolfBot:
             
         elif self.state == RobotState.COLLECTING_BALL:  # Enhanced sequence
             self.handle_collecting_ball()
-            
-        elif self.state == RobotState.BLIND_COLLECTION:  # DEPRECATED - redirects
-            self.handle_blind_collection()
             
         elif self.state == RobotState.AVOIDING_BOUNDARY:
             self.handle_avoiding_boundary(near_boundary)
@@ -386,11 +382,6 @@ class GolfBot:
         
         # Return to searching
         self.state = RobotState.SEARCHING
-    
-    def handle_blind_collection(self):
-        """REMOVED: This method is no longer used - redirects to collection"""
-        self.logger.info("Redirecting to enhanced collection sequence...")
-        self.state = RobotState.COLLECTING_BALL
     
     def handle_avoiding_boundary(self, near_boundary):
         """Handle boundary avoidance with improved timing"""
