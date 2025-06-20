@@ -60,6 +60,10 @@ class GolfBot:
         # Target persistence
         self.locked_target = None  # Persist target between centering phases
         
+        # Performance tracking
+        self.last_frame_time = time.time()
+        self.frame_skip_counter = 0
+        
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
