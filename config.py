@@ -17,8 +17,8 @@ EGG_MOVE_PENALTY = -300
 # === PCA9685 SERVO SETTINGS ===
 PCA9685_ADDRESS = 0x40
 PCA9685_FREQUENCY = 50
-SERVO_SS_CHANNEL = 0  # PCA9685 Channel 0 (was servo1)
-SERVO_SF_CHANNEL = 1  # PCA9685 Channel 1 (was servo2)
+SERVO_SS_CHANNEL = 0  # PCA9685 Channel 0 (main collection servo)
+SERVO_SF_CHANNEL = 1  # PCA9685 Channel 1 (secondary servo)
 
 # === DC MOTOR GPIO PINS ===
 MOTOR_IN1 = 19  # GPIO 19 (Pin 35) - Motor A
@@ -58,12 +58,6 @@ GOAL_HSV_UPPER = np.array([10, 255, 255])
 BOUNDARY_HSV_LOWER = np.array([0, 0, 0])    # Dark boundaries
 BOUNDARY_HSV_UPPER = np.array([180, 255, 50])
 
-# === SERVO POSITIONS (ANGLES IN DEGREES) ===
-SERVO_CENTER = 90
-SERVO_COLLECT_OPEN = 45   # Open position for collection
-SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
-SERVO_RELEASE = 0         # Release position
-
 # === SERVO SS (MAIN COLLECTION) FOUR-STATE SYSTEM ===
 SERVO_SS_STORE = 110        # Store position
 SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
@@ -74,6 +68,9 @@ SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 # === SERVO SF (SECONDARY) POSITIONS ===
 SERVO_SF_READY_POSITION = 90  # Ready to catch
 SERVO_SF_CATCH_POSITION = 135  # Close position to secure ball
+
+# === RELEASE POSITION ===
+SERVO_RELEASE = 0  # Release position for ball delivery
 
 # === SERVO MOVEMENT SETTINGS ===
 SERVO_GRADUAL_MOVEMENT = True  # Enable gradual servo movement to reduce current draw
@@ -86,16 +83,14 @@ TURN_TIME_90_DEGREES = 0.6  # Time to turn 90 degrees
 FORWARD_TIME_SHORT = 0.2    # Short forward movement
 BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 
-# === COLLECTION BEHAVIOR ===
-CENTERING_TOLERANCE = 25  # Pixels - more lenient X centering (was 15)
-CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
-COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
-MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
-MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
-COLLECTION_SPEED = 0.4  # Slower speed for precise collection
+# === ENHANCED COLLECTION BEHAVIOR ===
+CENTERING_TOLERANCE = 25  # Pixels - X-axis centering tolerance
+CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance
+ENHANCED_COLLECTION_DRIVE_TIME = 1.2  # Drive time for enhanced collection sequence
+COLLECTION_SPEED = 0.4  # Speed for collection movements
 
-# === ENHANCED CENTERING BEHAVIOR (FASTER) ===
-CENTERING_TURN_DURATION = 0.25  # Faster horizontal centering (was 0.16)
+# === CENTERING BEHAVIOR ===
+CENTERING_TURN_DURATION = 0.25  # Duration for horizontal centering turns
 CENTERING_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments
 CENTERING_SPEED = 0.4  # Speed for centering movements
 
@@ -104,11 +99,6 @@ SEARCH_PATTERN = [
     "forward", "turn_right", "forward", "turn_right", 
     "forward", "turn_right", "forward", "turn_right"
 ]
-
-# === BALL COLLECTION ===
-COLLECTION_DISTANCE_THRESHOLD = 30  # Pixels - how close before attempting collection
-BALL_LOST_TIMEOUT = 2.0  # Seconds before giving up on a ball
-MAX_COLLECTION_ATTEMPTS = 3
 
 # === DEBUGGING ===
 DEBUG_VISION = True
