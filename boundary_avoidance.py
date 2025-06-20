@@ -89,7 +89,7 @@ class BoundaryAvoidanceSystem:
     
     def detect_boundaries(self, frame) -> bool:
         """Detect if robot is too close to red walls (danger zones)
-        NEW: Check ENTIRE frame, not just edges!"""
+        UPDATED: Left/Right walls only trigger in BOTTOM 30% of image"""
         if frame is None:
             return False
         
@@ -118,8 +118,10 @@ class BoundaryAvoidanceSystem:
         # Define collection zone boundary (bottom 25% of image)
         collection_zone_y = int(h * 0.75)  # Top of collection zone (75% down from top)
         
-        # NEW: Define danger zones for FULL FRAME detection
-        # Robot position is at bottom center, so detect walls that are too close
+        # UPDATED: Define bottom 30% threshold for side wall detection
+        bottom_30_percent_y = int(h * 0.7)  # Start checking side walls at 70% down from top
+        
+        # Define danger zones
         danger_distance_vertical = int(h * 0.15)  # 15% of frame height
         danger_distance_horizontal = int(w * 0.1)  # 10% of frame width
         
@@ -152,8 +154,8 @@ class BoundaryAvoidanceSystem:
                             self.logger.info(f"Bottom wall detected: area={area}, width={w_rect}")
                         break
         
-        # === REGION 2: LEFT DANGER ZONE (full height above collection) ===
-        left_region = red_mask[0:collection_zone_y, 0:danger_distance_horizontal]
+        # === REGION 2: LEFT DANGER ZONE (ONLY BOTTOM 30% OF IMAGE) ===
+        left_region = red_mask[bottom_30_percent_y:collection_zone_y, 0:danger_distance_horizontal]
         contours, _ = cv2.findContours(left_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         for contour in contours:
@@ -166,17 +168,17 @@ class BoundaryAvoidanceSystem:
                         'zone': 'left',
                         'contour': contour,
                         'area': area,
-                        'bbox': (x, y, w_rect, h_rect),
+                        'bbox': (x, bottom_30_percent_y + y, w_rect, h_rect),
                         'length': h_rect,
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Left wall detected: area={area}, height={h_rect}")
+                        self.logger.info(f"Left wall detected in BOTTOM 30%: area={area}, height={h_rect}")
                     break
         
-        # === REGION 3: RIGHT DANGER ZONE (full height above collection) ===
-        right_region = red_mask[0:collection_zone_y, w-danger_distance_horizontal:w]
+        # === REGION 3: RIGHT DANGER ZONE (ONLY BOTTOM 30% OF IMAGE) ===
+        right_region = red_mask[bottom_30_percent_y:collection_zone_y, w-danger_distance_horizontal:w]
         contours, _ = cv2.findContours(right_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         for contour in contours:
@@ -189,21 +191,21 @@ class BoundaryAvoidanceSystem:
                         'zone': 'right',
                         'contour': contour,
                         'area': area,
-                        'bbox': (w - danger_distance_horizontal + x, y, w_rect, h_rect),
+                        'bbox': (w - danger_distance_horizontal + x, bottom_30_percent_y + y, w_rect, h_rect),
                         'length': h_rect,
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Right wall detected: area={area}, height={h_rect}")
+                        self.logger.info(f"Right wall detected in BOTTOM 30%: area={area}, height={h_rect}")
                     break
         
-        # === NEW: REGION 4: CENTER FORWARD DANGER ZONE ===
+        # === REGION 4: CENTER FORWARD DANGER ZONE (unchanged) ===
         # This detects walls directly in front of robot - BUT ONLY IN BOTTOM 40%
         center_width = int(w * 0.6)  # Check center 60% of frame width
         center_start_x = int(w * 0.2)  # Start at 20% from left
         
-        # KEY CHANGE: Only check BOTTOM 40% of frame (close to robot)
+        # Only check BOTTOM 40% of frame (close to robot)
         center_start_y = int(h * 0.6)   # Start at 60% down from top
         center_end_y = int(h * 0.9)     # End at 90% down (avoid collection zone)
         
