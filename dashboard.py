@@ -42,7 +42,7 @@ class GolfBotDashboard:
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
                                 self.bg_color, dtype=np.uint8)
     
-    def create_dashboard(self, camera_frame, robot_state, vision_system, hardware, telemetry=None):
+    def create_dashboard(self, camera_frame, robot_state, vision_system, hardware):
         """Create complete dashboard with camera and data panels"""
         
         # Create fresh dashboard
@@ -60,10 +60,6 @@ class GolfBotDashboard:
         self._add_robot_status_panel(robot_state, hardware)
         self._add_detection_details_panel(vision_system)
         self._add_controls_legend_panel()
-        
-        # 4. Add performance info if available
-        if telemetry:
-            self._add_performance_panel(telemetry)
         
         return self.dashboard
     
@@ -250,7 +246,7 @@ class GolfBotDashboard:
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
             y += line_height * 2
         
-        # Centering info (both X and Y) - Updated for more lenient tolerances
+        # Centering info (both X and Y)
         x_tolerance = getattr(config, 'CENTERING_TOLERANCE', 25)
         y_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 30)
         cv2.putText(self.dashboard, f"Centering: ±{x_tolerance}px X, ±{y_tolerance}px Y", 
@@ -300,32 +296,6 @@ class GolfBotDashboard:
             cv2.putText(self.dashboard, item, 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small-0.1, color, 1)
             y += line_height
-    
-    def _add_performance_panel(self, telemetry):
-        """Add performance metrics panel"""
-        panel_y = self.right_panel_y + 520
-        panel_height = 60
-        
-        # Panel background
-        cv2.rectangle(self.dashboard, 
-                     (self.right_panel_x, panel_y), 
-                     (self.right_panel_x + self.panel_width, panel_y + panel_height), 
-                     self.panel_color, -1)
-        
-        # Panel title
-        cv2.putText(self.dashboard, "PERFORMANCE", 
-                   (self.right_panel_x + 5, panel_y + 20), 
-                   self.font, self.font_scale_medium, self.accent_color, 1)
-        
-        y = panel_y + 40
-        
-        # Frame count and rate
-        if hasattr(telemetry, 'frame_count'):
-            cv2.putText(self.dashboard, f"Frames: {telemetry.frame_count}", 
-                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
-            
-            cv2.putText(self.dashboard, f"Collections: {telemetry.total_collections}", 
-                       (self.right_panel_x + 120, y), self.font, self.font_scale_small, self.success_color, 1)
     
     def _get_state_color(self, robot_state):
         """Get color for robot state"""

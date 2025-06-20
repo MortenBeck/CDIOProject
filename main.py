@@ -9,7 +9,6 @@ from typing import Optional
 import config
 from hardware import GolfBotHardware
 from vision import VisionSystem
-from telemetry import TelemetryLogger
 from hardware_test import run_hardware_test
 
 # Import the new dashboard (optional)
@@ -49,8 +48,6 @@ class GolfBot:
             self.logger.info("Using legacy overlay interface")
         
         # Initialize systems
-        # self.telemetry = TelemetryLogger()  # DISABLED for now
-        self.telemetry = None
         self.hardware = GolfBotHardware()
         self.vision = VisionSystem()
         
@@ -60,9 +57,6 @@ class GolfBot:
         self.state = RobotState.SEARCHING
         self.search_pattern_index = 0
         self.last_ball_seen_time = None
-        
-        # NEW: Blind collection tracking (removed - using enhanced sequence)
-        # self.blind_collection_drive_time = 0.0
         
         # Performance tracking
         self.last_frame_time = time.time()
@@ -170,30 +164,10 @@ class GolfBot:
                 balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame(dashboard_mode=self.use_dashboard)
                 
                 if balls is None:  # Frame capture failed
-                    # self.telemetry.log_error("Frame capture failed", "vision")  # DISABLED
                     continue
                 
                 # Store detected balls for dashboard access
                 self.vision._last_detected_balls = balls if balls else []
-                
-                # Enhanced logging with detection method info (DISABLED)
-                # detection_info = {
-                #     "detection_method": "hough_circles_hybrid",
-                #     "arena_detected": self.vision.arena_detected,
-                #     "balls_found": len(balls) if balls else 0,
-                #     "current_state": self.state.value
-                # }
-                
-                # Log ball detections with enhanced info (DISABLED)
-                # if balls:
-                #     for i, ball in enumerate(balls):
-                #         detection_info[f"ball_{i}_confidence"] = ball.confidence
-                #         detection_info[f"ball_{i}_type"] = ball.object_type
-                #         detection_info[f"ball_{i}_centered"] = self.vision.is_ball_centered(ball)
-                #         detection_info[f"ball_{i}_in_zone"] = ball.in_collection_zone
-                
-                # self.telemetry.log_ball_detection(balls, None, None)
-                # self.telemetry.log_frame_data(extra_data=detection_info)
                 
                 # Update ball tracking
                 if balls:
@@ -202,15 +176,10 @@ class GolfBot:
                     if high_confidence_balls:
                         self.logger.debug(f"High confidence balls: {len(high_confidence_balls)}")
                 
-                # Log hardware state periodically (DISABLED)
-                # if self.telemetry and self.telemetry.frame_count % 20 == 0:  # Less frequent logging
-                #     self.telemetry.log_hardware_state(self.hardware)
-                
-                # Performance tracking (DISABLED)
+                # Performance tracking
                 frame_time = time.time() - frame_start
                 fps = 1.0 / (time.time() - self.last_frame_time) if self.last_frame_time else 0
                 self.last_frame_time = time.time()
-                # self.telemetry.log_performance_metrics(fps, frame_time)
                 
                 # Show display based on mode
                 if config.SHOW_CAMERA_FEED and self.display_available:
@@ -218,7 +187,7 @@ class GolfBot:
                         if self.use_dashboard and self.dashboard:
                             # NEW DASHBOARD MODE
                             dashboard_frame = self.dashboard.create_dashboard(
-                                debug_frame, self.state, self.vision, self.hardware, None  # No telemetry
+                                debug_frame, self.state, self.vision, self.hardware, None
                             )
                             key = self.dashboard.show("GolfBot Dashboard - Enhanced Collection")
                         else:
@@ -241,14 +210,6 @@ class GolfBot:
                 old_state = self.state
                 self.execute_state_machine(balls, near_boundary, nav_command)
                 
-                # Log state transitions with enhanced info (DISABLED)
-                # if old_state != self.state:
-                #     reason = f"{nav_command} | balls={len(balls) if balls else 0} | boundary={near_boundary}"
-                #     if self.vision.current_target:
-                #         centered = self.vision.is_ball_centered(self.vision.current_target)
-                #         reason += f" | centered={centered}"
-                #     self.telemetry.log_state_transition(old_state, self.state, reason)
-                
                 # Adaptive sleep based on detection results and state
                 if self.state == RobotState.CENTERING_BALL:
                     time.sleep(0.03)  # Faster when centering
@@ -259,7 +220,6 @@ class GolfBot:
                 
             except Exception as e:
                 self.logger.error(f"Main loop iteration error: {e}")
-                # self.telemetry.log_error(f"Main loop error: {str(e)}", "main_loop")  # DISABLED
                 self.hardware.stop_motors()
                 time.sleep(0.5)
         
@@ -421,24 +381,11 @@ class GolfBot:
         # Execute new collection sequence (vision-free)
         success = self.hardware.enhanced_collection_sequence()
         
-        # Enhanced logging (DISABLED)
-        # self.telemetry.log_collection_attempt(success, ball_type)
-        
         if success:
             total_balls = self.hardware.get_ball_count()
             self.logger.info(f"✅ {ball_type.title()} ball collected with enhanced sequence! Total: {total_balls}")
-            
-            # Log collection success with details (DISABLED)
-            # collection_data = {
-            #     "ball_type": ball_type,
-            #     "confidence": confidence if current_target else 0.0,
-            #     "total_collected": total_balls,
-            #     "collection_method": "enhanced_sequence"
-            # }
-            # self.telemetry.log_frame_data(action="successful_enhanced_collection", extra_data=collection_data)
         else:
             self.logger.warning(f"❌ {ball_type.title()} enhanced collection failed")
-            # self.telemetry.log_error(f"Enhanced collection failed - {ball_type}", "collection")  # DISABLED
         
         # Return to searching
         self.state = RobotState.SEARCHING
@@ -566,19 +513,6 @@ class GolfBot:
         self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
         self.logger.info("=" * 60)
         
-        # Enhanced competition results
-        competition_result = {
-            "elapsed_time": elapsed_time,
-            "balls_collected": self.hardware.get_ball_count(),
-            "final_state": self.state.value,
-            "vision_system": "hough_circles_hybrid",
-            "collection_system": "enhanced_xy_centering_servo_sequence",
-            "arena_detected": self.vision.arena_detected
-        }
-        
-        # summary = self.telemetry.create_session_summary(competition_result)  # DISABLED
-        # self.logger.info(f"Session data saved to: {summary['session_metadata']['session_dir']}")  # DISABLED
-        
         self.emergency_stop()
     
     def emergency_stop(self):
@@ -591,11 +525,6 @@ class GolfBot:
         try:
             self.hardware.emergency_stop()
             self.vision.cleanup()
-            
-            # export_file = self.telemetry.export_for_analysis()  # DISABLED
-            # self.logger.info(f"📊 Telemetry exported: {export_file}")  # DISABLED
-            
-            # self.telemetry.cleanup()  # DISABLED
             self.hardware.cleanup()
         except Exception as e:
             self.logger.error(f"Emergency stop error: {e}")
