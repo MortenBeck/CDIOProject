@@ -303,32 +303,6 @@ class GolfBotHardware:
         except Exception as e:
             self.logger.error(f"Failed to set collection position: {e}")
     
-    # === ENHANCED COLLECTION METHODS ===
-    def prepare_for_collection(self):
-        """Prepare servos for ball collection - SS stays in driving position, SF to ready"""
-        try:
-            use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
-            
-            if config.DEBUG_COLLECTION:
-                self.logger.info("🔧 Preparing for collection - SS driving, SF ready...")
-            
-            if use_gradual:
-                # Keep SS in driving position, move SF to ready position
-                self.servo_ss_to_driving()
-                time.sleep(sequential_delay)
-                self.servo_sf_to_ready()
-                time.sleep(0.3)
-            else:
-                self.servo_ss_to_driving()
-                self.servo_sf_to_ready()
-                time.sleep(0.5)
-                
-            if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Prepared for collection - SS at driving, SF ready")
-                
-        except Exception as e:
-            self.logger.error(f"Failed to prepare for collection: {e}")
 
     # === ENHANCED COLLECTION SEQUENCE ===
     def enhanced_collection_sequence(self):
@@ -585,68 +559,7 @@ class GolfBotHardware:
             self.logger.debug("👣 Backward step")
         self.move_backward(duration=config.FORWARD_TIME_SHORT)
     
-    # === BALL COLLECTION SEQUENCE (LEGACY) ===
-    def attempt_ball_collection(self):
-        """Complete ball collection sequence (legacy method)"""
-        try:
-            # Slow down for precision
-            original_speed = self.current_speed
-            self.set_speed(config.MOTOR_SPEED_SLOW)
-            
-            if config.DEBUG_COLLECTION:
-                self.logger.info("🤖 Starting legacy ball collection sequence...")
-            
-            # Open collection mechanism
-            self.collection_position()
-            
-            # Move forward slowly to collect
-            self.move_forward(duration=0.5)
-            
-            # Grab the ball
-            self.grab_ball()
-            
-            # Back up slightly
-            self.move_backward(duration=0.3)
-            
-            # Restore original speed
-            self.set_speed(original_speed)
-            
-            if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Legacy collection sequence completed")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"❌ Legacy ball collection failed: {e}")
-            self.stop_motors()
-            self.set_speed(original_speed)
-            return False
-    
-    def delivery_sequence(self, goal_type="B"):
-        """Deliver balls to specified goal"""
-        try:
-            if config.DEBUG_COLLECTION:
-                self.logger.info(f"🚚 Starting ball delivery to goal {goal_type}")
-            
-            # Position for delivery
-            self.stop_motors()
-            time.sleep(0.5)
-            
-            # Release balls
-            balls_delivered = self.release_balls()
-            
-            # Back away from goal
-            self.move_backward(duration=1.0)
-            
-            if config.DEBUG_COLLECTION:
-                self.logger.info(f"✅ Delivered {balls_delivered} balls to goal {goal_type}")
-                
-            return balls_delivered
-            
-        except Exception as e:
-            self.logger.error(f"❌ Ball delivery failed: {e}")
-            return 0
-    
+
     # === SERVO ANGLE GETTERS ===
     def get_servo_angles(self):
         """Get current servo angles - ensures no None values"""

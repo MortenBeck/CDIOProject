@@ -196,11 +196,6 @@ class HardwareTester:
                 success = self.hardware.enhanced_collection_sequence()
                 print(f"Collection {'successful' if success else 'failed'}")
                 
-            elif cmd == 'deliver':
-                print("Running delivery sequence...")
-                balls = self.hardware.delivery_sequence("A")
-                print(f"Delivered {balls} balls")
-                
             elif cmd == 'open':
                 self.hardware.collection_position()
                 print("Collection mechanism opened")
@@ -220,10 +215,6 @@ class HardwareTester:
             elif cmd == 'reset':
                 self.hardware.collected_balls.clear()
                 print("Ball count reset to 0")
-                
-            elif cmd == 'prepare':
-                self.hardware.prepare_for_collection()
-                print("Prepared for collection")
                 
             elif cmd == 'back':
                 break
@@ -355,9 +346,6 @@ class HardwareTester:
         print("\n5. Enhanced collection sequence...")
         self.hardware.enhanced_collection_sequence()
         time.sleep(1)
-        
-        print("\n6. Delivery sequence...")
-        self.hardware.delivery_sequence("A")
         
         print("\nFull system demo complete!")
     
