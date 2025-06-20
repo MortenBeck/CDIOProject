@@ -44,7 +44,7 @@ BALL_HSV_UPPER = np.array([180, 30, 255])
 BALL_MIN_AREA = 100
 BALL_MAX_AREA = 10000
 BALL_MIN_RADIUS = 10
-BALL_MAX_RADIUS = 50
+BALL_MAX_RADIUS = 30
 
 # Orange VIP ball detection
 ORANGE_HSV_LOWER = np.array([10, 100, 100])
@@ -68,7 +68,7 @@ SERVO_RELEASE = 0         # Release position
 SERVO_SS_STORE = 110        # Store position
 SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
 SERVO_SS_DRIVING = 25       # Driving position (default/start position)
-SERVO_SS_COLLECT = 14       # Collect position
+SERVO_SS_COLLECT = 15       # Collect position
 SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 
 # === SERVO SF (SECONDARY) POSITIONS ===
@@ -96,7 +96,7 @@ COLLECTION_SPEED = 0.4  # Slower speed for precise collection
 
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
 CENTERING_TURN_DURATION = 0.25  # Faster horizontal centering (was 0.16)
-CENTERING_DRIVE_DURATION = 0.35  # Duration for forward/backward centering adjustments
+CENTERING_DRIVE_DURATION = 0.25  # Duration for forward/backward centering adjustments
 CENTERING_SPEED = 0.4  # Speed for centering movements
 
 # === NAVIGATION STRATEGY ===
