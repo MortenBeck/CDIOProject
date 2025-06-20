@@ -197,7 +197,12 @@ class GolfBotDashboard:
             # Use the correct keys: 'servo_ss' and 'servo_sf'
             ss_angle = angles.get('servo_ss', 90)
             sf_angle = angles.get('servo_sf', 90)
-            cv2.putText(self.dashboard, f"Servos: SS {ss_angle:.0f}° SF {sf_angle:.0f}°", 
+            
+            # Handle None values before formatting
+            ss_text = f"{ss_angle:.0f}" if ss_angle is not None else "--"
+            sf_text = f"{sf_angle:.0f}" if sf_angle is not None else "--"
+            
+            cv2.putText(self.dashboard, f"Servos: SS {ss_text}° SF {sf_text}°", 
                     (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         else:
             cv2.putText(self.dashboard, "Servos: N/A", 

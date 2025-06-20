@@ -654,14 +654,22 @@ class GolfBotHardware:
     
     # === SERVO ANGLE GETTERS ===
     def get_servo_angles(self):
-        """Get current servo angles"""
+        """Get current servo angles - ensures no None values"""
         try:
+            ss_angle = getattr(self.servo_ss, 'angle', None)
+            sf_angle = getattr(self.servo_sf, 'angle', None)
+            
+            # Ensure we never return None - use default values
+            ss_angle = 90 if ss_angle is None else ss_angle
+            sf_angle = 90 if sf_angle is None else sf_angle
+            
             return {
-                "servo_ss": getattr(self.servo_ss, 'angle', 90),
-                "servo_sf": getattr(self.servo_sf, 'angle', 90)
+                "servo_ss": ss_angle,
+                "servo_sf": sf_angle
             }
         except Exception as e:
             self.logger.error(f"Failed to get servo angles: {e}")
+            # Return safe default values instead of None
             return {"servo_ss": 90, "servo_sf": 90}
     
     # === EMERGENCY AND CLEANUP ===
