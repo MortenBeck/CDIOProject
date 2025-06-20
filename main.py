@@ -8,7 +8,7 @@ import sys
 import logging
 from ui.ui_menu import show_startup_menu
 from core.core_robot import GolfBot
-from hardware.test import run_hardware_test
+from hardware import run_hardware_test
 
 
 def setup_logging():

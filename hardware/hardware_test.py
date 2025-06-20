@@ -6,7 +6,7 @@ Interactive testing for servos and DC motors
 
 import time
 import logging
-from .control import GolfBotHardware
+from .hardware_control import GolfBotHardware
 import config
 
 class HardwareTester:

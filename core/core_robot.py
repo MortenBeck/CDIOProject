@@ -9,8 +9,8 @@ from typing import Optional
 import config
 from hardware import GolfBotHardware
 from vision import VisionSystem, GolfBotDashboard
-from .state_machine import StateMachine
-from .competition import CompetitionManager
+from .core_state_machine import StateMachine
+from .core_competition import CompetitionManager
 from states import RobotState
 
 class GolfBot:
