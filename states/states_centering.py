@@ -4,7 +4,7 @@ from .states_base import BaseState, RobotState
 import config
 
 class CenteringState1(BaseState):
-    """Phase 1: Center the locked target ball in both X and Y axes for initial alignment"""
+    """Phase 1: Center the locked target ball - DISTANCE FIRST, then horizontal alignment"""
     
     def __init__(self):
         super().__init__("CENTERING_1")
@@ -14,12 +14,12 @@ class CenteringState1(BaseState):
         locked_target = context.get('locked_target')
         if locked_target:
             ball_type = "orange" if locked_target.object_type == "orange_ball" else "white"
-            self.log_state_info(f"Starting Phase 1 centering for locked {ball_type} ball")
+            self.log_state_info(f"Starting Phase 1 centering for locked {ball_type} ball (distance first)")
         else:
-            self.log_state_info("Starting Phase 1 centering")
+            self.log_state_info("Starting Phase 1 centering (distance first)")
     
     def execute(self, context) -> Optional[RobotState]:
-        """Execute centering phase 1 logic"""
+        """Execute centering phase 1 logic - DISTANCE FIRST, then horizontal"""
         balls = context.get('balls', [])
         hardware = context['hardware']
         vision = context['vision']
@@ -42,58 +42,58 @@ class CenteringState1(BaseState):
         # Update vision current target
         vision.current_target = target_ball
         
-        # Check if ball is fully centered for Phase 1 (using Phase 1 tolerances)
+        # Calculate offsets
         x_offset = abs(target_ball.center[0] - vision.frame_center_x)
         y_offset = abs(target_ball.center[1] - vision.frame_center_y)
         
         x_centered = x_offset <= config.CENTERING_1_TOLERANCE
         y_centered = y_offset <= config.CENTERING_1_DISTANCE_TOLERANCE
         
-        if x_centered and y_centered:
-            ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.log_state_info(f"CENTERING_1 complete! Locked {ball_type} ball aligned. Starting CENTERING_2")
-            return RobotState.CENTERING_2
-        
-        # Ball not fully centered - get centering adjustments for both axes
-        # X-axis centering (left/right)
-        if not x_centered:
-            x_offset_signed = target_ball.center[0] - vision.frame_center_x
-            if x_offset_signed > 0:
-                hardware.turn_right(duration=config.CENTERING_1_TURN_DURATION, 
-                                   speed=config.CENTERING_1_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_1 X: turning right (offset: {x_offset_signed})")
-            else:
-                hardware.turn_left(duration=config.CENTERING_1_TURN_DURATION, 
-                                  speed=config.CENTERING_1_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_1 X: turning left (offset: {x_offset_signed})")
-            
-            time.sleep(0.03)
-            return None
-        
-        # Y-axis centering (distance - forward/backward)
+        # PRIORITY 1: Y-axis centering (distance) - must be done FIRST
         if not y_centered:
             y_offset_signed = target_ball.center[1] - vision.frame_center_y
             if y_offset_signed > 0:
                 hardware.move_backward(duration=config.CENTERING_1_DRIVE_DURATION, 
                                      speed=config.CENTERING_1_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_1 Y: moving backward (offset: {y_offset_signed})")
+                    self.log_state_info(f"CENTERING_1 DISTANCE: moving backward (offset: {y_offset_signed})")
             else:
                 hardware.move_forward(duration=config.CENTERING_1_DRIVE_DURATION, 
                                     speed=config.CENTERING_1_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_1 Y: moving forward (offset: {y_offset_signed})")
+                    self.log_state_info(f"CENTERING_1 DISTANCE: moving forward (offset: {y_offset_signed})")
             
             time.sleep(0.03)
-            return None
+            return None  # Stay in centering_1, continue Y centering
+        
+        # PRIORITY 2: X-axis centering (horizontal) - only after Y is centered
+        if not x_centered:
+            x_offset_signed = target_ball.center[0] - vision.frame_center_x
+            if x_offset_signed > 0:
+                hardware.turn_right(duration=config.CENTERING_1_TURN_DURATION, 
+                                   speed=config.CENTERING_1_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.log_state_info(f"CENTERING_1 HORIZONTAL: turning right (offset: {x_offset_signed})")
+            else:
+                hardware.turn_left(duration=config.CENTERING_1_TURN_DURATION, 
+                                  speed=config.CENTERING_1_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.log_state_info(f"CENTERING_1 HORIZONTAL: turning left (offset: {x_offset_signed})")
+            
+            time.sleep(0.03)
+            return None  # Stay in centering_1, continue X centering
+        
+        # Both axes centered - proceed to Phase 2
+        if x_centered and y_centered:
+            ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
+            self.log_state_info(f"CENTERING_1 complete! Locked {ball_type} ball aligned (distance + horizontal). Starting CENTERING_2")
+            return RobotState.CENTERING_2
         
         return None  # Stay in centering_1
     
     def exit(self, context):
         """Exit centering phase 1"""
-        self.log_state_info("Phase 1 centering complete")
+        self.log_state_info("Phase 1 centering complete (distance-first method)")
     
     def _find_locked_target_in_balls(self, balls, context):
         """Find the locked target ball in current detections"""
@@ -115,7 +115,7 @@ class CenteringState1(BaseState):
         return context.get('near_boundary', False)
 
 class CenteringState2(BaseState):
-    """Phase 2: IDENTICAL to Phase 1 centering, but targets upper green zone using locked target"""
+    """Phase 2: IDENTICAL distance-first centering, but targets upper green zone using locked target"""
     
     def __init__(self):
         super().__init__("CENTERING_2")
@@ -125,12 +125,12 @@ class CenteringState2(BaseState):
         locked_target = context.get('locked_target')
         if locked_target:
             ball_type = "orange" if locked_target.object_type == "orange_ball" else "white"
-            self.log_state_info(f"Starting Phase 2 centering for locked {ball_type} ball - targeting collection zone")
+            self.log_state_info(f"Starting Phase 2 centering for locked {ball_type} ball - targeting collection zone (distance first)")
         else:
-            self.log_state_info("Starting Phase 2 centering - targeting collection zone")
+            self.log_state_info("Starting Phase 2 centering - targeting collection zone (distance first)")
     
     def execute(self, context) -> Optional[RobotState]:
-        """Execute centering phase 2 logic"""
+        """Execute centering phase 2 logic - DISTANCE FIRST, then horizontal"""
         balls = context.get('balls', [])
         hardware = context['hardware']
         vision = context['vision']
@@ -165,58 +165,58 @@ class CenteringState2(BaseState):
         target_x = vision.frame_center_x  # Same X target as Phase 1
         target_y = vision.frame_center_y + config.CENTERING_2_Y_TARGET_OFFSET  # Offset into green zone
         
-        # Check if ball is fully centered for Phase 2 (using Phase 2 tolerances)
+        # Calculate offsets
         x_offset = abs(target_ball.center[0] - target_x)
         y_offset = abs(target_ball.center[1] - target_y)
         
         x_centered = x_offset <= config.CENTERING_2_TOLERANCE
         y_centered = y_offset <= config.CENTERING_2_DISTANCE_TOLERANCE
         
-        if x_centered and y_centered:
-            ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.log_state_info(f"CENTERING_2 complete! Locked {ball_type} ball centered in upper green zone. Starting collection")
-            return RobotState.COLLECTING_BALL
-        
-        # Ball not fully centered - IDENTICAL centering logic to Phase 1
-        # X-axis centering (left/right)
-        if not x_centered:
-            x_offset_signed = target_ball.center[0] - target_x
-            if x_offset_signed > 0:
-                hardware.turn_right(duration=config.CENTERING_2_TURN_DURATION, 
-                                   speed=config.CENTERING_2_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_2 X: turning right (offset: {x_offset_signed})")
-            else:
-                hardware.turn_left(duration=config.CENTERING_2_TURN_DURATION, 
-                                  speed=config.CENTERING_2_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_2 X: turning left (offset: {x_offset_signed})")
-            
-            time.sleep(0.03)
-            return None
-        
-        # Y-axis centering (distance - forward/backward) 
+        # PRIORITY 1: Y-axis centering (distance to collection zone) - must be done FIRST
         if not y_centered:
             y_offset_signed = target_ball.center[1] - target_y
             if y_offset_signed > 0:
                 hardware.move_backward(duration=config.CENTERING_2_DRIVE_DURATION, 
                                      speed=config.CENTERING_2_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_2 Y: moving backward (offset: {y_offset_signed})")
+                    self.log_state_info(f"CENTERING_2 DISTANCE: moving backward to collection zone (offset: {y_offset_signed})")
             else:
                 hardware.move_forward(duration=config.CENTERING_2_DRIVE_DURATION, 
                                     speed=config.CENTERING_2_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.log_state_info(f"CENTERING_2 Y: moving forward (offset: {y_offset_signed})")
+                    self.log_state_info(f"CENTERING_2 DISTANCE: moving forward to collection zone (offset: {y_offset_signed})")
             
             time.sleep(0.03)
-            return None
+            return None  # Stay in centering_2, continue Y centering
+        
+        # PRIORITY 2: X-axis centering (horizontal) - only after Y is positioned in collection zone
+        if not x_centered:
+            x_offset_signed = target_ball.center[0] - target_x
+            if x_offset_signed > 0:
+                hardware.turn_right(duration=config.CENTERING_2_TURN_DURATION, 
+                                   speed=config.CENTERING_2_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.log_state_info(f"CENTERING_2 HORIZONTAL: turning right in collection zone (offset: {x_offset_signed})")
+            else:
+                hardware.turn_left(duration=config.CENTERING_2_TURN_DURATION, 
+                                  speed=config.CENTERING_2_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.log_state_info(f"CENTERING_2 HORIZONTAL: turning left in collection zone (offset: {x_offset_signed})")
+            
+            time.sleep(0.03)
+            return None  # Stay in centering_2, continue X centering
+        
+        # Both axes centered in collection zone - ready for collection
+        if x_centered and y_centered:
+            ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
+            self.log_state_info(f"CENTERING_2 complete! Locked {ball_type} ball positioned in collection zone (distance + horizontal). Starting collection")
+            return RobotState.COLLECTING_BALL
         
         return None  # Stay in centering_2
     
     def exit(self, context):
         """Exit centering phase 2"""
-        self.log_state_info("Phase 2 centering complete - ready for collection")
+        self.log_state_info("Phase 2 centering complete - ready for collection (distance-first method)")
     
     def _find_locked_target_in_balls(self, balls, context):
         """Find the locked target ball in current detections"""
