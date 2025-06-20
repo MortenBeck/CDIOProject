@@ -89,7 +89,7 @@ class BoundaryAvoidanceSystem:
     
     def detect_boundaries(self, frame) -> bool:
         """Detect if robot is too close to red walls (danger zones)
-        Now ignores walls in the collection zone (bottom 25% of frame)"""
+        NEW: Check ENTIRE frame, not just edges!"""
         if frame is None:
             return False
         
@@ -98,7 +98,7 @@ class BoundaryAvoidanceSystem:
         
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        # Red wall detection
+        # Red wall detection - same parameters
         lower_red1 = np.array([0, 40, 40])
         upper_red1 = np.array([15, 255, 255])
         lower_red2 = np.array([165, 40, 40])
@@ -118,54 +118,49 @@ class BoundaryAvoidanceSystem:
         # Define collection zone boundary (bottom 25% of image)
         collection_zone_y = int(h * 0.75)  # Top of collection zone (75% down from top)
         
-        # Smaller danger zones - only trigger when very close
-        danger_distance = min(50, int(h * 0.1))
-        bottom_danger_y = h - danger_distance
-        
-        # Only check bottom wall if it's ABOVE the collection zone
-        if bottom_danger_y < collection_zone_y:
-            bottom_mask = red_mask[bottom_danger_y:collection_zone_y, :]  # Stop at collection zone
-        else:
-            # If danger zone extends into collection area, skip bottom wall detection entirely
-            bottom_mask = np.zeros((1, w), dtype=np.uint8)  # Empty mask
-        
-        edge_width = min(30, int(w * 0.06))
-        
-        # For side walls, only check the area ABOVE the collection zone
-        left_mask = red_mask[0:collection_zone_y, 0:edge_width]  # Only upper 75%
-        right_mask = red_mask[0:collection_zone_y, w-edge_width:w]  # Only upper 75%
+        # NEW: Define danger zones for FULL FRAME detection
+        # Robot position is at bottom center, so detect walls that are too close
+        danger_distance_vertical = int(h * 0.15)  # 15% of frame height
+        danger_distance_horizontal = int(w * 0.1)  # 10% of frame width
         
         danger_detected = False
-        min_wall_area = 120
+        min_wall_area = 150  # Minimum area to consider a wall
         
-        # Check bottom (only if not in collection zone)
-        contours, _ = cv2.findContours(bottom_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # === REGION 1: BOTTOM DANGER ZONE (but not in collection area) ===
+        # Check bottom portion that's ABOVE the collection zone
+        bottom_danger_start = max(collection_zone_y - danger_distance_vertical, int(h * 0.6))
+        if bottom_danger_start < collection_zone_y:
+            bottom_region = red_mask[bottom_danger_start:collection_zone_y, :]
+            contours, _ = cv2.findContours(bottom_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            for contour in contours:
+                area = cv2.contourArea(contour)
+                if area > min_wall_area:
+                    x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                    if w_rect > 30:  # Horizontal wall
+                        danger_detected = True
+                        wall_info = {
+                            'zone': 'bottom',
+                            'contour': contour,
+                            'area': area,
+                            'bbox': (x, bottom_danger_start + y, w_rect, h_rect),
+                            'length': w_rect,
+                            'triggered': True
+                        }
+                        self.detected_walls.append(wall_info)
+                        if config.DEBUG_VISION:
+                            self.logger.info(f"Bottom wall detected: area={area}, width={w_rect}")
+                        break
+        
+        # === REGION 2: LEFT DANGER ZONE (full height above collection) ===
+        left_region = red_mask[0:collection_zone_y, 0:danger_distance_horizontal]
+        contours, _ = cv2.findContours(left_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_wall_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                if w_rect > 40 and h_rect > 12:  # Horizontal wall
-                    danger_detected = True
-                    wall_info = {
-                        'zone': 'bottom',
-                        'contour': contour,
-                        'area': area,
-                        'bbox': (x, bottom_danger_y + y, w_rect, h_rect),
-                        'length': w_rect,
-                        'triggered': True
-                    }
-                    self.detected_walls.append(wall_info)
-                    if config.DEBUG_VISION:
-                        self.logger.info(f"Bottom wall detected above collection zone: area={area}")
-                    break
-        
-        # Check left (only upper portion)
-        contours, _ = cv2.findContours(left_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area > min_wall_area:
-                x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                if h_rect > 60 and w_rect > 12:  # Vertical wall
+                if h_rect > 40:  # Vertical wall
                     danger_detected = True
                     wall_info = {
                         'zone': 'left',
@@ -177,28 +172,60 @@ class BoundaryAvoidanceSystem:
                     }
                     self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Left wall detected above collection zone: area={area}")
+                        self.logger.info(f"Left wall detected: area={area}, height={h_rect}")
                     break
         
-        # Check right (only upper portion)
-        contours, _ = cv2.findContours(right_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # === REGION 3: RIGHT DANGER ZONE (full height above collection) ===
+        right_region = red_mask[0:collection_zone_y, w-danger_distance_horizontal:w]
+        contours, _ = cv2.findContours(right_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_wall_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                if h_rect > 60 and w_rect > 12:  # Vertical wall
+                if h_rect > 40:  # Vertical wall
                     danger_detected = True
                     wall_info = {
                         'zone': 'right',
                         'contour': contour,
                         'area': area,
-                        'bbox': (w - edge_width + x, y, w_rect, h_rect),
+                        'bbox': (w - danger_distance_horizontal + x, y, w_rect, h_rect),
                         'length': h_rect,
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Right wall detected above collection zone: area={area}")
+                        self.logger.info(f"Right wall detected: area={area}, height={h_rect}")
+                    break
+        
+        # === NEW: REGION 4: CENTER FORWARD DANGER ZONE ===
+        # This is KEY - detect walls directly in front of robot (center of frame)
+        center_width = int(w * 0.6)  # Check center 60% of frame width
+        center_start_x = int(w * 0.2)  # Start at 20% from left
+        center_height = int(h * 0.4)   # Check top 40% of frame (above robot)
+        
+        center_region = red_mask[0:center_height, center_start_x:center_start_x + center_width]
+        contours, _ = cv2.findContours(center_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_wall_area:
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                # Check if this wall is close enough to be dangerous
+                wall_bottom = y + h_rect
+                if wall_bottom > center_height * 0.5:  # Wall extends into lower half of center region
+                    danger_detected = True
+                    wall_info = {
+                        'zone': 'center_forward',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (center_start_x + x, y, w_rect, h_rect),
+                        'length': max(w_rect, h_rect),
+                        'triggered': True
+                    }
+                    self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"CENTER wall detected: area={area}, size={w_rect}x{h_rect}")
                     break
         
         return danger_detected
