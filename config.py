@@ -86,7 +86,7 @@ BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 # === ENHANCED COLLECTION BEHAVIOR ===
 CENTERING_TOLERANCE = 25  # Pixels - X-axis centering tolerance
 CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance
-ENHANCED_COLLECTION_DRIVE_TIME = 1.2  # Drive time for enhanced collection sequence
+ENHANCED_COLLECTION_DRIVE_TIME = 1.05  # Drive time for enhanced collection sequence
 COLLECTION_SPEED = 0.4  # Speed for collection movements
 
 # === CENTERING BEHAVIOR ===

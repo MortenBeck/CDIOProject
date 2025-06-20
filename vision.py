@@ -165,29 +165,8 @@ class VisionSystem:
         return x_direction, y_direction
     
     def calculate_drive_time_to_ball(self, ball: DetectedObject) -> float:
-        """Calculate how long to drive to reach the ball"""
-        # Get distance in pixels from ball to bottom center of collection zone
-        collection_zone_bottom_center = (
-            (self.collection_zone['left'] + self.collection_zone['right']) // 2,
-            self.collection_zone['bottom'] - 20  # Slightly above bottom edge
-        )
-        
-        # Calculate pixel distance
-        dx = ball.center[0] - collection_zone_bottom_center[0]
-        dy = ball.center[1] - collection_zone_bottom_center[1]
-        pixel_distance = np.sqrt(dx*dx + dy*dy)
-        
-        # Convert to drive time
-        drive_time = pixel_distance * config.COLLECTION_DRIVE_TIME_PER_PIXEL
-        
-        # Apply bounds
-        drive_time = max(config.MIN_COLLECTION_DRIVE_TIME, 
-                        min(config.MAX_COLLECTION_DRIVE_TIME, drive_time))
-        
-        if config.DEBUG_COLLECTION:
-            self.logger.info(f"Ball distance: {pixel_distance:.1f} pixels -> {drive_time:.2f}s drive time")
-        
-        return drive_time
+        """Return the configured drive time for enhanced collection"""
+        return config.ENHANCED_COLLECTION_DRIVE_TIME
     
     def detect_arena_boundaries(self, frame) -> bool:
         """Detect arena boundaries from red walls to create detection mask"""
