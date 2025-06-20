@@ -129,8 +129,10 @@ RESTART_THRESHOLD = 5  # Number of consecutive errors before restart
 
 # === FIXED COLLECTION BEHAVIOR (NEW APPROACH) ===
 FIXED_COLLECTION_DRIVE_TIME = 0.5  # Fixed time to drive from target zone to collection point
-TARGET_ZONE_TOP_PERCENT = 0.7       # Target zone starts at 70% down from top
-TARGET_ZONE_BOTTOM_PERCENT = 0.85   # Target zone ends at 85% down from top
+# === PRECISE TARGET ZONE (NEW APPROACH) ===
+TARGET_ZONE_WIDTH = 80              # Target zone width in pixels (ping pong ball sized)
+TARGET_ZONE_HEIGHT = 60             # Target zone height in pixels
+FIXED_COLLECTION_DRIVE_TIME = 1.05  # Fixed time to drive from target zone to collection point
 
 # Enhanced centering - ball must be in target zone AND X-centered before collection
 CENTERING_TOLERANCE = 25  # X-axis centering tolerance (pixels)

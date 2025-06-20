@@ -271,7 +271,7 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """UPDATED: Center ball to target zone + X-center before collection"""
+        """SIMPLIFIED: Get ball into precise target zone in center of screen"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
@@ -288,53 +288,50 @@ class GolfBot:
         # Target the closest confident ball
         target_ball = confident_balls[0]
         
-        # NEW: Check if ball is ready for collection (in target zone + X-centered)
+        # Check if ball is in the precise target zone
         if self.vision.is_ball_centered_for_collection(target_ball):
-            # Ball is perfectly positioned - start collection with FIXED drive time
-            drive_time = self.vision.get_drive_time_to_collection()
-            
-            self.logger.info(f"White ball in TARGET ZONE and X-centered! Collection starting (fixed drive: {drive_time:.2f}s)")
+            # Ball is in target zone - start collection!
+            self.logger.info(f"White ball in TARGET ZONE! Starting collection with fixed drive")
             self.state = RobotState.COLLECTING_BALL
             return
         
-        # Ball not ready - get centering adjustments using new method
+        # Ball not in target zone - get movement to position it
         x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
         
-        # PRIORITY 1: X-axis centering (left/right)
+        # Move ball toward target zone - prioritize the axis that's furthest off
         if x_direction != 'centered':
             if x_direction == 'right':
                 self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"X-centering: turning right")
+                    self.logger.info(f"Positioning to target zone: turning right")
             elif x_direction == 'left':
                 self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
                                     speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"X-centering: turning left")
+                    self.logger.info(f"Positioning to target zone: turning left")
             
             time.sleep(0.03)
             return
         
-        # PRIORITY 2: Y-axis positioning (get to target zone)
+        # X is centered, now work on Y
         if y_direction != 'centered':
             if y_direction == 'forward':
                 self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Y-positioning: moving toward target zone")
+                    self.logger.info(f"Positioning to target zone: moving forward")
             elif y_direction == 'backward':
                 self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Y-positioning: backing away from target zone")
+                    self.logger.info(f"Positioning to target zone: moving backward")
             
             time.sleep(0.03)
             return
         
-        # If we reach here, both should be positioned correctly
         if config.DEBUG_MOVEMENT:
-            self.logger.info("Ball should be in target zone and X-centered!")
+            self.logger.info("Ball should be in target zone now!")
     
     def handle_approaching_ball(self, balls, nav_command):
         """Handle approaching with confidence tracking (legacy mode) - WHITE BALLS ONLY"""
@@ -449,7 +446,7 @@ class GolfBot:
             # Ensure we return to ready positions on error
             self.hardware.servo_ss_to_driving()
             self.hardware.servo_sf_to_ready()
-            return False    
+            return False
     
     def handle_avoiding_boundary(self, near_boundary):
         """Handle boundary avoidance with improved timing"""
