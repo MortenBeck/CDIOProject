@@ -234,7 +234,7 @@ class BoundaryAvoidanceSystem:
         return danger_detected
     
     def get_avoidance_command(self, frame) -> Optional[str]:
-        """Get avoidance command based on wall detection"""
+        """Get avoidance command based on wall detection - FIXED PRIORITY ORDER"""
         danger_detected = self.detect_boundaries(frame)
         
         if not danger_detected:
@@ -243,14 +243,17 @@ class BoundaryAvoidanceSystem:
         # Analyze which walls are triggered to determine best avoidance
         triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
         
-        if 'bottom' in triggered_zones:
-            return 'move_backward'
-        elif 'left' in triggered_zones:
-            return 'turn_right'
+        # FIXED: Prioritize side walls over bottom walls for better navigation
+        if 'left' in triggered_zones:
+            return 'turn_right'      # Turn away from left wall
         elif 'right' in triggered_zones:
-            return 'turn_left'
+            return 'turn_left'       # Turn away from right wall
+        elif 'center_forward' in triggered_zones:
+            return 'turn_right'      # Turn when wall directly ahead
+        elif 'bottom' in triggered_zones:
+            return 'move_backward'   # Only back up if no side options
         else:
-            return 'move_backward'  # Default safe action
+            return 'move_backward'   # Default safe action
     
     def draw_boundary_visualization(self, frame) -> np.ndarray:
         """Draw boundary detection overlays on frame"""
