@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GolfBot Hardware Testing Interface
+GolfBot Hardware Testing Interface - FIXED
 Interactive testing for servos and DC motors
 Updated for two-servo system: SS and SF
 """
@@ -51,7 +51,8 @@ class HardwareTester:
             if cmd.startswith('ss-'):
                 try:
                     angle = int(cmd[3:])
-                    self.hardware.set_servo_angle(self.hardware.servo_ss, angle)
+                    # FIXED: Use servo controller directly
+                    self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_ss, angle)
                     print(f"Servo SS → {angle}°")
                 except ValueError:
                     print("Invalid format. Use: ss-90")
@@ -59,7 +60,8 @@ class HardwareTester:
             elif cmd.startswith('sf-'):
                 try:
                     angle = int(cmd[3:])
-                    self.hardware.set_servo_angle(self.hardware.servo_sf, angle)
+                    # FIXED: Use servo controller directly
+                    self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_sf, angle)
                     print(f"Servo SF → {angle}°")
                 except ValueError:
                     print("Invalid format. Use: sf-90")
@@ -67,8 +69,9 @@ class HardwareTester:
             elif cmd.startswith('all-'):
                 try:
                     angle = int(cmd[4:])
-                    self.hardware.set_servo_angle(self.hardware.servo_ss, angle)
-                    self.hardware.set_servo_angle(self.hardware.servo_sf, angle)
+                    # FIXED: Use servo controller directly
+                    self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_ss, angle)
+                    self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_sf, angle)
                     print(f"Both servos → {angle}°")
                 except ValueError:
                     print("Invalid format. Use: all-90")
@@ -223,13 +226,14 @@ class HardwareTester:
                 print("Unknown command. Available: collect, deliver, open, grab, release, count, reset, prepare, back")
     
     def servo_demo(self):
-        """Run servo demonstration for both servos"""
+        """FIXED: Run servo demonstration for both servos"""
         print("Running two-servo demo...")
         angles = [0, 45, 90, 135, 180, 90]
         for angle in angles:
             print(f"  Moving both servos to {angle}°...")
-            self.hardware.set_servo_angle(self.hardware.servo_ss, angle)
-            self.hardware.set_servo_angle(self.hardware.servo_sf, angle)
+            # FIXED: Use servo controller directly
+            self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_ss, angle)
+            self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_sf, angle)
             time.sleep(1)
         print("Two-servo demo complete!")
     
@@ -357,16 +361,18 @@ class HardwareTester:
         print("All systems stopped!")
     
     def cleanup(self):
-        """Clean shutdown - motors only"""
+        """FIXED: Clean shutdown - motors only"""
         if self.hardware:
             print("\nStopping motors...")
             # Only stop motors, don't center servos
             self.hardware.stop_motors()
-            # Close GPIO connections only
+            # FIXED: Access motor components through motor_controller
             try:
-                for component in [self.hardware.motor_in1, self.hardware.motor_in2, 
-                                self.hardware.motor_in3, self.hardware.motor_in4]:
-                    component.close()
+                motor_controller = self.hardware.motor_controller
+                for component in [motor_controller.motor_in1, motor_controller.motor_in2, 
+                                motor_controller.motor_in3, motor_controller.motor_in4]:
+                    if hasattr(component, 'close'):
+                        component.close()
                 print("✓ Motor cleanup complete (servos left in position)")
             except Exception as e:
                 print(f"Motor cleanup error: {e}")
