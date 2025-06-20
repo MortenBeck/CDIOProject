@@ -7,8 +7,8 @@ def show_startup_menu():
     print("\n" + "="*60)
     print("🤖 GOLFBOT CONTROL SYSTEM - TWO-PHASE COLLECTION")
     print("="*60)
-    print("1. Start Competition (Dashboard Mode)")
-    print("2. Start Competition (Legacy Overlay Mode)")
+    print("1. Start Competition (Full Dashboard)")
+    print("2. Start Competition (Compact Dashboard)")
     print("3. Hardware Testing") 
     print("4. Exit")
     print("="*60)
@@ -16,8 +16,8 @@ def show_startup_menu():
     print("• Phase 1: X+Y centering for ball alignment")
     print("• Phase 2: Collection zone positioning with servo pre-collect")
     print("• Optimized collection sequence in green zone")
-    print("• Clean dashboard interface (option 1)")
-    print("• Legacy overlay mode (option 2)")
+    print("• Full dashboard interface (option 1)")
+    print("• Compact dashboard with 25% camera scale (option 2)")
     print("="*60)
     
     while True:

@@ -25,19 +25,33 @@ class GolfBot:
         if not self.display_available:
             self.logger.info("No display detected - running in headless mode")
         
-        # Dashboard mode
+        # Dashboard mode determines interface style and camera scale
         self.use_dashboard = use_dashboard and self.display_available
         if self.use_dashboard:
             try:
-                self.dashboard = GolfBotDashboard()
-                self.logger.info("Using new dashboard interface")
+                # Dashboard mode: full-size camera
+                self.dashboard = GolfBotDashboard(
+                    camera_width=config.CAMERA_WIDTH,
+                    camera_height=config.CAMERA_HEIGHT,
+                    camera_scale=1.0
+                )
+                self.logger.info("Using dashboard interface with full-size camera")
             except ImportError:
                 self.dashboard = None
                 self.use_dashboard = False
-                self.logger.warning("Dashboard not available - using legacy overlay interface")
+                self.logger.warning("Dashboard not available - running headless")
         else:
-            self.dashboard = None
-            self.logger.info("Using legacy overlay interface")
+            try:
+                # Legacy mode: small camera with same dashboard interface
+                self.dashboard = GolfBotDashboard(
+                    camera_width=config.CAMERA_WIDTH,
+                    camera_height=config.CAMERA_HEIGHT,
+                    camera_scale=0.25  # 25% scale for legacy mode
+                )
+                self.logger.info("Using dashboard interface with 25% camera scale (legacy mode)")
+            except ImportError:
+                self.dashboard = None
+                self.logger.warning("Dashboard not available - running headless")
         
         # Initialize subsystems
         self.hardware = GolfBotHardware()
@@ -132,7 +146,10 @@ class GolfBot:
         print("   - Phase 2: Collection zone positioning with servo pre-collect") 
         print("   - Optimized collection sequence in green zone")
         
-        interface_mode = "Dashboard" if self.use_dashboard else "Legacy Overlay"
+        if self.use_dashboard:
+            interface_mode = "Dashboard (Full Camera)"
+        else:
+            interface_mode = "Dashboard (25% Camera Scale)"
         print(f"   - {interface_mode} interface for monitoring")
         
         print(f"\n⚙️  Configuration:")
@@ -173,9 +190,9 @@ class GolfBot:
                 if not ret:
                     continue
                 
-                # Get current vision data
+                # Get current vision data - use clean visualization for dashboard
                 balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame(
-                    dashboard_mode=self.use_dashboard
+                    dashboard_mode=True  # Always use clean mode for unified dashboard
                 )
                 
                 if balls is None:
@@ -209,28 +226,29 @@ class GolfBot:
                 fps = 1.0 / (time.time() - self.last_frame_time) if self.last_frame_time else 0
                 self.last_frame_time = time.time()
                 
-                # Show display based on mode
-                if config.SHOW_CAMERA_FEED and self.display_available:
+                # Show unified dashboard (both modes use same interface, different scale)
+                if config.SHOW_CAMERA_FEED and self.display_available and self.dashboard:
                     try:
                         # Add wall avoidance visualization to debug frame
                         if debug_frame is not None and debug_frame.size > 0:
                             debug_frame = self.boundary_avoidance.draw_boundary_visualization(debug_frame)
                         
-                        if self.use_dashboard and self.dashboard:
-                            # Get wall status for dashboard
-                            wall_status = self.boundary_avoidance.get_status()
-                            dashboard_frame = self.dashboard.create_dashboard(
-                                debug_frame, self.state_machine.get_current_state(), 
-                                self.vision, self.hardware
-                            )
-                            key = self.dashboard.show("GolfBot Dashboard - Two-Phase Collection")
+                        # Get wall status for dashboard
+                        wall_status = self.boundary_avoidance.get_status()
+                        
+                        # Create unified dashboard (scale determined in __init__)
+                        dashboard_frame = self.dashboard.create_dashboard(
+                            debug_frame, self.state_machine.get_current_state(), 
+                            self.vision, self.hardware, wall_status
+                        )
+                        
+                        # Show dashboard with appropriate window title
+                        if self.use_dashboard:
+                            window_title = "GolfBot Dashboard - Full Camera"
                         else:
-                            if debug_frame is not None and debug_frame.size > 0:
-                                self._add_legacy_status_overlay(debug_frame)
-                                cv2.imshow('GolfBot Debug - Two-Phase Collection', debug_frame)
-                                key = cv2.waitKey(1) & 0xFF
-                            else:
-                                key = -1
+                            window_title = "GolfBot Dashboard - Compact View"
+                        
+                        key = self.dashboard.show(window_title)
                         
                         if key == ord('q'):
                             break
@@ -265,62 +283,6 @@ class GolfBot:
         
         self.end_competition()
     
-    def _add_legacy_status_overlay(self, frame):
-        """Enhanced status overlay for legacy mode"""
-        y = 30
-        line_height = 25
-        
-        # Competition status
-        remaining = self.competition.get_time_remaining()
-        cv2.putText(frame, f"Time: {remaining:.0f}s", (10, y), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-        y += line_height
-        
-        # Current state with phase info
-        current_state = self.state_machine.get_current_state()
-        state_text = f"State: {current_state.value.replace('_', ' ').title()}"
-        
-        if current_state == RobotState.CENTERING_1:
-            state_text += " (X+Y Align)"
-        elif current_state == RobotState.CENTERING_2:
-            state_text += " (Zone Position)"
-        elif current_state == RobotState.COLLECTING_BALL:
-            state_text += " (Optimized)"
-        
-        # Add centering info if in centering states
-        if (current_state in [RobotState.CENTERING_1, RobotState.CENTERING_2] and 
-            self.vision.current_target):
-            if current_state == RobotState.CENTERING_1:
-                x_offset = abs(self.vision.current_target.center[0] - self.vision.frame_center_x)
-                y_offset = abs(self.vision.current_target.center[1] - self.vision.frame_center_y)
-                x_ok = x_offset <= config.CENTERING_1_TOLERANCE
-                y_ok = y_offset <= config.CENTERING_1_DISTANCE_TOLERANCE
-                status_char = f"{'✓' if x_ok else 'X'}{'✓' if y_ok else 'Y'}"
-                state_text += f" ({status_char})"
-            elif current_state == RobotState.CENTERING_2:
-                in_zone = self.vision.is_in_collection_zone(self.vision.current_target.center)
-                state_text += f" ({'✓' if in_zone else '→'})"
-        
-        cv2.putText(frame, state_text, (10, y), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-        y += line_height
-        
-        # Ball count
-        ball_count = self.hardware.get_ball_count()
-        cv2.putText(frame, f"Balls Collected: {ball_count}", (10, y), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-        y += line_height
-        
-        # Arena status
-        arena_status = "Detected" if self.vision.arena_detected else "Fallback"
-        cv2.putText(frame, f"Arena: {arena_status}", (10, y), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
-        y += line_height
-        
-        # Two-phase collection info
-        cv2.putText(frame, f"Collection: Two-Phase (C1→C2→Collect)", (10, y), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-    
     def end_competition(self):
         """End competition and cleanup"""
         self.competition.end_competition(self.hardware)
@@ -351,6 +313,7 @@ class GolfBot:
             },
             'display': {
                 'available': self.display_available,
-                'dashboard_mode': self.use_dashboard
+                'dashboard_mode': self.use_dashboard,
+                'camera_scale': self.dashboard.camera_scale if self.dashboard else 1.0
             }
         }

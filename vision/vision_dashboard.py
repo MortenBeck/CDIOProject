@@ -5,17 +5,27 @@ from typing import List, Optional
 import config
 
 class GolfBotDashboard:
-    """Clean dashboard interface for GolfBot with organized data panels"""
+    """Clean dashboard interface for GolfBot with scalable camera feed"""
     
-    def __init__(self, camera_width=640, camera_height=480):
-        self.camera_width = camera_width
-        self.camera_height = camera_height
+    def __init__(self, camera_width=640, camera_height=480, camera_scale=1.0):
+        # Scale camera dimensions
+        self.original_camera_width = camera_width
+        self.original_camera_height = camera_height
+        self.camera_scale = camera_scale
+        self.camera_width = int(camera_width * camera_scale)
+        self.camera_height = int(camera_height * camera_scale)
         
-        # Dashboard layout
+        # Dashboard layout - adjust for camera size
         self.panel_width = 300
         self.top_panel_height = 100
-        self.dashboard_width = camera_width + self.panel_width
-        self.dashboard_height = max(camera_height + self.top_panel_height, 600)
+        
+        # Adjust dashboard dimensions based on camera scale
+        if camera_scale < 0.5:  # Small camera mode
+            self.dashboard_width = max(self.camera_width + self.panel_width + 20, 800)
+            self.dashboard_height = max(self.camera_height + self.top_panel_height + 40, 600)
+        else:  # Normal camera mode
+            self.dashboard_width = self.camera_width + self.panel_width
+            self.dashboard_height = max(self.camera_height + self.top_panel_height, 600)
         
         # Colors
         self.bg_color = (40, 40, 40)      # Dark gray background
@@ -32,54 +42,77 @@ class GolfBotDashboard:
         self.font_scale_medium = 0.5
         self.font_scale_small = 0.4
         
-        # Panel positions
+        # Panel positions - adjust for camera scale
         self.camera_x = 10
         self.camera_y = self.top_panel_height + 10
-        self.right_panel_x = self.camera_width + 20
-        self.right_panel_y = self.top_panel_height + 10
+        
+        # Position panels based on camera size
+        if camera_scale < 0.5:  # Small camera - put panels to the right AND below
+            self.right_panel_x = self.camera_width + 30
+            self.right_panel_y = self.top_panel_height + 10
+            self.bottom_panel_x = 10
+            self.bottom_panel_y = self.camera_y + self.camera_height + 20
+        else:  # Normal camera - panels only to the right
+            self.right_panel_x = self.camera_width + 20
+            self.right_panel_y = self.top_panel_height + 10
+            self.bottom_panel_x = None
+            self.bottom_panel_y = None
         
         # Initialize dashboard
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
                                 self.bg_color, dtype=np.uint8)
     
-    def create_dashboard(self, camera_frame, robot_state, vision_system, hardware):
+    def create_dashboard(self, camera_frame, robot_state, vision_system, hardware, wall_status=None):
         """Create complete dashboard with camera and data panels"""
         
         # Create fresh dashboard
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
                                 self.bg_color, dtype=np.uint8)
         
-        # 1. Place clean camera preview (already processed by vision system)
+        # 1. Place scaled camera preview
         self._place_camera_preview(camera_frame)
         
         # 2. Add top status bar
         self._add_top_status_bar(robot_state, hardware)
         
-        # 3. Add right side panels
-        self._add_vision_status_panel(vision_system)
-        self._add_robot_status_panel(robot_state, hardware)
-        self._add_detection_details_panel(vision_system)
-        self._add_controls_legend_panel()
+        # 3. Add panels - layout depends on camera scale
+        if self.camera_scale < 0.5:
+            # Small camera: panels on right AND bottom
+            self._add_vision_status_panel(vision_system)
+            self._add_robot_status_panel(robot_state, hardware)
+            self._add_bottom_panels(vision_system, wall_status)
+        else:
+            # Normal camera: panels only on right
+            self._add_vision_status_panel(vision_system)
+            self._add_robot_status_panel(robot_state, hardware)
+            self._add_detection_details_panel(vision_system)
+            self._add_controls_legend_panel()
         
         return self.dashboard
     
     def _place_camera_preview(self, camera_frame):
-        """Place camera preview in dashboard"""
+        """Place scaled camera preview in dashboard"""
         if camera_frame is not None and camera_frame.size > 0:
-            # Resize if needed
-            if camera_frame.shape[:2] != (self.camera_height, self.camera_width):
-                camera_frame = cv2.resize(camera_frame, (self.camera_width, self.camera_height))
+            # Scale the frame to desired size
+            scaled_frame = cv2.resize(camera_frame, (self.camera_width, self.camera_height))
             
             # Place in dashboard
             end_y = self.camera_y + self.camera_height
             end_x = self.camera_x + self.camera_width
-            self.dashboard[self.camera_y:end_y, self.camera_x:end_x] = camera_frame
+            self.dashboard[self.camera_y:end_y, self.camera_x:end_x] = scaled_frame
             
             # Add border around camera
             cv2.rectangle(self.dashboard, 
                          (self.camera_x-2, self.camera_y-2), 
                          (end_x+1, end_y+1), 
                          self.accent_color, 2)
+            
+            # Add scale indicator for small camera mode
+            if self.camera_scale < 0.5:
+                scale_text = f"Camera: {int(self.camera_scale*100)}% scale"
+                cv2.putText(self.dashboard, scale_text, 
+                           (self.camera_x, self.camera_y - 5), 
+                           self.font, self.font_scale_small, self.accent_color, 1)
     
     def _add_top_status_bar(self, robot_state, hardware):
         """Add top status bar with critical info"""
@@ -87,14 +120,17 @@ class GolfBotDashboard:
         cv2.rectangle(self.dashboard, (0, 0), (self.dashboard_width, self.top_panel_height), 
                      self.panel_color, -1)
         
-        # Title
-        cv2.putText(self.dashboard, "GolfBot Enhanced Collection Dashboard", 
+        # Title - adjust for dashboard width
+        title = "GolfBot Enhanced Collection Dashboard"
+        if self.dashboard_width < 900:
+            title = "GolfBot Dashboard"
+        cv2.putText(self.dashboard, title, 
                    (10, 30), self.font, self.font_scale_large, self.accent_color, 2)
         
-        # Time and state info
+        # Status info on second line
         y_pos = 60
         
-        # Time (if available)
+        # Time
         time_text = f"Running: {time.strftime('%H:%M:%S')}"
         cv2.putText(self.dashboard, time_text, (10, y_pos), 
                    self.font, self.font_scale_medium, self.text_color, 1)
@@ -186,7 +222,7 @@ class GolfBotDashboard:
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         y += line_height
         
-        # Servo status - UPDATED for SS/SF naming
+        # Servo status
         if hardware and hasattr(hardware, 'get_servo_angles'):
             angles = hardware.get_servo_angles()
             servo_ss_angle = angles.get('servo_ss', 90)
@@ -209,8 +245,80 @@ class GolfBotDashboard:
         cv2.putText(self.dashboard, f"Action: {state_details}", 
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
     
+    def _add_bottom_panels(self, vision_system, wall_status):
+        """Add bottom panels for small camera mode"""
+        if self.bottom_panel_x is None:
+            return
+        
+        # Detection details panel (bottom left)
+        panel_width = 280
+        panel_height = 100
+        
+        cv2.rectangle(self.dashboard, 
+                     (self.bottom_panel_x, self.bottom_panel_y), 
+                     (self.bottom_panel_x + panel_width, self.bottom_panel_y + panel_height), 
+                     self.panel_color, -1)
+        
+        cv2.putText(self.dashboard, "DETECTION DETAILS", 
+                   (self.bottom_panel_x + 5, self.bottom_panel_y + 20), 
+                   self.font, self.font_scale_medium, self.accent_color, 1)
+        
+        y = self.bottom_panel_y + 40
+        line_height = 16
+        
+        # Ball count and types
+        if hasattr(vision_system, '_last_detected_balls'):
+            balls = getattr(vision_system, '_last_detected_balls', [])
+            orange_count = sum(1 for b in balls if b.object_type == 'orange_ball')
+            white_count = len(balls) - orange_count
+            
+            cv2.putText(self.dashboard, f"Balls Found: {len(balls)}", 
+                       (self.bottom_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+            y += line_height
+            
+            cv2.putText(self.dashboard, f"  White: {white_count}  Orange: {orange_count}", 
+                       (self.bottom_panel_x + 5, y), self.font, self.font_scale_small, (200, 200, 200), 1)
+        else:
+            cv2.putText(self.dashboard, "Balls Found: 0", 
+                       (self.bottom_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
+        y += line_height
+        
+        # Wall status
+        if wall_status:
+            wall_count = wall_status.get('walls_triggered', 0)
+            wall_color = self.danger_color if wall_count > 0 else self.success_color
+            wall_text = "DANGER" if wall_count > 0 else "SAFE"
+            cv2.putText(self.dashboard, f"Walls: {wall_text} ({wall_count})", 
+                       (self.bottom_panel_x + 5, y), self.font, self.font_scale_small, wall_color, 1)
+        
+        # Legend panel (bottom right)
+        legend_x = self.bottom_panel_x + panel_width + 20
+        legend_width = 280
+        
+        cv2.rectangle(self.dashboard, 
+                     (legend_x, self.bottom_panel_y), 
+                     (legend_x + legend_width, self.bottom_panel_y + panel_height), 
+                     self.panel_color, -1)
+        
+        cv2.putText(self.dashboard, "LEGEND", 
+                   (legend_x + 5, self.bottom_panel_y + 20), 
+                   self.font, self.font_scale_medium, self.accent_color, 1)
+        
+        y = self.bottom_panel_y + 40
+        legend_items = [
+            "Green Zone: Collection area",
+            "Cyan Lines: Centering tolerance",
+            "O: Orange ball  B: White ball",
+            "Red Outline: Wall danger"
+        ]
+        
+        for item in legend_items:
+            cv2.putText(self.dashboard, item, 
+                       (legend_x + 5, y), self.font, self.font_scale_small-0.1, self.text_color, 1)
+            y += line_height - 2
+    
     def _add_detection_details_panel(self, vision_system):
-        """Add detailed detection information panel"""
+        """Add detailed detection information panel (normal mode)"""
         panel_y = self.right_panel_y + 280
         panel_height = 120
         
@@ -246,7 +354,7 @@ class GolfBotDashboard:
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
             y += line_height * 2
         
-        # Centering info (both X and Y)
+        # Centering info
         x_tolerance = getattr(config, 'CENTERING_TOLERANCE', 25)
         y_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 30)
         cv2.putText(self.dashboard, f"Centering: ±{x_tolerance}px X, ±{y_tolerance}px Y", 
@@ -265,7 +373,7 @@ class GolfBotDashboard:
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, wall_color, 1)
     
     def _add_controls_legend_panel(self):
-        """Add controls and legend panel"""
+        """Add controls and legend panel (normal mode)"""
         panel_y = self.right_panel_y + 410
         panel_height = 100
         
