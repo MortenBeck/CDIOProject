@@ -32,7 +32,8 @@ class SearchingState(BaseState):
         
         # Look for balls
         if balls:
-            confident_balls = [ball for ball in balls if ball.confidence > 0.7]
+            # Use lower confidence threshold for initial ball detection
+            confident_balls = [ball for ball in balls if ball.confidence > 0.5]
             
             if confident_balls:
                 ball_count = len(confident_balls)

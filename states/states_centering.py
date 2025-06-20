@@ -103,12 +103,39 @@ class CenteringState1(BaseState):
         
         # Find ball closest to locked target position
         target_pos = locked_target.center
+        closest_ball = None
+        closest_distance = float('inf')
+        
         for ball in balls:
-            if ball.confidence > 0.3:  # Lower threshold for locked target
-                distance = ((ball.center[0] - target_pos[0])**2 + (ball.center[1] - target_pos[1])**2)**0.5
-                if distance < 50:  # Same ball if within 50 pixels
-                    return ball
-        return None
+            distance = ((ball.center[0] - target_pos[0])**2 + (ball.center[1] - target_pos[1])**2)**0.5
+            if distance < 50:  # Same ball if within 50 pixels
+                # During centering, use very low confidence threshold to maintain lock
+                if ball.confidence > 0.15:  # Much lower threshold for locked target during centering
+                    if distance < closest_distance:
+                        closest_distance = distance
+                        closest_ball = ball
+        
+        # If we found a confident candidate, return it
+        if closest_ball:
+            if config.DEBUG_MOVEMENT:
+                print(f"LOCKED TARGET TRACKING: Found confident ball at distance {closest_distance:.1f}px, confidence {closest_ball.confidence:.2f}")
+            return closest_ball
+            
+        # Fallback: if no confident ball found within 50px, try to find any ball within range
+        # This handles cases where confidence drops temporarily during movement
+        for ball in balls:
+            distance = ((ball.center[0] - target_pos[0])**2 + (ball.center[1] - target_pos[1])**2)**0.5
+            if distance < 50:  # Same ball if within 50 pixels
+                if distance < closest_distance:
+                    closest_distance = distance
+                    closest_ball = ball
+        
+        if closest_ball and config.DEBUG_MOVEMENT:
+            print(f"LOCKED TARGET TRACKING: Using fallback ball at distance {closest_distance:.1f}px, confidence {closest_ball.confidence:.2f}")
+        elif config.DEBUG_MOVEMENT:
+            print(f"LOCKED TARGET TRACKING: No ball found within 50px of target position {target_pos}")
+        
+        return closest_ball
     
     def should_avoid_boundary(self, context) -> bool:
         """Centering phase 1 should avoid boundaries"""
@@ -226,12 +253,39 @@ class CenteringState2(BaseState):
         
         # Find ball closest to locked target position
         target_pos = locked_target.center
+        closest_ball = None
+        closest_distance = float('inf')
+        
         for ball in balls:
-            if ball.confidence > 0.3:  # Lower threshold for locked target
-                distance = ((ball.center[0] - target_pos[0])**2 + (ball.center[1] - target_pos[1])**2)**0.5
-                if distance < 50:  # Same ball if within 50 pixels
-                    return ball
-        return None
+            distance = ((ball.center[0] - target_pos[0])**2 + (ball.center[1] - target_pos[1])**2)**0.5
+            if distance < 50:  # Same ball if within 50 pixels
+                # During centering, use very low confidence threshold to maintain lock
+                if ball.confidence > 0.15:  # Much lower threshold for locked target during centering
+                    if distance < closest_distance:
+                        closest_distance = distance
+                        closest_ball = ball
+        
+        # If we found a confident candidate, return it
+        if closest_ball:
+            if config.DEBUG_MOVEMENT:
+                print(f"LOCKED TARGET TRACKING: Found confident ball at distance {closest_distance:.1f}px, confidence {closest_ball.confidence:.2f}")
+            return closest_ball
+            
+        # Fallback: if no confident ball found within 50px, try to find any ball within range
+        # This handles cases where confidence drops temporarily during movement
+        for ball in balls:
+            distance = ((ball.center[0] - target_pos[0])**2 + (ball.center[1] - target_pos[1])**2)**0.5
+            if distance < 50:  # Same ball if within 50 pixels
+                if distance < closest_distance:
+                    closest_distance = distance
+                    closest_ball = ball
+        
+        if closest_ball and config.DEBUG_MOVEMENT:
+            print(f"LOCKED TARGET TRACKING: Using fallback ball at distance {closest_distance:.1f}px, confidence {closest_ball.confidence:.2f}")
+        elif config.DEBUG_MOVEMENT:
+            print(f"LOCKED TARGET TRACKING: No ball found within 50px of target position {target_pos}")
+        
+        return closest_ball
     
     def should_avoid_boundary(self, context) -> bool:
         """Centering phase 2 should NOT avoid boundaries - allow collection to complete"""
