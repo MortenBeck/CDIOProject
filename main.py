@@ -187,7 +187,7 @@ class GolfBot:
                         if self.use_dashboard and self.dashboard:
                             # NEW DASHBOARD MODE
                             dashboard_frame = self.dashboard.create_dashboard(
-                                debug_frame, self.state, self.vision, self.hardware, None
+                                debug_frame, self.state, self.vision, self.hardware
                             )
                             key = self.dashboard.show("GolfBot Dashboard - Enhanced Collection")
                         else:
