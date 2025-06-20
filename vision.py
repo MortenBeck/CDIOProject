@@ -189,8 +189,73 @@ class VisionSystem:
         
         return drive_time
     
+    def detect_excluded_areas(self, frame):
+        """Detect white containers/cages where balls should be excluded"""
+        if frame is None:
+            return None
+        
+        h, w = frame.shape[:2]
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        # Detect white/light colored containers (like the cage in your image)
+        # More restrictive white detection for containers
+        lower_white = np.array([0, 0, 180])    # Very bright
+        upper_white = np.array([180, 30, 255]) # Low saturation
+        white_mask = cv2.inRange(hsv, lower_white, upper_white)
+        
+        # Clean up the mask to find solid white structures
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
+        white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        
+        # Find large white structures (containers/cages)
+        contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        exclusion_zones = []
+        min_container_area = (w * h) * 0.02  # Container should be at least 2% of frame
+        
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_container_area:
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                
+                # Check if this looks like a container (reasonable size and shape)
+                aspect_ratio = w_rect / max(h_rect, 1)
+                if 0.3 < aspect_ratio < 3.0 and w_rect > 50 and h_rect > 30:
+                    # Expand the exclusion zone slightly to be safe
+                    margin = 10
+                    exclusion_zone = {
+                        'x': max(0, x - margin),
+                        'y': max(0, y - margin), 
+                        'width': min(w - x + margin, w_rect + 2*margin),
+                        'height': min(h - y + margin, h_rect + 2*margin),
+                        'area': area
+                    }
+                    exclusion_zones.append(exclusion_zone)
+                    
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y})")
+        
+        return exclusion_zones
+
+    def is_ball_in_exclusion_zone(self, ball_center, exclusion_zones):
+        """Check if a ball center is inside any exclusion zone"""
+        if not exclusion_zones:
+            return False
+            
+        x, y = ball_center
+        
+        for zone in exclusion_zones:
+            if (zone['x'] <= x <= zone['x'] + zone['width'] and 
+                zone['y'] <= y <= zone['y'] + zone['height']):
+                if config.DEBUG_VISION:
+                    self.logger.info(f"Ball at ({x},{y}) excluded - inside container")
+                return True
+        
+        return False
+
     def detect_balls_hough_circles(self, frame) -> List[DetectedObject]:
-        """Primary detection method using HoughCircles for robust shape detection - WHITE BALLS ONLY"""
+        """Primary detection method using HoughCircles with exclusion zones - WHITE BALLS ONLY"""
         detected_objects = []
         
         if frame is None:
@@ -204,6 +269,9 @@ class VisionSystem:
         self.arena_mask = self.boundary_system.arena_mask
         self.arena_detected = self.boundary_system.arena_detected
         self.arena_contour = self.boundary_system.arena_contour
+        
+        # NEW: Get exclusion zones for containers/cages
+        exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
         
@@ -240,6 +308,12 @@ class VisionSystem:
                     0 <= y < h and 0 <= x < w and
                     self.arena_mask[y, x] > 0):
                     
+                    # NEW: Check if ball is in exclusion zone (container/cage)
+                    if self.is_ball_in_exclusion_zone(center, exclusion_zones):
+                        if config.DEBUG_VISION:
+                            self.logger.debug(f"Ball at {center} excluded - inside container")
+                        continue  # Skip this ball
+                    
                     # Color verification to determine confidence (white balls only)
                     confidence = self._verify_white_ball_color(frame, center, radius)
                     
@@ -264,9 +338,9 @@ class VisionSystem:
                         detected_objects.append(ball)
         
         return detected_objects
-    
+
     def detect_balls_color_contours(self, frame) -> List[DetectedObject]:
-        """Fallback detection using color+contour method - WHITE BALLS ONLY"""
+        """Fallback detection using color+contour method with exclusion zones - WHITE BALLS ONLY"""
         detected_objects = []
         
         if frame is None:
@@ -278,6 +352,9 @@ class VisionSystem:
         
         # Update local references for compatibility
         self.arena_mask = self.boundary_system.arena_mask
+        
+        # NEW: Get exclusion zones for containers/cages
+        exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -316,6 +393,12 @@ class VisionSystem:
                         if (config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS and
                             0 <= center[1] < h and 0 <= center[0] < w and
                             self.arena_mask[center[1], center[0]] > 0):
+                            
+                            # NEW: Check if ball is in exclusion zone (container/cage)
+                            if self.is_ball_in_exclusion_zone(center, exclusion_zones):
+                                if config.DEBUG_VISION:
+                                    self.logger.debug(f"Ball at {center} excluded - inside container")
+                                continue  # Skip this ball
                             
                             # Circle-contour overlap validation
                             circle_mask = np.zeros((h, w), dtype=np.uint8)
