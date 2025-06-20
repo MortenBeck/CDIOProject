@@ -128,7 +128,7 @@ RESTART_THRESHOLD = 5  # Number of consecutive errors before restart
 
 
 # === FIXED COLLECTION BEHAVIOR (NEW APPROACH) ===
-FIXED_COLLECTION_DRIVE_TIME = 1.05  # Fixed time to drive from target zone to collection point
+FIXED_COLLECTION_DRIVE_TIME = 0.5  # Fixed time to drive from target zone to collection point
 TARGET_ZONE_TOP_PERCENT = 0.7       # Target zone starts at 70% down from top
 TARGET_ZONE_BOTTOM_PERCENT = 0.85   # Target zone ends at 85% down from top
 
