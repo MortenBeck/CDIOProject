@@ -332,7 +332,7 @@ class GolfBot:
             return
     
     def handle_centering_2(self, balls, nav_command):
-        """Phase 2: First get ball into green zone, THEN center it there"""
+        """Phase 2: IDENTICAL to Phase 1 centering, but targets upper green zone"""
         if not balls:
             self.logger.info("Lost sight of ball during CENTERING_2 - returning to search")
             self.state = RobotState.SEARCHING
@@ -355,60 +355,54 @@ class GolfBot:
             self.hardware.servo_ss_to_pre_collect()
             time.sleep(0.2)
         
-        # TWO-PHASE APPROACH:
-        # Phase 2a: Get ball into green zone (priority #1)
-        if not self.vision.is_in_collection_zone(target_ball.center):
-            if config.DEBUG_MOVEMENT:
-                self.logger.info("CENTERING_2: Ball not in green zone, driving forward (ignoring centering)")
-            
-            self.hardware.move_forward(duration=0.3, speed=config.CENTERING_2_SPEED)
-            time.sleep(0.1)
-            return
+        # Calculate target position (upper green zone instead of frame center)
+        target_x = self.vision.frame_center_x  # Same X target as Phase 1
+        target_y = self.vision.frame_center_y + config.CENTERING_2_Y_TARGET_OFFSET  # Offset into green zone
         
-        # Phase 2b: Ball IS in green zone - now do fine centering
-        x_offset = abs(target_ball.center[0] - self.vision.frame_center_x)
-        y_offset = abs(target_ball.center[1] - self.vision.frame_center_y)
+        # Check if ball is fully centered for Phase 2 (using Phase 2 tolerances)
+        x_offset = abs(target_ball.center[0] - target_x)
+        y_offset = abs(target_ball.center[1] - target_y)
         
         x_centered = x_offset <= config.CENTERING_2_TOLERANCE
         y_centered = y_offset <= config.CENTERING_2_DISTANCE_TOLERANCE
         
         if x_centered and y_centered:
             ball_type = "orange" if target_ball.object_type == "orange_ball" else "white"
-            self.logger.info(f"CENTERING_2 complete! {ball_type.title()} ball centered in green zone. Starting collection.")
+            self.logger.info(f"CENTERING_2 complete! Ball centered in upper green zone. Starting collection of {ball_type} ball")
             self.state = RobotState.COLLECTING_BALL
             return
         
-        # Ball in green zone but not centered - apply centering
-        # X-axis centering (left/right) - PRIORITY
+        # Ball not fully centered - IDENTICAL centering logic to Phase 1
+        # X-axis centering (left/right)
         if not x_centered:
-            x_offset_signed = target_ball.center[0] - self.vision.frame_center_x
+            x_offset_signed = target_ball.center[0] - target_x
             if x_offset_signed > 0:
                 self.hardware.turn_right(duration=config.CENTERING_2_TURN_DURATION, 
                                         speed=config.CENTERING_2_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"CENTERING_2 X: turning right in green zone (offset: {x_offset_signed})")
+                    self.logger.info(f"CENTERING_2 X: turning right (offset: {x_offset_signed})")
             else:
                 self.hardware.turn_left(duration=config.CENTERING_2_TURN_DURATION, 
                                        speed=config.CENTERING_2_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"CENTERING_2 X: turning left in green zone (offset: {x_offset_signed})")
+                    self.logger.info(f"CENTERING_2 X: turning left (offset: {x_offset_signed})")
             
             time.sleep(0.03)
             return
         
-        # Y-axis centering (distance) - ONLY if X is already centered
+        # Y-axis centering (distance - forward/backward) 
         if not y_centered:
-            y_offset_signed = target_ball.center[1] - self.vision.frame_center_y
+            y_offset_signed = target_ball.center[1] - target_y
             if y_offset_signed > 0:
                 self.hardware.move_backward(duration=config.CENTERING_2_DRIVE_DURATION, 
                                           speed=config.CENTERING_2_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"CENTERING_2 Y: moving backward in green zone (offset: {y_offset_signed})")
+                    self.logger.info(f"CENTERING_2 Y: moving backward (offset: {y_offset_signed})")
             else:
                 self.hardware.move_forward(duration=config.CENTERING_2_DRIVE_DURATION, 
                                          speed=config.CENTERING_2_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"CENTERING_2 Y: moving forward in green zone (offset: {y_offset_signed})")
+                    self.logger.info(f"CENTERING_2 Y: moving forward (offset: {y_offset_signed})")
             
             time.sleep(0.03)
             return
