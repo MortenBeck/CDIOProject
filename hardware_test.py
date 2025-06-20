@@ -30,9 +30,8 @@ class HardwareTester:
         """Interactive servo testing"""
         print("\n=== SERVO TESTING ===")
         print("Commands:")
-        print("  s1-90    - Move servo 1 to 90°")
-        print("  s2-45    - Move servo 2 to 45°") 
-        print("  s3-135   - Move servo 3 to 135°")
+        print("  ss-90    - Move servo SS to 90°")
+        print("  sf-45    - Move servo SF to 45°") 
         print("  all-90   - Move all servos to 90°")
         print("  center   - Center all servos")
         print("  open     - Collection open position")
@@ -40,48 +39,40 @@ class HardwareTester:
         print("  release  - Release position")
         print("  demo     - Run servo demo")
         print("  status   - Show servo angles")
+        print("  ss-demo  - Demo SS four-state system")
         print("  back     - Return to main menu")
         
         while True:
             cmd = input("\nServo> ").strip().lower()
             
-            if cmd.startswith('s1-'):
+            if cmd.startswith('ss-'):
                 try:
                     angle = int(cmd[3:])
-                    self.hardware.set_servo_angle(self.hardware.servo1, angle)
-                    print(f"Servo 1 → {angle}°")
+                    self.hardware.set_servo_angle(self.hardware.servo_ss, angle)
+                    print(f"Servo SS → {angle}°")
                 except ValueError:
-                    print("Invalid format. Use: s1-90")
+                    print("Invalid format. Use: ss-90")
                     
-            elif cmd.startswith('s2-'):
+            elif cmd.startswith('sf-'):
                 try:
                     angle = int(cmd[3:])
-                    self.hardware.set_servo_angle(self.hardware.servo2, angle)
-                    print(f"Servo 2 → {angle}°")
+                    self.hardware.set_servo_angle(self.hardware.servo_sf, angle)
+                    print(f"Servo SF → {angle}°")
                 except ValueError:
-                    print("Invalid format. Use: s2-90")
-                    
-            elif cmd.startswith('s3-'):
-                try:
-                    angle = int(cmd[3:])
-                    self.hardware.set_servo_angle(self.hardware.servo3, angle)
-                    print(f"Servo 3 → {angle}°")
-                except ValueError:
-                    print("Invalid format. Use: s3-90")
+                    print("Invalid format. Use: sf-90")
                     
             elif cmd.startswith('all-'):
                 try:
                     angle = int(cmd[4:])
-                    self.hardware.set_servo_angle(self.hardware.servo1, angle)
-                    self.hardware.set_servo_angle(self.hardware.servo2, angle)
-                    self.hardware.set_servo_angle(self.hardware.servo3, angle)
+                    self.hardware.set_servo_angle(self.hardware.servo_ss, angle)
+                    self.hardware.set_servo_angle(self.hardware.servo_sf, angle)
                     print(f"All servos → {angle}°")
                 except ValueError:
                     print("Invalid format. Use: all-90")
                     
             elif cmd == 'center':
                 self.hardware.center_servos()
-                print("All servos centered (90°)")
+                print("All servos centered")
                 
             elif cmd == 'open':
                 self.hardware.collection_position()
@@ -98,15 +89,19 @@ class HardwareTester:
             elif cmd == 'demo':
                 self.servo_demo()
                 
+            elif cmd == 'ss-demo':
+                self.servo_ss_demo()
+                
             elif cmd == 'status':
                 angles = self.hardware.get_servo_angles()
-                print(f"Servo angles: {angles}")
+                ss_state = self.hardware.get_servo_ss_state()
+                print(f"Servo angles: SS={angles['servo_ss']}° ({ss_state}) SF={angles['servo_sf']}°")
                 
             elif cmd == 'back':
                 break
                 
             else:
-                print("Unknown command. Available: s1-90, s2-45, s3-135, all-90, center, open, close, release, demo, status, back")
+                print("Unknown command. Available: ss-90, sf-45, all-90, center, open, close, release, demo, ss-demo, status, back")
     
     def motor_test_menu(self):
         """Interactive motor testing"""
@@ -178,6 +173,7 @@ class HardwareTester:
         print("\n=== COLLECTION TESTING ===")
         print("Commands:")
         print("  collect     - Full collection sequence")
+        print("  enhanced    - Enhanced SS/SF collection sequence")
         print("  deliver     - Full delivery sequence")
         print("  open        - Open collection mechanism")
         print("  grab        - Grab ball")
@@ -193,6 +189,11 @@ class HardwareTester:
                 print("Running collection sequence...")
                 success = self.hardware.attempt_ball_collection()
                 print(f"Collection {'successful' if success else 'failed'}")
+                
+            elif cmd == 'enhanced':
+                print("Running enhanced SS/SF collection sequence...")
+                success = self.hardware.enhanced_collection_sequence()
+                print(f"Enhanced collection {'successful' if success else 'failed'}")
                 
             elif cmd == 'deliver':
                 print("Running delivery sequence...")
@@ -223,7 +224,7 @@ class HardwareTester:
                 break
                 
             else:
-                print("Unknown command. Available: collect, deliver, open, grab, release, count, reset, back")
+                print("Unknown command. Available: collect, enhanced, deliver, open, grab, release, count, reset, back")
     
     def servo_demo(self):
         """Run servo demonstration"""
@@ -231,11 +232,37 @@ class HardwareTester:
         angles = [0, 45, 90, 135, 180, 90]
         for angle in angles:
             print(f"  Moving to {angle}°...")
-            self.hardware.set_servo_angle(self.hardware.servo1, angle)
-            self.hardware.set_servo_angle(self.hardware.servo2, angle)
-            self.hardware.set_servo_angle(self.hardware.servo3, angle)
+            self.hardware.set_servo_angle(self.hardware.servo_ss, angle)
+            self.hardware.set_servo_angle(self.hardware.servo_sf, angle)
             time.sleep(1)
         print("Servo demo complete!")
+    
+    def servo_ss_demo(self):
+        """Run servo SS four-state system demo"""
+        print("Running servo SS four-state demo...")
+        
+        print("  → DRIVING position")
+        self.hardware.servo_ss_to_driving()
+        time.sleep(1.5)
+        
+        print("  → PRE-COLLECT position")
+        self.hardware.servo_ss_to_pre_collect()
+        time.sleep(1.5)
+        
+        print("  → COLLECT position")
+        self.hardware.servo_ss_to_collect()
+        time.sleep(1.5)
+        
+        print("  → STORE position")
+        self.hardware.servo_ss_to_store()
+        time.sleep(1.5)
+        
+        print("  → Back to DRIVING position")
+        self.hardware.servo_ss_to_driving()
+        time.sleep(1)
+        
+        current_state = self.hardware.get_servo_ss_state()
+        print(f"SS demo complete! Current state: {current_state.upper()}")
     
     def motor_demo(self):
         """Run motor demonstration"""
@@ -261,7 +288,7 @@ class HardwareTester:
     def main_menu(self):
         """Main testing menu"""
         print("\n=== MAIN MENU ===")
-        print("1. Servo Testing")
+        print("1. Servo Testing (SS/SF)")
         print("2. Motor Testing") 
         print("3. Collection Testing")
         print("4. Full System Demo")
@@ -298,15 +325,19 @@ class HardwareTester:
         self.servo_demo()
         time.sleep(1)
         
-        print("\n2. Motor demo...")
+        print("\n2. Servo SS four-state demo...")
+        self.servo_ss_demo()
+        time.sleep(1)
+        
+        print("\n3. Motor demo...")
         self.motor_demo()
         time.sleep(1)
         
-        print("\n3. Collection sequence...")
-        self.hardware.attempt_ball_collection()
+        print("\n4. Enhanced collection sequence...")
+        self.hardware.enhanced_collection_sequence()
         time.sleep(1)
         
-        print("\n4. Delivery sequence...")
+        print("\n5. Delivery sequence...")
         self.hardware.delivery_sequence("A")
         
         print("\nFull system demo complete!")
@@ -342,7 +373,7 @@ def run_hardware_test():
     
     try:
         print("\n🤖 GolfBot Hardware Tester Ready!")
-        print("Use this interface to test servos, motors, and collection systems.")
+        print("Use this interface to test servos (SS/SF), motors, and collection systems.")
         print("Type commands or use the menu to control hardware.")
         
         tester.main_menu()
