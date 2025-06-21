@@ -4,6 +4,7 @@ import cv2
 import signal
 import sys
 import os
+import numpy as np
 from enum import Enum
 from typing import Optional
 import config
