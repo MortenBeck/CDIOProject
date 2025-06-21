@@ -98,7 +98,7 @@ class BoundaryAvoidanceSystem:
 
     def detect_boundaries(self, frame) -> bool:
         """Detect if robot is too close to red walls (danger zones)
-        UPDATED: More centered detection zones (60%-80% from edges) and only in BOTTOM 30% of image"""
+        UPDATED: Only trigger avoidance for walls in BOTTOM 30% of image"""
         if frame is None:
             return False
 
@@ -133,13 +133,7 @@ class BoundaryAvoidanceSystem:
 
         # Define danger zones ONLY in bottom 30%
         danger_distance_vertical = int(h * 0.1)   # 10% of frame height (reduced)
-        
-        # NEW: More centered horizontal detection zones
-        # Instead of checking 0-8% and 92-100%, check 20-40% and 60-80%
-        left_detection_start = int(w * 0.20)    # Start at 20% from left edge
-        left_detection_end = int(w * 0.40)      # End at 40% from left edge
-        right_detection_start = int(w * 0.60)   # Start at 60% from left edge  
-        right_detection_end = int(w * 0.80)     # End at 80% from left edge
+        danger_distance_horizontal = int(w * 0.08) # 8% of frame width (reduced)
 
         # === REGION 1: BOTTOM WALL DETECTION (in bottom 30% but above collection zone) ===
         bottom_danger_start = max(bottom_30_percent_y, collection_zone_y - danger_distance_vertical)
@@ -166,8 +160,8 @@ class BoundaryAvoidanceSystem:
                             self.logger.info(f"Bottom wall detected in BOTTOM 30%: area={area}, width={w_rect}")
                         break
 
-        # === REGION 2: LEFT WALL DETECTION (CENTERED - 20%-40% from left edge, ONLY in bottom 30%) ===
-        left_region = red_mask[bottom_30_percent_y:collection_zone_y, left_detection_start:left_detection_end]
+        # === REGION 2: LEFT WALL DETECTION (ONLY in bottom 30%) ===
+        left_region = red_mask[bottom_30_percent_y:collection_zone_y, 0:danger_distance_horizontal]
         contours, _ = cv2.findContours(left_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
@@ -177,20 +171,20 @@ class BoundaryAvoidanceSystem:
                 if h_rect > 30:  # Vertical wall
                     danger_detected = True
                     wall_info = {
-                        'zone': 'left_centered',
+                        'zone': 'left',
                         'contour': contour,
                         'area': area,
-                        'bbox': (left_detection_start + x, bottom_30_percent_y + y, w_rect, h_rect),
+                        'bbox': (x, bottom_30_percent_y + y, w_rect, h_rect),
                         'length': h_rect,
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Left wall detected in CENTERED zone (20-40%): area={area}, height={h_rect}")
+                        self.logger.info(f"Left wall detected in BOTTOM 30%: area={area}, height={h_rect}")
                     break
 
-        # === REGION 3: RIGHT WALL DETECTION (CENTERED - 60%-80% from left edge, ONLY in bottom 30%) ===
-        right_region = red_mask[bottom_30_percent_y:collection_zone_y, right_detection_start:right_detection_end]
+        # === REGION 3: RIGHT WALL DETECTION (ONLY in bottom 30%) ===
+        right_region = red_mask[bottom_30_percent_y:collection_zone_y, w-danger_distance_horizontal:w]
         contours, _ = cv2.findContours(right_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
@@ -200,20 +194,20 @@ class BoundaryAvoidanceSystem:
                 if h_rect > 30:  # Vertical wall
                     danger_detected = True
                     wall_info = {
-                        'zone': 'right_centered',
+                        'zone': 'right',
                         'contour': contour,
                         'area': area,
-                        'bbox': (right_detection_start + x, bottom_30_percent_y + y, w_rect, h_rect),
+                        'bbox': (w - danger_distance_horizontal + x, bottom_30_percent_y + y, w_rect, h_rect),
                         'length': h_rect,
                         'triggered': True
                     }
                     self.detected_walls.append(wall_info)
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Right wall detected in CENTERED zone (60-80%): area={area}, height={h_rect}")
+                        self.logger.info(f"Right wall detected in BOTTOM 30%: area={area}, height={h_rect}")
                     break
 
         # === REGION 4: CENTER FORWARD WALL DETECTION (ONLY in bottom 30%) ===
-        # Check center area for walls directly in front of robot - keep this as is
+        # Check center area for walls directly in front of robot
         center_width = int(w * 0.5)  # Check center 50% of frame width
         center_start_x = int(w * 0.25)  # Start at 25% from left
 
@@ -243,12 +237,12 @@ class BoundaryAvoidanceSystem:
 
         if config.DEBUG_VISION and danger_detected:
             triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
-            self.logger.info(f"Wall avoidance triggered in CENTERED zones - zones: {triggered_zones}")
+            self.logger.info(f"Wall avoidance triggered in BOTTOM 30% - zones: {triggered_zones}")
 
         return danger_detected
 
     def get_avoidance_command(self, frame) -> Optional[str]:
-        """Get avoidance command based on wall detection - UPDATED for centered zones"""
+        """Get avoidance command based on wall detection - FIXED PRIORITY ORDER"""
         danger_detected = self.detect_boundaries(frame)
 
         if not danger_detected:
@@ -257,10 +251,10 @@ class BoundaryAvoidanceSystem:
         # Analyze which walls are triggered to determine best avoidance
         triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
 
-        # UPDATED: Handle new centered zone names
-        if 'left_centered' in triggered_zones:
+        # FIXED: Prioritize side walls over bottom walls for better navigation
+        if 'left' in triggered_zones:
             return 'turn_right'       # Turn away from left wall
-        elif 'right_centered' in triggered_zones:
+        elif 'right' in triggered_zones:
             return 'turn_left'        # Turn away from right wall
         elif 'center_forward' in triggered_zones:
             return 'move_backward'    # Turn when wall directly ahead
@@ -270,7 +264,7 @@ class BoundaryAvoidanceSystem:
             return 'move_backward'    # Default safe action
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
-        """Draw boundary detection overlays on frame - UPDATED for centered zones"""
+        """Draw boundary detection overlays on frame"""
         if frame is None:
             return frame
 
@@ -290,47 +284,21 @@ class BoundaryAvoidanceSystem:
                 if cv2.contourArea(contour) > 100:
                     cv2.drawContours(result, [contour], -1, (0, 0, 255), 2)
 
-        # === DANGER ZONES - UPDATED to show centered detection areas ===
-        bottom_30_percent_y = int(h * 0.7)  # Start of bottom 30%
-        collection_zone_y = int(h * 0.75)   # Collection zone
-        danger_distance = int(h * 0.1)
-        danger_y = max(bottom_30_percent_y, collection_zone_y - danger_distance)
+        # === DANGER ZONES ===
+        danger_distance = min(50, int(h * 0.1))
+        danger_y = h - danger_distance
+        edge_width = min(30, int(w * 0.06))
 
-        # NEW: Centered detection zones
-        left_detection_start = int(w * 0.20)    # 20% from left
-        left_detection_end = int(w * 0.40)      # 40% from left
-        right_detection_start = int(w * 0.60)   # 60% from left  
-        right_detection_end = int(w * 0.80)     # 80% from left
-
-        # Draw centered danger zone borders
-        cv2.rectangle(result, (0, danger_y), (w, collection_zone_y), (0, 100, 255), 1)  # Bottom zone
-        
-        # Left centered detection zone (20%-40%)
-        cv2.rectangle(result, (left_detection_start, bottom_30_percent_y), 
-                     (left_detection_end, collection_zone_y), (0, 150, 255), 2)
-        cv2.putText(result, "L-DETECT", (left_detection_start + 5, bottom_30_percent_y + 20), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 150, 255), 1)
-        
-        # Right centered detection zone (60%-80%)
-        cv2.rectangle(result, (right_detection_start, bottom_30_percent_y), 
-                     (right_detection_end, collection_zone_y), (0, 150, 255), 2)
-        cv2.putText(result, "R-DETECT", (right_detection_start + 5, bottom_30_percent_y + 20), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 150, 255), 1)
-
-        # Center detection zone (25%-75%)
-        center_start = int(w * 0.25)
-        center_end = int(w * 0.75)
-        cv2.rectangle(result, (center_start, bottom_30_percent_y), 
-                     (center_end, collection_zone_y), (0, 100, 200), 1)
+        # Draw danger zone borders
+        cv2.rectangle(result, (0, danger_y), (w, h), (0, 100, 255), 2)  # Bottom
+        cv2.rectangle(result, (0, 0), (edge_width, h), (0, 100, 255), 2)  # Left
+        cv2.rectangle(result, (w - edge_width, 0), (w, h), (0, 100, 255), 2)  # Right
 
         # === TRIGGERED WALLS ===
         for wall in self.detected_walls:
             if wall['triggered']:
                 x, y, w_rect, h_rect = wall['bbox']
                 cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 4)
-                # Add zone label
-                cv2.putText(result, wall['zone'].upper(), (x, y - 5), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
 
         # === ARENA BOUNDARY ===
         if self.arena_detected and self.arena_contour is not None:
@@ -367,18 +335,14 @@ if __name__ == "__main__":
     # Initialize the boundary avoidance system
     boundary_system = BoundaryAvoidanceSystem()
 
-    print("UPDATED: Centered Wall Detection Zones")
-    print("- Left detection: 20%-40% from left edge")
-    print("- Right detection: 60%-80% from left edge")
-    print("- Only active in bottom 30% of camera view")
-    print("- Should avoid early false triggers from distant walls")
-
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
         # Detect arena boundaries (often done once at startup or periodically)
+        # For simplicity, we'll run it every frame here, but for a robot,
+        # you might do this less frequently if the arena is static.
         arena_found = boundary_system.detect_arena_boundaries(frame)
 
         # Detect walls in danger zones
@@ -396,13 +360,20 @@ if __name__ == "__main__":
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
             cv2.putText(visualized_frame, f"Danger Zones: {', '.join(status['danger_zones']) if status['danger_zones'] else 'None'}", (10, 90),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
-            cv2.putText(visualized_frame, "CENTERED DETECTION (20-40% & 60-80%)", (10, 120),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
-            cv2.imshow('Boundary Avoidance System - Centered Detection', visualized_frame)
+            cv2.imshow('Boundary Avoidance System', visualized_frame)
 
         # Here you would integrate the 'avoidance_command' with your robot's movement logic
         if avoidance_command:
             boundary_system.logger.info(f"Robot should: {avoidance_command}")
+            # Example:
+            # if avoidance_command == 'turn_right':
+            #     robot.turn_right()
+            # elif avoidance_command == 'move_backward':
+            #     robot.move_backward()
+            # etc.
+        # else:
+            # If no avoidance command, the robot can proceed with its main task
+            # robot.move_forward() # or whatever its goal is
 
         # Press 'q' to quit the video stream
         if cv2.waitKey(1) & 0xFF == ord('q'):
