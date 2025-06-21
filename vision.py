@@ -164,51 +164,55 @@ class VisionSystem:
         return drive_time
     
     def detect_excluded_areas(self, frame):
-        """Detect white containers/cages where balls should be excluded in the bottom 15% of the image"""
+        """Detect white containers/cages where balls should be excluded in the bottom 30% of the image"""
         if frame is None:
             return None
-
+        
         h, w = frame.shape[:2]
-        bottom_start = int(h * 0.7)  # Only keep bottom 30%
+        bottom_start = int(h * 0.7)  # Only look in bottom 30%
         cropped_frame = frame[bottom_start:h, :]
-
+        
         hsv = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2HSV)
-
-        # Detect white/light colored containers
+        
+        # Detect white/light colored containers (like the cage in your image)
+        # More restrictive white detection for containers
         lower_white = np.array([0, 0, 180])    # Very bright
         upper_white = np.array([180, 30, 255]) # Low saturation
         white_mask = cv2.inRange(hsv, lower_white, upper_white)
-
-        # Clean up the mask
+        
+        # Clean up the mask to find solid white structures
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel, iterations=2)
-
+        
         # Find contours in the cropped mask
         contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        
         exclusion_zones = []
-        min_container_area = (w * h) * 0.02  # Based on full frame size
-
+        min_container_area = (w * h) * 0.02  # Container should be at least 2% of frame
+        
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_container_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                
+                # Check if this looks like a container (reasonable size and shape)
                 aspect_ratio = w_rect / max(h_rect, 1)
                 if 0.3 < aspect_ratio < 3.0 and w_rect > 50 and h_rect > 30:
+                    # Expand the exclusion zone slightly to be safe
                     margin = 10
                     exclusion_zone = {
                         'x': max(0, x - margin),
-                        'y': max(0, y + bottom_start - margin),  # shift y back to full image coordinates
+                        'y': max(0, y + bottom_start - margin),  # Shift y back to full image coordinates
                         'width': min(w - x + margin, w_rect + 2*margin),
                         'height': min(h - (y + bottom_start) + margin, h_rect + 2*margin),
                         'area': area
                     }
                     exclusion_zones.append(exclusion_zone)
-
+                    
                     if config.DEBUG_VISION:
                         self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y + bottom_start})")
-
+        
         return exclusion_zones
 
     def is_ball_in_exclusion_zone(self, ball_center, exclusion_zones):
@@ -243,10 +247,13 @@ class VisionSystem:
         self.arena_detected = self.boundary_system.arena_detected
         self.arena_contour = self.boundary_system.arena_contour
         
-        # NEW: Get exclusion zones for containers/cages
+        # Get exclusion zones for containers/cages
         exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
+        
+        # Define bottom exclusion line - EXCLUDE BOTTOM 30%
+        bottom_exclusion_start = int(h * 0.7)  # Bottom 30% exclusion
         
         # Convert to grayscale for HoughCircles
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -276,12 +283,18 @@ class VisionSystem:
             for (x, y, radius) in circles:
                 center = (x, y)
                 
+                # FIRST CHECK: Skip balls in bottom 30% entirely
+                if y >= bottom_exclusion_start:
+                    if config.DEBUG_VISION:
+                        self.logger.debug(f"Ball at {center} excluded - in bottom 30%")
+                    continue
+                
                 # Verify center is within arena
                 if (self.arena_mask is not None and 
                     0 <= y < h and 0 <= x < w and
                     self.arena_mask[y, x] > 0):
                     
-                    # NEW: Check if ball is in exclusion zone (container/cage)
+                    # Check if ball is in exclusion zone (container/cage)
                     if self.is_ball_in_exclusion_zone(center, exclusion_zones):
                         if config.DEBUG_VISION:
                             self.logger.debug(f"Ball at {center} excluded - inside container")
@@ -326,10 +339,14 @@ class VisionSystem:
         # Update local references for compatibility
         self.arena_mask = self.boundary_system.arena_mask
         
-        # NEW: Get exclusion zones for containers/cages
+        # Get exclusion zones for containers/cages
         exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
+        
+        # Define bottom exclusion line - EXCLUDE BOTTOM 30%
+        bottom_exclusion_start = int(h * 0.7)  # Bottom 30% exclusion
+        
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
         # White ball detection only
@@ -363,11 +380,17 @@ class VisionSystem:
                         center = (int(x), int(y))
                         radius = int(radius)
                         
+                        # FIRST CHECK: Skip balls in bottom 30% entirely
+                        if center[1] >= bottom_exclusion_start:
+                            if config.DEBUG_VISION:
+                                self.logger.debug(f"Ball at {center} excluded - in bottom 30%")
+                            continue
+                        
                         if (config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS and
                             0 <= center[1] < h and 0 <= center[0] < w and
                             self.arena_mask[center[1], center[0]] > 0):
                             
-                            # NEW: Check if ball is in exclusion zone (container/cage)
+                            # Check if ball is in exclusion zone (container/cage)
                             if self.is_ball_in_exclusion_zone(center, exclusion_zones):
                                 if config.DEBUG_VISION:
                                     self.logger.debug(f"Ball at {center} excluded - inside container")
