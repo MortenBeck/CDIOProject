@@ -15,6 +15,7 @@ class BoundaryAvoidanceSystem:
         # Detection results
         self.detected_walls = []
         self.red_mask = None
+        self.arena_detected = False
 
         # Multi-step avoidance state
         self.avoidance_state = None  # 'backing_up' or 'turning_right'
@@ -41,6 +42,34 @@ class BoundaryAvoidanceSystem:
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
 
         return red_mask
+
+    def detect_arena_boundaries(self, frame) -> bool:
+        """Detect arena boundaries for initialization (simplified version)"""
+        if frame is None:
+            return False
+            
+        # Simple arena detection - just check if we can see red boundaries
+        red_mask = self._create_red_mask(frame)
+        contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if contours:
+            # Find largest contour (likely arena boundary)
+            largest_contour = max(contours, key=cv2.contourArea)
+            area = cv2.contourArea(largest_contour)
+            
+            h, w = frame.shape[:2]
+            min_arena_area = (w * h) * 0.1  # Arena should be at least 10% of frame
+            
+            if area > min_arena_area:
+                self.arena_detected = True
+                if config.DEBUG_VISION:
+                    self.logger.info(f"Arena boundary detected: area={area:.0f}")
+                return True
+        
+        self.arena_detected = False
+        if config.DEBUG_VISION:
+            self.logger.info("Using fallback arena detection")
+        return False
 
     def detect_boundaries(self, frame) -> bool:
         """Detect if robot is too close to red walls in critical zones"""
@@ -210,4 +239,3 @@ class BoundaryAvoidanceSystem:
         self.detected_walls = []
         self.red_mask = None
         self._reset_avoidance_state()
-
