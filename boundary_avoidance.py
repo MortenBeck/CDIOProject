@@ -2,13 +2,7 @@ import cv2
 import numpy as np
 import logging
 from typing import List, Dict, Optional
-
-# --- config.py (simulated for demonstration) ---
-class Config:
-    DEBUG_VISION = True
-
-config = Config()
-# -------------------------------------------------
+import config
 
 class BoundaryAvoidanceSystem:
     """Simplified system for detecting and avoiding arena boundaries/walls"""
