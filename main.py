@@ -707,9 +707,9 @@ class GolfBot:
                 self.hardware.turn_left(duration=0.4)
             elif avoidance_command == 'backup_and_turn':
                 self.logger.warning("CENTER wall detected - backing up and turning")
-                self.hardware.move_backward(duration=0.5)  # Back up for 0.5 seconds
-                time.sleep(0.1)  # Brief pause between movements
-                self.hardware.turn_right(duration=0.6)     # Turn right for 0.6 seconds
+                self.hardware.move_backward(duration=0.3)
+                time.sleep(0.1)
+                self.hardware.turn_right(duration=0.6)
             else:
                 # Default: back up and turn (fallback)
                 self.hardware.move_backward(duration=0.3)
