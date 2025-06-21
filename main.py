@@ -312,7 +312,7 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """SIMPLIFIED: Get ball into precise target zone in center of screen"""
+        """UPDATED: Get ball into precise center using existing vision methods"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
@@ -329,17 +329,17 @@ class GolfBot:
         # Target the closest confident ball
         target_ball = confident_balls[0]
         
-        # Check if ball is in the precise target zone
-        if self.vision.is_ball_centered_for_collection(target_ball):
-            # Ball is in target zone - start collection!
+        # Check if ball is centered using existing vision method
+        if self.vision.is_ball_centered(target_ball):
+            # Ball is centered - start collection!
             self.logger.info(f"White ball in TARGET ZONE! Starting collection with fixed drive")
             self.state = RobotState.COLLECTING_BALL
             return
         
-        # Ball not in target zone - get movement to position it
-        x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
+        # Ball not centered - get movement directions using existing vision method
+        x_direction, y_direction = self.vision.get_centering_adjustment(target_ball)
         
-        # Move ball toward target zone - prioritize the axis that's furthest off
+        # Move ball toward center - prioritize the axis that's furthest off
         if x_direction != 'centered':
             if x_direction == 'right':
                 self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
@@ -410,8 +410,8 @@ class GolfBot:
         else:
             self.logger.info("Starting collection: white ball")
         
-        # Get the fixed drive time from vision system
-        drive_time = self.vision.get_drive_time_to_collection()
+        # Use fixed drive time from config - this is the new approach
+        drive_time = getattr(config, 'COLLECTION_DRIVE_TIME', 1.05)  # Default 1.05 seconds
         self.logger.info(f"Using collection sequence: servo up -> drive {drive_time:.2f}s -> servo down")
         
         # STEP 1: PREPARE SERVOS FOR COLLECTION (SERVO UP)
