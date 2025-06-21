@@ -229,12 +229,37 @@ class GolfBot:
         self.end_competition()
     
     def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute current state logic with enhanced ball centering and collection - WHITE BALLS ONLY"""
+        """Execute state logic with ball detection priority - WHITE BALLS ONLY"""
         
-        # Always check for boundary first (but allow collection to complete)
-        if near_boundary and self.state not in [RobotState.COLLECTING_BALL]:
+        # HIGH PRIORITY: Never interrupt active collection
+        if self.state == RobotState.COLLECTING_BALL:
+            self.handle_collecting_ball()
+            return
+        
+        # MEDIUM PRIORITY: Protect ball operations if we have good targets
+        confident_balls = [ball for ball in balls if ball.confidence > 0.4] if balls else []
+        has_good_target = bool(confident_balls)
+        
+        # SMART BOUNDARY AVOIDANCE: Only interrupt ball operations if:
+        # 1. No confident balls detected, OR
+        # 2. Currently just searching (not actively pursuing), OR
+        # 3. Boundary is critically close (imminent collision)
+        should_avoid_boundary = (
+            near_boundary and (
+                not has_good_target or 
+                self.state == RobotState.SEARCHING or
+                self._is_boundary_critical()
+            )
+        )
+        
+        if should_avoid_boundary:
+            # Log why we're switching to boundary avoidance
+            reason = "no_balls" if not has_good_target else "searching" if self.state == RobotState.SEARCHING else "critical_proximity"
+            if config.DEBUG_MOVEMENT:
+                self.logger.info(f"⚠️ Boundary avoidance triggered: {reason}")
             self.state = RobotState.AVOIDING_BOUNDARY
         
+        # Execute current state
         if self.state == RobotState.SEARCHING:
             self.handle_searching(balls, nav_command)
             
@@ -244,14 +269,30 @@ class GolfBot:
         elif self.state == RobotState.APPROACHING_BALL:
             self.handle_approaching_ball(balls, nav_command)
             
-        elif self.state == RobotState.COLLECTING_BALL:  # Enhanced sequence
-            self.handle_collecting_ball()
-            
         elif self.state == RobotState.AVOIDING_BOUNDARY:
             self.handle_avoiding_boundary(near_boundary)
             
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
+
+    def _is_boundary_critical(self) -> bool:
+        """Check if boundary is critically close (imminent collision)"""
+        try:
+            # Check if boundary system has distance measurement
+            if hasattr(self.vision.boundary_system, 'get_closest_boundary_distance'):
+                min_distance = self.vision.boundary_system.get_closest_boundary_distance()
+                return min_distance < 15  # Very close - immediate danger
+            
+            # Fallback: check if multiple walls are triggered
+            if hasattr(self.vision.boundary_system, 'detected_walls'):
+                triggered_walls = [w for w in self.vision.boundary_system.detected_walls 
+                                 if w.get('triggered', False)]
+                return len(triggered_walls) >= 2  # Multiple walls = corner/tight spot
+                
+        except Exception as e:
+            self.logger.warning(f"Boundary critical check failed: {e}")
+        
+        return False  # Default to not critical
     
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
@@ -532,32 +573,33 @@ class GolfBot:
             return False
     
     def handle_avoiding_boundary(self, near_boundary):
-        """Handle boundary avoidance with improved timing"""
+        """Handle boundary avoidance with faster return to ball detection"""
         if near_boundary:
-            self.logger.warning("⚠️  Near arena boundary - executing avoidance")
+            self.logger.warning("⚠️ Executing boundary avoidance maneuver")
             
-            # Get specific avoidance command from boundary system
+            # Get specific avoidance command
             avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
             
-            # Immediate stop
+            # Stop and execute avoidance
             self.hardware.stop_motors()
             time.sleep(0.1)
             
-            # Execute specific avoidance based on boundary system recommendation
             if avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.4)  # 0.25 seconds
+                self.hardware.move_backward(duration=0.3)  # Shorter duration
             elif avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
+                self.hardware.turn_right(duration=0.4)     # Shorter duration
             elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
+                self.hardware.turn_left(duration=0.4)      # Shorter duration
             else:
-                # Default fallback
-                self.hardware.move_backward(duration=0.25)
-                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
+                # Default: back up and turn
+                self.hardware.move_backward(duration=0.2)
+                self.hardware.turn_right(duration=0.4)
             
-            time.sleep(0.15)
+            time.sleep(0.1)  # Shorter pause
         else:
-            # Clear of boundary
+            # Clear of boundary - return to ball detection immediately
+            if config.DEBUG_MOVEMENT:
+                self.logger.info("✅ Clear of boundary - resuming ball detection")
             self.state = RobotState.SEARCHING
     
     def execute_navigation_command(self, command):
