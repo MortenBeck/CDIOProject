@@ -102,16 +102,6 @@ class VisionSystem:
         self.arena_detected = False
         self.arena_contour = None
     
-    def is_in_collection_zone(self, ball_center: Tuple[int, int]) -> bool:
-        """Check if ball center is in the collection zone"""
-        x, y = ball_center
-        zone = self.collection_zone
-        
-        horizontal_ok = zone['left'] <= x <= zone['right']
-        vertical_ok = zone['top'] <= y <= zone['bottom']
-        
-        return horizontal_ok and vertical_ok
-    
     # === BALL CENTERING METHODS ===
     def is_ball_centered(self, ball: DetectedObject) -> bool:
         """Check if ball is centered enough to start collection (both X and Y)"""
@@ -746,26 +736,22 @@ class VisionSystem:
         return result
     
     def draw_detections_clean(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Clean detection visualization with precise target zone"""
+        """Clean detection visualization with ONLY the target zone that matters"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # 1. ZONE BOUNDARIES
+        # 1. ONLY SHOW THE TARGET ZONE THAT ACTUALLY MATTERS
         zone = self.collection_zone
         
-        # General collection zone (green, thin line)
-        cv2.rectangle(result, (zone['left'], zone['top']), 
-                    (zone['right'], zone['bottom']), (0, 255, 0), 1)
-        
-        # PRECISE TARGET ZONE in center - small box just for ping pong ball (bright yellow, thick)
+        # PRECISE TARGET ZONE - the only zone that matters for collection (bright yellow, thick)
         cv2.rectangle(result, (zone['target_left'], zone['target_top']), 
                     (zone['target_right'], zone['target_bottom']), (0, 255, 255), 3)
         
         # Add target zone label
-        cv2.putText(result, "TARGET", (zone['target_left'] + 5, zone['target_top'] - 5), 
+        cv2.putText(result, "COLLECTION TARGET", (zone['target_left'] + 5, zone['target_top'] - 5), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
         
         # Target zone crosshair (center point)
@@ -790,7 +776,7 @@ class VisionSystem:
             ball_char = 'B'
             
             if is_target:
-                # Check if ball is in precise target zone
+                # Check if ball is in target zone (the ONLY zone that matters)
                 in_target_zone = self.is_ball_in_target_zone(ball.center)
                 
                 if in_target_zone:
@@ -855,7 +841,7 @@ class VisionSystem:
     
 
     def _calculate_collection_zone(self):
-        """Calculate collection zones using configurable parameters"""
+        """Calculate ONLY the target zone that actually matters for collection"""
         
         # TARGET ZONE: Use config parameters for positioning and sizing
         center_x = config.CAMERA_WIDTH // 2
@@ -873,23 +859,8 @@ class VisionSystem:
         target_top = center_y - (target_height // 2)
         target_bottom = center_y + (target_height // 2)
         
-        # GENERAL collection area using config parameters
-        horizontal_margin_ratio = getattr(config, 'COLLECTION_ZONE_HORIZONTAL_MARGIN', 0.35)
-        horizontal_margin = config.CAMERA_WIDTH * horizontal_margin_ratio
-        general_left = int(horizontal_margin)
-        general_right = int(config.CAMERA_WIDTH - horizontal_margin)
-        
-        vertical_start_ratio = getattr(config, 'COLLECTION_ZONE_VERTICAL_START', 0.55)
-        general_top = int(config.CAMERA_HEIGHT * vertical_start_ratio)
-        
         return {
-            # General collection area
-            'left': general_left,
-            'right': general_right, 
-            'top': general_top,
-            'bottom': config.CAMERA_HEIGHT,
-            
-            # PRECISE target zone
+            # ONLY the target zone that actually matters
             'target_left': target_left,
             'target_right': target_right,
             'target_top': target_top,
