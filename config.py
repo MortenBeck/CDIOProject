@@ -17,8 +17,8 @@ EGG_MOVE_PENALTY = -300
 # === PCA9685 SERVO SETTINGS ===
 PCA9685_ADDRESS = 0x40
 PCA9685_FREQUENCY = 50
-SERVO_SS_CHANNEL = 0  # PCA9685 Channel 0 (main collection servo)
-SERVO_SF_CHANNEL = 1  # PCA9685 Channel 1 (secondary servo)
+SERVO_SS_CHANNEL = 0  # PCA9685 Channel 0 - "ss" servo
+SERVO_SF_CHANNEL = 1  # PCA9685 Channel 1 - "SF" servo
 
 # === DC MOTOR GPIO PINS ===
 MOTOR_IN1 = 19  # GPIO 19 (Pin 35) - Motor A
@@ -27,16 +27,10 @@ MOTOR_IN3 = 20  # GPIO 20 (Pin 38) - Motor B
 MOTOR_IN4 = 21  # GPIO 21 (Pin 40) - Motor B
 
 # === MOTOR SETTINGS ===
-MOTOR_SPEED_SLOW = 0.5
-MOTOR_SPEED_MEDIUM = 0.6
+MOTOR_SPEED_SLOW = 0.3
+MOTOR_SPEED_MEDIUM = 0.5
 MOTOR_SPEED_FAST = 0.8
-DEFAULT_SPEED = MOTOR_SPEED_SLOW
-
-# === MOTOR CALIBRATION ===
-# Motor balance adjustment for slow speeds (to compensate for motor differences)
-MOTOR_LEFT_COMPENSATION = 1.0   # Multiplier for left motors (adjust if drifting right)
-MOTOR_RIGHT_COMPENSATION = 1.05  # Multiplier for right motors (adjust if drifting left)
-SLOW_SPEED_THRESHOLD = 0.3       # Below this speed, use compensation
+DEFAULT_SPEED = MOTOR_SPEED_MEDIUM
 
 # === CAMERA SETTINGS ===
 CAMERA_WIDTH = 640
@@ -50,11 +44,11 @@ BALL_HSV_UPPER = np.array([180, 30, 255])
 BALL_MIN_AREA = 100
 BALL_MAX_AREA = 10000
 BALL_MIN_RADIUS = 10
-BALL_MAX_RADIUS = 30
+BALL_MAX_RADIUS = 70
 
 # Orange VIP ball detection
-ORANGE_HSV_LOWER = np.array([10, 100, 100])
-ORANGE_HSV_UPPER = np.array([25, 255, 255])
+##ORANGE_HSV_LOWER = np.array([10, 100, 100])
+##ORANGE_HSV_UPPER = np.array([25, 255, 255])
 
 # Goal detection (red tape - smaller=A, larger=B)
 GOAL_HSV_LOWER = np.array([0, 100, 100])
@@ -64,19 +58,27 @@ GOAL_HSV_UPPER = np.array([10, 255, 255])
 BOUNDARY_HSV_LOWER = np.array([0, 0, 0])    # Dark boundaries
 BOUNDARY_HSV_UPPER = np.array([180, 255, 50])
 
-# === SERVO SS (MAIN COLLECTION) POSITIONS ===
-SERVO_SS_STORE = 110          # Store position
-SERVO_SS_PRE_COLLECT = 130    # Pre-collect position (UPDATED to 130)
-SERVO_SS_DRIVING = 28         # Driving position (default/start position)
-SERVO_SS_COLLECT = 18         # Collect position
-SERVO_SS_STEP_SIZE = 5        # Incremental movement step size
+# === SERVO POSITIONS (ANGLES IN DEGREES) ===
+SERVO_CENTER = 90
+SERVO_COLLECT_OPEN = 45   # Open position for collection
+SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
+SERVO_RELEASE = 0         # Release position
 
-# === SERVO SF (SECONDARY) POSITIONS ===
-SERVO_SF_READY_POSITION = 90  # Ready to catch
-SERVO_SF_CATCH_POSITION = 135  # Close position to secure ball
+# === SERVO SS (SERVO 1) FOUR-STATE SYSTEM ===
+SERVO_SS_STORE = 110        # Store position
+SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
+SERVO_SS_DRIVING = 25       # Driving position (default/start position)
+SERVO_SS_COLLECT = 14        # Collect position
+SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 
-# === RELEASE POSITION ===
-SERVO_RELEASE = 0  # Release position for ball delivery
+# === SERVO SF (SERVO 2) POSITIONS ===
+SERVO_SF_READY = 90         # Ready position
+SERVO_SF_CATCH = 135        # Catch position
+SERVO_SF_RELEASE = 0        # Release position
+
+# === ENHANCED COLLECTION POSITIONS ===
+SERVO_READY_POSITION = 90  # Servos up and ready to catch
+SERVO_CATCH_POSITION = 135  # Close position to secure ball
 
 # === SERVO MOVEMENT SETTINGS ===
 SERVO_GRADUAL_MOVEMENT = True  # Enable gradual servo movement to reduce current draw
@@ -85,44 +87,33 @@ SERVO_SMOOTH_DURATION = 0.5  # Duration for smooth movements (seconds)
 SERVO_SEQUENTIAL_DELAY = 0.1  # Delay between multiple servo movements (seconds)
 
 # === MOVEMENT PARAMETERS ===
-TURN_TIME_90_DEGREES = 0.8  # Time to turn 90 degrees
-FORWARD_TIME_SHORT = 0.4    # Short forward movement
+TURN_TIME_90_DEGREES = 0.6  # Time to turn 90 degrees
+FORWARD_TIME_SHORT = 0.2    # Short forward movement
 BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 
-# === TWO-PHASE COLLECTION SETTINGS ===
-# Phase 1 - Initial Ball Centering (X+Y alignment to frame center)
-CENTERING_1_TOLERANCE = 25  # Pixels - X-axis centering tolerance
-CENTERING_1_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance
-CENTERING_1_TURN_DURATION = 0.4  # Duration for horizontal centering turns
-CENTERING_1_DRIVE_DURATION = 0.4  # Duration for forward/backward centering adjustments
-CENTERING_1_SPEED = 0.5  # Speed for initial centering movements
+# === COLLECTION BEHAVIOR ===
+CENTERING_TOLERANCE = 25  # Pixels - more lenient X centering (was 15)
+CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
+COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
+MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
+MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
+COLLECTION_SPEED = 0.4  # Slower speed for precise collection
 
-# Phase 2 - Collection Zone Centering (identical system, different Y target)
-CENTERING_2_TOLERANCE = 25  # Pixels - X-axis centering tolerance (same as Phase 1)
-CENTERING_2_DISTANCE_TOLERANCE = 30  # Pixels - Y-axis centering tolerance (same as Phase 1)
-CENTERING_2_TURN_DURATION = 0.6  # Duration for horizontal centering turns (same)
-CENTERING_2_DRIVE_DURATION = 0.6  # Duration for forward/backward centering adjustments (same)
-CENTERING_2_SPEED = 0.5  # Speed for centering movements (same)
-CENTERING_2_Y_TARGET_OFFSET = 100  # Pixels below frame center to target upper green zone
-
-# Final Collection Settings
-CENTERING_2_COLLECTION_SPEED = 0.5  # Speed during final collection sequence
-CENTERING_2_COLLECTION_TIME = 0.8   # Reduced time for final collection sequence
-
-# === LEGACY SETTINGS (maintained for compatibility) ===
-CENTERING_TOLERANCE = CENTERING_1_TOLERANCE  # Backward compatibility
-CENTERING_DISTANCE_TOLERANCE = CENTERING_1_DISTANCE_TOLERANCE  # Backward compatibility
-CENTERING_TURN_DURATION = CENTERING_1_TURN_DURATION
-CENTERING_DRIVE_DURATION = CENTERING_1_DRIVE_DURATION
-CENTERING_SPEED = CENTERING_1_SPEED
-ENHANCED_COLLECTION_DRIVE_TIME = CENTERING_2_COLLECTION_TIME  # Backward compatibility
-COLLECTION_SPEED = CENTERING_2_COLLECTION_SPEED
+# === ENHANCED CENTERING BEHAVIOR (FASTER) ===
+CENTERING_TURN_DURATION = 0.25  # Faster horizontal centering (was 0.16)
+CENTERING_DRIVE_DURATION = 0.15  # Duration for forward/backward centering adjustments
+CENTERING_SPEED = 0.4  # Speed for centering movements
 
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [
     "forward", "turn_right", "forward", "turn_right", 
     "forward", "turn_right", "forward", "turn_right"
 ]
+
+# === BALL COLLECTION ===
+COLLECTION_DISTANCE_THRESHOLD = 30  # Pixels - how close before attempting collection
+BALL_LOST_TIMEOUT = 2.0  # Seconds before giving up on a ball
+MAX_COLLECTION_ATTEMPTS = 3
 
 # === DEBUGGING ===
 DEBUG_VISION = True
@@ -134,3 +125,12 @@ SHOW_CAMERA_FEED = True
 MOTOR_TIMEOUT = 5.0  # Max time for any single movement
 VISION_TIMEOUT = 1.0  # Max time to wait for camera frame
 RESTART_THRESHOLD = 5  # Number of consecutive errors before restart
+
+# === PRECISE TARGET ZONE (NEW APPROACH) ===
+TARGET_ZONE_WIDTH = 80              # Target zone width in pixels (ping pong ball sized)
+TARGET_ZONE_HEIGHT = 60             # Target zone height in pixels
+FIXED_COLLECTION_DRIVE_TIME = 1.05  # Fixed time to drive from target zone to collection point
+
+# Enhanced centering - ball must be in target zone AND X-centered before collection
+CENTERING_TOLERANCE = 25  # X-axis centering tolerance (pixels)
+REQUIRE_TARGET_ZONE_FOR_COLLECTION = True  # Ball must be in target zone, not just centered
