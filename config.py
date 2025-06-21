@@ -101,7 +101,7 @@ COLLECTION_SPEED = 0.4  # Slower speed for precise collection
 
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
 CENTERING_TURN_DURATION = 0.2  # Faster horizontal centering (was 0.16)
-CENTERING_DRIVE_DURATION = 0.15  # Duration for forward/backward centering adjustments
+CENTERING_DRIVE_DURATION = 0.4  # Duration for forward/backward centering adjustments
 CENTERING_SPEED = 0.4  # Speed for centering movements
 
 # === NAVIGATION STRATEGY ===
