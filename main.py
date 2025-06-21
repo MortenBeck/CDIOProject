@@ -60,10 +60,6 @@ class GolfBot:
         self.state = RobotState.SEARCHING
         self.search_pattern_index = 0
         self.last_ball_seen_time = None
-
-        self.target_ball_memory = None
-        self.target_lost_time = None
-        self.max_target_lost_time = 1.0  # 1 second grace period
         
         # Performance tracking
         self.last_frame_time = time.time()
@@ -259,11 +255,6 @@ class GolfBot:
     
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
-        # Clear any previous target memory when starting new search
-        if self.target_ball_memory is not None:
-            self.target_ball_memory = None
-            self.target_lost_time = None
-        
         if balls:
             # Filter for high confidence balls only
             confident_balls = [ball for ball in balls if ball.confidence > 0.4]
@@ -280,103 +271,61 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """Enhanced centering with ball tracking memory"""
-        current_time = time.time()
-        
-        # Try to find balls first
-        confident_balls = [ball for ball in balls if ball.confidence > 0.3] if balls else []
-        
-        # If we have a remembered target, try to find it or similar ball nearby
-        if self.target_ball_memory and not confident_balls:
-            # Look for balls with lower confidence near the remembered position
-            relaxed_balls = [ball for ball in balls if ball.confidence > 0.15] if balls else []
-            
-            for ball in relaxed_balls:
-                # Check if this ball is close to our remembered target
-                distance = np.sqrt(
-                    (ball.center[0] - self.target_ball_memory.center[0])**2 +
-                    (ball.center[1] - self.target_ball_memory.center[1])**2
-                )
-                
-                if distance < 50:  # Within 50 pixels of remembered position
-                    # Boost confidence and use this ball
-                    ball.confidence = max(ball.confidence, 0.4)
-                    confident_balls = [ball]
-                    self.logger.info(f"Recovered target ball near expected position (distance: {distance:.0f}px)")
-                    break
-        
-        # Handle ball loss with grace period
-        if not confident_balls:
-            if self.target_ball_memory:
-                if self.target_lost_time is None:
-                    self.target_lost_time = current_time
-                    self.logger.info("Target ball temporarily lost - starting grace period")
-                    return  # Don't give up immediately
-                elif current_time - self.target_lost_time < self.max_target_lost_time:
-                    self.logger.info(f"Waiting for ball recovery ({current_time - self.target_lost_time:.1f}s)")
-                    return  # Still in grace period
-            
-            # Grace period expired or no memory
+        """SIMPLIFIED: Get ball into precise target zone in center of screen"""
+        if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
-            self.target_ball_memory = None
-            self.target_lost_time = None
             self.state = RobotState.SEARCHING
             return
         
-        # We have confident balls - reset loss tracking
-        self.target_lost_time = None
+        # Filter for confident balls
+        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
         
-        # Select target ball (prefer one close to memory if available)
-        if self.target_ball_memory and len(confident_balls) > 1:
-            # Find ball closest to remembered position
-            target_ball = min(confident_balls, key=lambda b: np.sqrt(
-                (b.center[0] - self.target_ball_memory.center[0])**2 +
-                (b.center[1] - self.target_ball_memory.center[1])**2
-            ))
-        else:
-            # Use closest ball to center
-            target_ball = confident_balls[0]
+        if not confident_balls:
+            self.logger.info("No confident ball detections during centering - returning to search")
+            self.state = RobotState.SEARCHING
+            return
         
-        # Update memory
-        self.target_ball_memory = target_ball
+        # Target the closest confident ball
+        target_ball = confident_balls[0]
         
-        # Check if ball is in target zone
+        # Check if ball is in the precise target zone
         if self.vision.is_ball_centered_for_collection(target_ball):
-            self.logger.info(f"White ball in TARGET ZONE! Starting collection")
+            # Ball is in target zone - start collection!
+            self.logger.info(f"White ball in TARGET ZONE! Starting collection with fixed drive")
             self.state = RobotState.COLLECTING_BALL
             return
         
-        # Get movement adjustments
+        # Ball not in target zone - get movement to position it
         x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
         
-        # PRIORITY 1: Y-axis (distance) - but more conservative movements
-        if y_direction != 'centered':
-            if y_direction == 'forward':
-                self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
-                                        speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving forward (Y-axis first)")
-            elif y_direction == 'backward':
-                self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
-                                        speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving backward (Y-axis first)")
-            
-            time.sleep(0.03)
-            return
-        
-        # PRIORITY 2: X-axis (left/right fine-tuning)
+        # Move ball toward target zone - prioritize the axis that's furthest off
         if x_direction != 'centered':
             if x_direction == 'right':
                 self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning right (X-axis fine-tune)")
+                    self.logger.info(f"Positioning to target zone: turning right")
             elif x_direction == 'left':
                 self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
                                     speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning left (X-axis fine-tune)")
+                    self.logger.info(f"Positioning to target zone: turning left")
+            
+            time.sleep(0.03)
+            return
+        
+        # X is centered, now work on Y
+        if y_direction != 'centered':
+            if y_direction == 'forward':
+                self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
+                                        speed=config.CENTERING_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"Positioning to target zone: moving forward")
+            elif y_direction == 'backward':
+                self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
+                                        speed=config.CENTERING_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"Positioning to target zone: moving backward")
             
             time.sleep(0.03)
             return
