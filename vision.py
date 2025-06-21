@@ -101,32 +101,6 @@ class VisionSystem:
         self.arena_mask = None
         self.arena_detected = False
         self.arena_contour = None
-        
-    def _calculate_collection_zone(self):
-        """Calculate the collection zone boundaries"""
-        horizontal_margin = config.CAMERA_WIDTH * 0.3
-        left_boundary = int(horizontal_margin)
-        right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
-        
-        vertical_threshold = int(config.CAMERA_HEIGHT * 0.4)
-        bottom_boundary = config.CAMERA_HEIGHT
-        
-        return {
-            'left': left_boundary,
-            'right': right_boundary, 
-            'top': vertical_threshold,
-            'bottom': bottom_boundary
-        }
-    
-    def is_in_collection_zone(self, ball_center: Tuple[int, int]) -> bool:
-        """Check if ball center is in the collection zone"""
-        x, y = ball_center
-        zone = self.collection_zone
-        
-        horizontal_ok = zone['left'] <= x <= zone['right']
-        vertical_ok = zone['top'] <= y <= zone['bottom']
-        
-        return horizontal_ok and vertical_ok
     
     # === BALL CENTERING METHODS ===
     def is_ball_centered(self, ball: DetectedObject) -> bool:
@@ -190,12 +164,15 @@ class VisionSystem:
         return drive_time
     
     def detect_excluded_areas(self, frame):
-        """Detect white containers/cages where balls should be excluded"""
+        """Detect white containers/cages where balls should be excluded in the bottom 30% of the image"""
         if frame is None:
             return None
         
         h, w = frame.shape[:2]
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        bottom_start = int(h * 0.7)  # Only look in bottom 30%
+        cropped_frame = frame[bottom_start:h, :]
+        
+        hsv = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2HSV)
         
         # Detect white/light colored containers (like the cage in your image)
         # More restrictive white detection for containers
@@ -208,7 +185,7 @@ class VisionSystem:
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel, iterations=2)
         
-        # Find large white structures (containers/cages)
+        # Find contours in the cropped mask
         contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         exclusion_zones = []
@@ -226,15 +203,15 @@ class VisionSystem:
                     margin = 10
                     exclusion_zone = {
                         'x': max(0, x - margin),
-                        'y': max(0, y - margin), 
+                        'y': max(0, y + bottom_start - margin),  # Shift y back to full image coordinates
                         'width': min(w - x + margin, w_rect + 2*margin),
-                        'height': min(h - y + margin, h_rect + 2*margin),
+                        'height': min(h - (y + bottom_start) + margin, h_rect + 2*margin),
                         'area': area
                     }
                     exclusion_zones.append(exclusion_zone)
                     
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y})")
+                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y + bottom_start})")
         
         return exclusion_zones
 
@@ -270,10 +247,13 @@ class VisionSystem:
         self.arena_detected = self.boundary_system.arena_detected
         self.arena_contour = self.boundary_system.arena_contour
         
-        # NEW: Get exclusion zones for containers/cages
+        # Get exclusion zones for containers/cages
         exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
+        
+        # Define bottom exclusion line - EXCLUDE BOTTOM 30%
+        bottom_exclusion_start = int(h * 0.7)  # Bottom 30% exclusion
         
         # Convert to grayscale for HoughCircles
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -303,12 +283,18 @@ class VisionSystem:
             for (x, y, radius) in circles:
                 center = (x, y)
                 
+                # FIRST CHECK: Skip balls in bottom 30% entirely
+                if y >= bottom_exclusion_start:
+                    if config.DEBUG_VISION:
+                        self.logger.debug(f"Ball at {center} excluded - in bottom 30%")
+                    continue
+                
                 # Verify center is within arena
                 if (self.arena_mask is not None and 
                     0 <= y < h and 0 <= x < w and
                     self.arena_mask[y, x] > 0):
                     
-                    # NEW: Check if ball is in exclusion zone (container/cage)
+                    # Check if ball is in exclusion zone (container/cage)
                     if self.is_ball_in_exclusion_zone(center, exclusion_zones):
                         if config.DEBUG_VISION:
                             self.logger.debug(f"Ball at {center} excluded - inside container")
@@ -323,7 +309,7 @@ class VisionSystem:
                             (center[1] - self.frame_center_y)**2
                         )
                         
-                        in_collection_zone = self.is_in_collection_zone(center)
+                        in_collection_zone = self.is_ball_in_target_zone(center)
                         area = int(np.pi * radius * radius)
                         
                         ball = DetectedObject(
@@ -353,10 +339,14 @@ class VisionSystem:
         # Update local references for compatibility
         self.arena_mask = self.boundary_system.arena_mask
         
-        # NEW: Get exclusion zones for containers/cages
+        # Get exclusion zones for containers/cages
         exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
+        
+        # Define bottom exclusion line - EXCLUDE BOTTOM 30%
+        bottom_exclusion_start = int(h * 0.7)  # Bottom 30% exclusion
+        
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
         # White ball detection only
@@ -390,11 +380,17 @@ class VisionSystem:
                         center = (int(x), int(y))
                         radius = int(radius)
                         
+                        # FIRST CHECK: Skip balls in bottom 30% entirely
+                        if center[1] >= bottom_exclusion_start:
+                            if config.DEBUG_VISION:
+                                self.logger.debug(f"Ball at {center} excluded - in bottom 30%")
+                            continue
+                        
                         if (config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS and
                             0 <= center[1] < h and 0 <= center[0] < w and
                             self.arena_mask[center[1], center[0]] > 0):
                             
-                            # NEW: Check if ball is in exclusion zone (container/cage)
+                            # Check if ball is in exclusion zone (container/cage)
                             if self.is_ball_in_exclusion_zone(center, exclusion_zones):
                                 if config.DEBUG_VISION:
                                     self.logger.debug(f"Ball at {center} excluded - inside container")
@@ -420,7 +416,7 @@ class VisionSystem:
                                         (center[1] - self.frame_center_y)**2
                                     )
                                     
-                                    in_collection_zone = self.is_in_collection_zone(center)
+                                    in_collection_zone = self.is_ball_in_target_zone(center)
                                     
                                     ball = DetectedObject(
                                         object_type='ball',  # Only white balls
@@ -556,7 +552,7 @@ class VisionSystem:
         target_ball = self.get_target_ball(detected_objects)
         
         if target_ball:
-            if target_ball.in_collection_zone:
+            if self.is_ball_in_target_zone(target_ball.center):
                 return "collect_ball"
             else:
                 return self._get_direction_to_object(target_ball)
@@ -762,81 +758,80 @@ class VisionSystem:
         return result
     
     def draw_detections_clean(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Clean detection visualization for dashboard (essential overlays only) - WHITE BALLS ONLY"""
+        """Clean detection visualization with ONLY the target zone that matters"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # 1. ZONE BOUNDARIES (keep these visible)
-        # Collection zone
+        # 1. ONLY SHOW THE TARGET ZONE THAT ACTUALLY MATTERS
         zone = self.collection_zone
-        cv2.rectangle(result, (zone['left'], zone['top']), 
-                     (zone['right'], zone['bottom']), (0, 255, 0), 2)
         
-        # Centering tolerance lines
-        tolerance = getattr(config, 'CENTERING_TOLERANCE', 15)
-        distance_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 20)
-        center_x = self.frame_center_x
-        center_y = self.frame_center_y
+        # PRECISE TARGET ZONE - the only zone that matters for collection (bright yellow, thick)
+        cv2.rectangle(result, (zone['target_left'], zone['target_top']), 
+                    (zone['target_right'], zone['target_bottom']), (0, 255, 255), 3)
         
-        # Vertical lines (left/right centering)
-        left_line = center_x - tolerance
-        right_line = center_x + tolerance
-        cv2.line(result, (left_line, 0), (left_line, h), (0, 255, 255), 1)
-        cv2.line(result, (right_line, 0), (right_line, h), (0, 255, 255), 1)
+        # Add target zone label
+        cv2.putText(result, "COLLECTION TARGET", (zone['target_left'] + 5, zone['target_top'] - 5), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
         
-        # Horizontal lines (distance centering)
-        top_line = center_y - distance_tolerance
-        bottom_line = center_y + distance_tolerance
-        cv2.line(result, (0, top_line), (w, top_line), (0, 255, 255), 1)
-        cv2.line(result, (0, bottom_line), (w, bottom_line), (0, 255, 255), 1)
+        # Target zone crosshair (center point)
+        target_cx, target_cy = zone['target_center_x'], zone['target_center_y']
+        cv2.circle(result, (target_cx, target_cy), 3, (0, 255, 255), 2)
+        cv2.line(result, (target_cx-8, target_cy), (target_cx+8, target_cy), (0, 255, 255), 1)
+        cv2.line(result, (target_cx, target_cy-8), (target_cx, target_cy+8), (0, 255, 255), 1)
         
-        # 2. WALL/BOUNDARY DETECTION (safety critical)
+        # 2. WALL/BOUNDARY DETECTION
         if hasattr(self.boundary_system, 'detected_walls') and self.boundary_system.detected_walls:
             for wall in self.boundary_system.detected_walls:
                 if wall.get('triggered', False):
                     x, y, w_rect, h_rect = wall['bbox']
                     cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 3)
         
-        # 3. BALL DETECTIONS (WHITE BALLS ONLY)
+        # 3. BALL DETECTIONS
         for ball in balls:
             is_target = (self.current_target and 
                         self.current_target.center == ball.center)
             
-            # All balls are white now
             color = (0, 255, 0)  # Green for white balls
             ball_char = 'B'
             
             if is_target:
-                # TARGET BALL - prominent display
-                cv2.circle(result, ball.center, ball.radius + 3, color, 3)
-                cv2.circle(result, ball.center, 3, (0, 255, 255), -1)
+                # Check if ball is in target zone (the ONLY zone that matters)
+                in_target_zone = self.is_ball_in_target_zone(ball.center)
                 
-                # Arrow to target
-                cv2.arrowedLine(result, (self.frame_center_x, self.frame_center_y), 
-                               ball.center, (0, 255, 255), 2)
-                
-                # Centering status (minimal indicator)
-                centered = self.is_ball_centered(ball)
-                center_color = (0, 255, 0) if centered else (0, 0, 255)
-                status = "✓" if centered else "⊙"
-                cv2.putText(result, status, (ball.center[0]-8, ball.center[1]-20), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, center_color, 2)
+                if in_target_zone:
+                    # Ball is in target zone - READY FOR COLLECTION!
+                    cv2.circle(result, ball.center, ball.radius + 4, (0, 255, 0), 4)
+                    cv2.circle(result, ball.center, 4, (0, 255, 0), -1)
+                    cv2.putText(result, "COLLECT!", (ball.center[0]-30, ball.center[1]-30), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                else:
+                    # Ball being positioned to target zone
+                    cv2.circle(result, ball.center, ball.radius + 3, (255, 255, 0), 3)
+                    cv2.circle(result, ball.center, 3, (0, 255, 255), -1)
+                    
+                    # Show positioning arrow toward target zone
+                    cv2.arrowedLine(result, ball.center, (target_cx, target_cy), (0, 255, 255), 2)
+                    
+                    # Distance to target zone
+                    distance = int(np.sqrt((ball.center[0] - target_cx)**2 + (ball.center[1] - target_cy)**2))
+                    cv2.putText(result, f"{distance}px", (ball.center[0]-15, ball.center[1]-20), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
             else:
-                # OTHER BALLS - simple display
+                # OTHER BALLS
                 cv2.circle(result, ball.center, ball.radius, color, 2)
                 cv2.circle(result, ball.center, 2, color, -1)
             
             # Ball type indicator
             cv2.putText(result, ball_char, (ball.center[0]-5, ball.center[1]+5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
-        # 4. CENTER CROSSHAIR
+        # 4. FRAME CENTER CROSSHAIR (for reference)
         cx, cy = self.frame_center_x, self.frame_center_y
-        cv2.line(result, (cx-10, cy), (cx+10, cy), (255, 255, 255), 1)
-        cv2.line(result, (cx, cy-10), (cx, cy+10), (255, 255, 255), 1)
+        cv2.line(result, (cx-6, cy), (cx+6, cy), (255, 255, 255), 1)
+        cv2.line(result, (cx, cy-6), (cx, cy+6), (255, 255, 255), 1)
         
         return result
     
@@ -865,6 +860,109 @@ class VisionSystem:
             debug_frame = self.draw_detections_legacy(frame, balls)
         
         return balls, orange_ball, near_boundary, nav_command, debug_frame
+    
+
+    def _calculate_collection_zone(self):
+        """Calculate ONLY the target zone that actually matters for collection"""
+        
+        # TARGET ZONE: Use config parameters for positioning and sizing
+        center_x = config.CAMERA_WIDTH // 2
+        
+        # Position target zone vertically using config parameter
+        vertical_pos = getattr(config, 'TARGET_ZONE_VERTICAL_POSITION', 0.65)
+        center_y = int(config.CAMERA_HEIGHT * vertical_pos)
+        
+        # Target zone size from config
+        target_width = getattr(config, 'TARGET_ZONE_WIDTH', 60)
+        target_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
+        
+        target_left = center_x - (target_width // 2)
+        target_right = center_x + (target_width // 2)
+        target_top = center_y - (target_height // 2)
+        target_bottom = center_y + (target_height // 2)
+        
+        return {
+            # ONLY the target zone that actually matters
+            'target_left': target_left,
+            'target_right': target_right,
+            'target_top': target_top,
+            'target_bottom': target_bottom,
+            'target_center_x': center_x,
+            'target_center_y': center_y
+        }
+
+    def is_ball_in_target_zone(self, ball_center: Tuple[int, int]) -> bool:
+        """Check if ball is in the precise target zone (small area in center)"""
+        x, y = ball_center
+        zone = self.collection_zone
+        
+        horizontal_ok = zone['target_left'] <= x <= zone['target_right']
+        vertical_ok = zone['target_top'] <= y <= zone['target_bottom']
+        
+        return horizontal_ok and vertical_ok
+
+    def is_ball_centered_for_collection(self, ball: DetectedObject) -> bool:
+        """Check if ball is perfectly positioned in the small target zone"""
+        # Simply check if ball is in the precise target zone - no additional centering needed
+        return self.is_ball_in_target_zone(ball.center)
+
+    def get_drive_time_to_collection(self) -> float:
+        """Get fixed drive time from target zone to collection point"""
+        # This should be calibrated based on your robot's speed and the distance
+        # from the target zone to where the ball needs to be for servo collection
+        return getattr(config, 'FIXED_COLLECTION_DRIVE_TIME', 1.0)  # 1 second default
+
+    def get_centering_adjustment_v2(self, ball: DetectedObject) -> tuple:
+        """Adaptive centering tolerances based on distance"""
+        ball_x, ball_y = ball.center
+        zone = self.collection_zone
+        
+        target_center_x = zone['target_center_x']
+        target_center_y = zone['target_center_y']
+        
+        # Calculate distance to determine tolerance
+        distance_to_target = np.sqrt((ball_x - target_center_x)**2 + (ball_y - target_center_y)**2)
+        
+        # ADAPTIVE TOLERANCES based on distance
+        if distance_to_target > 80:
+            # Far away - use larger tolerances to avoid micro-adjustments
+            x_tolerance = 20
+            y_tolerance = 15
+            hysteresis = 5
+        elif distance_to_target > 40:
+            # Medium distance - balanced tolerances
+            x_tolerance = 12
+            y_tolerance = 10
+            hysteresis = 3
+        else:
+            # Close - precise tolerances
+            x_tolerance = 8
+            y_tolerance = 6
+            hysteresis = 2
+        
+        # X-axis with adaptive tolerance
+        x_offset = ball_x - target_center_x
+        if abs(x_offset) <= x_tolerance:
+            x_direction = 'centered'
+        elif x_offset > x_tolerance + hysteresis:
+            x_direction = 'right'
+        elif x_offset < -(x_tolerance + hysteresis):
+            x_direction = 'left'
+        else:
+            x_direction = 'centered'  # In hysteresis zone
+        
+        # Y-axis with adaptive tolerance
+        y_offset = ball_y - target_center_y
+        if abs(y_offset) <= y_tolerance:
+            y_direction = 'centered'
+        elif y_offset > y_tolerance + hysteresis:
+            y_direction = 'backward'
+        elif y_offset < -(y_tolerance + hysteresis):
+            y_direction = 'forward'
+        else:
+            y_direction = 'centered'  # In hysteresis zone
+        
+        return x_direction, y_direction
     
     # === DELEGATE PROPERTIES FOR COMPATIBILITY ===
     @property

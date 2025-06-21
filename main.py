@@ -4,6 +4,7 @@ import cv2
 import signal
 import sys
 import os
+import numpy as np
 from enum import Enum
 from typing import Optional
 import config
@@ -64,6 +65,18 @@ class GolfBot:
         # Performance tracking
         self.last_frame_time = time.time()
         self.frame_skip_counter = 0  # Skip frames for performance
+
+        #Centering enhancements
+        self.centering_history = []  # Track recent centering moves
+        self.centering_stable_count = 0  # Count of stable frames
+        self.last_centering_direction = None
+        self.direction_change_count = 0
+        self.min_stable_frames = 3  #
+
+        # NEW: Distance-based and timeout system
+        self.centering_start_time = None
+        self.centering_attempts = 0
+        self.last_significant_progress = None
         
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -229,29 +242,79 @@ class GolfBot:
         self.end_competition()
     
     def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute current state logic with enhanced ball centering and collection - WHITE BALLS ONLY"""
+        """Execute state logic with ball detection priority - WHITE BALLS ONLY"""
         
-        # Always check for boundary first (but allow collection to complete)
-        if near_boundary and self.state not in [RobotState.COLLECTING_BALL]:
+        # HIGH PRIORITY: Never interrupt active collection
+        if self.state == RobotState.COLLECTING_BALL:
+            self.handle_collecting_ball()
+            return
+        
+        # MEDIUM PRIORITY: Protect ball operations if we have good targets
+        confident_balls = [ball for ball in balls if ball.confidence > 0.4] if balls else []
+        has_good_target = bool(confident_balls)
+        
+        # SMART BOUNDARY AVOIDANCE: Only interrupt ball operations if:
+        # 1. No confident balls detected, OR
+        # 2. Currently just searching (not actively pursuing), OR
+        # 3. Boundary is critically close (imminent collision)
+        should_avoid_boundary = (
+            near_boundary and (
+                not has_good_target or 
+                self.state == RobotState.SEARCHING or
+                self._is_boundary_critical()
+            )
+        )
+        
+        if should_avoid_boundary:
+            # Log why we're switching to boundary avoidance
+            reason = "no_balls" if not has_good_target else "searching" if self.state == RobotState.SEARCHING else "critical_proximity"
+            if config.DEBUG_MOVEMENT:
+                self.logger.info(f"⚠️ Boundary avoidance triggered: {reason}")
             self.state = RobotState.AVOIDING_BOUNDARY
         
+        # Execute current state
         if self.state == RobotState.SEARCHING:
             self.handle_searching(balls, nav_command)
             
-        elif self.state == RobotState.CENTERING_BALL:  # Enhanced with X+Y centering
+        elif self.state == RobotState.CENTERING_BALL:
+            # Check for centering timeout and force progression
+            if hasattr(self, 'centering_start_time') and self.centering_start_time:
+                elapsed = time.time() - self.centering_start_time
+                if elapsed > 10.0:  # Hard timeout - give up and search
+                    self.logger.warning(f"HARD centering timeout ({elapsed:.1f}s) - returning to search")
+                    self.state = RobotState.SEARCHING
+                    self._reset_centering_state()
+                    return
+            
             self.handle_centering_ball(balls, nav_command)
             
         elif self.state == RobotState.APPROACHING_BALL:
             self.handle_approaching_ball(balls, nav_command)
-            
-        elif self.state == RobotState.COLLECTING_BALL:  # Enhanced sequence
-            self.handle_collecting_ball()
             
         elif self.state == RobotState.AVOIDING_BOUNDARY:
             self.handle_avoiding_boundary(near_boundary)
             
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
+
+    def _is_boundary_critical(self) -> bool:
+        """Check if boundary is critically close (imminent collision)"""
+        try:
+            # Check if boundary system has distance measurement
+            if hasattr(self.vision.boundary_system, 'get_closest_boundary_distance'):
+                min_distance = self.vision.boundary_system.get_closest_boundary_distance()
+                return min_distance < 15  # Very close - immediate danger
+            
+            # Fallback: check if multiple walls are triggered
+            if hasattr(self.vision.boundary_system, 'detected_walls'):
+                triggered_walls = [w for w in self.vision.boundary_system.detected_walls 
+                                 if w.get('triggered', False)]
+                return len(triggered_walls) >= 2  # Multiple walls = corner/tight spot
+                
+        except Exception as e:
+            self.logger.warning(f"Boundary critical check failed: {e}")
+        
+        return False  # Default to not critical
     
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
@@ -271,146 +334,393 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """FIXED: Center the ball in both X and Y axes before collection - WHITE BALLS ONLY"""
+        """ADAPTIVE CENTERING: Distance-based movement + timeout system"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
+            self._reset_centering_state()
             return
         
         # Filter for confident balls
-        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
+        confident_balls = [ball for ball in balls if ball.confidence > 0.3]
         
         if not confident_balls:
             self.logger.info("No confident ball detections during centering - returning to search")
             self.state = RobotState.SEARCHING
+            self._reset_centering_state()
             return
         
         # Target the closest confident ball
         target_ball = confident_balls[0]
         
-        # Check if ball is fully centered (both X and Y)
-        if self.vision.is_ball_centered(target_ball):
-            # Ball is centered - calculate drive time and start collection
-            drive_time = self.vision.calculate_drive_time_to_ball(target_ball)
+        # Initialize centering session if needed
+        if self.centering_start_time is None:
+            self.centering_start_time = time.time()
+            self.centering_attempts = 0
+            self.logger.info("Starting centering session")
+        
+        # Check if ball is in the precise target zone
+        if self.vision.is_ball_centered_for_collection(target_ball):
+            self.centering_stable_count += 1
             
-            self.logger.info(f"White ball fully centered! Starting collection (drive time: {drive_time:.2f}s)")
-            self.state = RobotState.COLLECTING_BALL
-            return
+            if self.centering_stable_count >= self.min_stable_frames:
+                elapsed_time = time.time() - self.centering_start_time
+                self.logger.info(f"White ball STABLE in target zone! (took {elapsed_time:.1f}s, {self.centering_attempts} attempts)")
+                self.state = RobotState.COLLECTING_BALL
+                self._reset_centering_state()
+                return
+            else:
+                self.logger.info(f"Ball in target zone - verifying stability ({self.centering_stable_count}/{self.min_stable_frames})")
+                time.sleep(0.1)
+                return
+        else:
+            # Ball moved out of target zone - reset stability counter
+            self.centering_stable_count = 0
         
-        # Ball not fully centered - get centering adjustments for both axes
-        x_direction, y_direction = self.vision.get_centering_adjustment(target_ball)
+        # Calculate distance from ball to target zone center
+        ball_x, ball_y = target_ball.center
+        target_x = self.vision.collection_zone['target_center_x']
+        target_y = self.vision.collection_zone['target_center_y']
         
-        # PRIORITY 1: X-axis centering (left/right) - FASTER
-        if x_direction != 'centered':
+        distance_to_target = np.sqrt((ball_x - target_x)**2 + (ball_y - target_y)**2)
+        x_error = abs(ball_x - target_x)
+        y_error = abs(ball_y - target_y)
+        
+        # ADAPTIVE STRATEGY based on distance and time
+        elapsed_time = time.time() - self.centering_start_time
+        self.centering_attempts += 1
+        
+        # Get movement direction
+        x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
+        
+        # === STRATEGY 1: BALL IS FAR AWAY (>80 pixels) - AGGRESSIVE APPROACH ===
+        if distance_to_target > 80:
+            self.logger.info(f"Ball far from target ({distance_to_target:.0f}px) - using aggressive centering")
+            
+            # Use normal speed and duration for far distances
+            movement_duration = config.CENTERING_TURN_DURATION
+            movement_speed = config.CENTERING_SPEED
+            post_delay = 0.03
+            
+            # Larger deadbands for far distances (avoid micro-adjustments)
+            min_x_error = 15
+            min_y_error = 12
+        
+        # === STRATEGY 2: BALL IS CLOSE (40-80 pixels) - BALANCED APPROACH ===
+        elif distance_to_target > 40:
+            self.logger.info(f"Ball moderately close ({distance_to_target:.0f}px) - using balanced centering")
+            
+            movement_duration = config.CENTERING_TURN_DURATION * 0.8
+            movement_speed = config.CENTERING_SPEED * 0.9
+            post_delay = 0.05
+            
+            min_x_error = 10
+            min_y_error = 8
+        
+        # === STRATEGY 3: BALL IS VERY CLOSE (<40 pixels) - PRECISE APPROACH ===
+        else:
+            self.logger.info(f"Ball very close ({distance_to_target:.0f}px) - using precise centering")
+            
+            # Apply oscillation detection only for close-range precision work
+            if self.direction_change_count >= 3:
+                self.logger.warning("OSCILLATION DETECTED in precision mode - using micro movements")
+                movement_duration = config.CENTERING_TURN_DURATION * 0.4
+                movement_speed = config.CENTERING_SPEED * 0.6
+                post_delay = 0.15
+                min_x_error = 12  # Larger deadband when oscillating
+                min_y_error = 10
+            else:
+                movement_duration = config.CENTERING_TURN_DURATION * 0.7
+                movement_speed = config.CENTERING_SPEED * 0.8
+                post_delay = 0.08
+                min_x_error = 6
+                min_y_error = 5
+
+        # === TIMEOUT SYSTEM: GIVE UP ON DIFFICULT BALLS ===
+        max_centering_time = 12.0  # Increased timeout for better success rate
+        max_attempts_without_progress = 30  # More attempts
+
+        if (elapsed_time > max_centering_time or 
+            self.centering_attempts > max_attempts_without_progress):
+            
+            self.logger.warning(f"Centering timeout ({elapsed_time:.1f}s, {self.centering_attempts} attempts)")
+            
+            # ONLY proceed if ball is actually in target zone
+            if self.vision.is_ball_in_target_zone(target_ball.center):
+                self.logger.info("✅ Ball IS in target zone despite timeout - proceeding with collection")
+                self.state = RobotState.COLLECTING_BALL
+                self._reset_centering_state()
+                return
+            else:
+                # Give up on this ball and find an easier target
+                self.logger.info("❌ Ball NOT in target zone after timeout - abandoning this ball")
+                self.state = RobotState.SEARCHING
+                self._reset_centering_state()
+                return
+        
+        # === MOVEMENT EXECUTION ===
+        movement_made = False
+        
+        # Track direction changes for oscillation detection
+        current_direction = x_direction if x_direction != 'centered' else y_direction
+        if (self.last_centering_direction and 
+            current_direction != 'centered' and 
+            self.last_centering_direction != 'centered' and
+            current_direction != self.last_centering_direction):
+            self.direction_change_count += 1
+        
+        # PRIORITIZE X-AXIS (turning) when ball is far
+        if x_direction != 'centered' and x_error > min_x_error:
             if x_direction == 'right':
-                self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
-                                        speed=config.CENTERING_SPEED)
+                self.hardware.turn_right(duration=movement_duration, speed=movement_speed)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering X: turning right (faster)")
+                    self.logger.info(f"Centering: turn right (x_error: {x_error:.0f}px, dist: {distance_to_target:.0f}px)")
             elif x_direction == 'left':
-                self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
-                                       speed=config.CENTERING_SPEED)
+                self.hardware.turn_left(duration=movement_duration, speed=movement_speed)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering X: turning left (faster)")
+                    self.logger.info(f"Centering: turn left (x_error: {x_error:.0f}px, dist: {distance_to_target:.0f}px)")
             
-            time.sleep(0.03)  # Short pause for stability
-            return  # Handle one axis at a time for stability
+            movement_made = True
+            self.last_centering_direction = x_direction
         
-        # PRIORITY 2: Y-axis centering (distance - forward/backward)
-        if y_direction != 'centered':
+        # Y-AXIS (forward/backward) only if X is reasonably centered
+        elif y_direction != 'centered' and y_error > min_y_error:
             if y_direction == 'forward':
-                self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
-                                          speed=config.CENTERING_SPEED)
+                self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, speed=movement_speed)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering Y: moving forward (closer)")
+                    self.logger.info(f"Centering: forward (y_error: {y_error:.0f}px, dist: {distance_to_target:.0f}px)")
             elif y_direction == 'backward':
-                self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
-                                           speed=config.CENTERING_SPEED)
+                self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, speed=movement_speed)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Centering Y: moving backward (farther)")
+                    self.logger.info(f"Centering: backward (y_error: {y_error:.0f}px, dist: {distance_to_target:.0f}px)")
             
-            time.sleep(0.03)  # Short pause for stability
-            return
+            movement_made = True
+            self.last_centering_direction = y_direction
         
-        # If we reach here, both axes should be centered
-        if config.DEBUG_MOVEMENT:
-            self.logger.info("Both X and Y axes centered!")
-    
-    def handle_approaching_ball(self, balls, nav_command):
-        """Handle approaching with confidence tracking (legacy mode) - WHITE BALLS ONLY"""
-        if not balls:
-            self.logger.info("Lost sight of all white balls - returning to search")
-            self.state = RobotState.SEARCHING
-            return
-        
-        # Filter for confident balls
-        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
-        
-        if not confident_balls:
-            self.logger.info("No confident white ball detections - returning to search")
-            self.state = RobotState.SEARCHING
-            return
-        
-        # Target the closest confident ball
-        target_ball = confident_balls[0]
-        
-        if target_ball.in_collection_zone:
-            self.logger.info(f"White ball in collection zone - attempting collection (confidence: {target_ball.confidence:.2f})")
-            self.state = RobotState.COLLECTING_BALL
-            return
-        
-        # Navigate toward ball
-        self.execute_navigation_command(nav_command)
+        if movement_made:
+            time.sleep(post_delay)
+        else:
+            if config.DEBUG_MOVEMENT:
+                self.logger.info(f"Ball within tolerances (x:{x_error:.0f}, y:{y_error:.0f}, dist:{distance_to_target:.0f}px)")
+            time.sleep(0.1)
+
+
+    def _reset_centering_state(self):
+        """Reset centering state tracking"""
+        self.centering_history = []
+        self.centering_stable_count = 0
+        self.last_centering_direction = None
+        self.direction_change_count = 0
+        self.centering_start_time = None
+        self.centering_attempts = 0
+        self.last_significant_progress = None
     
     def handle_collecting_ball(self):
-        """Handle ball collection with new enhanced sequence (vision-free) - WHITE BALLS ONLY"""
+        """Handle ball collection with PROPER sequence: servo up -> drive -> servo down"""
         current_target = self.vision.current_target
         
         if current_target:
             confidence = current_target.confidence
-            self.logger.info(f"Starting enhanced collection of white ball (confidence: {confidence:.2f})...")
+            self.logger.info(f"Starting collection: white ball (confidence: {confidence:.2f})")
         else:
-            self.logger.info("Starting enhanced white ball collection...")
+            self.logger.info("Starting collection: white ball")
         
-        # Execute new collection sequence (vision-free)
-        success = self.hardware.enhanced_collection_sequence()
+        # Get the fixed drive time from vision system
+        drive_time = self.vision.get_drive_time_to_collection()
+        self.logger.info(f"Using collection sequence: servo up -> drive {drive_time:.2f}s -> servo down")
+        
+        # STEP 1: PREPARE SERVOS FOR COLLECTION (SERVO UP)
+        self.logger.info("Step 1: Preparing servos for collection (UP)")
+        success = self.prepare_servos_for_collection()
+        if not success:
+            self.logger.warning("Failed to prepare servos - aborting collection")
+            self.state = RobotState.SEARCHING
+            return
+        
+        # STEP 2: DRIVE FORWARD TO BALL
+        self.logger.info("Step 2: Driving forward to ball")
+        self.hardware.move_forward(duration=drive_time, speed=config.COLLECTION_SPEED)
+        time.sleep(0.1)
+        
+        # STEP 3: COMPLETE COLLECTION (SERVO DOWN/GRAB)
+        self.logger.info("Step 3: Completing collection (DOWN)")
+        success = self.complete_servo_collection()
         
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ White ball collected with enhanced sequence! Total: {total_balls}")
+            self.logger.info(f"✅ White ball collected with proper sequence! Total: {total_balls}")
         else:
-            self.logger.warning(f"❌ White ball enhanced collection failed")
+            self.logger.warning(f"❌ White ball collection failed")
         
         # Return to searching
         self.state = RobotState.SEARCHING
+
+    def execute_servo_collection_only(self):
+        """Execute just the servo collection sequence without driving"""
+        try:
+            if config.DEBUG_COLLECTION:
+                self.logger.info("🚀 Executing servo-only collection sequence...")
+            
+            # Step 1: Prepare SF for catching
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 1: Preparing SF for catching")
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Step 2: Move SS from driving to pre-collect position
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 2: Moving SS from DRIVING to PRE-COLLECT")
+            self.hardware.servo_ss_to_pre_collect()
+            time.sleep(0.2)
+            
+            # Step 3: Coordinate collection - SS captures, SF assists
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 3: Coordinated collection - SS collect, SF catch")
+            self.hardware.servo_ss_to_collect()
+            time.sleep(0.15)
+            self.hardware.servo_sf_to_catch()
+            time.sleep(0.3)
+            
+            # Step 4: Move SS to store position (secure ball)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 4: Moving SS to STORE position (secure)")
+            self.hardware.servo_ss_to_store()
+            time.sleep(0.3)
+            
+            # Step 5: Return both servos to ready positions
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 5: Returning servos to ready positions")
+            self.hardware.servo_ss_to_driving()
+            time.sleep(0.1)
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Record collection
+            self.hardware.collected_balls.append(time.time())
+            
+            if config.DEBUG_COLLECTION:
+                ss_state = self.hardware.get_servo_ss_state()
+                self.logger.info(f"✅ Servo collection complete! SS state: {ss_state.upper()}")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Servo collection sequence failed: {e}")
+            self.hardware.stop_motors()
+            # Ensure we return to ready positions on error
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_ready()
+            return False
+        
+    def prepare_servos_for_collection(self):
+        """Prepare servos for collection - put them in position to catch ball"""
+        try:
+            if config.DEBUG_COLLECTION:
+                self.logger.info("🚀 Preparing servos for collection...")
+            
+            # Step 1: Prepare SF for catching
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Preparing SF for catching")
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Step 2: Move SS from driving to pre-collect position
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Moving SS from DRIVING to PRE-COLLECT")
+            self.hardware.servo_ss_to_pre_collect()
+            time.sleep(0.2)
+            
+            if config.DEBUG_COLLECTION:
+                self.logger.info("✅ Servos prepared for collection")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to prepare servos for collection: {e}")
+            # Ensure we return to safe positions on error
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_ready()
+            return False
+        
+    def complete_servo_collection(self):
+        """Complete the servo collection sequence after driving"""
+        try:
+            if config.DEBUG_COLLECTION:
+                self.logger.info("🤏 Completing servo collection sequence...")
+            
+            # Step 1: Coordinate collection - SS captures, SF assists
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Coordinated collection - SS collect, SF catch")
+            self.hardware.servo_ss_to_collect()
+            time.sleep(0.15)
+            self.hardware.servo_sf_to_catch()
+            time.sleep(0.3)
+            
+            # Step 2: Move SS to store position (secure ball)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Moving SS to STORE position (secure)")
+            self.hardware.servo_ss_to_store()
+            time.sleep(0.3)
+            
+            # Step 3: Return both servos to ready positions
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Returning servos to ready positions")
+            self.hardware.servo_ss_to_driving()
+            time.sleep(0.1)
+            self.hardware.servo_sf_to_ready()
+            time.sleep(0.2)
+            
+            # Record collection
+            self.hardware.collected_balls.append(time.time())
+            
+            if config.DEBUG_COLLECTION:
+                ss_state = self.hardware.get_servo_ss_state()
+                self.logger.info(f"✅ Collection sequence complete! SS state: {ss_state.upper()}")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Collection sequence failed: {e}")
+            self.hardware.stop_motors()
+            # Ensure we return to ready positions on error
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_ready()
+            return False
     
     def handle_avoiding_boundary(self, near_boundary):
-        """Handle boundary avoidance with improved timing"""
+        """Handle boundary avoidance with simplified approach"""
         if near_boundary:
-            self.logger.warning("⚠️  Near arena boundary - executing avoidance")
+            self.logger.warning("⚠️ Executing boundary avoidance maneuver")
             
-            # Get specific avoidance command from boundary system
+            # Get specific avoidance command
             avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
             
-            # Immediate stop
+            # Stop and execute avoidance
             self.hardware.stop_motors()
             time.sleep(0.1)
             
-            # Execute specific avoidance based on boundary system recommendation
             if avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.4)  # 0.25 seconds
+                self.hardware.move_backward(duration=0.3)
             elif avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
+                self.hardware.turn_right(duration=0.4)
             elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
+                self.hardware.turn_left(duration=0.4)
+            elif avoidance_command == 'backup_and_turn':
+                self.logger.warning("CENTER wall detected - backing up and turning")
+                self.hardware.move_backward(duration=0.3)
+                time.sleep(0.1)
+                self.hardware.turn_right(duration=0.6)
             else:
-                # Default fallback
-                self.hardware.move_backward(duration=0.25)
-                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
+                # Default: back up and turn (fallback)
+                self.hardware.move_backward(duration=0.3)
+                time.sleep(0.1)
+                self.hardware.turn_right(duration=0.4)
             
-            time.sleep(0.15)
+            time.sleep(0.1)  # Shorter pause after avoidance
         else:
-            # Clear of boundary
+            # Clear of boundary - return to ball detection immediately
+            if config.DEBUG_MOVEMENT:
+                self.logger.info("✅ Clear of boundary - resuming ball detection")
             self.state = RobotState.SEARCHING
     
     def execute_navigation_command(self, command):

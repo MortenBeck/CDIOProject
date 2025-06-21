@@ -44,7 +44,7 @@ BALL_HSV_UPPER = np.array([180, 30, 255])
 BALL_MIN_AREA = 100
 BALL_MAX_AREA = 10000
 BALL_MIN_RADIUS = 10
-BALL_MAX_RADIUS = 50
+BALL_MAX_RADIUS = 70
 
 # Orange VIP ball detection
 ##ORANGE_HSV_LOWER = np.array([10, 100, 100])
@@ -67,8 +67,8 @@ SERVO_RELEASE = 0         # Release position
 # === SERVO SS (SERVO 1) FOUR-STATE SYSTEM ===
 SERVO_SS_STORE = 110        # Store position
 SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
-SERVO_SS_DRIVING = 25       # Driving position (default/start position)
-SERVO_SS_COLLECT = 14        # Collect position
+SERVO_SS_DRIVING = 10       # Driving position (default/start position)
+SERVO_SS_COLLECT = 3      # Collect position
 SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 
 # === SERVO SF (SERVO 2) POSITIONS ===
@@ -100,9 +100,9 @@ MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
 COLLECTION_SPEED = 0.4  # Slower speed for precise collection
 
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
-CENTERING_TURN_DURATION = 0.25  # Faster horizontal centering (was 0.16)
-CENTERING_DRIVE_DURATION = 0.15  # Duration for forward/backward centering adjustments
-CENTERING_SPEED = 0.4  # Speed for centering movements
+CENTERING_TURN_DURATION = 0.15  # Slightly reduced from 0.2
+CENTERING_DRIVE_DURATION = 0.25  # Slightly reduced from 0.3
+CENTERING_SPEED = 0.45  # Slightly reduced from 0.4
 
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [
@@ -125,3 +125,24 @@ SHOW_CAMERA_FEED = True
 MOTOR_TIMEOUT = 5.0  # Max time for any single movement
 VISION_TIMEOUT = 1.0  # Max time to wait for camera frame
 RESTART_THRESHOLD = 5  # Number of consecutive errors before restart
+
+# === PRECISE TARGET ZONE (NEW APPROACH) ===
+TARGET_ZONE_WIDTH = 80              # Target zone width in pixels (ping pong ball sized)
+TARGET_ZONE_HEIGHT = 60             # Target zone height in pixels
+FIXED_COLLECTION_DRIVE_TIME = 0.7  # Fixed time to drive from target zone to collection point
+
+# Enhanced centering - ball must be in target zone AND X-centered before collection
+CENTERING_TOLERANCE = 40  # X-axis centering tolerance (pixels)
+REQUIRE_TARGET_ZONE_FOR_COLLECTION = True  # Ball must be in target zone, not just centered
+
+# === COLLECTION ZONE CONFIGURATION ===
+# Target zone positioning (0.0 = top, 1.0 = bottom)
+TARGET_ZONE_VERTICAL_POSITION = 0.65  # 65% down from top (was centered at 50%)
+
+# Target zone size (pixels)
+TARGET_ZONE_WIDTH = 60   # Reduced from 80 pixels
+TARGET_ZONE_HEIGHT = 45  # Reduced from 60 pixels
+
+# General collection area
+COLLECTION_ZONE_HORIZONTAL_MARGIN = 0.35  # Increased from 0.3 (smaller area)
+COLLECTION_ZONE_VERTICAL_START = 0.55     # Start at 55% down (was 40%)
