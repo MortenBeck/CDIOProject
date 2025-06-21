@@ -913,39 +913,51 @@ class VisionSystem:
         return getattr(config, 'FIXED_COLLECTION_DRIVE_TIME', 1.0)  # 1 second default
 
     def get_centering_adjustment_v2(self, ball: DetectedObject) -> tuple:
-        """Get ball into target zone with improved tolerance zones"""
+        """Adaptive centering tolerances based on distance"""
         ball_x, ball_y = ball.center
         zone = self.collection_zone
         
         target_center_x = zone['target_center_x']
         target_center_y = zone['target_center_y']
         
-        # X-axis: LARGER tolerance zones to prevent micro-adjustments
+        # Calculate distance to determine tolerance
+        distance_to_target = np.sqrt((ball_x - target_center_x)**2 + (ball_y - target_center_y)**2)
+        
+        # ADAPTIVE TOLERANCES based on distance
+        if distance_to_target > 80:
+            # Far away - use larger tolerances to avoid micro-adjustments
+            x_tolerance = 20
+            y_tolerance = 15
+            hysteresis = 5
+        elif distance_to_target > 40:
+            # Medium distance - balanced tolerances
+            x_tolerance = 12
+            y_tolerance = 10
+            hysteresis = 3
+        else:
+            # Close - precise tolerances
+            x_tolerance = 8
+            y_tolerance = 6
+            hysteresis = 2
+        
+        # X-axis with adaptive tolerance
         x_offset = ball_x - target_center_x
-        
-        # Use a graduated tolerance system
-        target_width = zone['target_right'] - zone['target_left']
-        x_tolerance = max(8, target_width // 6)  # At least 8 pixels tolerance
-        
         if abs(x_offset) <= x_tolerance:
             x_direction = 'centered'
-        elif x_offset > x_tolerance + 3:  # Add hysteresis
+        elif x_offset > x_tolerance + hysteresis:
             x_direction = 'right'
-        elif x_offset < -(x_tolerance + 3):  # Add hysteresis  
+        elif x_offset < -(x_tolerance + hysteresis):
             x_direction = 'left'
         else:
-            x_direction = 'centered'  # In hysteresis zone - consider centered
+            x_direction = 'centered'  # In hysteresis zone
         
-        # Y-axis: Similar approach
+        # Y-axis with adaptive tolerance
         y_offset = ball_y - target_center_y
-        target_height = zone['target_bottom'] - zone['target_top']
-        y_tolerance = max(6, target_height // 6)  # At least 6 pixels tolerance
-        
         if abs(y_offset) <= y_tolerance:
             y_direction = 'centered'
-        elif y_offset > y_tolerance + 2:  # Add hysteresis
+        elif y_offset > y_tolerance + hysteresis:
             y_direction = 'backward'
-        elif y_offset < -(y_tolerance + 2):  # Add hysteresis
+        elif y_offset < -(y_tolerance + hysteresis):
             y_direction = 'forward'
         else:
             y_direction = 'centered'  # In hysteresis zone
