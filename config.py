@@ -140,7 +140,7 @@ REQUIRE_TARGET_ZONE_FOR_COLLECTION = True  # Ball must be in target zone, not ju
 TARGET_ZONE_VERTICAL_POSITION = 0.65  # 65% down from top (was centered at 50%)
 
 # Target zone size (pixels)
-TARGET_ZONE_WIDTH = 60   # Reduced from 80 pixels
+TARGET_ZONE_WIDTH = 80   # Reduced from 80 pixels
 TARGET_ZONE_HEIGHT = 45  # Reduced from 60 pixels
 
 # General collection area
