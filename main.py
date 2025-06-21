@@ -27,6 +27,7 @@ class RobotState(Enum):
     APPROACHING_BALL = "approaching_ball"
     COLLECTING_BALL = "collecting_ball"  # Enhanced: New servo sequence
     AVOIDING_BOUNDARY = "avoiding_boundary"
+    DELIVERY = "delivery"  # NEW: Delivery mode
     EMERGENCY_STOP = "emergency_stop"
 
 class GolfBot:
@@ -140,6 +141,173 @@ class GolfBot:
             self.logger.error(f"Main loop error: {e}")
             self.emergency_stop()
     
+    def start_delivery_mode(self):
+        """Start delivery mode - navigate to goals and deliver balls"""
+        self.start_time = time.time()
+        self.competition_active = True
+        self.state = RobotState.DELIVERY
+        
+        self.logger.info("🚚 DELIVERY MODE STARTED!")
+        self.logger.info(f"Current balls collected: {self.hardware.get_ball_count()}")
+        self.logger.info("Searching for goals to deliver balls...")
+        
+        try:
+            self.delivery_loop()
+        except Exception as e:
+            self.logger.error(f"Delivery loop error: {e}")
+            self.emergency_stop()
+    
+    def delivery_loop(self):
+        """Main delivery control loop"""
+        while self.competition_active:
+            try:
+                frame_start = time.time()
+                
+                # Skip frames for performance (process every 2nd frame)
+                self.frame_skip_counter += 1
+                if self.frame_skip_counter % 2 != 0:
+                    time.sleep(0.05)
+                    continue
+                
+                # Get current vision data
+                balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame(dashboard_mode=self.use_dashboard)
+                
+                if balls is None:  # Frame capture failed
+                    continue
+                
+                # TODO: Add goal detection to vision system
+                # For now, we'll use manual navigation or simple pattern
+                
+                # Performance tracking
+                frame_time = time.time() - frame_start
+                fps = 1.0 / (time.time() - self.last_frame_time) if self.last_frame_time else 0
+                self.last_frame_time = time.time()
+                
+                # Show display based on mode
+                if config.SHOW_CAMERA_FEED and self.display_available:
+                    try:
+                        if self.use_dashboard and self.dashboard:
+                            # NEW DASHBOARD MODE
+                            dashboard_frame = self.dashboard.create_dashboard(
+                                debug_frame, self.state, self.vision, self.hardware, None  # No telemetry
+                            )
+                            key = self.dashboard.show("GolfBot Dashboard - Delivery Mode")
+                        else:
+                            # LEGACY OVERLAY MODE  
+                            if debug_frame is not None and debug_frame.size > 0:
+                                self.add_delivery_overlay(debug_frame)
+                                cv2.imshow('GolfBot Debug - Delivery Mode', debug_frame)
+                                key = cv2.waitKey(1) & 0xFF
+                            else:
+                                key = -1
+                        
+                        if key == ord('q'):
+                            break
+                        elif key == ord('r'):  # 'r' key to release balls
+                            self.release_balls_at_goal()
+                            
+                    except Exception as e:
+                        self.logger.warning(f"Display error: {e}")
+                        self.display_available = False
+                
+                # Delivery state machine execution
+                self.execute_delivery_state_machine(near_boundary)
+                
+                # Adaptive sleep
+                time.sleep(0.1)
+                
+            except Exception as e:
+                self.logger.error(f"Delivery loop iteration error: {e}")
+                self.hardware.stop_motors()
+                time.sleep(0.5)
+        
+        self.end_delivery()
+    
+    def execute_delivery_state_machine(self, near_boundary):
+        """Execute delivery state logic"""
+        
+        # Always check for boundary first
+        if near_boundary:
+            self.handle_avoiding_boundary(near_boundary)
+            return
+        
+        if self.state == RobotState.DELIVERY:
+            self.handle_delivery_navigation()
+        elif self.state == RobotState.AVOIDING_BOUNDARY:
+            self.handle_avoiding_boundary(near_boundary)
+        elif self.state == RobotState.EMERGENCY_STOP:
+            self.hardware.emergency_stop()
+    
+    def handle_delivery_navigation(self):
+        """Handle navigation during delivery mode"""
+        # Check if we have balls to deliver
+        if not self.hardware.has_balls():
+            self.logger.info("No balls to deliver - stopping delivery mode")
+            self.competition_active = False
+            return
+        
+        # TODO: Implement goal detection and navigation
+        # For now, use a simple search pattern
+        self.execute_search_pattern()
+        
+        # Manual release instruction
+        ball_count = self.hardware.get_ball_count()
+        if ball_count > 0:
+            self.logger.info(f"Carrying {ball_count} balls - Press 'R' key when at goal to release")
+    
+    def release_balls_at_goal(self):
+        """Release balls at goal location"""
+        ball_count = self.hardware.get_ball_count()
+        if ball_count > 0:
+            self.logger.info(f"🎯 RELEASING {ball_count} balls at goal!")
+            released_count = self.hardware.release_balls()
+            
+            # Calculate points (assuming Goal B for now - you can enhance this)
+            points = released_count * config.GOAL_B_POINTS
+            self.logger.info(f"✅ Released {released_count} balls! Points earned: {points}")
+            
+            # Log delivery attempt if telemetry is available
+            if self.telemetry:
+                self.telemetry.log_delivery_attempt(released_count, "B")
+        else:
+            self.logger.info("No balls to release!")
+    
+    def add_delivery_overlay(self, frame):
+        """Add delivery mode status overlay"""
+        y = 30
+        line_height = 25
+        
+        # Delivery mode indicator
+        cv2.putText(frame, "DELIVERY MODE", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
+        y += line_height
+        
+        # Ball count
+        ball_count = self.hardware.get_ball_count()
+        cv2.putText(frame, f"Balls to Deliver: {ball_count}", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        y += line_height
+        
+        # Instructions
+        cv2.putText(frame, "Press 'R' at goal to release balls", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+        y += line_height
+        
+        cv2.putText(frame, "Press 'Q' to quit delivery mode", (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+    
+    def end_delivery(self):
+        """End delivery mode"""
+        self.competition_active = False
+        
+        self.logger.info("=" * 60)
+        self.logger.info("🚚 DELIVERY MODE ENDED!")
+        self.logger.info("=" * 60)
+        self.logger.info(f"Final balls remaining: {self.hardware.get_ball_count()}")
+        self.logger.info("=" * 60)
+        
+        self.emergency_stop()
+    
     def get_time_remaining(self) -> float:
         """Get remaining competition time"""
         if not self.start_time:
@@ -229,37 +397,12 @@ class GolfBot:
         self.end_competition()
     
     def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute state logic with ball detection priority - WHITE BALLS ONLY"""
+        """Execute current state logic with enhanced ball centering and collection - WHITE BALLS ONLY"""
         
-        # HIGH PRIORITY: Never interrupt active collection
-        if self.state == RobotState.COLLECTING_BALL:
-            self.handle_collecting_ball()
-            return
-        
-        # MEDIUM PRIORITY: Protect ball operations if we have good targets
-        confident_balls = [ball for ball in balls if ball.confidence > 0.4] if balls else []
-        has_good_target = bool(confident_balls)
-        
-        # SMART BOUNDARY AVOIDANCE: Only interrupt ball operations if:
-        # 1. No confident balls detected, OR
-        # 2. Currently just searching (not actively pursuing), OR
-        # 3. Boundary is critically close (imminent collision)
-        should_avoid_boundary = (
-            near_boundary and (
-                not has_good_target or 
-                self.state == RobotState.SEARCHING or
-                self._is_boundary_critical()
-            )
-        )
-        
-        if should_avoid_boundary:
-            # Log why we're switching to boundary avoidance
-            reason = "no_balls" if not has_good_target else "searching" if self.state == RobotState.SEARCHING else "critical_proximity"
-            if config.DEBUG_MOVEMENT:
-                self.logger.info(f"⚠️ Boundary avoidance triggered: {reason}")
+        # Always check for boundary first (but allow collection to complete)
+        if near_boundary and self.state not in [RobotState.COLLECTING_BALL]:
             self.state = RobotState.AVOIDING_BOUNDARY
         
-        # Execute current state
         if self.state == RobotState.SEARCHING:
             self.handle_searching(balls, nav_command)
             
@@ -269,30 +412,14 @@ class GolfBot:
         elif self.state == RobotState.APPROACHING_BALL:
             self.handle_approaching_ball(balls, nav_command)
             
+        elif self.state == RobotState.COLLECTING_BALL:  # Enhanced sequence
+            self.handle_collecting_ball()
+            
         elif self.state == RobotState.AVOIDING_BOUNDARY:
             self.handle_avoiding_boundary(near_boundary)
             
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
-
-    def _is_boundary_critical(self) -> bool:
-        """Check if boundary is critically close (imminent collision)"""
-        try:
-            # Check if boundary system has distance measurement
-            if hasattr(self.vision.boundary_system, 'get_closest_boundary_distance'):
-                min_distance = self.vision.boundary_system.get_closest_boundary_distance()
-                return min_distance < 15  # Very close - immediate danger
-            
-            # Fallback: check if multiple walls are triggered
-            if hasattr(self.vision.boundary_system, 'detected_walls'):
-                triggered_walls = [w for w in self.vision.boundary_system.detected_walls 
-                                 if w.get('triggered', False)]
-                return len(triggered_walls) >= 2  # Multiple walls = corner/tight spot
-                
-        except Exception as e:
-            self.logger.warning(f"Boundary critical check failed: {e}")
-        
-        return False  # Default to not critical
     
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
@@ -312,14 +439,14 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """SIMPLIFIED: Get ball into precise target zone in center of screen"""
+        """FIXED: Center the ball in both X and Y axes before collection - WHITE BALLS ONLY"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
             return
         
         # Filter for confident balls
-        confident_balls = [ball for ball in balls if ball.confidence > 0.3]
+        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
         
         if not confident_balls:
             self.logger.info("No confident ball detections during centering - returning to search")
@@ -329,50 +456,53 @@ class GolfBot:
         # Target the closest confident ball
         target_ball = confident_balls[0]
         
-        # Check if ball is in the precise target zone
-        if self.vision.is_ball_centered_for_collection(target_ball):
-            # Ball is in target zone - start collection!
-            self.logger.info(f"White ball in TARGET ZONE! Starting collection with fixed drive")
+        # Check if ball is fully centered (both X and Y)
+        if self.vision.is_ball_centered(target_ball):
+            # Ball is centered - calculate drive time and start collection
+            drive_time = self.vision.calculate_drive_time_to_ball(target_ball)
+            
+            self.logger.info(f"White ball fully centered! Starting collection (drive time: {drive_time:.2f}s)")
             self.state = RobotState.COLLECTING_BALL
             return
         
-        # Ball not in target zone - get movement to position it
-        x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
+        # Ball not fully centered - get centering adjustments for both axes
+        x_direction, y_direction = self.vision.get_centering_adjustment(target_ball)
         
-        # Move ball toward target zone - prioritize the axis that's furthest off
+        # PRIORITY 1: X-axis centering (left/right) - FASTER
         if x_direction != 'centered':
             if x_direction == 'right':
                 self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning right")
+                    self.logger.info(f"Centering X: turning right (faster)")
             elif x_direction == 'left':
                 self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
-                                    speed=config.CENTERING_SPEED)
+                                       speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning left")
+                    self.logger.info(f"Centering X: turning left (faster)")
             
-            time.sleep(0.03)
-            return
+            time.sleep(0.03)  # Short pause for stability
+            return  # Handle one axis at a time for stability
         
-        # X is centered, now work on Y
+        # PRIORITY 2: Y-axis centering (distance - forward/backward)
         if y_direction != 'centered':
             if y_direction == 'forward':
                 self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
-                                        speed=config.CENTERING_SPEED)
+                                          speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving forward")
+                    self.logger.info(f"Centering Y: moving forward (closer)")
             elif y_direction == 'backward':
                 self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
-                                        speed=config.CENTERING_SPEED)
+                                           speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving backward")
+                    self.logger.info(f"Centering Y: moving backward (farther)")
             
-            time.sleep(0.03)
+            time.sleep(0.03)  # Short pause for stability
             return
         
+        # If we reach here, both axes should be centered
         if config.DEBUG_MOVEMENT:
-            self.logger.info("Ball should be in target zone now!")
+            self.logger.info("Both X and Y axes centered!")
     
     def handle_approaching_ball(self, balls, nav_command):
         """Handle approaching with confidence tracking (legacy mode) - WHITE BALLS ONLY"""
@@ -401,206 +531,56 @@ class GolfBot:
         self.execute_navigation_command(nav_command)
     
     def handle_collecting_ball(self):
-        """Handle ball collection with PROPER sequence: servo up -> drive -> servo down"""
+        """Handle ball collection with new enhanced sequence (vision-free) - WHITE BALLS ONLY"""
         current_target = self.vision.current_target
         
         if current_target:
             confidence = current_target.confidence
-            self.logger.info(f"Starting collection: white ball (confidence: {confidence:.2f})")
+            self.logger.info(f"Starting enhanced collection of white ball (confidence: {confidence:.2f})...")
         else:
-            self.logger.info("Starting collection: white ball")
+            self.logger.info("Starting enhanced white ball collection...")
         
-        # Get the fixed drive time from vision system
-        drive_time = self.vision.get_drive_time_to_collection()
-        self.logger.info(f"Using collection sequence: servo up -> drive {drive_time:.2f}s -> servo down")
-        
-        # STEP 1: PREPARE SERVOS FOR COLLECTION (SERVO UP)
-        self.logger.info("Step 1: Preparing servos for collection (UP)")
-        success = self.prepare_servos_for_collection()
-        if not success:
-            self.logger.warning("Failed to prepare servos - aborting collection")
-            self.state = RobotState.SEARCHING
-            return
-        
-        # STEP 2: DRIVE FORWARD TO BALL
-        self.logger.info("Step 2: Driving forward to ball")
-        self.hardware.move_forward(duration=drive_time, speed=config.COLLECTION_SPEED)
-        time.sleep(0.1)
-        
-        # STEP 3: COMPLETE COLLECTION (SERVO DOWN/GRAB)
-        self.logger.info("Step 3: Completing collection (DOWN)")
-        success = self.complete_servo_collection()
+        # Execute new collection sequence (vision-free)
+        success = self.hardware.enhanced_collection_sequence()
         
         if success:
             total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ White ball collected with proper sequence! Total: {total_balls}")
+            self.logger.info(f"✅ White ball collected with enhanced sequence! Total: {total_balls}")
         else:
-            self.logger.warning(f"❌ White ball collection failed")
+            self.logger.warning(f"❌ White ball enhanced collection failed")
         
         # Return to searching
         self.state = RobotState.SEARCHING
-
-    def execute_servo_collection_only(self):
-        """Execute just the servo collection sequence without driving"""
-        try:
-            if config.DEBUG_COLLECTION:
-                self.logger.info("🚀 Executing servo-only collection sequence...")
-            
-            # Step 1: Prepare SF for catching
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Step 1: Preparing SF for catching")
-            self.hardware.servo_sf_to_ready()
-            time.sleep(0.2)
-            
-            # Step 2: Move SS from driving to pre-collect position
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Step 2: Moving SS from DRIVING to PRE-COLLECT")
-            self.hardware.servo_ss_to_pre_collect()
-            time.sleep(0.2)
-            
-            # Step 3: Coordinate collection - SS captures, SF assists
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Step 3: Coordinated collection - SS collect, SF catch")
-            self.hardware.servo_ss_to_collect()
-            time.sleep(0.15)
-            self.hardware.servo_sf_to_catch()
-            time.sleep(0.3)
-            
-            # Step 4: Move SS to store position (secure ball)
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Step 4: Moving SS to STORE position (secure)")
-            self.hardware.servo_ss_to_store()
-            time.sleep(0.3)
-            
-            # Step 5: Return both servos to ready positions
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Step 5: Returning servos to ready positions")
-            self.hardware.servo_ss_to_driving()
-            time.sleep(0.1)
-            self.hardware.servo_sf_to_ready()
-            time.sleep(0.2)
-            
-            # Record collection
-            self.hardware.collected_balls.append(time.time())
-            
-            if config.DEBUG_COLLECTION:
-                ss_state = self.hardware.get_servo_ss_state()
-                self.logger.info(f"✅ Servo collection complete! SS state: {ss_state.upper()}")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Servo collection sequence failed: {e}")
-            self.hardware.stop_motors()
-            # Ensure we return to ready positions on error
-            self.hardware.servo_ss_to_driving()
-            self.hardware.servo_sf_to_ready()
-            return False
-        
-    def prepare_servos_for_collection(self):
-        """Prepare servos for collection - put them in position to catch ball"""
-        try:
-            if config.DEBUG_COLLECTION:
-                self.logger.info("🚀 Preparing servos for collection...")
-            
-            # Step 1: Prepare SF for catching
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Preparing SF for catching")
-            self.hardware.servo_sf_to_ready()
-            time.sleep(0.2)
-            
-            # Step 2: Move SS from driving to pre-collect position
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Moving SS from DRIVING to PRE-COLLECT")
-            self.hardware.servo_ss_to_pre_collect()
-            time.sleep(0.2)
-            
-            if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Servos prepared for collection")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to prepare servos for collection: {e}")
-            # Ensure we return to safe positions on error
-            self.hardware.servo_ss_to_driving()
-            self.hardware.servo_sf_to_ready()
-            return False
-        
-    def complete_servo_collection(self):
-        """Complete the servo collection sequence after driving"""
-        try:
-            if config.DEBUG_COLLECTION:
-                self.logger.info("🤏 Completing servo collection sequence...")
-            
-            # Step 1: Coordinate collection - SS captures, SF assists
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Coordinated collection - SS collect, SF catch")
-            self.hardware.servo_ss_to_collect()
-            time.sleep(0.15)
-            self.hardware.servo_sf_to_catch()
-            time.sleep(0.3)
-            
-            # Step 2: Move SS to store position (secure ball)
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Moving SS to STORE position (secure)")
-            self.hardware.servo_ss_to_store()
-            time.sleep(0.3)
-            
-            # Step 3: Return both servos to ready positions
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Returning servos to ready positions")
-            self.hardware.servo_ss_to_driving()
-            time.sleep(0.1)
-            self.hardware.servo_sf_to_ready()
-            time.sleep(0.2)
-            
-            # Record collection
-            self.hardware.collected_balls.append(time.time())
-            
-            if config.DEBUG_COLLECTION:
-                ss_state = self.hardware.get_servo_ss_state()
-                self.logger.info(f"✅ Collection sequence complete! SS state: {ss_state.upper()}")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Collection sequence failed: {e}")
-            self.hardware.stop_motors()
-            # Ensure we return to ready positions on error
-            self.hardware.servo_ss_to_driving()
-            self.hardware.servo_sf_to_ready()
-            return False
     
     def handle_avoiding_boundary(self, near_boundary):
-        """Handle boundary avoidance with faster return to ball detection"""
+        """Handle boundary avoidance with improved timing"""
         if near_boundary:
-            self.logger.warning("⚠️ Executing boundary avoidance maneuver")
+            self.logger.warning("⚠️  Near arena boundary - executing avoidance")
             
-            # Get specific avoidance command
+            # Get specific avoidance command from boundary system
             avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
             
-            # Stop and execute avoidance
+            # Immediate stop
             self.hardware.stop_motors()
             time.sleep(0.1)
             
+            # Execute specific avoidance based on boundary system recommendation
             if avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.3)  # Shorter duration
+                self.hardware.move_backward(duration=0.4)  # 0.25 seconds
             elif avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=0.4)     # Shorter duration
+                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
             elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=0.4)      # Shorter duration
+                self.hardware.turn_left(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
             else:
-                # Default: back up and turn
-                self.hardware.move_backward(duration=0.2)
-                self.hardware.turn_right(duration=0.4)
+                # Default fallback
+                self.hardware.move_backward(duration=0.25)
+                self.hardware.turn_right(duration=config.TURN_TIME_90_DEGREES)  # 0.6 seconds
             
-            time.sleep(0.1)  # Shorter pause
+            time.sleep(0.15)
         else:
-            # Clear of boundary - return to ball detection immediately
-            if config.DEBUG_MOVEMENT:
-                self.logger.info("✅ Clear of boundary - resuming ball detection")
-            self.state = RobotState.SEARCHING
+            # Clear of boundary
+            if self.state != RobotState.DELIVERY:
+                self.state = RobotState.SEARCHING
     
     def execute_navigation_command(self, command):
         """Execute navigation with improved timing"""
@@ -649,6 +629,8 @@ class GolfBot:
             x_dir, y_dir = self.vision.get_centering_adjustment(self.vision.current_target)
             centered = self.vision.is_ball_centered(self.vision.current_target)
             state_text += f" ({'✓' if centered else f'{x_dir[:1].upper()}{y_dir[:1].upper()}'})"
+        elif self.state == RobotState.DELIVERY:
+            state_text += " (Navigate to Goal)"
         
         cv2.putText(frame, state_text, (10, y), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
@@ -734,8 +716,9 @@ def show_startup_menu():
     print("="*60)
     print("1. Start Competition (Dashboard Mode)")
     print("2. Start Competition (Legacy Overlay Mode)")
-    print("3. Hardware Testing") 
-    print("4. Exit")
+    print("3. Hardware Testing")
+    print("4. Delivery Mode") 
+    print("5. Exit")
     print("="*60)
     print("FEATURES:")
     print("• White ball detection and collection only")
@@ -745,11 +728,12 @@ def show_startup_menu():
     print("• Modular boundary avoidance system")
     print("• Clean dashboard interface (option 1) - Camera + Side panels")
     print("• Legacy overlay mode (option 2) - All info on camera")
+    print("• Delivery mode (option 4) - Navigate to goals and deliver balls")
     print("="*60)
     
     while True:
         try:
-            choice = input("Select option (1-4): ").strip()
+            choice = input("Select option (1-5): ").strip()
             
             if choice == '1':
                 return 'competition_dashboard'
@@ -758,9 +742,11 @@ def show_startup_menu():
             elif choice == '3':
                 return 'testing'
             elif choice == '4':
+                return 'delivery'
+            elif choice == '5':
                 return 'exit'
             else:
-                print("Invalid choice. Enter 1, 2, 3, or 4.")
+                print("Invalid choice. Enter 1, 2, 3, 4, or 5.")
                 
         except KeyboardInterrupt:
             print("\nExiting...")
@@ -789,6 +775,41 @@ def main():
                 print("❌ Testing failed!")
         except Exception as e:
             print(f"Testing error: {e}")
+        return 0
+        
+    elif mode == 'delivery':
+        print("\n🚚 Entering Delivery Mode...")
+        
+        try:
+            robot = GolfBot(use_dashboard=True)  # Use dashboard for delivery mode
+            
+            if not robot.initialize():
+                print("❌ Failed to initialize robot - exiting")
+                return 1
+            
+            ball_count = robot.hardware.get_ball_count()
+            print(f"\n🚀 Robot ready for delivery mode!")
+            print(f"   - Current balls collected: {ball_count}")
+            print("   - Navigate to goals and press 'R' to release balls")
+            print("   - Press 'Q' to quit delivery mode")
+            print("   - Dashboard interface for monitoring")
+            print("\nPress Enter to start delivery mode...")
+            input()
+            
+            robot.start_delivery_mode()
+            
+        except KeyboardInterrupt:
+            print("\n⚠️  Delivery mode interrupted by user")
+            if 'robot' in locals():
+                robot.logger.info("Delivery mode interrupted by user")
+        except Exception as e:
+            print(f"❌ Delivery mode error: {e}")
+            if 'robot' in locals():
+                robot.logger.error(f"Unexpected error: {e}")
+        finally:
+            if 'robot' in locals():
+                robot.emergency_stop()
+        
         return 0
         
     elif mode in ['competition_dashboard', 'competition_legacy']:
