@@ -871,34 +871,41 @@ class VisionSystem:
     
 
     def _calculate_collection_zone(self):
-        """Calculate collection zones with precise target area in middle of screen"""
+        """Calculate collection zones using configurable parameters"""
         
-        # TARGET ZONE: Small precise area in center of screen (just big enough for ping pong ball)
+        # TARGET ZONE: Use config parameters for positioning and sizing
         center_x = config.CAMERA_WIDTH // 2
-        center_y = config.CAMERA_HEIGHT // 2
         
-        # Target zone size - roughly ping pong ball sized area
-        target_width = getattr(config, 'TARGET_ZONE_WIDTH', 80)   # 80 pixels wide
-        target_height = getattr(config, 'TARGET_ZONE_HEIGHT', 60)  # 60 pixels tall
+        # Position target zone vertically using config parameter
+        vertical_pos = getattr(config, 'TARGET_ZONE_VERTICAL_POSITION', 0.65)
+        center_y = int(config.CAMERA_HEIGHT * vertical_pos)
+        
+        # Target zone size from config
+        target_width = getattr(config, 'TARGET_ZONE_WIDTH', 60)
+        target_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
         
         target_left = center_x - (target_width // 2)
         target_right = center_x + (target_width // 2)
         target_top = center_y - (target_height // 2)
         target_bottom = center_y + (target_height // 2)
         
-        # GENERAL collection area (larger, for initial detection)
-        horizontal_margin = config.CAMERA_WIDTH * 0.3
+        # GENERAL collection area using config parameters
+        horizontal_margin_ratio = getattr(config, 'COLLECTION_ZONE_HORIZONTAL_MARGIN', 0.35)
+        horizontal_margin = config.CAMERA_WIDTH * horizontal_margin_ratio
         general_left = int(horizontal_margin)
         general_right = int(config.CAMERA_WIDTH - horizontal_margin)
         
+        vertical_start_ratio = getattr(config, 'COLLECTION_ZONE_VERTICAL_START', 0.55)
+        general_top = int(config.CAMERA_HEIGHT * vertical_start_ratio)
+        
         return {
-            # General collection area (for initial detection)
+            # General collection area
             'left': general_left,
             'right': general_right, 
-            'top': int(config.CAMERA_HEIGHT * 0.4),
+            'top': general_top,
             'bottom': config.CAMERA_HEIGHT,
             
-            # PRECISE target zone in middle of screen
+            # PRECISE target zone
             'target_left': target_left,
             'target_right': target_right,
             'target_top': target_top,

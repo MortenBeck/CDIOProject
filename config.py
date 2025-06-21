@@ -134,3 +134,15 @@ FIXED_COLLECTION_DRIVE_TIME = 1.5  # Fixed time to drive from target zone to col
 # Enhanced centering - ball must be in target zone AND X-centered before collection
 CENTERING_TOLERANCE = 25  # X-axis centering tolerance (pixels)
 REQUIRE_TARGET_ZONE_FOR_COLLECTION = True  # Ball must be in target zone, not just centered
+
+# === COLLECTION ZONE CONFIGURATION ===
+# Target zone positioning (0.0 = top, 1.0 = bottom)
+TARGET_ZONE_VERTICAL_POSITION = 0.65  # 65% down from top (was centered at 50%)
+
+# Target zone size (pixels)
+TARGET_ZONE_WIDTH = 60   # Reduced from 80 pixels
+TARGET_ZONE_HEIGHT = 45  # Reduced from 60 pixels
+
+# General collection area
+COLLECTION_ZONE_HORIZONTAL_MARGIN = 0.35  # Increased from 0.3 (smaller area)
+COLLECTION_ZONE_VERTICAL_START = 0.55     # Start at 55% down (was 40%)
