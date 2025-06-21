@@ -278,7 +278,7 @@ class GolfBot:
             return
         
         # Filter for confident balls
-        confident_balls = [ball for ball in balls if ball.confidence > 0.2]
+        confident_balls = [ball for ball in balls if ball.confidence > 0.3]
         
         if not confident_balls:
             self.logger.info("No confident ball detections during centering - returning to search")
