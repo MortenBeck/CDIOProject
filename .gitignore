@@ -25,3 +25,8 @@ dist/
 build/
 .coverage
 .pytest_cache/
+
+#Logs
+*.log
+logs/
+golfbot.log
