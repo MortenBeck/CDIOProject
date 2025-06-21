@@ -305,6 +305,10 @@ class GolfBot:
                 min_distance = self.vision.boundary_system.get_closest_boundary_distance()
                 return min_distance < 15  # Very close - immediate danger
             
+            # Also consider if we're in an active avoidance sequence as critical
+            if hasattr(self.vision.boundary_system, 'avoidance_sequence_active'):
+                return self.vision.boundary_system.avoidance_sequence_active
+            
             # Fallback: check if multiple walls are triggered
             if hasattr(self.vision.boundary_system, 'detected_walls'):
                 triggered_walls = [w for w in self.vision.boundary_system.detected_walls 
@@ -689,31 +693,38 @@ class GolfBot:
             return False
     
     def handle_avoiding_boundary(self, near_boundary):
-        """Handle boundary avoidance with faster return to ball detection"""
-        if near_boundary:
-            self.logger.warning("⚠️ Executing boundary avoidance maneuver")
-            
-            # Get specific avoidance command
+        """Handle boundary avoidance with new sequential system: backward THEN turn right"""
+        if near_boundary or self.vision.boundary_system.avoidance_sequence_active:
+            # Get the current avoidance command from the boundary system
             avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
             
-            # Stop and execute avoidance
-            self.hardware.stop_motors()
-            time.sleep(0.1)
-            
-            if avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.3)  # Shorter duration
-            elif avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=0.4)     # Shorter duration
-            elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=0.4)      # Shorter duration
+            if avoidance_command:
+                # Stop current movement before executing avoidance command
+                self.hardware.stop_motors()
+                time.sleep(0.05)  # Brief pause
+                
+                # Execute the sequential avoidance command
+                if avoidance_command == 'move_backward':
+                    if config.DEBUG_MOVEMENT:
+                        step = "STEP 1" if self.vision.boundary_system.avoidance_step == 1 else "CONTINUING"
+                        self.logger.info(f"⚠️ Boundary avoidance: {step} - BACKING UP")
+                    self.hardware.move_backward(duration=0.1)  # Short duration, system will call again
+                    
+                elif avoidance_command == 'turn_right':
+                    if config.DEBUG_MOVEMENT:
+                        self.logger.info("⚠️ Boundary avoidance: STEP 2 - TURNING RIGHT")
+                    self.hardware.turn_right(duration=0.1)  # Short duration, system will call again
+                
+                # Short pause between commands
+                time.sleep(0.05)
+                
             else:
-                # Default: back up and turn
-                self.hardware.move_backward(duration=0.2)
-                self.hardware.turn_right(duration=0.4)
-            
-            time.sleep(0.1)  # Shorter pause
+                # Sequence completed or no command needed
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info("✅ Boundary avoidance sequence complete - resuming ball detection")
+                self.state = RobotState.SEARCHING
         else:
-            # Clear of boundary - return to ball detection immediately
+            # No boundary detected and no active sequence - return to searching
             if config.DEBUG_MOVEMENT:
                 self.logger.info("✅ Clear of boundary - resuming ball detection")
             self.state = RobotState.SEARCHING

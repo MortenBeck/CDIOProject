@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import logging
 from typing import List, Dict, Tuple, Optional
+import time
 
 # --- config.py (simulated for demonstration) ---
 class Config:
@@ -11,7 +12,7 @@ config = Config()
 # -------------------------------------------------
 
 class BoundaryAvoidanceSystem:
-    """Simplified boundary avoidance system - focuses on what actually works"""
+    """Simplified boundary avoidance system - backs up then turns right when wall detected"""
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -29,6 +30,11 @@ class BoundaryAvoidanceSystem:
         
         # Add compatibility properties for dashboard
         self.avoidance_state = None
+        
+        # NEW: Avoidance sequence tracking
+        self.avoidance_sequence_active = False
+        self.avoidance_step = 0  # 0 = not active, 1 = backing up, 2 = turning right
+        self.avoidance_start_time = None
 
     def detect_arena_boundaries(self, frame) -> bool:
         """Simplified arena boundary detection"""
@@ -156,14 +162,48 @@ class BoundaryAvoidanceSystem:
         return danger_detected
 
     def get_avoidance_command(self, frame) -> Optional[str]:
-        """Simplified avoidance - just back up and turn right when wall detected"""
+        """NEW: Sequential avoidance - back up THEN turn right when wall detected"""
         danger_detected = self.detect_boundaries(frame)
 
-        if danger_detected:
+        # If no danger and no active sequence, we're clear
+        if not danger_detected and not self.avoidance_sequence_active:
+            return None
+        
+        # If danger detected and no sequence active, start the sequence
+        if danger_detected and not self.avoidance_sequence_active:
             if config.DEBUG_VISION:
-                self.logger.info("Wall detected - backing up and turning right")
-            # Simple strategy: back up first, then turn right
+                self.logger.info("Wall detected - starting avoidance sequence: STEP 1 - BACKING UP")
+            self.avoidance_sequence_active = True
+            self.avoidance_step = 1
+            self.avoidance_start_time = time.time()
             return 'move_backward'
+        
+        # If sequence is active, manage the steps
+        if self.avoidance_sequence_active:
+            elapsed_time = time.time() - self.avoidance_start_time
+            
+            if self.avoidance_step == 1:  # Currently backing up
+                if elapsed_time >= 0.4:  # Back up for 0.4 seconds
+                    if config.DEBUG_VISION:
+                        self.logger.info("Backup complete - starting STEP 2 - TURNING RIGHT")
+                    self.avoidance_step = 2
+                    self.avoidance_start_time = time.time()
+                    return 'turn_right'
+                else:
+                    # Continue backing up
+                    return 'move_backward'
+            
+            elif self.avoidance_step == 2:  # Currently turning right
+                if elapsed_time >= 0.6:  # Turn right for 0.6 seconds
+                    if config.DEBUG_VISION:
+                        self.logger.info("Turn complete - avoidance sequence finished")
+                    self.avoidance_sequence_active = False
+                    self.avoidance_step = 0
+                    self.avoidance_start_time = None
+                    return None  # Sequence complete
+                else:
+                    # Continue turning right
+                    return 'turn_right'
         
         return None
 
@@ -176,7 +216,7 @@ class BoundaryAvoidanceSystem:
         return 10.0  # Close enough to trigger critical boundary check
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
-        """Simplified visualization"""
+        """Simplified visualization with sequence status"""
         if frame is None:
             return frame
 
@@ -203,15 +243,29 @@ class BoundaryAvoidanceSystem:
         if self.arena_detected and self.arena_contour is not None:
             cv2.drawContours(result, [self.arena_contour], -1, (0, 255, 255), 1)
 
-        # Show wall warnings
+        # Show wall warnings with sequence status
         if self.detected_walls:
-            cv2.putText(result, "WALL DETECTED - BACKING UP", (10, h - 30),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            if self.avoidance_sequence_active:
+                if self.avoidance_step == 1:
+                    status_text = "BACKING UP (STEP 1/2)"
+                    color = (0, 165, 255)  # Orange
+                elif self.avoidance_step == 2:
+                    status_text = "TURNING RIGHT (STEP 2/2)"
+                    color = (0, 100, 255)  # Red-orange
+                else:
+                    status_text = "WALL DETECTED - STARTING SEQUENCE"
+                    color = (0, 0, 255)  # Red
+            else:
+                status_text = "WALL DETECTED - BACKING UP"
+                color = (0, 0, 255)  # Red
+                
+            cv2.putText(result, status_text, (10, h - 30),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
 
         return result
 
     def get_status(self) -> Dict:
-        """Get simple status"""
+        """Get simple status with sequence information"""
         triggered_walls = [wall for wall in self.detected_walls if wall.get('triggered', False)]
 
         return {
@@ -219,10 +273,16 @@ class BoundaryAvoidanceSystem:
             'walls_detected': len(self.detected_walls),
             'walls_triggered': len(triggered_walls),
             'danger_zones': [wall['zone'] for wall in triggered_walls],
-            'safe': len(triggered_walls) == 0
+            'safe': len(triggered_walls) == 0,
+            'avoidance_sequence_active': self.avoidance_sequence_active,
+            'avoidance_step': self.avoidance_step
         }
 
     def reset(self):
         """Reset detection state"""
         self.detected_walls = []
         self.red_mask = None
+        # Also reset avoidance sequence
+        self.avoidance_sequence_active = False
+        self.avoidance_step = 0
+        self.avoidance_start_time = None
