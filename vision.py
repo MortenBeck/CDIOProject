@@ -297,7 +297,7 @@ class VisionSystem:
                             (center[1] - self.frame_center_y)**2
                         )
                         
-                        in_collection_zone = self.is_in_collection_zone(center)
+                        in_collection_zone = self.is_ball_in_target_zone(center)
                         area = int(np.pi * radius * radius)
                         
                         ball = DetectedObject(
@@ -394,7 +394,7 @@ class VisionSystem:
                                         (center[1] - self.frame_center_y)**2
                                     )
                                     
-                                    in_collection_zone = self.is_in_collection_zone(center)
+                                    in_collection_zone = self.is_ball_in_target_zone(center)
                                     
                                     ball = DetectedObject(
                                         object_type='ball',  # Only white balls
@@ -530,7 +530,7 @@ class VisionSystem:
         target_ball = self.get_target_ball(detected_objects)
         
         if target_ball:
-            if target_ball.in_collection_zone:
+            if self.is_ball_in_target_zone(target_ball.center):
                 return "collect_ball"
             else:
                 return self._get_direction_to_object(target_ball)
