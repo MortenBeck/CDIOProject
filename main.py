@@ -60,6 +60,10 @@ class GolfBot:
         self.state = RobotState.SEARCHING
         self.search_pattern_index = 0
         self.last_ball_seen_time = None
+
+        self.target_ball_memory = None
+        self.target_lost_time = None
+        self.max_target_lost_time = 1.0  # 1 second grace period
         
         # Performance tracking
         self.last_frame_time = time.time()
@@ -239,7 +243,7 @@ class GolfBot:
             self.handle_searching(balls, nav_command)
             
         elif self.state == RobotState.CENTERING_BALL:  # Enhanced with X+Y centering
-            self.handle_centering_ball_with_tracking(balls, nav_command)
+            self.handle_centering_ball(balls, nav_command)
             
         elif self.state == RobotState.APPROACHING_BALL:
             self.handle_approaching_ball(balls, nav_command)
@@ -255,6 +259,11 @@ class GolfBot:
     
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
+        # Clear any previous target memory when starting new search
+        if self.target_ball_memory is not None:
+            self.target_ball_memory = None
+            self.target_lost_time = None
+        
         if balls:
             # Filter for high confidence balls only
             confident_balls = [ball for ball in balls if ball.confidence > 0.4]
@@ -270,7 +279,7 @@ class GolfBot:
         # No confident balls found
         self.execute_search_pattern()
     
-    def handle_centering_ball_with_tracking(self, balls, nav_command):
+    def handle_centering_ball(self, balls, nav_command):
         """Enhanced centering with ball tracking memory"""
         current_time = time.time()
         
@@ -337,38 +346,43 @@ class GolfBot:
             self.state = RobotState.COLLECTING_BALL
             return
         
-        # Get movement adjustments (rest of centering logic unchanged)
+        # Get movement adjustments
         x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
         
-        # Y-axis first, then X-axis (existing logic)
+        # PRIORITY 1: Y-axis (distance) - but more conservative movements
         if y_direction != 'centered':
             if y_direction == 'forward':
                 self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving forward")
+                    self.logger.info(f"Positioning to target zone: moving forward (Y-axis first)")
             elif y_direction == 'backward':
                 self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving backward")
+                    self.logger.info(f"Positioning to target zone: moving backward (Y-axis first)")
+            
             time.sleep(0.03)
             return
         
-        # X-axis centering
+        # PRIORITY 2: X-axis (left/right fine-tuning)
         if x_direction != 'centered':
             if x_direction == 'right':
                 self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning right")
+                    self.logger.info(f"Positioning to target zone: turning right (X-axis fine-tune)")
             elif x_direction == 'left':
                 self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
                                     speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning left")
+                    self.logger.info(f"Positioning to target zone: turning left (X-axis fine-tune)")
+            
             time.sleep(0.03)
             return
+        
+        if config.DEBUG_MOVEMENT:
+            self.logger.info("Ball should be in target zone now!")
     
     def handle_approaching_ball(self, balls, nav_command):
         """Handle approaching with confidence tracking (legacy mode) - WHITE BALLS ONLY"""
