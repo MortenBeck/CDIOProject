@@ -257,9 +257,6 @@ class BoundaryAvoidanceSystem:
         elif 'right' in triggered_zones:
             return 'turn_left'         # Turn away from right wall
         elif 'center_forward' in triggered_zones:
-            # *** CRITICAL CHANGE HERE ***
-            # Instead of 'move_backward', we now return 'turn_right' for a hard turn.
-            self.logger.info("Decision: Hard turn right due to center_forward wall.")
             return 'turn_right'
         elif 'bottom' in triggered_zones:
             return 'turn_right'     # Only back up if no side options
