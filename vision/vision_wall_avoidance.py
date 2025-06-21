@@ -135,6 +135,7 @@ class BoundaryAvoidanceSystem:
             wall_info = {
                 'zone': 'bottom',
                 'area': cv2.countNonZero(bottom_sample_region),
+                'bbox': (0, danger_y-sample_height, w, sample_height),  # FIXED: Added bbox
                 'triggered': True
             }
             self.detected_walls.append(wall_info)
@@ -150,6 +151,7 @@ class BoundaryAvoidanceSystem:
             wall_info = {
                 'zone': 'left',
                 'area': cv2.countNonZero(left_sample_region),
+                'bbox': (edge_width, 0, sample_width, danger_y),  # FIXED: Added bbox
                 'triggered': True
             }
             self.detected_walls.append(wall_info)
@@ -165,6 +167,7 @@ class BoundaryAvoidanceSystem:
             wall_info = {
                 'zone': 'right', 
                 'area': cv2.countNonZero(right_sample_region),
+                'bbox': (right_line_x-sample_width, 0, sample_width, danger_y),  # FIXED: Added bbox
                 'triggered': True
             }
             self.detected_walls.append(wall_info)
@@ -239,14 +242,20 @@ class BoundaryAvoidanceSystem:
         cv2.rectangle(result, (0, 0), (edge_width, h), (0, 100, 255), 2)  # Left
         cv2.rectangle(result, (w - edge_width, 0), (w, h), (0, 100, 255), 2)  # Right
         
-        # Center zone visualization removed to reduce visual clutter
-        
         # === TRIGGERED WALLS ===
         for wall in self.detected_walls:
             if wall['triggered']:
-                x, y, w_rect, h_rect = wall['bbox']
-                # All walls get the same red visualization
-                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 4)
+                # FIXED: Use safe access to bbox with proper error handling
+                bbox = wall.get('bbox')
+                if bbox is not None:
+                    x, y, w_rect, h_rect = bbox
+                    # Draw red rectangle for triggered wall
+                    cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 4)
+                    
+                    # Add zone label
+                    zone_text = wall['zone'].upper()
+                    cv2.putText(result, f"WALL: {zone_text}", (x + 5, y + 20),
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
         
         # === ARENA BOUNDARY ===
         if self.arena_detected and self.arena_contour is not None:
