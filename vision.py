@@ -101,32 +101,6 @@ class VisionSystem:
         self.arena_mask = None
         self.arena_detected = False
         self.arena_contour = None
-        
-    def _calculate_collection_zone(self):
-        """Calculate the collection zone boundaries"""
-        horizontal_margin = config.CAMERA_WIDTH * 0.3
-        left_boundary = int(horizontal_margin)
-        right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
-        
-        vertical_threshold = int(config.CAMERA_HEIGHT * 0.4)
-        bottom_boundary = config.CAMERA_HEIGHT
-        
-        return {
-            'left': left_boundary,
-            'right': right_boundary, 
-            'top': vertical_threshold,
-            'bottom': bottom_boundary
-        }
-    
-    def is_in_collection_zone(self, ball_center: Tuple[int, int]) -> bool:
-        """Check if ball center is in the collection zone"""
-        x, y = ball_center
-        zone = self.collection_zone
-        
-        horizontal_ok = zone['left'] <= x <= zone['right']
-        vertical_ok = zone['top'] <= y <= zone['bottom']
-        
-        return horizontal_ok and vertical_ok
     
     # === BALL CENTERING METHODS ===
     def is_ball_centered(self, ball: DetectedObject) -> bool:
@@ -190,12 +164,15 @@ class VisionSystem:
         return drive_time
     
     def detect_excluded_areas(self, frame):
-        """Detect white containers/cages where balls should be excluded"""
+        """Detect white containers/cages where balls should be excluded in the bottom 30% of the image"""
         if frame is None:
             return None
         
         h, w = frame.shape[:2]
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        bottom_start = int(h * 0.7)  # Only look in bottom 30%
+        cropped_frame = frame[bottom_start:h, :]
+        
+        hsv = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2HSV)
         
         # Detect white/light colored containers (like the cage in your image)
         # More restrictive white detection for containers
@@ -208,7 +185,7 @@ class VisionSystem:
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel, iterations=2)
         
-        # Find large white structures (containers/cages)
+        # Find contours in the cropped mask
         contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         exclusion_zones = []
@@ -226,15 +203,15 @@ class VisionSystem:
                     margin = 10
                     exclusion_zone = {
                         'x': max(0, x - margin),
-                        'y': max(0, y - margin), 
+                        'y': max(0, y + bottom_start - margin),  # Shift y back to full image coordinates
                         'width': min(w - x + margin, w_rect + 2*margin),
-                        'height': min(h - y + margin, h_rect + 2*margin),
+                        'height': min(h - (y + bottom_start) + margin, h_rect + 2*margin),
                         'area': area
                     }
                     exclusion_zones.append(exclusion_zone)
                     
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y})")
+                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y + bottom_start})")
         
         return exclusion_zones
 
@@ -270,10 +247,13 @@ class VisionSystem:
         self.arena_detected = self.boundary_system.arena_detected
         self.arena_contour = self.boundary_system.arena_contour
         
-        # NEW: Get exclusion zones for containers/cages
+        # Get exclusion zones for containers/cages
         exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
+        
+        # Define bottom exclusion line - EXCLUDE BOTTOM 30%
+        bottom_exclusion_start = int(h * 0.7)  # Bottom 30% exclusion
         
         # Convert to grayscale for HoughCircles
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -303,12 +283,18 @@ class VisionSystem:
             for (x, y, radius) in circles:
                 center = (x, y)
                 
+                # FIRST CHECK: Skip balls in bottom 30% entirely
+                if y >= bottom_exclusion_start:
+                    if config.DEBUG_VISION:
+                        self.logger.debug(f"Ball at {center} excluded - in bottom 30%")
+                    continue
+                
                 # Verify center is within arena
                 if (self.arena_mask is not None and 
                     0 <= y < h and 0 <= x < w and
                     self.arena_mask[y, x] > 0):
                     
-                    # NEW: Check if ball is in exclusion zone (container/cage)
+                    # Check if ball is in exclusion zone (container/cage)
                     if self.is_ball_in_exclusion_zone(center, exclusion_zones):
                         if config.DEBUG_VISION:
                             self.logger.debug(f"Ball at {center} excluded - inside container")
@@ -323,7 +309,7 @@ class VisionSystem:
                             (center[1] - self.frame_center_y)**2
                         )
                         
-                        in_collection_zone = self.is_in_collection_zone(center)
+                        in_collection_zone = self.is_ball_in_target_zone(center)
                         area = int(np.pi * radius * radius)
                         
                         ball = DetectedObject(
@@ -353,10 +339,14 @@ class VisionSystem:
         # Update local references for compatibility
         self.arena_mask = self.boundary_system.arena_mask
         
-        # NEW: Get exclusion zones for containers/cages
+        # Get exclusion zones for containers/cages
         exclusion_zones = self.detect_excluded_areas(frame)
         
         h, w = frame.shape[:2]
+        
+        # Define bottom exclusion line - EXCLUDE BOTTOM 30%
+        bottom_exclusion_start = int(h * 0.7)  # Bottom 30% exclusion
+        
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
         # White ball detection only
@@ -390,11 +380,17 @@ class VisionSystem:
                         center = (int(x), int(y))
                         radius = int(radius)
                         
+                        # FIRST CHECK: Skip balls in bottom 30% entirely
+                        if center[1] >= bottom_exclusion_start:
+                            if config.DEBUG_VISION:
+                                self.logger.debug(f"Ball at {center} excluded - in bottom 30%")
+                            continue
+                        
                         if (config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS and
                             0 <= center[1] < h and 0 <= center[0] < w and
                             self.arena_mask[center[1], center[0]] > 0):
                             
-                            # NEW: Check if ball is in exclusion zone (container/cage)
+                            # Check if ball is in exclusion zone (container/cage)
                             if self.is_ball_in_exclusion_zone(center, exclusion_zones):
                                 if config.DEBUG_VISION:
                                     self.logger.debug(f"Ball at {center} excluded - inside container")
@@ -420,7 +416,7 @@ class VisionSystem:
                                         (center[1] - self.frame_center_y)**2
                                     )
                                     
-                                    in_collection_zone = self.is_in_collection_zone(center)
+                                    in_collection_zone = self.is_ball_in_target_zone(center)
                                     
                                     ball = DetectedObject(
                                         object_type='ball',  # Only white balls
@@ -556,7 +552,7 @@ class VisionSystem:
         target_ball = self.get_target_ball(detected_objects)
         
         if target_ball:
-            if target_ball.in_collection_zone:
+            if self.is_ball_in_target_zone(target_ball.center):
                 return "collect_ball"
             else:
                 return self._get_direction_to_object(target_ball)
@@ -762,26 +758,22 @@ class VisionSystem:
         return result
     
     def draw_detections_clean(self, frame, balls: List[DetectedObject]) -> np.ndarray:
-        """Clean detection visualization with precise target zone"""
+        """Clean detection visualization with ONLY the target zone that matters"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # 1. ZONE BOUNDARIES
+        # 1. ONLY SHOW THE TARGET ZONE THAT ACTUALLY MATTERS
         zone = self.collection_zone
         
-        # General collection zone (green, thin line)
-        cv2.rectangle(result, (zone['left'], zone['top']), 
-                    (zone['right'], zone['bottom']), (0, 255, 0), 1)
-        
-        # PRECISE TARGET ZONE in center - small box just for ping pong ball (bright yellow, thick)
+        # PRECISE TARGET ZONE - the only zone that matters for collection (bright yellow, thick)
         cv2.rectangle(result, (zone['target_left'], zone['target_top']), 
                     (zone['target_right'], zone['target_bottom']), (0, 255, 255), 3)
         
         # Add target zone label
-        cv2.putText(result, "TARGET", (zone['target_left'] + 5, zone['target_top'] - 5), 
+        cv2.putText(result, "COLLECTION TARGET", (zone['target_left'] + 5, zone['target_top'] - 5), 
                 cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
         
         # Target zone crosshair (center point)
@@ -806,7 +798,7 @@ class VisionSystem:
             ball_char = 'B'
             
             if is_target:
-                # Check if ball is in precise target zone
+                # Check if ball is in target zone (the ONLY zone that matters)
                 in_target_zone = self.is_ball_in_target_zone(ball.center)
                 
                 if in_target_zone:
@@ -871,34 +863,26 @@ class VisionSystem:
     
 
     def _calculate_collection_zone(self):
-        """Calculate collection zones with precise target area in middle of screen"""
+        """Calculate ONLY the target zone that actually matters for collection"""
         
-        # TARGET ZONE: Small precise area in center of screen (just big enough for ping pong ball)
+        # TARGET ZONE: Use config parameters for positioning and sizing
         center_x = config.CAMERA_WIDTH // 2
-        center_y = config.CAMERA_HEIGHT // 2
         
-        # Target zone size - roughly ping pong ball sized area
-        target_width = getattr(config, 'TARGET_ZONE_WIDTH', 80)   # 80 pixels wide
-        target_height = getattr(config, 'TARGET_ZONE_HEIGHT', 60)  # 60 pixels tall
+        # Position target zone vertically using config parameter
+        vertical_pos = getattr(config, 'TARGET_ZONE_VERTICAL_POSITION', 0.65)
+        center_y = int(config.CAMERA_HEIGHT * vertical_pos)
+        
+        # Target zone size from config
+        target_width = getattr(config, 'TARGET_ZONE_WIDTH', 60)
+        target_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
         
         target_left = center_x - (target_width // 2)
         target_right = center_x + (target_width // 2)
         target_top = center_y - (target_height // 2)
         target_bottom = center_y + (target_height // 2)
         
-        # GENERAL collection area (larger, for initial detection)
-        horizontal_margin = config.CAMERA_WIDTH * 0.3
-        general_left = int(horizontal_margin)
-        general_right = int(config.CAMERA_WIDTH - horizontal_margin)
-        
         return {
-            # General collection area (for initial detection)
-            'left': general_left,
-            'right': general_right, 
-            'top': int(config.CAMERA_HEIGHT * 0.4),
-            'bottom': config.CAMERA_HEIGHT,
-            
-            # PRECISE target zone in middle of screen
+            # ONLY the target zone that actually matters
             'target_left': target_left,
             'target_right': target_right,
             'target_top': target_top,
