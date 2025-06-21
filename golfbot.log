@@ -1710,3 +1710,193 @@
 2025-06-20 17:50:51,453 - hardware - INFO - ✅ Hardware cleanup completed
 2025-06-20 17:50:51,453 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
 2025-06-20 17:50:51,453 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 11:16:01,873 - __main__ - INFO - Using new dashboard interface
+2025-06-21 11:16:01,873 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-21 11:16:01,873 - motor_controller - INFO - Initializing motor controllers...
+2025-06-21 11:16:01,877 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-21 11:16:01,877 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-21 11:16:01,877 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-21 11:16:01,877 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-21 11:16:01,889 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-21 11:16:01,889 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-21 11:16:01,889 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-21 11:16:01,889 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-21 11:16:01,889 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-21 11:16:01,889 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 11:16:01,889 - __main__ - INFO - Detecting arena boundaries...
+2025-06-21 11:16:02,678 - boundary_avoidance - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 11:16:02,678 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 11:16:02,679 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-21 11:16:03,763 - __main__ - INFO - COMPETITION STARTED - WHITE BALLS ONLY!
+2025-06-21 11:16:03,763 - __main__ - INFO - Time limit: 480 seconds
+2025-06-21 11:16:03,763 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-21 11:16:04,611 - vision - INFO - Container exclusion zone: 288x164 at (272,94)
+2025-06-21 11:16:04,620 - vision - INFO - Container exclusion zone: 288x164 at (272,94)
+2025-06-21 11:16:04,654 - __main__ - INFO - Found 1 confident white ball(s) (avg conf: 0.89)
+2025-06-21 11:16:05,502 - vision - INFO - Container exclusion zone: 288x168 at (272,94)
+2025-06-21 11:16:05,509 - vision - INFO - Container exclusion zone: 288x168 at (272,94)
+2025-06-21 11:16:05,785 - __main__ - INFO - Positioning to target zone: turning left
+2025-06-21 11:16:06,667 - vision - INFO - Container exclusion zone: 292x164 at (284,95)
+2025-06-21 11:16:06,675 - vision - INFO - Container exclusion zone: 292x164 at (284,95)
+2025-06-21 11:16:06,949 - __main__ - INFO - Positioning to target zone: turning left
+2025-06-21 11:16:07,824 - vision - INFO - Container exclusion zone: 290x167 at (285,95)
+2025-06-21 11:16:07,832 - vision - INFO - Container exclusion zone: 290x167 at (285,95)
+2025-06-21 11:16:07,840 - boundary_avoidance - INFO - Bottom wall detected: area=330.5, width=32
+2025-06-21 11:16:07,858 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-21 11:16:07,862 - boundary_avoidance - INFO - Bottom wall detected: area=330.5, width=32
+2025-06-21 11:16:09,395 - vision - INFO - Container exclusion zone: 287x166 at (288,93)
+2025-06-21 11:16:09,404 - vision - INFO - Container exclusion zone: 287x166 at (288,93)
+2025-06-21 11:16:09,417 - boundary_avoidance - INFO - Bottom wall detected: area=827.0, width=57
+2025-06-21 11:16:09,436 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-21 11:16:09,439 - boundary_avoidance - INFO - Bottom wall detected: area=827.0, width=57
+2025-06-21 11:16:10,974 - vision - INFO - Container exclusion zone: 286x168 at (290,91)
+2025-06-21 11:16:11,872 - vision - INFO - Container exclusion zone: 286x173 at (289,91)
+2025-06-21 11:16:11,877 - vision - INFO - Ball at (541,101) excluded - inside container
+2025-06-21 11:16:11,879 - boundary_avoidance - INFO - Bottom wall detected: area=254.5, width=34
+2025-06-21 11:16:11,894 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-21 11:16:11,897 - boundary_avoidance - INFO - Bottom wall detected: area=254.5, width=34
+2025-06-21 11:16:13,427 - vision - INFO - Container exclusion zone: 280x172 at (273,88)
+2025-06-21 11:16:14,347 - vision - INFO - Container exclusion zone: 280x171 at (272,88)
+2025-06-21 11:16:14,380 - __main__ - INFO - Found 2 confident white ball(s) (avg conf: 0.88)
+2025-06-21 11:16:15,193 - vision - INFO - Container exclusion zone: 279x176 at (273,88)
+2025-06-21 11:16:15,474 - __main__ - INFO - Positioning to target zone: turning left
+2025-06-21 11:16:16,368 - vision - INFO - Container exclusion zone: 281x176 at (281,89)
+2025-06-21 11:16:16,393 - __main__ - INFO - ============================================================
+2025-06-21 11:16:16,393 - __main__ - INFO - COMPETITION ENDED - WHITE BALLS ONLY!
+2025-06-21 11:16:16,393 - __main__ - INFO - ============================================================
+2025-06-21 11:16:16,393 - __main__ - INFO - Total time: 12.6 seconds
+2025-06-21 11:16:16,393 - __main__ - INFO - White balls collected: 0
+2025-06-21 11:16:16,393 - __main__ - INFO - Final state: centering_ball
+2025-06-21 11:16:16,393 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-21 11:16:16,393 - __main__ - INFO - Arena detection: Fallback
+2025-06-21 11:16:16,393 - __main__ - INFO - Boundary avoidance: Modular system
+2025-06-21 11:16:16,393 - __main__ - INFO - ============================================================
+2025-06-21 11:16:16,393 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 11:16:16,393 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-21 11:16:16,393 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 11:16:16,497 - servo_controller - INFO - 🔧 Moving servo SF to READY position (90°)
+2025-06-21 11:16:16,801 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 11:16:16,801 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 11:16:16,802 - vision - INFO - Enhanced vision system (white balls only) cleanup completed
+2025-06-21 11:16:16,802 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 11:16:16,802 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-21 11:16:16,803 - motor_controller - INFO - ✅ Motor cleanup completed
+2025-06-21 11:16:16,803 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-21 11:16:16,803 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-21 11:16:16,803 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 11:16:16,907 - servo_controller - INFO - 🔧 Moving servo SF to READY position (90°)
+2025-06-21 11:16:17,210 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 11:16:17,211 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-21 11:16:17,211 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-21 11:16:17,211 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 11:16:17,211 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-21 11:24:56,961 - __main__ - INFO - Using new dashboard interface
+2025-06-21 11:24:56,961 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-21 11:24:56,961 - motor_controller - INFO - Initializing motor controllers...
+2025-06-21 11:24:56,967 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-21 11:24:56,968 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-21 11:24:56,968 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-21 11:24:56,968 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-21 11:24:56,979 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-21 11:24:56,979 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-21 11:24:56,979 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-21 11:24:56,979 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-21 11:24:56,980 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-21 11:24:56,980 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-21 11:24:56,980 - __main__ - INFO - Detecting arena boundaries...
+2025-06-21 11:24:57,734 - boundary_avoidance - INFO - Using fallback arena mask (conservative edges)
+2025-06-21 11:24:57,734 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-21 11:24:57,734 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-21 11:24:58,609 - __main__ - INFO - COMPETITION STARTED - WHITE BALLS ONLY!
+2025-06-21 11:24:58,609 - __main__ - INFO - Time limit: 480 seconds
+2025-06-21 11:24:58,609 - __main__ - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-21 11:24:59,443 - vision - INFO - Container exclusion zone: 269x159 at (87,95)
+2025-06-21 11:24:59,451 - vision - INFO - Container exclusion zone: 269x159 at (87,95)
+2025-06-21 11:25:00,795 - vision - INFO - Container exclusion zone: 269x150 at (103,93)
+2025-06-21 11:25:00,803 - vision - INFO - Container exclusion zone: 269x150 at (103,93)
+2025-06-21 11:25:02,553 - vision - INFO - Container exclusion zone: 199x167 at (0,106)
+2025-06-21 11:25:02,553 - vision - INFO - Container exclusion zone: 192x65 at (0,0)
+2025-06-21 11:25:02,563 - vision - INFO - Container exclusion zone: 199x167 at (0,106)
+2025-06-21 11:25:02,564 - vision - INFO - Container exclusion zone: 192x65 at (0,0)
+2025-06-21 11:25:03,923 - vision - INFO - Container exclusion zone: 224x166 at (0,103)
+2025-06-21 11:25:03,932 - vision - INFO - Container exclusion zone: 224x166 at (0,103)
+2025-06-21 11:25:05,718 - vision - INFO - Container exclusion zone: 88x207 at (0,134)
+2025-06-21 11:25:05,725 - vision - INFO - Container exclusion zone: 88x207 at (0,134)
+2025-06-21 11:25:07,090 - vision - INFO - Container exclusion zone: 91x205 at (0,132)
+2025-06-21 11:25:07,102 - vision - INFO - Container exclusion zone: 91x205 at (0,132)
+2025-06-21 11:25:08,843 - vision - INFO - Container exclusion zone: 156x117 at (121,163)
+2025-06-21 11:25:08,851 - vision - INFO - Container exclusion zone: 156x117 at (121,163)
+2025-06-21 11:25:08,856 - vision - INFO - Ball at (201,193) excluded - inside container
+2025-06-21 11:25:08,875 - __main__ - INFO - Found 1 confident white ball(s) (avg conf: 0.65)
+2025-06-21 11:25:09,696 - vision - INFO - Container exclusion zone: 157x114 at (119,163)
+2025-06-21 11:25:09,703 - vision - INFO - Container exclusion zone: 157x114 at (119,163)
+2025-06-21 11:25:09,708 - vision - INFO - Ball at (203,192) excluded - inside container
+2025-06-21 11:25:09,977 - __main__ - INFO - Positioning to target zone: turning right
+2025-06-21 11:25:10,842 - vision - INFO - Container exclusion zone: 207x127 at (38,167)
+2025-06-21 11:25:10,851 - vision - INFO - Container exclusion zone: 207x127 at (38,167)
+2025-06-21 11:25:10,857 - vision - INFO - Ball at (163,198) excluded - inside container
+2025-06-21 11:25:11,127 - __main__ - INFO - Positioning to target zone: turning right
+2025-06-21 11:25:11,979 - vision - INFO - Container exclusion zone: 217x132 at (0,170)
+2025-06-21 11:25:11,980 - vision - INFO - Container exclusion zone: 292x116 at (0,0)
+2025-06-21 11:25:11,987 - vision - INFO - Container exclusion zone: 217x132 at (0,170)
+2025-06-21 11:25:11,987 - vision - INFO - Container exclusion zone: 292x116 at (0,0)
+2025-06-21 11:25:11,992 - vision - INFO - Ball at (131,199) excluded - inside container
+2025-06-21 11:25:12,261 - __main__ - INFO - Positioning to target zone: turning right
+2025-06-21 11:25:13,109 - vision - INFO - Container exclusion zone: 179x146 at (0,175)
+2025-06-21 11:25:13,116 - vision - INFO - Container exclusion zone: 179x146 at (0,175)
+2025-06-21 11:25:13,121 - vision - INFO - Ball at (93,213) excluded - inside container
+2025-06-21 11:25:13,124 - boundary_avoidance - INFO - Bottom wall detected: area=884.5, width=41
+2025-06-21 11:25:13,140 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-21 11:25:13,144 - boundary_avoidance - INFO - Bottom wall detected: area=884.5, width=41
+2025-06-21 11:25:14,652 - vision - INFO - Container exclusion zone: 208x154 at (0,155)
+2025-06-21 11:25:14,661 - vision - INFO - Container exclusion zone: 208x154 at (0,155)
+2025-06-21 11:25:14,666 - vision - INFO - Ball at (114,192) excluded - inside container
+2025-06-21 11:25:14,669 - boundary_avoidance - INFO - Bottom wall detected: area=1574.0, width=46
+2025-06-21 11:25:14,685 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-21 11:25:14,689 - boundary_avoidance - INFO - Bottom wall detected: area=1574.0, width=46
+2025-06-21 11:25:16,207 - vision - INFO - Container exclusion zone: 326x272 at (0,133)
+2025-06-21 11:25:16,215 - vision - INFO - Container exclusion zone: 326x272 at (0,133)
+2025-06-21 11:25:16,220 - vision - INFO - Ball at (96,197) excluded - inside container
+2025-06-21 11:25:16,222 - boundary_avoidance - INFO - Bottom wall detected: area=2402.0, width=81
+2025-06-21 11:25:16,238 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-21 11:25:16,242 - boundary_avoidance - INFO - Bottom wall detected: area=2402.0, width=81
+2025-06-21 11:25:17,780 - vision - INFO - Container exclusion zone: 335x313 at (0,132)
+2025-06-21 11:25:17,787 - vision - INFO - Container exclusion zone: 335x313 at (0,132)
+2025-06-21 11:25:17,792 - vision - INFO - Ball at (88,201) excluded - inside container
+2025-06-21 11:25:17,795 - boundary_avoidance - INFO - Bottom wall detected: area=2198.0, width=74
+2025-06-21 11:25:17,818 - __main__ - WARNING - ⚠️  Near arena boundary - executing avoidance
+2025-06-21 11:25:17,822 - boundary_avoidance - INFO - Bottom wall detected: area=2198.0, width=74
+2025-06-21 11:25:19,353 - vision - INFO - Container exclusion zone: 351x293 at (0,133)
+2025-06-21 11:25:19,357 - vision - INFO - Ball at (117,413) excluded - inside container
+2025-06-21 11:25:19,360 - vision - INFO - Container exclusion zone: 351x293 at (0,133)
+2025-06-21 11:25:19,365 - vision - INFO - Ball at (87,199) excluded - inside container
+2025-06-21 11:25:19,368 - boundary_avoidance - INFO - Bottom wall detected: area=2188.5, width=80
+2025-06-21 11:25:19,383 - __main__ - INFO - ============================================================
+2025-06-21 11:25:19,384 - __main__ - INFO - COMPETITION ENDED - WHITE BALLS ONLY!
+2025-06-21 11:25:19,384 - __main__ - INFO - ============================================================
+2025-06-21 11:25:19,384 - __main__ - INFO - Total time: 20.8 seconds
+2025-06-21 11:25:19,384 - __main__ - INFO - White balls collected: 0
+2025-06-21 11:25:19,384 - __main__ - INFO - Final state: avoiding_boundary
+2025-06-21 11:25:19,384 - __main__ - INFO - Collection system: Enhanced (X+Y Centering + Servo Sequence)
+2025-06-21 11:25:19,384 - __main__ - INFO - Arena detection: Fallback
+2025-06-21 11:25:19,384 - __main__ - INFO - Boundary avoidance: Modular system
+2025-06-21 11:25:19,384 - __main__ - INFO - ============================================================
+2025-06-21 11:25:19,384 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 11:25:19,384 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-21 11:25:19,384 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 11:25:19,488 - servo_controller - INFO - 🔧 Moving servo SF to READY position (90°)
+2025-06-21 11:25:19,792 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 11:25:19,792 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-21 11:25:19,794 - vision - INFO - Enhanced vision system (white balls only) cleanup completed
+2025-06-21 11:25:19,794 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-21 11:25:19,794 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-21 11:25:19,795 - motor_controller - INFO - ✅ Motor cleanup completed
+2025-06-21 11:25:19,795 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-21 11:25:19,795 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-21 11:25:19,795 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (25°)
+2025-06-21 11:25:19,899 - servo_controller - INFO - 🔧 Moving servo SF to READY position (90°)
+2025-06-21 11:25:20,203 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF at ready
+2025-06-21 11:25:20,204 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-21 11:25:20,204 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-21 11:25:20,204 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-21 11:25:20,204 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
