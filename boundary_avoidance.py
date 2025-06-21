@@ -255,13 +255,16 @@ class BoundaryAvoidanceSystem:
         if 'left' in triggered_zones:
             return 'turn_right'       # Turn away from left wall
         elif 'right' in triggered_zones:
-            return 'turn_left'        # Turn away from right wall
+            return 'turn_left'         # Turn away from right wall
         elif 'center_forward' in triggered_zones:
-            return 'move_backward'    # Turn when wall directly ahead
+            # *** CRITICAL CHANGE HERE ***
+            # Instead of 'move_backward', we now return 'turn_right' for a hard turn.
+            self.logger.info("Decision: Hard turn right due to center_forward wall.")
+            return 'turn_right'
         elif 'bottom' in triggered_zones:
-            return 'move_backward'    # Only back up if no side options
+            return 'move_backward'     # Only back up if no side options
         else:
-            return 'move_backward'    # Default safe action
+            return 'move_backward'     # Default safe action
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
         """Draw boundary detection overlays on frame"""
@@ -285,14 +288,29 @@ class BoundaryAvoidanceSystem:
                     cv2.drawContours(result, [contour], -1, (0, 0, 255), 2)
 
         # === DANGER ZONES ===
-        danger_distance = min(50, int(h * 0.1))
-        danger_y = h - danger_distance
-        edge_width = min(30, int(w * 0.06))
+        # The variables `danger_distance_vertical`, `danger_distance_horizontal`,
+        # `bottom_30_percent_y`, `collection_zone_y`, `center_start_x`, `center_width`
+        # are calculated within `detect_boundaries`. For drawing purposes, you might
+        # need to either pass them as arguments, re-calculate them, or store them
+        # as class attributes if you want them to be dynamically reflected in the visualization.
+        # For simplicity in drawing, I'll use fixed values similar to how they're used
+        # in the drawing section's original logic, but be aware of the disconnect
+        # if the calculations in `detect_boundaries` are significantly different.
+
+        # Recalculate or use sensible defaults for visualization
+        h, w = frame.shape[:2]
+        bottom_30_percent_y = int(h * 0.7)
+        collection_zone_y = int(h * 0.75)
+        danger_distance_horizontal = int(w * 0.08)
 
         # Draw danger zone borders
-        cv2.rectangle(result, (0, danger_y), (w, h), (0, 100, 255), 2)  # Bottom
-        cv2.rectangle(result, (0, 0), (edge_width, h), (0, 100, 255), 2)  # Left
-        cv2.rectangle(result, (w - edge_width, 0), (w, h), (0, 100, 255), 2)  # Right
+        # Bottom region (where 'bottom' and 'center_forward' walls are detected)
+        cv2.rectangle(result, (0, bottom_30_percent_y), (w, collection_zone_y), (0, 100, 255), 2)
+        # Left region
+        cv2.rectangle(result, (0, bottom_30_percent_y), (danger_distance_horizontal, collection_zone_y), (0, 100, 255), 2)
+        # Right region
+        cv2.rectangle(result, (w - danger_distance_horizontal, bottom_30_percent_y), (w, collection_zone_y), (0, 100, 255), 2)
+
 
         # === TRIGGERED WALLS ===
         for wall in self.detected_walls:
@@ -341,8 +359,6 @@ if __name__ == "__main__":
             break
 
         # Detect arena boundaries (often done once at startup or periodically)
-        # For simplicity, we'll run it every frame here, but for a robot,
-        # you might do this less frequently if the arena is static.
         arena_found = boundary_system.detect_arena_boundaries(frame)
 
         # Detect walls in danger zones
