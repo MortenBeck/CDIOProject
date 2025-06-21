@@ -435,28 +435,27 @@ class GolfBot:
                 post_delay = 0.08
                 min_x_error = 6
                 min_y_error = 5
-        
-        # === TIMEOUT SYSTEM: GIVE UP ON FINE CENTERING ===
-        max_centering_time = 8.0  # Maximum time to spend centering
-        max_attempts_without_progress = 20
-        
+
+        # === TIMEOUT SYSTEM: GIVE UP ON DIFFICULT BALLS ===
+        max_centering_time = 12.0  # Increased timeout for better success rate
+        max_attempts_without_progress = 30  # More attempts
+
         if (elapsed_time > max_centering_time or 
             self.centering_attempts > max_attempts_without_progress):
             
-            self.logger.warning(f"Centering timeout ({elapsed_time:.1f}s, {self.centering_attempts} attempts) - ADVANCING TO BALL")
+            self.logger.warning(f"Centering timeout ({elapsed_time:.1f}s, {self.centering_attempts} attempts)")
             
-            # If ball is reasonably close, just drive toward it
-            if distance_to_target < 120:
-                self.logger.info("Ball reasonably close - attempting collection anyway")
+            # ONLY proceed if ball is actually in target zone
+            if self.vision.is_ball_in_target_zone(target_ball.center):
+                self.logger.info("✅ Ball IS in target zone despite timeout - proceeding with collection")
                 self.state = RobotState.COLLECTING_BALL
                 self._reset_centering_state()
                 return
             else:
-                # Ball too far - drive forward to get closer, then try again
-                self.logger.info("Ball too far - driving forward to get closer")
-                self.hardware.move_forward(duration=0.6, speed=config.CENTERING_SPEED)
-                self._reset_centering_state()  # Reset and try centering again
-                time.sleep(0.1)
+                # Give up on this ball and find an easier target
+                self.logger.info("❌ Ball NOT in target zone after timeout - abandoning this ball")
+                self.state = RobotState.SEARCHING
+                self._reset_centering_state()
                 return
         
         # === MOVEMENT EXECUTION ===
