@@ -271,7 +271,7 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """SIMPLIFIED: Get ball into precise target zone in center of screen"""
+        """UPDATED: Get ball into precise target zone - Y-axis (distance) FIRST, then X-axis (left/right)"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
@@ -298,34 +298,34 @@ class GolfBot:
         # Ball not in target zone - get movement to position it
         x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
         
-        # Move ball toward target zone - prioritize the axis that's furthest off
-        if x_direction != 'centered':
-            if x_direction == 'right':
-                self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
-                                        speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning right")
-            elif x_direction == 'left':
-                self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
-                                    speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning left")
-            
-            time.sleep(0.03)
-            return
-        
-        # X is centered, now work on Y
+        # CHANGED: Prioritize Y-axis (distance) first since robot doesn't drive straight
         if y_direction != 'centered':
             if y_direction == 'forward':
                 self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving forward")
+                    self.logger.info(f"Positioning to target zone: moving forward (Y-axis first)")
             elif y_direction == 'backward':
                 self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
                                         speed=config.CENTERING_SPEED)
                 if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving backward")
+                    self.logger.info(f"Positioning to target zone: moving backward (Y-axis first)")
+            
+            time.sleep(0.03)
+            return
+        
+        # Y is centered, now work on X (left/right fine-tuning)
+        if x_direction != 'centered':
+            if x_direction == 'right':
+                self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
+                                        speed=config.CENTERING_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"Positioning to target zone: turning right (X-axis fine-tune)")
+            elif x_direction == 'left':
+                self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
+                                    speed=config.CENTERING_SPEED)
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"Positioning to target zone: turning left (X-axis fine-tune)")
             
             time.sleep(0.03)
             return
