@@ -169,8 +169,8 @@ class VisionSystem:
             return None
 
         h, w = frame.shape[:2]
-        bottom_15_start = int(h * 0.85)  # Only keep bottom 15%
-        cropped_frame = frame[bottom_15_start:h, :]
+        bottom_start = int(h * 0.7)  # Only keep bottom 30%
+        cropped_frame = frame[bottom_start:h, :]
 
         hsv = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2HSV)
 
@@ -199,15 +199,15 @@ class VisionSystem:
                     margin = 10
                     exclusion_zone = {
                         'x': max(0, x - margin),
-                        'y': max(0, y + bottom_15_start - margin),  # shift y back to full image coordinates
+                        'y': max(0, y + bottom_start - margin),  # shift y back to full image coordinates
                         'width': min(w - x + margin, w_rect + 2*margin),
-                        'height': min(h - (y + bottom_15_start) + margin, h_rect + 2*margin),
+                        'height': min(h - (y + bottom_start) + margin, h_rect + 2*margin),
                         'area': area
                     }
                     exclusion_zones.append(exclusion_zone)
 
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y + bottom_15_start})")
+                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y + bottom_start})")
 
         return exclusion_zones
 
