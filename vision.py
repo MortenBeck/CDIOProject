@@ -101,22 +101,6 @@ class VisionSystem:
         self.arena_mask = None
         self.arena_detected = False
         self.arena_contour = None
-        
-    def _calculate_collection_zone(self):
-        """Calculate the collection zone boundaries"""
-        horizontal_margin = config.CAMERA_WIDTH * 0.3
-        left_boundary = int(horizontal_margin)
-        right_boundary = int(config.CAMERA_WIDTH - horizontal_margin)
-        
-        vertical_threshold = int(config.CAMERA_HEIGHT * 0.4)
-        bottom_boundary = config.CAMERA_HEIGHT
-        
-        return {
-            'left': left_boundary,
-            'right': right_boundary, 
-            'top': vertical_threshold,
-            'bottom': bottom_boundary
-        }
     
     def is_in_collection_zone(self, ball_center: Tuple[int, int]) -> bool:
         """Check if ball center is in the collection zone"""
