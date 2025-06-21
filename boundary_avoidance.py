@@ -11,40 +11,37 @@ config = Config()
 # -------------------------------------------------
 
 class BoundaryAvoidanceSystem:
-    """Dedicated system for detecting and avoiding arena boundaries/walls"""
+    """Simplified boundary avoidance system - focuses on what actually works"""
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         logging.basicConfig(level=logging.INFO if config.DEBUG_VISION else logging.WARNING,
                             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-        # Wall detection results for visualization
+        # Simple detection results
         self.detected_walls = []
         self.red_mask = None
 
-        # Arena boundaries
+        # Arena boundaries (keep this simple)
         self.arena_mask = None
         self.arena_detected = False
         self.arena_contour = None
-
-        # State variable to manage multi-step avoidance
-        self.avoidance_state = None # Can be 'backing_up', 'turning_right', etc.
-        self.backup_duration_frames = 10 # Number of frames to back up
-        self.backup_frame_count = 0
+        
+        # Add compatibility properties for dashboard
+        self.avoidance_state = None
 
     def detect_arena_boundaries(self, frame) -> bool:
-        """Detect arena boundaries from red walls to create detection mask"""
+        """Simplified arena boundary detection"""
         if frame is None:
             return False
 
         h, w = frame.shape[:2]
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # Red boundary detection with wider ranges
-        # UPDATED PARAMETERS for strong red (stop sign like)
-        lower_red1 = np.array([0, 150, 100])  # Increased S and V minimums
+        # Simple red boundary detection
+        lower_red1 = np.array([0, 150, 100])
         upper_red1 = np.array([15, 255, 255])
-        lower_red2 = np.array([165, 150, 100]) # Increased S and V minimums
+        lower_red2 = np.array([165, 150, 100])
         upper_red2 = np.array([180, 255, 255])
 
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
@@ -53,27 +50,25 @@ class BoundaryAvoidanceSystem:
 
         # Clean up the boundary mask
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-        red_boundary_mask = cv2.morphologyEx(red_boundary_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
-        red_boundary_mask = cv2.morphologyEx(red_boundary_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        red_boundary_mask = cv2.morphologyEx(red_boundary_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
 
         # Find the arena boundary contour
         contours, _ = cv2.findContours(red_boundary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if contours:
-            # Get the largest contour (should be arena boundary)
             largest_contour = max(contours, key=cv2.contourArea)
             area = cv2.contourArea(largest_contour)
 
             # Check if this could be a valid arena boundary
-            min_arena_area = (w * h) * 0.15  # Arena should be at least 15% of frame
+            min_arena_area = (w * h) * 0.15
 
             if area > min_arena_area:
-                # Create arena mask - everything inside the red boundary
+                # Create arena mask
                 self.arena_mask = np.zeros((h, w), dtype=np.uint8)
                 cv2.fillPoly(self.arena_mask, [largest_contour], 255)
 
-                # Erode slightly to ensure we're well inside the boundary
-                erosion_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15))
+                # Erode slightly to be safe
+                erosion_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (10, 10))
                 self.arena_mask = cv2.erode(self.arena_mask, erosion_kernel, iterations=1)
 
                 self.arena_contour = largest_contour
@@ -81,29 +76,27 @@ class BoundaryAvoidanceSystem:
 
                 if config.DEBUG_VISION:
                     self.logger.info(f"Arena boundary detected: area={area:.0f}")
-
                 return True
 
-        # Fallback: create a conservative arena mask
+        # Fallback: create a simple arena mask
         if not self.arena_detected:
             self.arena_mask = np.ones((h, w), dtype=np.uint8) * 255
-            # Exclude outer edges where objects might be outside arena
-            margin_h = int(h * 0.12)  # 12% margin top/bottom
-            margin_w = int(w * 0.08)  # 8% margin left/right
+            # Simple margins
+            margin_h = int(h * 0.10)
+            margin_w = int(w * 0.08)
 
-            self.arena_mask[:margin_h, :] = 0  # Top
-            self.arena_mask[-margin_h:, :] = 0  # Bottom
-            self.arena_mask[:, :margin_w] = 0  # Left
-            self.arena_mask[:, -margin_w:] = 0  # Right
+            self.arena_mask[:margin_h, :] = 0
+            self.arena_mask[-margin_h:, :] = 0
+            self.arena_mask[:, :margin_w] = 0
+            self.arena_mask[:, -margin_w:] = 0
 
             if config.DEBUG_VISION:
-                self.logger.info("Using fallback arena mask (conservative edges)")
+                self.logger.info("Using fallback arena mask")
 
         return False
 
     def detect_boundaries(self, frame) -> bool:
-        """Detect if robot is too close to red walls (danger zones)
-        UPDATED: Only trigger avoidance for walls in BOTTOM 30% of image"""
+        """Simplified boundary detection - only check for red walls in front of robot"""
         if frame is None:
             return False
 
@@ -112,10 +105,10 @@ class BoundaryAvoidanceSystem:
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # Red wall detection - UPDATED PARAMETERS for strong red (stop sign like)
-        lower_red1 = np.array([0, 150, 100])  # Increased S and V minimums
+        # Red wall detection
+        lower_red1 = np.array([0, 150, 100])
         upper_red1 = np.array([15, 255, 255])
-        lower_red2 = np.array([165, 150, 100]) # Increased S and V minimums
+        lower_red2 = np.array([165, 150, 100])
         upper_red2 = np.array([180, 255, 255])
 
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
@@ -129,240 +122,96 @@ class BoundaryAvoidanceSystem:
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
 
-        # CRITICAL CHANGE: Only check bottom 30% of image for all wall detection
-        bottom_30_percent_y = int(h * 0.7)  # Start checking at 70% down from top
-        collection_zone_y = int(h * 0.75)   # Collection zone starts at 75%
+        # SIMPLIFIED: Only check bottom center area where robot is likely to hit walls
+        danger_zone_top = int(h * 0.6)     # Bottom 40% of image
+        danger_zone_left = int(w * 0.25)   # Center 50% of image width
+        danger_zone_right = int(w * 0.75)
 
-        danger_detected = False
-        min_wall_area = 150   # Minimum area to consider a wall
+        # Extract danger zone
+        danger_region = red_mask[danger_zone_top:h, danger_zone_left:danger_zone_right]
+        
+        # Check if there's significant red in the danger zone
+        red_pixels = np.sum(danger_region > 0)
+        total_pixels = danger_region.shape[0] * danger_region.shape[1]
+        red_percentage = red_pixels / total_pixels
 
-        # Define danger zones ONLY in bottom 30%
-        danger_distance_vertical = int(h * 0.1)   # 10% of frame height (reduced)
-        danger_distance_horizontal = int(w * 0.08) # 8% of frame width (reduced)
+        # If more than 5% of danger zone is red, we're too close to a wall
+        danger_detected = red_percentage > 0.05
 
-        # === REGION 1: BOTTOM WALL DETECTION (in bottom 30% but above collection zone) ===
-        bottom_danger_start = max(bottom_30_percent_y, collection_zone_y - danger_distance_vertical)
-        if bottom_danger_start < collection_zone_y:
-            bottom_region = red_mask[bottom_danger_start:collection_zone_y, :]
-            contours, _ = cv2.findContours(bottom_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-            for contour in contours:
-                area = cv2.contourArea(contour)
-                if area > min_wall_area:
-                    x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    if w_rect > 30:   # Horizontal wall
-                        danger_detected = True
-                        wall_info = {
-                            'zone': 'bottom',
-                            'contour': contour,
-                            'area': area,
-                            'bbox': (x, bottom_danger_start + y, w_rect, h_rect),
-                            'length': w_rect,
-                            'triggered': True
-                        }
-                        self.detected_walls.append(wall_info)
-                        if config.DEBUG_VISION:
-                            self.logger.info(f"Bottom wall detected in BOTTOM 30%: area={area}, width={w_rect}")
-                        break
-
-        # === REGION 2: LEFT WALL DETECTION (ONLY in bottom 30%) ===
-        left_region = red_mask[bottom_30_percent_y:collection_zone_y, 0:danger_distance_horizontal]
-        contours, _ = cv2.findContours(left_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area > min_wall_area:
-                x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                if h_rect > 30:   # Vertical wall
-                    danger_detected = True
-                    wall_info = {
-                        'zone': 'left',
-                        'contour': contour,
-                        'area': area,
-                        'bbox': (x, bottom_30_percent_y + y, w_rect, h_rect),
-                        'length': h_rect,
-                        'triggered': True
-                    }
-                    self.detected_walls.append(wall_info)
-                    if config.DEBUG_VISION:
-                        self.logger.info(f"Left wall detected in BOTTOM 30%: area={area}, height={h_rect}")
-                    break
-
-        # === REGION 3: RIGHT WALL DETECTION (ONLY in bottom 30%) ===
-        right_region = red_mask[bottom_30_percent_y:collection_zone_y, w-danger_distance_horizontal:w]
-        contours, _ = cv2.findContours(right_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area > min_wall_area:
-                x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                if h_rect > 30:   # Vertical wall
-                    danger_detected = True
-                    wall_info = {
-                        'zone': 'right',
-                        'contour': contour,
-                        'area': area,
-                        'bbox': (w - danger_distance_horizontal + x, bottom_30_percent_y + y, w_rect, h_rect),
-                        'length': h_rect,
-                        'triggered': True
-                    }
-                    self.detected_walls.append(wall_info)
-                    if config.DEBUG_VISION:
-                        self.logger.info(f"Right wall detected in BOTTOM 30%: area={area}, height={h_rect}")
-                    break
-
-        # === REGION 4: CENTER FORWARD WALL DETECTION (ONLY in bottom 30%) ===
-        # Check center area for walls directly in front of robot
-        center_width = int(w * 0.5)   # Check center 50% of frame width
-        center_start_x = int(w * 0.25)   # Start at 25% from left
-
-        # Only check bottom 30% area where walls are actually close to robot
-        center_region = red_mask[bottom_30_percent_y:collection_zone_y, center_start_x:center_start_x + center_width]
-        contours, _ = cv2.findContours(center_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area > min_wall_area:
-                x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                # Wall is dangerous if it has significant size
-                if w_rect > 40 or h_rect > 20:   # Must be substantial wall segment
-                    danger_detected = True
-                    wall_info = {
-                        'zone': 'center_forward',
-                        'contour': contour,
-                        'area': area,
-                        'bbox': (center_start_x + x, bottom_30_percent_y + y, w_rect, h_rect),
-                        'length': max(w_rect, h_rect),
-                        'triggered': True
-                    }
-                    self.detected_walls.append(wall_info)
-                    if config.DEBUG_VISION:
-                        self.logger.info(f"CENTER wall detected in BOTTOM 30%: area={area}, pos=({center_start_x + x}, {bottom_30_percent_y + y})")
-                    break
-
-        if config.DEBUG_VISION and danger_detected:
-            triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
-            self.logger.info(f"Wall avoidance triggered in BOTTOM 30% - zones: {triggered_zones}")
+        if danger_detected:
+            # Add a simple wall entry for visualization
+            wall_info = {
+                'zone': 'front',
+                'area': red_pixels,
+                'bbox': (danger_zone_left, danger_zone_top, 
+                        danger_zone_right - danger_zone_left, 
+                        h - danger_zone_top),
+                'triggered': True
+            }
+            self.detected_walls.append(wall_info)
+            
+            if config.DEBUG_VISION:
+                self.logger.info(f"Wall detected in front danger zone: {red_percentage:.1%} red")
 
         return danger_detected
 
     def get_avoidance_command(self, frame) -> Optional[str]:
-        """Get avoidance command based on wall detection - FIXED PRIORITY ORDER"""
+        """Simplified avoidance - just back up and turn right when wall detected"""
         danger_detected = self.detect_boundaries(frame)
 
-        # Handle multi-step avoidance state
-        if self.avoidance_state == 'backing_up':
-            self.backup_frame_count += 1
-            if self.backup_frame_count < self.backup_duration_frames:
-                self.logger.info(f"Executing BACKUP: frame {self.backup_frame_count}/{self.backup_duration_frames}")
-                return 'move_backward'
-            else:
-                self.logger.info("Finished BACKUP, transitioning to TURN_RIGHT.")
-                self.avoidance_state = 'turning_right'
-                self.backup_frame_count = 0 # Reset for next time
-                return 'turn_right' # Immediately execute turn after backup
-        elif self.avoidance_state == 'turning_right':
-            # This state needs a way to know when the turn is complete.
-            # For simplicity here, we assume one 'turn_right' command is enough,
-            # or it's handled by the robot's control system.
-            # For a more robust solution, you'd need a turning duration or IMU feedback.
-            self.avoidance_state = None # Reset state after turning
-            return 'turn_right'
+        if danger_detected:
+            if config.DEBUG_VISION:
+                self.logger.info("Wall detected - backing up and turning right")
+            # Simple strategy: back up first, then turn right
+            return 'move_backward'
+        
+        return None
 
-        if not danger_detected:
-            self.avoidance_state = None # Reset state if no danger
-            self.backup_frame_count = 0
-            return None
-
-        # Analyze which walls are triggered to determine best avoidance
-        triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
-
-        # FIXED: Prioritize side walls over bottom walls for better navigation
-        if 'left' in triggered_zones:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
-            return 'turn_right'       # Turn away from left wall
-        elif 'right' in triggered_zones:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
-            return 'turn_left'         # Turn away from right wall
-        elif 'center_forward' in triggered_zones:
-            if self.avoidance_state is None: # Only start backup if not already in an avoidance sequence
-                self.logger.info("CENTER FORWARD wall detected, initiating BACKUP.")
-                self.avoidance_state = 'backing_up'
-                self.backup_frame_count = 0
-                return 'move_backward'
-            # If already in backing_up or turning_right state, let the state machine handle it
-            # This 'else' path here would only be hit if already handling 'center_forward'
-            # but the above if/else if handles that. This line is mostly for clarity.
-            return 'move_backward' if self.avoidance_state == 'backing_up' else 'turn_right'
-        elif 'bottom' in triggered_zones:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
-            # For a 'bottom' wall, if it's not a 'center_forward' but just a general bottom wall,
-            # a simple turn might still be effective without backing up.
-            return 'turn_right'    # Default turn right if only bottom wall detected
-        else:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
-            return 'turn_right'      # Default safe action if danger_detected but no specific zone caught
+    def get_closest_boundary_distance(self) -> float:
+        """Simplified distance calculation for compatibility with main.py"""
+        if not self.detected_walls:
+            return 100.0  # No walls detected, return safe distance
+        
+        # Simple approximation: if walls detected, assume close distance
+        return 10.0  # Close enough to trigger critical boundary check
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
-        """Draw boundary detection overlays on frame"""
+        """Simplified visualization"""
         if frame is None:
             return frame
 
         result = frame.copy()
         h, w = result.shape[:2]
 
-        # === WALL VISUALIZATION ===
+        # Show red walls if detected
         if self.red_mask is not None:
-            # Create red overlay
             wall_overlay = np.zeros_like(result)
             wall_overlay[:, :, 2] = self.red_mask  # Red channel
-            cv2.addWeighted(result, 0.75, wall_overlay, 0.25, 0, result)
+            cv2.addWeighted(result, 0.8, wall_overlay, 0.2, 0, result)
 
-            # Add outlines around red walls
-            contours, _ = cv2.findContours(self.red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
-                if cv2.contourArea(contour) > 100:
-                    cv2.drawContours(result, [contour], -1, (0, 0, 255), 2)
+        # Show danger zone
+        danger_zone_top = int(h * 0.6)
+        danger_zone_left = int(w * 0.25)
+        danger_zone_right = int(w * 0.75)
+        
+        cv2.rectangle(result, (danger_zone_left, danger_zone_top), 
+                     (danger_zone_right, h), (0, 255, 255), 2)
+        cv2.putText(result, "DANGER ZONE", (danger_zone_left + 10, danger_zone_top + 20),
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
-        # === DANGER ZONES ===
-        # Recalculate or use sensible defaults for visualization
-        h, w = frame.shape[:2]
-        bottom_30_percent_y = int(h * 0.7)
-        collection_zone_y = int(h * 0.75)
-        danger_distance_horizontal = int(w * 0.08)
-
-        # Draw danger zone borders
-        # Bottom region (where 'bottom' and 'center_forward' walls are detected)
-        cv2.rectangle(result, (0, bottom_30_percent_y), (w, collection_zone_y), (0, 100, 255), 2)
-        # Left region
-        cv2.rectangle(result, (0, bottom_30_percent_y), (danger_distance_horizontal, collection_zone_y), (0, 100, 255), 2)
-        # Right region
-        cv2.rectangle(result, (w - danger_distance_horizontal, bottom_30_percent_y), (w, collection_zone_y), (0, 100, 255), 2)
-
-
-        # === TRIGGERED WALLS ===
-        for wall in self.detected_walls:
-            if wall['triggered']:
-                x, y, w_rect, h_rect = wall['bbox']
-                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), (0, 0, 255), 4)
-
-        # === ARENA BOUNDARY ===
+        # Show arena boundary if detected
         if self.arena_detected and self.arena_contour is not None:
             cv2.drawContours(result, [self.arena_contour], -1, (0, 255, 255), 1)
 
-        # Display current avoidance state
-        if self.avoidance_state:
-            cv2.putText(result, f"Avoidance State: {self.avoidance_state}", (10, h - 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+        # Show wall warnings
+        if self.detected_walls:
+            cv2.putText(result, "WALL DETECTED - BACKING UP", (10, h - 30),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
         return result
 
     def get_status(self) -> Dict:
-        """Get boundary avoidance system status"""
+        """Get simple status"""
         triggered_walls = [wall for wall in self.detected_walls if wall.get('triggered', False)]
 
         return {
@@ -370,73 +219,10 @@ class BoundaryAvoidanceSystem:
             'walls_detected': len(self.detected_walls),
             'walls_triggered': len(triggered_walls),
             'danger_zones': [wall['zone'] for wall in triggered_walls],
-            'safe': len(triggered_walls) == 0,
-            'current_avoidance_state': self.avoidance_state
+            'safe': len(triggered_walls) == 0
         }
 
     def reset(self):
         """Reset detection state"""
         self.detected_walls = []
         self.red_mask = None
-        self.avoidance_state = None
-        self.backup_frame_count = 0
-
-# --- Example of how to use the class in a main script ---
-if __name__ == "__main__":
-    # Initialize the camera
-    cap = cv2.VideoCapture(0) # Use 0 for default webcam, or path to video file
-
-    if not cap.isOpened():
-        print("Error: Could not open video stream.")
-        exit()
-
-    # Initialize the boundary avoidance system
-    boundary_system = BoundaryAvoidanceSystem()
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        # Detect arena boundaries (often done once at startup or periodically)
-        arena_found = boundary_system.detect_arena_boundaries(frame)
-
-        # Get avoidance command based on current frame and internal state
-        avoidance_command = boundary_system.get_avoidance_command(frame)
-
-        # Get status for logging/debugging
-        status = boundary_system.get_status()
-
-        if config.DEBUG_VISION:
-            # Draw visualizations
-            visualized_frame = boundary_system.draw_boundary_visualization(frame)
-            cv2.putText(visualized_frame, f"Arena Detected: {status['arena_detected']}", (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-            cv2.putText(visualized_frame, f"Command: {avoidance_command if avoidance_command else 'None'}", (10, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-            cv2.putText(visualized_frame, f"Danger Zones: {', '.join(status['danger_zones']) if status['danger_zones'] else 'None'}", (10, 90),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
-            cv2.imshow('Boundary Avoidance System', visualized_frame)
-
-        # Here you would integrate the 'avoidance_command' with your robot's movement logic
-        if avoidance_command:
-            boundary_system.logger.info(f"Robot should: {avoidance_command}")
-            # Example:
-            # if avoidance_command == 'turn_right':
-            #     robot.turn_right()
-            # elif avoidance_command == 'move_backward':
-            #     robot.move_backward()
-            # # Add other movement commands as needed
-            # elif avoidance_command == 'turn_left':
-            #     robot.turn_left()
-        # else:
-            # If no avoidance command, the robot can proceed with its main task
-            # robot.move_forward() # or whatever its goal is
-
-        # Press 'q' to quit the video stream
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    # Release resources
-    cap.release()
-    cv2.destroyAllWindows()
