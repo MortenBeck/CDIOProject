@@ -163,7 +163,7 @@ class VisionSystem:
         
         return drive_time
     
-    def detect_excluded_areas(self, frame):
+    ##def detect_excluded_areas(self, frame):
         """Detect white containers/cages where balls should be excluded"""
         if frame is None:
             return None
