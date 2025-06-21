@@ -64,6 +64,13 @@ class GolfBot:
         # Performance tracking
         self.last_frame_time = time.time()
         self.frame_skip_counter = 0  # Skip frames for performance
+
+        #Centering enhancements
+        self.centering_history = []  # Track recent centering moves
+        self.centering_stable_count = 0  # Count of stable frames
+        self.last_centering_direction = None
+        self.direction_change_count = 0
+        self.min_stable_frames = 3  #
         
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -312,10 +319,11 @@ class GolfBot:
         self.execute_search_pattern()
     
     def handle_centering_ball(self, balls, nav_command):
-        """SIMPLIFIED: Get ball into precise target zone in center of screen"""
+        """ANTI-OSCILLATION: Get ball into target zone with damping"""
         if not balls:
             self.logger.info("Lost sight of ball during centering - returning to search")
             self.state = RobotState.SEARCHING
+            self._reset_centering_state()
             return
         
         # Filter for confident balls
@@ -324,6 +332,7 @@ class GolfBot:
         if not confident_balls:
             self.logger.info("No confident ball detections during centering - returning to search")
             self.state = RobotState.SEARCHING
+            self._reset_centering_state()
             return
         
         # Target the closest confident ball
@@ -331,74 +340,123 @@ class GolfBot:
         
         # Check if ball is in the precise target zone
         if self.vision.is_ball_centered_for_collection(target_ball):
-            # Ball is in target zone - start collection!
-            self.logger.info(f"White ball in TARGET ZONE! Starting collection with fixed drive")
-            self.state = RobotState.COLLECTING_BALL
-            return
+            # ADDITIONAL STABILITY CHECK: Require several consecutive stable frames
+            self.centering_stable_count += 1
+            
+            if self.centering_stable_count >= self.min_stable_frames:
+                self.logger.info(f"White ball STABLE in target zone for {self.centering_stable_count} frames! Starting collection")
+                self.state = RobotState.COLLECTING_BALL
+                self._reset_centering_state()
+                return
+            else:
+                self.logger.info(f"Ball in target zone - verifying stability ({self.centering_stable_count}/{self.min_stable_frames})")
+                time.sleep(0.1)  # Wait a bit longer for stability verification
+                return
+        else:
+            # Ball moved out of target zone - reset stability counter
+            self.centering_stable_count = 0
         
-        # Ball not in target zone - get movement to position it
+        # Get movement direction
         x_direction, y_direction = self.vision.get_centering_adjustment_v2(target_ball)
         
-        # Move ball toward target zone - prioritize the axis that's furthest off
+        # ANTI-OSCILLATION LOGIC
+        current_direction = x_direction if x_direction != 'centered' else y_direction
+        
+        # Track direction changes to detect oscillation
+        if (self.last_centering_direction and 
+            current_direction != 'centered' and 
+            self.last_centering_direction != 'centered' and
+            current_direction != self.last_centering_direction):
+            self.direction_change_count += 1
+            self.logger.warning(f"Direction change detected: {self.last_centering_direction} -> {current_direction} (count: {self.direction_change_count})")
+        
+        # If we're oscillating, use smaller movements and wait longer
+        if self.direction_change_count >= 3:
+            self.logger.warning("OSCILLATION DETECTED - Using reduced movement and longer delays")
+            movement_duration = config.CENTERING_TURN_DURATION * 0.5  # Half duration
+            movement_speed = config.CENTERING_SPEED * 0.7  # Slower speed
+            post_movement_delay = 0.2  # Longer delay after movement
+        else:
+            movement_duration = config.CENTERING_TURN_DURATION
+            movement_speed = config.CENTERING_SPEED
+            post_movement_delay = 0.03
+        
+        # Store history for oscillation detection
+        self.centering_history.append({
+            'direction': current_direction,
+            'ball_pos': target_ball.center,
+            'timestamp': time.time()
+        })
+        
+        # Keep only recent history (last 10 moves)
+        if len(self.centering_history) > 10:
+            self.centering_history.pop(0)
+        
+        # PRIORITIZED MOVEMENT with anti-oscillation
+        movement_made = False
+        
         if x_direction != 'centered':
-            if x_direction == 'right':
-                self.hardware.turn_right(duration=config.CENTERING_TURN_DURATION, 
-                                        speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning right")
-            elif x_direction == 'left':
-                self.hardware.turn_left(duration=config.CENTERING_TURN_DURATION, 
-                                    speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: turning left")
+            # Add small deadband to prevent micro-adjustments
+            ball_x = target_ball.center[0]
+            target_x = self.vision.collection_zone['target_center_x']
+            x_error = abs(ball_x - target_x)
             
-            time.sleep(0.03)
-            return
-        
-        # X is centered, now work on Y
-        if y_direction != 'centered':
-            if y_direction == 'forward':
-                self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, 
-                                        speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving forward")
-            elif y_direction == 'backward':
-                self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, 
-                                        speed=config.CENTERING_SPEED)
-                if config.DEBUG_MOVEMENT:
-                    self.logger.info(f"Positioning to target zone: moving backward")
+            # Only move if error is significant enough (deadband)
+            min_x_error = 8 if self.direction_change_count >= 3 else 5
             
-            time.sleep(0.03)
-            return
+            if x_error > min_x_error:
+                if x_direction == 'right':
+                    self.hardware.turn_right(duration=movement_duration, speed=movement_speed)
+                    if config.DEBUG_MOVEMENT:
+                        self.logger.info(f"Positioning: turning right (error: {x_error}px, duration: {movement_duration:.3f}s)")
+                elif x_direction == 'left':
+                    self.hardware.turn_left(duration=movement_duration, speed=movement_speed)
+                    if config.DEBUG_MOVEMENT:
+                        self.logger.info(f"Positioning: turning left (error: {x_error}px, duration: {movement_duration:.3f}s)")
+                
+                movement_made = True
+                self.last_centering_direction = x_direction
+            else:
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"X-error {x_error}px within deadband {min_x_error}px - skipping movement")
         
-        if config.DEBUG_MOVEMENT:
-            self.logger.info("Ball should be in target zone now!")
-    
-    def handle_approaching_ball(self, balls, nav_command):
-        """Handle approaching with confidence tracking (legacy mode) - WHITE BALLS ONLY"""
-        if not balls:
-            self.logger.info("Lost sight of all white balls - returning to search")
-            self.state = RobotState.SEARCHING
-            return
+        elif y_direction != 'centered':
+            # Add deadband for Y-axis too
+            ball_y = target_ball.center[1]
+            target_y = self.vision.collection_zone['target_center_y']
+            y_error = abs(ball_y - target_y)
+            
+            min_y_error = 6 if self.direction_change_count >= 3 else 4
+            
+            if y_error > min_y_error:
+                if y_direction == 'forward':
+                    self.hardware.move_forward(duration=config.CENTERING_DRIVE_DURATION, speed=movement_speed)
+                    if config.DEBUG_MOVEMENT:
+                        self.logger.info(f"Positioning: moving forward (error: {y_error}px)")
+                elif y_direction == 'backward':
+                    self.hardware.move_backward(duration=config.CENTERING_DRIVE_DURATION, speed=movement_speed)
+                    if config.DEBUG_MOVEMENT:
+                        self.logger.info(f"Positioning: moving backward (error: {y_error}px)")
+                
+                movement_made = True
+                self.last_centering_direction = y_direction
+            else:
+                if config.DEBUG_MOVEMENT:
+                    self.logger.info(f"Y-error {y_error}px within deadband {min_y_error}px - skipping movement")
         
-        # Filter for confident balls
-        confident_balls = [ball for ball in balls if ball.confidence > 0.4]
-        
-        if not confident_balls:
-            self.logger.info("No confident white ball detections - returning to search")
-            self.state = RobotState.SEARCHING
-            return
-        
-        # Target the closest confident ball
-        target_ball = confident_balls[0]
-        
-        if target_ball.in_collection_zone:
-            self.logger.info(f"White ball in collection zone - attempting collection (confidence: {target_ball.confidence:.2f})")
-            self.state = RobotState.COLLECTING_BALL
-            return
-        
-        # Navigate toward ball
-        self.execute_navigation_command(nav_command)
+        if movement_made:
+            time.sleep(post_movement_delay)
+        else:
+            if config.DEBUG_MOVEMENT:
+                self.logger.info("Ball should be in target zone now (within deadbands)!")
+            time.sleep(0.1)
+
+    def _reset_centering_state(self):
+        """Reset centering state tracking"""
+        self.centering_history = []
+        self.centering_stable_count = 0
+        self.last_centering_direction = None
+        self.direction_change_count = 0
     
     def handle_collecting_ball(self):
         """Handle ball collection with PROPER sequence: servo up -> drive -> servo down"""

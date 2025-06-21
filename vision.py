@@ -913,34 +913,42 @@ class VisionSystem:
         return getattr(config, 'FIXED_COLLECTION_DRIVE_TIME', 1.0)  # 1 second default
 
     def get_centering_adjustment_v2(self, ball: DetectedObject) -> tuple:
-        """Get ball into the precise target zone in center of screen"""
+        """Get ball into target zone with improved tolerance zones"""
         ball_x, ball_y = ball.center
         zone = self.collection_zone
         
         target_center_x = zone['target_center_x']
         target_center_y = zone['target_center_y']
         
-        # X-axis: Get ball to target zone center
+        # X-axis: LARGER tolerance zones to prevent micro-adjustments
         x_offset = ball_x - target_center_x
-        x_tolerance = (zone['target_right'] - zone['target_left']) // 4  # Quarter of target zone width
+        
+        # Use a graduated tolerance system
+        target_width = zone['target_right'] - zone['target_left']
+        x_tolerance = max(8, target_width // 6)  # At least 8 pixels tolerance
         
         if abs(x_offset) <= x_tolerance:
             x_direction = 'centered'
-        elif x_offset > 0:
-            x_direction = 'right'  # Ball is right of target, turn right to center it
+        elif x_offset > x_tolerance + 3:  # Add hysteresis
+            x_direction = 'right'
+        elif x_offset < -(x_tolerance + 3):  # Add hysteresis  
+            x_direction = 'left'
         else:
-            x_direction = 'left'   # Ball is left of target, turn left to center it
+            x_direction = 'centered'  # In hysteresis zone - consider centered
         
-        # Y-axis: Get ball to target zone center
+        # Y-axis: Similar approach
         y_offset = ball_y - target_center_y
-        y_tolerance = (zone['target_bottom'] - zone['target_top']) // 4  # Quarter of target zone height
+        target_height = zone['target_bottom'] - zone['target_top']
+        y_tolerance = max(6, target_height // 6)  # At least 6 pixels tolerance
         
         if abs(y_offset) <= y_tolerance:
             y_direction = 'centered'
-        elif y_offset > 0:
-            y_direction = 'backward'  # Ball is below target center, back up
+        elif y_offset > y_tolerance + 2:  # Add hysteresis
+            y_direction = 'backward'
+        elif y_offset < -(y_tolerance + 2):  # Add hysteresis
+            y_direction = 'forward'
         else:
-            y_direction = 'forward'   # Ball is above target center, move forward
+            y_direction = 'centered'  # In hysteresis zone
         
         return x_direction, y_direction
     
