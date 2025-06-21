@@ -262,9 +262,9 @@ class BoundaryAvoidanceSystem:
             self.logger.info("Decision: Hard turn right due to center_forward wall.")
             return 'turn_right'
         elif 'bottom' in triggered_zones:
-            return 'move_backward'     # Only back up if no side options
+            return 'turn_right'     # Only back up if no side options
         else:
-            return 'move_backward'     # Default safe action
+            return 'turn_right'     # Default safe action
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
         """Draw boundary detection overlays on frame"""
