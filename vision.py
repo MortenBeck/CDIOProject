@@ -163,53 +163,52 @@ class VisionSystem:
         
         return drive_time
     
-    ##def detect_excluded_areas(self, frame):
-        """Detect white containers/cages where balls should be excluded"""
+    def detect_excluded_areas(self, frame):
+        """Detect white containers/cages where balls should be excluded in the bottom 15% of the image"""
         if frame is None:
             return None
-        
+
         h, w = frame.shape[:2]
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # Detect white/light colored containers (like the cage in your image)
-        # More restrictive white detection for containers
+        bottom_15_start = int(h * 0.85)  # Only keep bottom 15%
+        cropped_frame = frame[bottom_15_start:h, :]
+
+        hsv = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2HSV)
+
+        # Detect white/light colored containers
         lower_white = np.array([0, 0, 180])    # Very bright
         upper_white = np.array([180, 30, 255]) # Low saturation
         white_mask = cv2.inRange(hsv, lower_white, upper_white)
-        
-        # Clean up the mask to find solid white structures
+
+        # Clean up the mask
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
         white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel, iterations=2)
-        
-        # Find large white structures (containers/cages)
+
+        # Find contours in the cropped mask
         contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
+
         exclusion_zones = []
-        min_container_area = (w * h) * 0.02  # Container should be at least 2% of frame
-        
+        min_container_area = (w * h) * 0.02  # Based on full frame size
+
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > min_container_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                
-                # Check if this looks like a container (reasonable size and shape)
                 aspect_ratio = w_rect / max(h_rect, 1)
                 if 0.3 < aspect_ratio < 3.0 and w_rect > 50 and h_rect > 30:
-                    # Expand the exclusion zone slightly to be safe
                     margin = 10
                     exclusion_zone = {
                         'x': max(0, x - margin),
-                        'y': max(0, y - margin), 
+                        'y': max(0, y + bottom_15_start - margin),  # shift y back to full image coordinates
                         'width': min(w - x + margin, w_rect + 2*margin),
-                        'height': min(h - y + margin, h_rect + 2*margin),
+                        'height': min(h - (y + bottom_15_start) + margin, h_rect + 2*margin),
                         'area': area
                     }
                     exclusion_zones.append(exclusion_zone)
-                    
+
                     if config.DEBUG_VISION:
-                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y})")
-        
+                        self.logger.info(f"Container exclusion zone: {w_rect}x{h_rect} at ({x},{y + bottom_15_start})")
+
         return exclusion_zones
 
     def is_ball_in_exclusion_zone(self, ball_center, exclusion_zones):
