@@ -689,7 +689,7 @@ class GolfBot:
             return False
     
     def handle_avoiding_boundary(self, near_boundary):
-        """Handle boundary avoidance with faster return to ball detection"""
+        """Handle boundary avoidance with simplified approach"""
         if near_boundary:
             self.logger.warning("⚠️ Executing boundary avoidance maneuver")
             
@@ -701,17 +701,23 @@ class GolfBot:
             time.sleep(0.1)
             
             if avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.3)  # Shorter duration
+                self.hardware.move_backward(duration=0.3)
             elif avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=0.4)     # Shorter duration
+                self.hardware.turn_right(duration=0.4)
             elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=0.4)      # Shorter duration
+                self.hardware.turn_left(duration=0.4)
+            elif avoidance_command == 'backup_and_turn':
+                self.logger.warning("CENTER wall detected - backing up and turning")
+                self.hardware.move_backward(duration=0.5)  # Back up for 0.5 seconds
+                time.sleep(0.1)  # Brief pause between movements
+                self.hardware.turn_right(duration=0.6)     # Turn right for 0.6 seconds
             else:
-                # Default: back up and turn
-                self.hardware.move_backward(duration=0.2)
+                # Default: back up and turn (fallback)
+                self.hardware.move_backward(duration=0.3)
+                time.sleep(0.1)
                 self.hardware.turn_right(duration=0.4)
             
-            time.sleep(0.1)  # Shorter pause
+            time.sleep(0.1)  # Shorter pause after avoidance
         else:
             # Clear of boundary - return to ball detection immediately
             if config.DEBUG_MOVEMENT:

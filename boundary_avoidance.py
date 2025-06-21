@@ -27,11 +27,6 @@ class BoundaryAvoidanceSystem:
         self.arena_detected = False
         self.arena_contour = None
 
-        # State variable to manage multi-step avoidance
-        self.avoidance_state = None # Can be 'backing_up', 'turning_right', etc.
-        self.backup_duration_frames = 10 # Number of frames to back up
-        self.backup_frame_count = 0
-
     def detect_arena_boundaries(self, frame) -> bool:
         """Detect arena boundaries from red walls to create detection mask"""
         if frame is None:
@@ -247,65 +242,29 @@ class BoundaryAvoidanceSystem:
         return danger_detected
 
     def get_avoidance_command(self, frame) -> Optional[str]:
-        """Get avoidance command based on wall detection - FIXED PRIORITY ORDER"""
+        """Get avoidance command based on wall detection - SIMPLIFIED VERSION"""
         danger_detected = self.detect_boundaries(frame)
 
-        # Handle multi-step avoidance state
-        if self.avoidance_state == 'backing_up':
-            self.backup_frame_count += 1
-            if self.backup_frame_count < self.backup_duration_frames:
-                self.logger.info(f"Executing BACKUP: frame {self.backup_frame_count}/{self.backup_duration_frames}")
-                return 'move_backward'
-            else:
-                self.logger.info("Finished BACKUP, transitioning to TURN_RIGHT.")
-                self.avoidance_state = 'turning_right'
-                self.backup_frame_count = 0 # Reset for next time
-                return 'turn_right' # Immediately execute turn after backup
-        elif self.avoidance_state == 'turning_right':
-            # This state needs a way to know when the turn is complete.
-            # For simplicity here, we assume one 'turn_right' command is enough,
-            # or it's handled by the robot's control system.
-            # For a more robust solution, you'd need a turning duration or IMU feedback.
-            self.avoidance_state = None # Reset state after turning
-            return 'turn_right'
+        # REMOVED: All state machine handling
+        # No more self.avoidance_state checks
 
         if not danger_detected:
-            self.avoidance_state = None # Reset state if no danger
-            self.backup_frame_count = 0
             return None
 
         # Analyze which walls are triggered to determine best avoidance
         triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
 
-        # FIXED: Prioritize side walls over bottom walls for better navigation
+        # SIMPLIFIED: Direct commands without state tracking
         if 'left' in triggered_zones:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
             return 'turn_right'       # Turn away from left wall
         elif 'right' in triggered_zones:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
-            return 'turn_left'         # Turn away from right wall
+            return 'turn_left'        # Turn away from right wall
         elif 'center_forward' in triggered_zones:
-            if self.avoidance_state is None: # Only start backup if not already in an avoidance sequence
-                self.logger.info("CENTER FORWARD wall detected, initiating BACKUP.")
-                self.avoidance_state = 'backing_up'
-                self.backup_frame_count = 0
-                return 'move_backward'
-            # If already in backing_up or turning_right state, let the state machine handle it
-            # This 'else' path here would only be hit if already handling 'center_forward'
-            # but the above if/else if handles that. This line is mostly for clarity.
-            return 'move_backward' if self.avoidance_state == 'backing_up' else 'turn_right'
+            return 'backup_and_turn'  # NEW: Compound command for backing up + turning
         elif 'bottom' in triggered_zones:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
-            # For a 'bottom' wall, if it's not a 'center_forward' but just a general bottom wall,
-            # a simple turn might still be effective without backing up.
-            return 'turn_right'    # Default turn right if only bottom wall detected
+            return 'turn_right'       # Simple turn for bottom wall
         else:
-            self.avoidance_state = None # Clear any pending multi-step avoidance
-            self.backup_frame_count = 0
-            return 'turn_right'      # Default safe action if danger_detected but no specific zone caught
+            return 'turn_right'       # Default safe action
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
         """Draw boundary detection overlays on frame"""
@@ -329,20 +288,15 @@ class BoundaryAvoidanceSystem:
                     cv2.drawContours(result, [contour], -1, (0, 0, 255), 2)
 
         # === DANGER ZONES ===
-        # Recalculate or use sensible defaults for visualization
         h, w = frame.shape[:2]
         bottom_30_percent_y = int(h * 0.7)
         collection_zone_y = int(h * 0.75)
         danger_distance_horizontal = int(w * 0.08)
 
         # Draw danger zone borders
-        # Bottom region (where 'bottom' and 'center_forward' walls are detected)
         cv2.rectangle(result, (0, bottom_30_percent_y), (w, collection_zone_y), (0, 100, 255), 2)
-        # Left region
         cv2.rectangle(result, (0, bottom_30_percent_y), (danger_distance_horizontal, collection_zone_y), (0, 100, 255), 2)
-        # Right region
         cv2.rectangle(result, (w - danger_distance_horizontal, bottom_30_percent_y), (w, collection_zone_y), (0, 100, 255), 2)
-
 
         # === TRIGGERED WALLS ===
         for wall in self.detected_walls:
@@ -354,10 +308,8 @@ class BoundaryAvoidanceSystem:
         if self.arena_detected and self.arena_contour is not None:
             cv2.drawContours(result, [self.arena_contour], -1, (0, 255, 255), 1)
 
-        # Display current avoidance state
-        if self.avoidance_state:
-            cv2.putText(result, f"Avoidance State: {self.avoidance_state}", (10, h - 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
+        # REMOVED: Display current avoidance state
+        # No more state to display
 
         return result
 
@@ -371,15 +323,13 @@ class BoundaryAvoidanceSystem:
             'walls_triggered': len(triggered_walls),
             'danger_zones': [wall['zone'] for wall in triggered_walls],
             'safe': len(triggered_walls) == 0,
-            'current_avoidance_state': self.avoidance_state
+            # REMOVED: 'current_avoidance_state': self.avoidance_state
         }
 
     def reset(self):
         """Reset detection state"""
         self.detected_walls = []
         self.red_mask = None
-        self.avoidance_state = None
-        self.backup_frame_count = 0
 
 # --- Example of how to use the class in a main script ---
 if __name__ == "__main__":
