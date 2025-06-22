@@ -1,4 +1,131 @@
-#!/usr/bin/env python3
+def get_parallel_parking_command(self, target: GreenTarget) -> Optional[str]:
+        """
+        Get command for parallel parking approach using ACTUAL rectangle orientation
+        
+        Strategy: Find the closest short side and approach it perpendicularly
+        """
+        
+        robot_x = self.frame_center_x
+        robot_y = self.frame_center_y
+        
+        # If we have rotated rectangle data, use it for precise positioning
+        if hasattr(target, 'box_points') and target.box_points is not None:
+            box_pts = target.box_points
+            
+            # Calculate side lengths to identify short sides
+            side_data = []
+            for i in range(4):
+                p1 = box_pts[i]
+                p2 = box_pts[(i + 1) % 4]
+                length = np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
+                mid_x = (p1[0] + p2[0]) // 2
+                mid_y = (p1[1] + p2[1]) // 2
+                
+                # Calculate distance from robot to this side
+                robot_dist = np.sqrt((robot_x - mid_x)**2 + (robot_y - mid_y)**2)
+                
+                side_data.append({
+                    'length': length,
+                    'midpoint': (mid_x, mid_y),
+                    'robot_distance': robot_dist,
+                    'side_index': i,
+                    'p1': p1,
+                    'p2': p2
+                })
+            
+            # Sort by length to find short sides
+            side_data.sort(key=lambda x: x['length'])
+            short_sides = side_data[:2]  # Two shortest sides
+            
+            # Choose the short side closest to the robot
+            closest_short_side = min(short_sides, key=lambda x: x['robot_distance'])
+            
+            target_midpoint = closest_short_side['midpoint']
+            target_x, target_y = target_midpoint
+            
+            # Calculate the perpendicular approach vector
+            # Vector along the short side
+            p1, p2 = closest_short_side['p1'], closest_short_side['p2']
+            side_vec_x = p2[0] - p1[0]
+            side_vec_y = p2[1] - p1[1]
+            
+            # Perpendicular vector (rotate 90 degrees)
+            perp_vec_x = -side_vec_y
+            perp_vec_y = side_vec_x
+            
+            # Normalize perpendicular vector
+            perp_length = np.sqrt(perp_vec_x**2 + perp_vec_y**2)
+            if perp_length > 0:
+                perp_vec_x /= perp_length
+                perp_vec_y /= perp_length
+            
+            # Determine which direction to approach from (toward robot or away)
+            # Calculate current robot vector from target
+            robot_vec_x = robot_x - target_x
+            robot_vec_y = robot_y - target_y
+            
+            # Choose perpendicular direction that points toward robot
+            dot_product = robot_vec_x * perp_vec_x + robot_vec_y * perp_vec_y
+            if dot_product < 0:
+                perp_vec_x = -perp_vec_x
+                perp_vec_y = -perp_vec_y
+            
+            # Desired position: approach_distance away from target in perpendicular direction
+            desired_x = target_x + int(self.approach_distance * perp_vec_x)
+            desired_y = target_y + int(self.approach_distance * perp_vec_y)
+            
+        else:
+            # Fallback to simple logic if no rotated rectangle data
+            target_x, target_y = target.center
+            
+            if target.orientation == 'horizontal':
+                desired_x = target_x
+                desired_y = target_y - self.approach_distance
+            else:
+                desired_x = target_x - self.approach_distance
+                desired_y = target_y
+        
+        # Calculate positioning commands
+        x_error = robot_x - desired_x
+        y_error = robot_y - desired_y
+        
+        # Prioritize the larger error
+        if abs(x_error) > abs(y_error):
+            # X positioning needed
+            if abs(x_error) > self.centering_tolerance:
+                if x_error > 0:
+                    return 'move_left'   # Robot too far right, turn left
+                else:
+                    return 'move_right'  # Robot too far left, turn right
+        else:
+            # Y positioning needed
+            if abs(y_error) > self.centering_tolerance:
+                if y_error > 0:
+                    return 'move_backward'  # Robot too far down, move up
+                else:
+                    return 'move_forward'   # Robot too far up, move down
+        
+        # If we're close enough in both directions
+        if (abs(x_error) <= self.centering_tolerance and 
+            abs(y_error) <= self.centering_tolerance):
+            return 'approach_target'
+        
+        return None
+    
+    def get_final_approach_command(self, target: GreenTarget) -> str:
+        """Get command for final straight approach to the closest short side"""
+        
+        # If we have rotated rectangle data, calculate precise approach
+        if hasattr(target, 'box_points') and target.box_points is not None:
+            # The positioning phase should have set us up to approach the closest short side
+            # Now we just need to drive straight toward it
+            return 'approach_perpendicular'
+        else:
+            # Fallback to simple approach
+            if target.orientation == 'horizontal':
+                return 'approach_vertical'
+            else:
+                return 'approach_horizontal'#!/usr/bin/env python3
 """
 Simple Green Target Delivery System - Parallel Parking Approach
 Uses the working green detection to line up with green target's short end
@@ -14,14 +141,18 @@ import config
 
 @dataclass
 class GreenTarget:
-    """Simple green target data"""
+    """Simple green target data with rotated rectangle support"""
     center: Tuple[int, int]
     area: int
     confidence: float
-    bbox: Tuple[int, int, int, int]  # x, y, width, height
-    orientation: str  # 'horizontal' or 'vertical'
+    bbox: Tuple[int, int, int, int]  # x, y, width, height (approximate bounds)
+    orientation: str  # 'horizontal' or 'vertical' 
     short_side_length: int
     long_side_length: int
+    # Rotated rectangle data
+    rotated_rect: Optional[Tuple] = None  # ((cx, cy), (w, h), angle)
+    box_points: Optional[np.ndarray] = None  # 4 corner points
+    rotation_angle: Optional[float] = None  # Rotation angle in degrees
 
 class SimpleDeliveryVisionSystem:
     """Simplified vision system focused on green target detection and parallel parking approach"""
@@ -44,7 +175,7 @@ class SimpleDeliveryVisionSystem:
         self.centering_tolerance = 20  # Tolerance for centering
         
     def detect_green_targets(self, frame) -> List[GreenTarget]:
-        """Detect green targets and determine their orientation"""
+        """Detect green targets and determine their ACTUAL orientation using rotated rectangles"""
         green_targets = []
         
         if frame is None:
@@ -68,44 +199,82 @@ class SimpleDeliveryVisionSystem:
             area = cv2.contourArea(contour)
             
             if self.min_green_area < area < self.max_green_area:
-                # Get bounding box
-                x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                center = (x + w_rect // 2, y + h_rect // 2)
-                
-                # Determine orientation and which is the short side
-                if w_rect > h_rect:
-                    orientation = 'horizontal'
-                    short_side = h_rect
-                    long_side = w_rect
-                else:
-                    orientation = 'vertical'
-                    short_side = w_rect
-                    long_side = h_rect
-                
-                # Calculate confidence
-                perimeter = cv2.arcLength(contour, True)
-                if perimeter > 0:
-                    aspect_ratio = max(w_rect, h_rect) / max(min(w_rect, h_rect), 1)
-                    area_ratio = area / (w_rect * h_rect)
-                    
-                    # Prefer rectangular shapes (higher aspect ratio = more rectangular)
-                    size_confidence = min(1.0, area / 5000)
-                    shape_confidence = min(1.0, aspect_ratio / 3.0)  # Rectangles have higher aspect ratios
-                    fill_confidence = area_ratio
-                    
-                    confidence = (size_confidence + shape_confidence + fill_confidence) / 3
-                    
-                    if confidence > 0.3:
-                        target = GreenTarget(
-                            center=center,
-                            area=area,
-                            confidence=confidence,
-                            bbox=(x, y, w_rect, h_rect),
-                            orientation=orientation,
-                            short_side_length=short_side,
-                            long_side_length=long_side
-                        )
-                        green_targets.append(target)
+                # Use rotated rectangle to get ACTUAL orientation
+                if len(contour) >= 5:  # Need at least 5 points for fitEllipse
+                    try:
+                        # Get the minimum area rotated rectangle
+                        rotated_rect = cv2.minAreaRect(contour)
+                        center_float, (width_float, height_float), angle = rotated_rect
+                        
+                        # Convert to integers
+                        center = (int(center_float[0]), int(center_float[1]))
+                        width = int(width_float)
+                        height = int(height_float)
+                        
+                        # Determine TRUE orientation based on actual dimensions
+                        if width > height:
+                            orientation = 'horizontal'
+                            short_side = height
+                            long_side = width
+                            # Normalize angle for horizontal rectangles
+                            if angle < -45:
+                                angle += 90
+                        else:
+                            orientation = 'vertical'  
+                            short_side = width
+                            long_side = height
+                            # Normalize angle for vertical rectangles
+                            if angle < -45:
+                                angle += 90
+                        
+                        # Get the four corner points of the rotated rectangle
+                        box_points = cv2.boxPoints(rotated_rect)
+                        box_points = np.int0(box_points)
+                        
+                        # Use rotated rectangle for bbox instead of axis-aligned
+                        x_coords = box_points[:, 0]
+                        y_coords = box_points[:, 1]
+                        bbox = (int(np.min(x_coords)), int(np.min(y_coords)), 
+                               int(np.max(x_coords) - np.min(x_coords)), 
+                               int(np.max(y_coords) - np.min(y_coords)))
+                        
+                        # Calculate confidence based on how rectangular the shape is
+                        perimeter = cv2.arcLength(contour, True)
+                        if perimeter > 0:
+                            # For rotated rectangles, check how well contour fits the rotated rect
+                            rect_area = width * height
+                            contour_area = area
+                            fill_ratio = contour_area / max(rect_area, 1)
+                            
+                            aspect_ratio = max(long_side, 1) / max(short_side, 1)
+                            size_confidence = min(1.0, area / 3000)
+                            shape_confidence = min(1.0, fill_ratio)
+                            aspect_confidence = min(1.0, aspect_ratio / 4.0)  # Prefer rectangular shapes
+                            
+                            confidence = (size_confidence + shape_confidence + aspect_confidence) / 3
+                            
+                            if confidence > 0.3:
+                                target = GreenTarget(
+                                    center=center,
+                                    area=area,
+                                    confidence=confidence,
+                                    bbox=bbox,
+                                    orientation=orientation,
+                                    short_side_length=short_side,
+                                    long_side_length=long_side
+                                )
+                                # Store the rotated rectangle info for drawing
+                                target.rotated_rect = rotated_rect
+                                target.box_points = box_points
+                                target.rotation_angle = angle
+                                
+                                green_targets.append(target)
+                                
+                    except Exception as e:
+                        # Fallback to regular bounding box if rotated rect fails
+                        if self.logger:
+                            self.logger.warning(f"Rotated rectangle calculation failed: {e}")
+                        continue
         
         # Sort by confidence and size
         green_targets.sort(key=lambda t: (-t.confidence, -t.area))
@@ -185,61 +354,106 @@ class SimpleDeliveryVisionSystem:
             return 'approach_horizontal'
     
     def draw_delivery_visualization(self, frame, targets: List[GreenTarget], current_phase: str) -> np.ndarray:
-        """Draw delivery system visualization"""
+        """Draw delivery system visualization with ACTUAL rotated rectangles"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # Draw green targets with orientation info
+        # Draw green targets with ACTUAL orientation info
         for i, target in enumerate(targets):
-            x, y, w_rect, h_rect = target.bbox
-            
             if i == 0:
                 color = (0, 255, 0)    # Bright green for primary target
                 thickness = 3
                 
-                # Draw target rectangle
-                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
+                # Draw the ACTUAL rotated rectangle using the corner points
+                if hasattr(target, 'box_points') and target.box_points is not None:
+                    cv2.drawContours(result, [target.box_points], 0, color, thickness)
+                    
+                    # Calculate and highlight the short sides
+                    box_pts = target.box_points
+                    
+                    # Calculate side lengths to identify short sides
+                    side_lengths = []
+                    for i in range(4):
+                        p1 = box_pts[i]
+                        p2 = box_pts[(i + 1) % 4]
+                        length = np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
+                        side_lengths.append((length, i))
+                    
+                    # Sort to find the two shortest sides
+                    side_lengths.sort()
+                    short_side_indices = [side_lengths[0][1], side_lengths[1][1]]
+                    
+                    # Highlight the short sides in yellow
+                    for side_idx in short_side_indices:
+                        p1 = tuple(box_pts[side_idx])
+                        p2 = tuple(box_pts[(side_idx + 1) % 4])
+                        cv2.line(result, p1, p2, (0, 255, 255), 5)  # Thick yellow line
+                    
+                    # Show approach direction toward the closest short side
+                    # Find the short side closest to the robot (frame center)
+                    robot_pos = (self.frame_center_x, self.frame_center_y)
+                    min_dist = float('inf')
+                    closest_short_side = None
+                    
+                    for side_idx in short_side_indices:
+                        p1 = box_pts[side_idx]
+                        p2 = box_pts[(side_idx + 1) % 4]
+                        # Calculate distance from robot to side midpoint
+                        mid_x = (p1[0] + p2[0]) // 2
+                        mid_y = (p1[1] + p2[1]) // 2
+                        dist = np.sqrt((robot_pos[0] - mid_x)**2 + (robot_pos[1] - mid_y)**2)
+                        
+                        if dist < min_dist:
+                            min_dist = dist
+                            closest_short_side = (p1, p2, (mid_x, mid_y))
+                    
+                    # Draw approach arrow to closest short side
+                    if closest_short_side:
+                        p1, p2, midpoint = closest_short_side
+                        # Calculate approach position (30 pixels away from midpoint toward robot)
+                        dx = robot_pos[0] - midpoint[0]
+                        dy = robot_pos[1] - midpoint[1]
+                        norm = np.sqrt(dx*dx + dy*dy)
+                        if norm > 0:
+                            approach_x = midpoint[0] + int(30 * dx / norm)
+                            approach_y = midpoint[1] + int(30 * dy / norm)
+                            cv2.arrowedLine(result, (approach_x, approach_y), midpoint, (0, 255, 255), 3)
+                            cv2.putText(result, "APPROACH", (approach_x - 30, approach_y - 10), 
+                                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
+                
+                else:
+                    # Fallback to regular bounding box if rotated rect not available
+                    x, y, w_rect, h_rect = target.bbox
+                    cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
+                
+                # Draw center point
                 cv2.circle(result, target.center, 5, color, -1)
                 
-                # Show orientation and short side
+                # Show orientation and rotation info
                 orientation_text = f"{target.orientation.upper()}"
-                cv2.putText(result, orientation_text, (target.center[0] - 30, target.center[1] - 40), 
+                if hasattr(target, 'rotation_angle') and target.rotation_angle is not None:
+                    orientation_text += f" ({target.rotation_angle:.1f}°)"
+                    
+                cv2.putText(result, orientation_text, (target.center[0] - 40, target.center[1] - 50), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
                 
                 short_side_text = f"Short: {target.short_side_length}px"
-                cv2.putText(result, short_side_text, (target.center[0] - 30, target.center[1] - 20), 
+                cv2.putText(result, short_side_text, (target.center[0] - 40, target.center[1] - 30), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
-                
-                # Highlight the short sides we want to approach
-                if target.orientation == 'horizontal':
-                    # Horizontal rectangle - highlight top and bottom edges (short sides)
-                    cv2.line(result, (x, y), (x + w_rect, y), (255, 255, 0), 4)  # Top edge
-                    cv2.line(result, (x, y + h_rect), (x + w_rect, y + h_rect), (255, 255, 0), 4)  # Bottom edge
-                    
-                    # Show approach direction (from top)
-                    approach_start = (target.center[0], y - 30)
-                    cv2.arrowedLine(result, approach_start, (target.center[0], y), (255, 255, 0), 3)
-                    cv2.putText(result, "APPROACH", (approach_start[0] - 30, approach_start[1] - 10), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
-                    
-                else:
-                    # Vertical rectangle - highlight left and right edges (short sides)
-                    cv2.line(result, (x, y), (x, y + h_rect), (255, 255, 0), 4)  # Left edge
-                    cv2.line(result, (x + w_rect, y), (x + w_rect, y + h_rect), (255, 255, 0), 4)  # Right edge
-                    
-                    # Show approach direction (from left)
-                    approach_start = (x - 30, target.center[1])
-                    cv2.arrowedLine(result, approach_start, (x, target.center[1]), (255, 255, 0), 3)
-                    cv2.putText(result, "APPROACH", (approach_start[0] - 20, approach_start[1] - 10), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
                 
             else:
                 color = (0, 150, 0)    # Darker green for secondary targets
                 thickness = 2
-                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
+                
+                if hasattr(target, 'box_points') and target.box_points is not None:
+                    cv2.drawContours(result, [target.box_points], 0, color, thickness)
+                else:
+                    x, y, w_rect, h_rect = target.bbox
+                    cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
+                
                 cv2.circle(result, target.center, 3, color, -1)
             
             # Target label
@@ -260,14 +474,17 @@ class SimpleDeliveryVisionSystem:
         result[0:overlay_height, :] = cv2.addWeighted(result[0:overlay_height, :], 0.6, overlay, 0.4, 0)
         
         # Status text
-        cv2.putText(result, "SIMPLE DELIVERY - Parallel Parking Approach", (10, 25), 
+        cv2.putText(result, "SIMPLE DELIVERY - Rotated Rectangle Detection", (10, 25), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         
         target_count = len(targets)
         primary_target = targets[0] if targets else None
         
         if primary_target:
-            status = f"Target: {primary_target.orientation.upper()} green rectangle"
+            angle_info = ""
+            if hasattr(primary_target, 'rotation_angle') and primary_target.rotation_angle is not None:
+                angle_info = f" (rotated {primary_target.rotation_angle:.1f}°)"
+            status = f"Target: {primary_target.orientation.upper()} green rectangle{angle_info}"
             phase_status = f"Phase: {current_phase.upper()}"
         else:
             status = "Scanning for green targets..."
@@ -280,7 +497,7 @@ class SimpleDeliveryVisionSystem:
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
         
         # Instructions
-        cv2.putText(result, "Strategy: Position to side -> Align -> Drive straight at short end", (10, 105), 
+        cv2.putText(result, "Yellow lines: Short sides to target | Yellow arrow: Approach direction", (10, 105), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
         
         return result
@@ -433,7 +650,7 @@ class SimpleDeliverySystem:
             self.current_phase = "approach"
     
     def handle_approach_phase(self):
-        """Handle final straight approach to green target"""
+        """Handle final straight approach to green target's closest short side"""
         if not self.current_target:
             self.current_phase = "search"
             return
@@ -444,15 +661,23 @@ class SimpleDeliverySystem:
         self.logger.info(f"🚀 Final approach: {approach_command}")
         
         # Execute straight approach
-        approach_duration = 1.0
+        approach_duration = 1.2
         approach_speed = 0.35
         
-        if approach_command == 'approach_vertical':
-            # Drive straight toward horizontal target (from above)
+        if approach_command == 'approach_perpendicular':
+            # Drive straight toward the target (we should already be aligned)
+            self.logger.info("Driving straight toward closest short side")
             self.hardware.move_forward(duration=approach_duration, speed=approach_speed)
+            
+        elif approach_command == 'approach_vertical':
+            # Drive straight toward horizontal target (from above)
+            self.logger.info("Approaching horizontal target from above")
+            self.hardware.move_forward(duration=approach_duration, speed=approach_speed)
+            
         elif approach_command == 'approach_horizontal':
             # For horizontal approach, we need to turn and drive
             # Since we can't move sideways, turn toward target and drive
+            self.logger.info("Approaching vertical target with turn and drive")
             self.hardware.turn_right(duration=0.3, speed=approach_speed)
             time.sleep(0.1)
             self.hardware.move_forward(duration=approach_duration, speed=approach_speed)
