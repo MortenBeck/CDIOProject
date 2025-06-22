@@ -13,7 +13,7 @@ from vision import VisionSystem
 from competition_manager import CompetitionManager
 from startup_menu import show_startup_menu, show_competition_info, show_delivery_info
 from hardware_test import run_hardware_test
-from delivery_system import run_enhanced_delivery_test
+from delivery_system import run_delivery_test
 
 class GolfBot:
     """Main GolfBot class - simplified to coordinate components"""
@@ -141,7 +141,7 @@ def main():
         show_delivery_info()
         
         try:
-            if run_enhanced_delivery_test():
+            if run_delivery_test():
                 print("✅ Delivery test completed successfully!")
             else:
                 print("❌ Delivery test failed!")
