@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-GolfBot Delivery System - Green Target Detection and Navigation
-Enhanced with oscillation prevention, wall detection, and proper function exports
+Enhanced GolfBot Delivery System - Wall-Perpendicular Approach
+Detects wall orientation and approaches green targets perpendicular to the wall
 """
 
 import cv2
@@ -21,13 +21,25 @@ class GreenTarget:
     confidence: float
     distance_from_center: float
     bbox: Tuple[int, int, int, int]  # x, y, width, height
+    wall_direction: Optional[str] = None  # 'top', 'bottom', 'left', 'right'
+    approach_angle: Optional[float] = None  # Angle to approach perpendicular
 
-class DeliveryVisionSystem:
-    """Vision system specifically for green target detection with oscillation prevention and wall detection"""
+@dataclass 
+class WallSegment:
+    """Class to store wall segment information"""
+    direction: str  # 'top', 'bottom', 'left', 'right'
+    start_point: Tuple[int, int]
+    end_point: Tuple[int, int]
+    center_point: Tuple[int, int]
+    length: int
+    angle: float  # Wall angle in degrees
+
+class EnhancedDeliveryVisionSystem:
+    """Enhanced vision system with wall orientation detection for perpendicular approach"""
     
     def __init__(self, vision_system):
         self.logger = logging.getLogger(__name__)
-        self.vision = vision_system  # Reuse main vision system for camera
+        self.vision = vision_system
         self.frame_center_x = config.CAMERA_WIDTH // 2
         self.frame_center_y = config.CAMERA_HEIGHT // 2
         
@@ -35,130 +47,128 @@ class DeliveryVisionSystem:
         self.boundary_system = BoundaryAvoidanceSystem()
         
         # Green detection parameters
-        self.green_lower = np.array([40, 50, 50])   # Lower green HSV
-        self.green_upper = np.array([80, 255, 255]) # Upper green HSV
-        self.min_green_area = 500   # Minimum area for green target
-        self.max_green_area = 50000 # Maximum area for green target
+        self.green_lower = np.array([40, 50, 50])
+        self.green_upper = np.array([80, 255, 255])
+        self.min_green_area = 500
+        self.max_green_area = 50000
         
-        # ADAPTIVE CENTERING TOLERANCES with oscillation prevention
-        self.base_centering_tolerance_x = 30  # Base X tolerance
-        self.base_centering_tolerance_y = 25  # Base Y tolerance
+        # Wall detection parameters
+        self.red_lower1 = np.array([0, 150, 100])
+        self.red_upper1 = np.array([15, 255, 255])
+        self.red_lower2 = np.array([165, 150, 100])
+        self.red_upper2 = np.array([180, 255, 255])
         
-        # OSCILLATION DETECTION AND PREVENTION
-        self.last_direction = None
-        self.direction_change_count = 0
-        self.centering_start_time = None
-        self.centering_attempts = 0
-        self.oscillation_detected = False
-        self.stable_frames = 0
-        self.min_stable_frames = 2  # Must be stable for 2 frames before proceeding
+        # Approach state tracking
+        self.approach_phase = "detect"  # "detect", "position", "align", "approach"
+        self.target_approach_angle = None
+        self.positioning_complete = False
         
-    def get_adaptive_tolerances(self, target: GreenTarget) -> tuple:
-        """Get adaptive tolerances based on distance and oscillation state"""
-        distance = target.distance_from_center
+    def detect_wall_segments(self, frame) -> List[WallSegment]:
+        """Detect wall segments and their orientations around green targets"""
+        wall_segments = []
         
-        # Base tolerances based on distance
-        if distance > 100:
-            # Far away - larger tolerances
-            x_tolerance = self.base_centering_tolerance_x + 15
-            y_tolerance = self.base_centering_tolerance_y + 10
-        elif distance > 60:
-            # Medium distance - standard tolerances
-            x_tolerance = self.base_centering_tolerance_x
-            y_tolerance = self.base_centering_tolerance_y
-        else:
-            # Close - tighter tolerances
-            x_tolerance = self.base_centering_tolerance_x - 5
-            y_tolerance = self.base_centering_tolerance_y - 5
+        if frame is None:
+            return wall_segments
         
-        # OSCILLATION COMPENSATION - increase tolerances when oscillating
-        if self.oscillation_detected or self.direction_change_count >= 3:
-            self.logger.info("🔄 Oscillation detected - increasing tolerances")
-            x_tolerance = int(x_tolerance * 1.8)  # 80% increase
-            y_tolerance = int(y_tolerance * 1.6)  # 60% increase
+        h, w = frame.shape[:2]
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        return max(15, x_tolerance), max(10, y_tolerance)
+        # Create red wall mask
+        mask1 = cv2.inRange(hsv, self.red_lower1, self.red_upper1)
+        mask2 = cv2.inRange(hsv, self.red_lower2, self.red_upper2)
+        red_mask = mask1 + mask2
+        
+        # Clean up the mask
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        
+        # Find contours
+        contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > 1000:  # Minimum wall area
+                # Get bounding rectangle
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                
+                # Determine wall direction based on position and shape
+                wall_direction = self._classify_wall_direction(x, y, w_rect, h_rect, w, h)
+                
+                if wall_direction:
+                    # Calculate wall center and angle
+                    center_x = x + w_rect // 2
+                    center_y = y + h_rect // 2
+                    
+                    if wall_direction in ['top', 'bottom']:
+                        # Horizontal wall
+                        start_point = (x, center_y)
+                        end_point = (x + w_rect, center_y)
+                        angle = 0.0  # Horizontal
+                        length = w_rect
+                    else:
+                        # Vertical wall
+                        start_point = (center_x, y)
+                        end_point = (center_x, y + h_rect)
+                        angle = 90.0  # Vertical
+                        length = h_rect
+                    
+                    wall_segment = WallSegment(
+                        direction=wall_direction,
+                        start_point=start_point,
+                        end_point=end_point,
+                        center_point=(center_x, center_y),
+                        length=length,
+                        angle=angle
+                    )
+                    wall_segments.append(wall_segment)
+        
+        return wall_segments
     
-    def is_target_centered(self, target: GreenTarget) -> bool:
-        """Check if green target is centered with adaptive tolerances"""
-        x_tolerance, y_tolerance = self.get_adaptive_tolerances(target)
+    def _classify_wall_direction(self, x, y, w_rect, h_rect, frame_w, frame_h) -> Optional[str]:
+        """Classify wall direction based on position and shape"""
+        aspect_ratio = w_rect / max(h_rect, 1)
         
-        x_offset = abs(target.center[0] - self.frame_center_x)
-        y_offset = abs(target.center[1] - self.frame_center_y)
+        # Determine if wall is more horizontal or vertical
+        if aspect_ratio > 2.0:  # Wide wall (horizontal)
+            if y < frame_h * 0.3:
+                return 'top'
+            elif y > frame_h * 0.7:
+                return 'bottom'
+        elif aspect_ratio < 0.5:  # Tall wall (vertical)
+            if x < frame_w * 0.3:
+                return 'left'
+            elif x > frame_w * 0.7:
+                return 'right'
         
-        centered = (x_offset <= x_tolerance and y_offset <= y_tolerance)
-        
-        if centered:
-            self.stable_frames += 1
-            if self.stable_frames >= self.min_stable_frames:
-                return True
-            else:
-                self.logger.info(f"Target centered but verifying stability ({self.stable_frames}/{self.min_stable_frames})")
-                return False
-        else:
-            self.stable_frames = 0
-            return False
+        return None
     
-    def get_centering_direction(self, target: GreenTarget) -> tuple:
-        """Get direction to center on green target with oscillation detection"""
-        x_tolerance, y_tolerance = self.get_adaptive_tolerances(target)
+    def detect_green_targets_with_walls(self, frame) -> List[GreenTarget]:
+        """Detect green targets and determine which wall they're associated with"""
+        green_targets = []
         
-        x_offset = target.center[0] - self.frame_center_x
-        y_offset = target.center[1] - self.frame_center_y
+        if frame is None:
+            return green_targets
         
-        # Hysteresis to prevent rapid direction changes
-        hysteresis = 5 if not self.oscillation_detected else 10
+        # First detect wall segments
+        wall_segments = self.detect_wall_segments(frame)
         
-        # X-axis (turning) with hysteresis
-        if abs(x_offset) <= x_tolerance:
-            x_direction = 'centered'
-        elif x_offset > (x_tolerance + hysteresis):
-            x_direction = 'right'
-        elif x_offset < -(x_tolerance + hysteresis):
-            x_direction = 'left'
-        else:
-            x_direction = 'centered'  # In hysteresis zone - don't move
+        # Then detect green targets
+        targets = self.detect_green_targets(frame)
         
-        # Y-axis (distance) with hysteresis
-        if abs(y_offset) <= y_tolerance:
-            y_direction = 'centered'
-        elif y_offset > (y_tolerance + hysteresis):
-            y_direction = 'backward'
-        elif y_offset < -(y_tolerance + hysteresis):
-            y_direction = 'forward'
-        else:
-            y_direction = 'centered'  # In hysteresis zone - don't move
-        
-        # OSCILLATION DETECTION
-        current_direction = x_direction if x_direction != 'centered' else y_direction
-        
-        if (self.last_direction and 
-            current_direction != 'centered' and 
-            self.last_direction != 'centered' and
-            current_direction != self.last_direction):
+        # Associate each green target with the nearest wall
+        for target in targets:
+            nearest_wall = self._find_nearest_wall(target, wall_segments)
+            if nearest_wall:
+                target.wall_direction = nearest_wall.direction
+                target.approach_angle = self._calculate_approach_angle(target, nearest_wall)
             
-            self.direction_change_count += 1
-            self.logger.info(f"Direction change detected: {self.last_direction} -> {current_direction} (count: {self.direction_change_count})")
-            
-            if self.direction_change_count >= 3:
-                self.oscillation_detected = True
-                self.logger.warning("🔄 OSCILLATION DETECTED - applying countermeasures")
+            green_targets.append(target)
         
-        self.last_direction = current_direction
-        return x_direction, y_direction
+        return green_targets
     
-    def reset_centering_state(self):
-        """Reset centering state when starting new target or after success"""
-        self.last_direction = None
-        self.direction_change_count = 0
-        self.centering_start_time = None
-        self.centering_attempts = 0
-        self.oscillation_detected = False
-        self.stable_frames = 0
-        self.logger.info("🔄 Centering state reset")
-        
     def detect_green_targets(self, frame) -> List[GreenTarget]:
-        """Detect green targets in the frame"""
+        """Basic green target detection (unchanged from original)"""
         green_targets = []
         
         if frame is None:
@@ -186,20 +196,18 @@ class DeliveryVisionSystem:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
                 center = (x + w_rect // 2, y + h_rect // 2)
                 
-                # Calculate confidence based on area and shape
+                # Calculate confidence
                 perimeter = cv2.arcLength(contour, True)
                 if perimeter > 0:
-                    # More rectangular = higher confidence for delivery zones
                     aspect_ratio = w_rect / max(h_rect, 1)
                     area_ratio = area / (w_rect * h_rect)
                     
-                    # Confidence based on size and rectangular shape
-                    size_confidence = min(1.0, area / 5000)  # Larger = more confident
-                    shape_confidence = area_ratio * 0.7  # How well it fills bounding box
+                    size_confidence = min(1.0, area / 5000)
+                    shape_confidence = area_ratio * 0.7
                     
                     confidence = (size_confidence + shape_confidence) / 2
                     
-                    if confidence > 0.3:  # Minimum confidence threshold
+                    if confidence > 0.3:
                         distance_from_center = np.sqrt(
                             (center[0] - self.frame_center_x)**2 + 
                             (center[1] - self.frame_center_y)**2
@@ -214,95 +222,186 @@ class DeliveryVisionSystem:
                         )
                         green_targets.append(target)
         
-        # Sort by confidence and size (prefer larger, more confident targets)
+        # Sort by confidence and size
         green_targets.sort(key=lambda t: (-t.confidence, -t.area))
+        return green_targets[:3]
+    
+    def _find_nearest_wall(self, target: GreenTarget, wall_segments: List[WallSegment]) -> Optional[WallSegment]:
+        """Find the nearest wall segment to a green target"""
+        if not wall_segments:
+            return None
         
-        return green_targets[:3]  # Return top 3 targets
+        min_distance = float('inf')
+        nearest_wall = None
+        
+        for wall in wall_segments:
+            # Calculate distance from target to wall
+            distance = self._point_to_line_distance(target.center, wall.start_point, wall.end_point)
+            
+            if distance < min_distance:
+                min_distance = distance
+                nearest_wall = wall
+        
+        return nearest_wall
     
-    def detect_walls(self, frame) -> bool:
-        """Detect wall boundaries that should be avoided"""
-        return self.boundary_system.detect_boundaries(frame)
+    def _point_to_line_distance(self, point: Tuple[int, int], line_start: Tuple[int, int], line_end: Tuple[int, int]) -> float:
+        """Calculate distance from point to line segment"""
+        x0, y0 = point
+        x1, y1 = line_start
+        x2, y2 = line_end
+        
+        # Calculate line length
+        line_length = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        if line_length == 0:
+            return np.sqrt((x0 - x1)**2 + (y0 - y1)**2)
+        
+        # Calculate distance
+        t = max(0, min(1, ((x0 - x1) * (x2 - x1) + (y0 - y1) * (y2 - y1)) / (line_length**2)))
+        projection_x = x1 + t * (x2 - x1)
+        projection_y = y1 + t * (y2 - y1)
+        
+        return np.sqrt((x0 - projection_x)**2 + (y0 - projection_y)**2)
     
-    def get_wall_avoidance_command(self, frame) -> Optional[str]:
-        """Get wall avoidance command if walls are detected"""
-        return self.boundary_system.get_avoidance_command(frame)
+    def _calculate_approach_angle(self, target: GreenTarget, wall: WallSegment) -> float:
+        """Calculate the angle needed to approach the target perpendicular to the wall"""
+        if wall.direction == 'top':
+            return 270.0  # Approach from bottom (upward)
+        elif wall.direction == 'bottom':
+            return 90.0   # Approach from top (downward)  
+        elif wall.direction == 'left':
+            return 0.0    # Approach from right (leftward)
+        elif wall.direction == 'right':
+            return 180.0  # Approach from left (rightward)
+        else:
+            return 0.0
     
-    def draw_green_detection(self, frame, targets: List[GreenTarget]) -> np.ndarray:
-        """Draw green target detection overlays with oscillation and wall info"""
+    def get_positioning_command(self, target: GreenTarget) -> Optional[str]:
+        """Get command to position robot for perpendicular approach"""
+        if not target.wall_direction or target.approach_angle is None:
+            return None
+        
+        robot_x = self.frame_center_x
+        robot_y = self.frame_center_y
+        target_x, target_y = target.center
+        
+        # Calculate where robot needs to be positioned for perpendicular approach
+        approach_distance = 100  # Distance to maintain from target during positioning
+        
+        if target.wall_direction == 'top':
+            # Position below target for upward approach
+            desired_x = target_x
+            desired_y = target_y + approach_distance
+        elif target.wall_direction == 'bottom':
+            # Position above target for downward approach
+            desired_x = target_x
+            desired_y = target_y - approach_distance
+        elif target.wall_direction == 'left':
+            # Position to the right of target for leftward approach
+            desired_x = target_x + approach_distance
+            desired_y = target_y
+        elif target.wall_direction == 'right':
+            # Position to the left of target for rightward approach
+            desired_x = target_x - approach_distance
+            desired_y = target_y
+        else:
+            return None
+        
+        # Calculate movement needed
+        dx = desired_x - robot_x
+        dy = desired_y - robot_y
+        
+        # Determine primary movement direction
+        if abs(dx) > abs(dy):
+            if dx > 20:
+                return 'move_right'
+            elif dx < -20:
+                return 'move_left'
+        else:
+            if dy > 20:
+                return 'move_backward'
+            elif dy < -20:
+                return 'move_forward'
+        
+        # If close enough, robot is positioned
+        if abs(dx) < 20 and abs(dy) < 20:
+            return 'positioned'
+        
+        return None
+    
+    def get_alignment_command(self, target: GreenTarget) -> Optional[str]:
+        """Get command to align robot perpendicular to wall before approach"""
+        if not target.wall_direction:
+            return None
+        
+        # For simplicity, assume robot needs to turn to face the correct direction
+        # In practice, you'd need to track robot's current orientation
+        
+        # This is a simplified alignment - you may need IMU/compass data for precise alignment
+        if target.wall_direction in ['top', 'bottom']:
+            return 'align_vertical'
+        else:
+            return 'align_horizontal'
+    
+    def draw_enhanced_detection(self, frame, targets: List[GreenTarget]) -> np.ndarray:
+        """Draw enhanced detection with wall information and approach vectors"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # === WALL DETECTION VISUALIZATION ===
-        result = self.boundary_system.draw_boundary_visualization(result)
+        # Draw wall segments
+        wall_segments = self.detect_wall_segments(frame)
+        for wall in wall_segments:
+            color = (0, 0, 255)  # Red for walls
+            cv2.line(result, wall.start_point, wall.end_point, color, 3)
+            
+            # Label wall direction
+            label_pos = (wall.center_point[0] - 20, wall.center_point[1] - 10)
+            cv2.putText(result, wall.direction.upper(), label_pos, 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         
-        # Draw adaptive centering zone for primary target
-        if targets:
-            primary_target = targets[0]
-            x_tolerance, y_tolerance = self.get_adaptive_tolerances(primary_target)
-            
-            center_left = self.frame_center_x - x_tolerance
-            center_right = self.frame_center_x + x_tolerance
-            center_top = self.frame_center_y - y_tolerance
-            center_bottom = self.frame_center_y + y_tolerance
-            
-            # Color based on oscillation state
-            zone_color = (0, 165, 255) if self.oscillation_detected else (255, 255, 0)  # Orange if oscillating
-            
-            cv2.rectangle(result, (center_left, center_top), (center_right, center_bottom), zone_color, 2)
-            
-            zone_label = "ADAPTIVE CENTER ZONE"
-            if self.oscillation_detected:
-                zone_label += " (ANTI-OSCILLATION)"
-            
-            cv2.putText(result, zone_label, (center_left + 5, center_top - 5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, zone_color, 1)
-        
-        # Draw detected green targets
+        # Draw green targets with approach information
         for i, target in enumerate(targets):
             x, y, w_rect, h_rect = target.bbox
             
-            # Color based on priority (first target is primary)
             if i == 0:
                 color = (0, 255, 0)    # Bright green for primary target
                 thickness = 3
                 
-                # Check if centered with adaptive tolerances
-                centered = self.is_target_centered(target)
-                if centered:
-                    cv2.putText(result, "CENTERED - READY!", (target.center[0] - 50, target.center[1] - 30), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-                else:
-                    # Show direction arrows with oscillation info
-                    x_dir, y_dir = self.get_centering_direction(target)
-                    direction_text = f"{x_dir.upper()}, {y_dir.upper()}"
+                # Draw target
+                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
+                cv2.circle(result, target.center, 5, color, -1)
+                
+                # Show wall association and approach angle
+                if target.wall_direction:
+                    info_text = f"Wall: {target.wall_direction.upper()}"
+                    cv2.putText(result, info_text, (target.center[0] - 40, target.center[1] - 30), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
                     
-                    if self.oscillation_detected:
-                        direction_text += " (DAMPED)"
-                    
-                    cv2.putText(result, direction_text, (target.center[0] - 40, target.center[1] - 20), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
-                    
-                    # Arrow to target
-                    cv2.arrowedLine(result, (self.frame_center_x, self.frame_center_y), 
-                                   target.center, (255, 255, 0), 2)
+                    if target.approach_angle is not None:
+                        angle_text = f"Approach: {target.approach_angle:.0f}°"
+                        cv2.putText(result, angle_text, (target.center[0] - 40, target.center[1] - 10), 
+                                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
+                        
+                        # Draw approach vector
+                        approach_length = 60
+                        angle_rad = np.radians(target.approach_angle)
+                        end_x = target.center[0] + int(approach_length * np.cos(angle_rad))
+                        end_y = target.center[1] + int(approach_length * np.sin(angle_rad))
+                        
+                        cv2.arrowedLine(result, target.center, (end_x, end_y), (255, 255, 0), 2)
+                        cv2.putText(result, "APPROACH", (end_x - 30, end_y - 10), 
+                                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
             else:
                 color = (0, 150, 0)    # Darker green for secondary targets
                 thickness = 2
+                cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
+                cv2.circle(result, target.center, 3, color, -1)
             
-            # Draw bounding box
-            cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
-            
-            # Draw center point
-            cv2.circle(result, target.center, 5, color, -1)
-            
-            # Target info
+            # Target label
             cv2.putText(result, f"G{i+1}", (target.center[0] - 10, target.center[1] + 5), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-            cv2.putText(result, f"C:{target.confidence:.2f}", (x, y - 5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
         
         # Frame center crosshair
         cv2.line(result, (self.frame_center_x - 10, self.frame_center_y), 
@@ -310,203 +409,77 @@ class DeliveryVisionSystem:
         cv2.line(result, (self.frame_center_x, self.frame_center_y - 10), 
                 (self.frame_center_x, self.frame_center_y + 10), (255, 255, 255), 2)
         
-        # Status overlay with oscillation and wall info
-        overlay_height = 120  # Increased for wall info
+        # Status overlay
+        overlay_height = 140
         overlay = np.zeros((overlay_height, w, 3), dtype=np.uint8)
         result[0:overlay_height, :] = cv2.addWeighted(result[0:overlay_height, :], 0.6, overlay, 0.4, 0)
         
         # Status text
-        cv2.putText(result, "DELIVERY MODE - Green Target Detection + Wall Avoidance", (10, 25), 
+        cv2.putText(result, "ENHANCED DELIVERY - Perpendicular Wall Approach", (10, 25), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         
         target_count = len(targets)
         primary_target = targets[0] if targets else None
         
-        # Wall status
-        wall_status = self.boundary_system.get_status()
-        wall_danger = wall_status['walls_triggered'] > 0
-        wall_text = f"Walls: {wall_status['walls_detected']} detected"
-        if wall_danger:
-            wall_text += " - DANGER!"
-            wall_color = (0, 0, 255)
+        if primary_target and primary_target.wall_direction:
+            status = f"Target: Green at {primary_target.wall_direction.upper()} wall"
+            approach_status = f"Approach Phase: {self.approach_phase.upper()}"
         else:
-            wall_text += " - Safe"
-            wall_color = (0, 255, 0)
+            status = "Scanning for green targets near walls..."
+            approach_status = "Phase: DETECT"
         
-        cv2.putText(result, wall_text, (10, 55), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, wall_color, 1)
+        cv2.putText(result, f"Targets: {target_count} | {status}", (10, 55), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
         
-        # Target status
-        if primary_target:
-            centered = self.is_target_centered(primary_target)
-            if centered:
-                status = "CENTERED - READY TO APPROACH"
-                status_color = (0, 255, 0)
-            elif self.oscillation_detected:
-                status = "CENTERING (ANTI-OSCILLATION MODE)"
-                status_color = (0, 165, 255)
-            else:
-                status = "CENTERING ON TARGET"
-                status_color = (255, 255, 0)
-        else:
-            status = "SCANNING FOR GREEN TARGETS..."
-            status_color = (255, 255, 255)
+        cv2.putText(result, approach_status, (10, 80), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
         
-        cv2.putText(result, f"Targets: {target_count} | Status: {status}", (10, 80), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, status_color, 1)
-        
-        # Oscillation and wall debug info
-        debug_info = []
-        if self.oscillation_detected or self.direction_change_count > 0:
-            debug_info.append(f"Dir Changes: {self.direction_change_count}")
-            debug_info.append(f"Oscillation: {'YES' if self.oscillation_detected else 'NO'}")
-        
-        if wall_danger:
-            triggered_zones = wall_status.get('danger_zones', [])
-            debug_info.append(f"Wall zones: {', '.join(triggered_zones)}")
-        
-        if debug_info:
-            debug_text = " | ".join(debug_info)
-            cv2.putText(result, debug_text, (10, 105), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 165, 255), 1)
+        # Wall detection info
+        wall_count = len(wall_segments)
+        cv2.putText(result, f"Walls detected: {wall_count}", (10, 105), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
         
         return result
 
-class DeliverySystem:
-    """Enhanced delivery system with oscillation prevention and wall avoidance"""
+class EnhancedDeliverySystem:
+    """Enhanced delivery system with perpendicular wall approach"""
     
     def __init__(self, hardware, vision_system):
         self.logger = logging.getLogger(__name__)
         self.hardware = hardware
         self.vision_system = vision_system
-        self.delivery_vision = DeliveryVisionSystem(vision_system)
+        self.delivery_vision = EnhancedDeliveryVisionSystem(vision_system)
         
-        # State management
+        # Enhanced state management for perpendicular approach
         self.current_target = None
         self.delivery_active = False
         self.start_time = None
         
-        # ADAPTIVE MOVEMENT PARAMETERS
-        self.base_search_turn_duration = 0.8
-        self.base_centering_turn_duration = 0.3
-        self.approach_speed = 0.4
-        self.search_speed = 0.5
+        # Approach phases: detect -> position -> align -> approach -> deliver
+        self.approach_phase = "detect"
+        self.phase_start_time = None
         
-    def get_adaptive_movement_params(self, target: Optional[GreenTarget] = None):
-        """Get movement parameters adapted for oscillation state"""
-        if target is None:
-            return self.base_centering_turn_duration, self.search_speed
-        
-        # Base parameters
-        turn_duration = self.base_centering_turn_duration
-        speed = self.search_speed
-        
-        # Adapt based on distance
-        distance = target.distance_from_center
-        if distance > 100:
-            # Far - faster, longer movements
-            turn_duration *= 1.2
-            speed *= 1.0
-        elif distance < 40:
-            # Close - slower, shorter movements
-            turn_duration *= 0.7
-            speed *= 0.8
-        
-        # OSCILLATION COMPENSATION
-        if self.delivery_vision.oscillation_detected:
-            self.logger.info("🔄 Applying oscillation compensation to movement")
-            # Reduce movement duration and speed when oscillating
-            turn_duration *= 0.5  # 50% reduction
-            speed *= 0.7          # 30% speed reduction
-        elif self.delivery_vision.direction_change_count >= 2:
-            # Partial reduction when approaching oscillation
-            turn_duration *= 0.8
-            speed *= 0.9
-        
-        return turn_duration, speed
-    
-    def center_on_target(self, target: GreenTarget):
-        """Center robot on green target with oscillation prevention"""
-        x_direction, y_direction = self.delivery_vision.get_centering_direction(target)
-        
-        # Skip movement if both directions are centered
-        if x_direction == 'centered' and y_direction == 'centered':
-            return
-        
-        # Get adaptive movement parameters
-        turn_duration, speed = self.get_adaptive_movement_params(target)
-        
-        if config.DEBUG_MOVEMENT:
-            oscillation_status = " (DAMPED)" if self.delivery_vision.oscillation_detected else ""
-            self.logger.info(f"🎯 Centering: {x_direction}, {y_direction}{oscillation_status} | Duration: {turn_duration:.2f}s")
-        
-        # Prioritize X-axis centering (turning)
-        if x_direction == 'right':
-            self.hardware.turn_right(duration=turn_duration, speed=speed)
-        elif x_direction == 'left':
-            self.hardware.turn_left(duration=turn_duration, speed=speed)
-        elif y_direction == 'forward':
-            self.hardware.move_forward(duration=turn_duration, speed=speed * 0.8)
-        elif y_direction == 'backward':
-            self.hardware.move_backward(duration=turn_duration, speed=speed * 0.8)
-        
-        # Adaptive post-movement delay
-        if self.delivery_vision.oscillation_detected:
-            time.sleep(0.2)  # Longer pause when oscillating
-        else:
-            time.sleep(0.1)  # Normal pause
-    
-    def handle_wall_avoidance(self, frame):
-        """Handle wall avoidance during delivery"""
-        avoidance_command = self.delivery_vision.get_wall_avoidance_command(frame)
-        
-        if avoidance_command:
-            self.logger.warning(f"⚠️ Wall detected - executing avoidance: {avoidance_command}")
-            
-            # Stop current movement
-            self.hardware.stop_motors()
-            time.sleep(0.1)
-            
-            # Execute avoidance maneuver
-            if avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=0.4, speed=0.5)
-            elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=0.4, speed=0.5)
-            elif avoidance_command == 'backup_and_turn':
-                self.hardware.move_backward(duration=0.3, speed=0.4)
-                time.sleep(0.1)
-                self.hardware.turn_right(duration=0.6, speed=0.5)
-            else:
-                # Default avoidance
-                self.hardware.move_backward(duration=0.3, speed=0.4)
-                time.sleep(0.1)
-                self.hardware.turn_right(duration=0.4, speed=0.5)
-            
-            time.sleep(0.2)
-            return True
-        
-        return False
-    
-    def start_delivery_mode(self):
-        """Start delivery mode with step-by-step approach and wall avoidance"""
-        self.logger.info("🚚 STARTING DELIVERY MODE - Green Target Detection")
-        self.logger.info("   Features: Step-by-step approach, adaptive tolerances, oscillation detection, wall avoidance")
+    def start_enhanced_delivery_mode(self):
+        """Start enhanced delivery mode with perpendicular approach"""
+        self.logger.info("🚚 STARTING ENHANCED DELIVERY MODE - Perpendicular Wall Approach")
+        self.logger.info("   Features: Wall orientation detection, perpendicular positioning, straight approach")
         
         self.delivery_active = True
         self.start_time = time.time()
+        self.approach_phase = "detect"
         
         try:
-            self.delivery_main_loop()
+            self.enhanced_delivery_main_loop()
         except KeyboardInterrupt:
-            self.logger.info("Delivery mode interrupted by user")
+            self.logger.info("Enhanced delivery mode interrupted by user")
         except Exception as e:
-            self.logger.error(f"Delivery mode error: {e}")
+            self.logger.error(f"Enhanced delivery mode error: {e}")
         finally:
             self.stop_delivery()
     
-    def delivery_main_loop(self):
-        """Main delivery loop with oscillation and wall handling"""
-        search_direction = 1  # 1 for right, -1 for left
+    def enhanced_delivery_main_loop(self):
+        """Main delivery loop with phase-based perpendicular approach"""
+        search_direction = 1
         frames_without_target = 0
         max_frames_without_target = 30
         
@@ -518,71 +491,51 @@ class DeliverySystem:
                     time.sleep(0.1)
                     continue
                 
-                # === PRIORITY 1: WALL AVOIDANCE ===
-                wall_danger = self.delivery_vision.detect_walls(frame)
-                if wall_danger:
-                    wall_avoided = self.handle_wall_avoidance(frame)
-                    if wall_avoided:
-                        # Reset target tracking after wall avoidance
-                        self.current_target = None
-                        self.delivery_vision.reset_centering_state()
-                        continue  # Skip this frame after avoidance
-                
-                # === PRIORITY 2: GREEN TARGET PROCESSING ===
-                green_targets = self.delivery_vision.detect_green_targets(frame)
+                # Detect green targets with wall associations
+                green_targets = self.delivery_vision.detect_green_targets_with_walls(frame)
                 
                 # Create visualization
-                debug_frame = self.delivery_vision.draw_green_detection(frame, green_targets)
+                debug_frame = self.delivery_vision.draw_enhanced_detection(frame, green_targets)
                 
                 # Show frame if display available
                 if config.SHOW_CAMERA_FEED:
-                    cv2.imshow('GolfBot Delivery Mode (Anti-Oscillation + Wall Avoidance)', debug_frame)
+                    cv2.imshow('Enhanced Delivery - Perpendicular Approach', debug_frame)
                     key = cv2.waitKey(1) & 0xFF
                     if key == ord('q'):
                         break
                 
-                # TARGET PROCESSING WITH OSCILLATION HANDLING
+                # PHASE-BASED PROCESSING
                 if green_targets:
                     frames_without_target = 0
                     primary_target = green_targets[0]
                     
                     # Check if this is a new target
                     if (self.current_target is None or 
-                        abs(primary_target.center[0] - self.current_target.center[0]) > 50 or
-                        abs(primary_target.center[1] - self.current_target.center[1]) > 50):
-                        
-                        self.logger.info("🎯 New target detected - resetting centering state")
-                        self.delivery_vision.reset_centering_state()
+                        abs(primary_target.center[0] - self.current_target.center[0]) > 50):
+                        self.logger.info("🎯 New target detected - starting approach sequence")
+                        self.current_target = primary_target
+                        self.approach_phase = "detect"
+                        self.phase_start_time = time.time()
                     
                     self.current_target = primary_target
                     
-                    # Initialize centering session if needed
-                    if self.delivery_vision.centering_start_time is None:
-                        self.delivery_vision.centering_start_time = time.time()
-                        self.delivery_vision.centering_attempts = 0
-                    
-                    # Check if target is centered (with stability verification)
-                    if self.delivery_vision.is_target_centered(primary_target):
-                        elapsed_time = time.time() - self.delivery_vision.centering_start_time
-                        self.logger.info(f"🎯 Target centered and stable! Approaching (took {elapsed_time:.1f}s)")
-                        self.approach_target(primary_target)
-                        self.delivery_vision.reset_centering_state()  # Reset for next target
-                    else:
-                        # TIMEOUT CHECK - prevent infinite centering
-                        elapsed_time = time.time() - self.delivery_vision.centering_start_time
-                        if elapsed_time > 15.0:  # 15 second timeout
-                            self.logger.warning(f"⏰ Centering timeout after {elapsed_time:.1f}s - proceeding anyway")
-                            self.approach_target(primary_target)
-                            self.delivery_vision.reset_centering_state()
-                        else:
-                            # Continue centering with oscillation prevention
-                            self.center_on_target(primary_target)
+                    # Execute current phase
+                    if self.approach_phase == "detect":
+                        self.handle_detect_phase()
+                    elif self.approach_phase == "position":
+                        self.handle_position_phase()
+                    elif self.approach_phase == "align":
+                        self.handle_align_phase()
+                    elif self.approach_phase == "approach":
+                        self.handle_approach_phase()
+                    elif self.approach_phase == "deliver":
+                        self.handle_deliver_phase()
                 
                 else:
-                    # No targets found - search
+                    # No targets - search
                     frames_without_target += 1
                     self.current_target = None
-                    self.delivery_vision.reset_centering_state()  # Reset when losing target
+                    self.approach_phase = "detect"
                     
                     if frames_without_target >= max_frames_without_target:
                         search_direction *= -1
@@ -591,141 +544,218 @@ class DeliverySystem:
                     
                     self.search_for_targets(search_direction)
                 
-                # Control loop timing - adaptive based on state
-                if self.current_target and self.delivery_vision.oscillation_detected:
-                    time.sleep(0.15)  # Slower when oscillating
-                elif wall_danger:
-                    time.sleep(0.2)   # Slower when walls detected
-                else:
-                    time.sleep(0.1)   # Normal timing
+                time.sleep(0.1)
                 
             except Exception as e:
-                self.logger.error(f"Delivery loop error: {e}")
+                self.logger.error(f"Enhanced delivery loop error: {e}")
                 self.hardware.stop_motors()
                 time.sleep(0.5)
     
-    def approach_target(self, target: GreenTarget):
-        """Approach the centered green target using step-by-step movement"""
-        self.logger.info(f"🚚 Starting step-by-step approach to green delivery zone")
+    def handle_detect_phase(self):
+        """Phase 1: Detect target and determine wall orientation"""
+        if not self.current_target or not self.current_target.wall_direction:
+            return
         
-        # Approach parameters
-        approach_step_duration = 0.3  # Short steps forward
-        approach_step_speed = 0.4     # Moderate speed
-        max_approach_steps = 8        # Maximum steps before giving up
-        min_target_size = target.area * 1.5  # Target should grow as we approach
+        self.logger.info(f"📍 Target detected at {self.current_target.wall_direction} wall - moving to positioning")
+        self.approach_phase = "position"
+        self.phase_start_time = time.time()
+        self.delivery_vision.approach_phase = "position"
+    
+    def handle_position_phase(self):
+        """Phase 2: Position robot for perpendicular approach"""
+        if not self.current_target:
+            self.approach_phase = "detect"
+            return
         
-        for step in range(max_approach_steps):
-            # Take a step forward
-            self.logger.info(f"🚶 Approach step {step + 1}/{max_approach_steps}")
-            self.hardware.move_forward(duration=approach_step_duration, speed=approach_step_speed)
-            time.sleep(0.2)
+        # Get positioning command
+        pos_command = self.delivery_vision.get_positioning_command(self.current_target)
+        
+        if pos_command == 'positioned':
+            self.logger.info("✅ Robot positioned for perpendicular approach - moving to alignment")
+            self.approach_phase = "align"
+            self.phase_start_time = time.time()
+            self.delivery_vision.approach_phase = "align"
+            return
+        
+        # Execute positioning movement
+        if pos_command == 'move_right':
+            self.hardware.turn_right(duration=0.3, speed=0.4)
+        elif pos_command == 'move_left':
+            self.hardware.turn_left(duration=0.3, speed=0.4)
+        elif pos_command == 'move_forward':
+            self.hardware.move_forward(duration=0.3, speed=0.4)
+        elif pos_command == 'move_backward':
+            self.hardware.move_backward(duration=0.3, speed=0.4)
+        
+        # Timeout check
+        if time.time() - self.phase_start_time > 15.0:
+            self.logger.warning("⏰ Positioning timeout - proceeding to alignment")
+            self.approach_phase = "align"
+    
+    def handle_align_phase(self):
+        """Phase 3: Align robot perpendicular to wall"""
+        if not self.current_target:
+            self.approach_phase = "detect"
+            return
+        
+        # Get alignment command
+        align_command = self.delivery_vision.get_alignment_command(self.current_target)
+        
+        if align_command == 'align_vertical':
+            # For top/bottom walls, ensure robot is facing up/down
+            if self.current_target.wall_direction == 'top':
+                self.logger.info("🧭 Aligning to face upward (toward top wall)")
+            else:
+                self.logger.info("🧭 Aligning to face downward (toward bottom wall)")
             
-            # Check current frame to see if target is getting larger/closer
-            ret, frame = self.vision_system.get_frame()
-            if ret:
-                # Check for walls first
-                wall_danger = self.delivery_vision.detect_walls(frame)
-                if wall_danger:
-                    self.logger.warning("⚠️ Wall detected during approach - stopping")
-                    break
-                
-                # Re-detect green targets to see if we're getting closer
-                current_targets = self.delivery_vision.detect_green_targets(frame)
-                
-                if current_targets:
-                    current_target = current_targets[0]
-                    
-                    # Check if target is getting significantly larger (we're approaching)
-                    if current_target.area >= min_target_size:
-                        self.logger.info(f"🎯 Target area increased to {current_target.area} - close enough!")
-                        break
-                    
-                    # Update minimum target size for next iteration
-                    min_target_size = max(min_target_size, current_target.area * 1.2)
-                    
-                    self.logger.debug(f"Target area: {current_target.area}, target size: {min_target_size:.0f}")
-                else:
-                    self.logger.warning("❌ Lost sight of green target during approach")
-                    break
+            # Simple alignment turn (you may need more sophisticated alignment)
+            self.hardware.turn_right(duration=0.2, speed=0.3)
             
-            time.sleep(0.1)
+        elif align_command == 'align_horizontal':
+            # For left/right walls, ensure robot is facing left/right
+            if self.current_target.wall_direction == 'left':
+                self.logger.info("🧭 Aligning to face left (toward left wall)")
+            else:
+                self.logger.info("🧭 Aligning to face right (toward right wall)")
+            
+            # Simple alignment turn
+            self.hardware.turn_left(duration=0.2, speed=0.3)
         
-        # We've either reached the target or hit max steps
-        self.logger.info("📦 Approach complete - checking for ball delivery")
+        # Move to approach phase after alignment attempt
+        time.sleep(0.5)
+        self.logger.info("⚡ Alignment complete - starting perpendicular approach")
+        self.approach_phase = "approach"
+        self.phase_start_time = time.time()
+        self.delivery_vision.approach_phase = "approach"
+    
+    def handle_approach_phase(self):
+        """Phase 4: Approach target perpendicular to wall"""
+        if not self.current_target:
+            self.approach_phase = "detect"
+            return
         
-        # Check if we should release balls here
+        # Move straight toward the target (should now be perpendicular to wall)
+        self.logger.info(f"🚀 Approaching {self.current_target.wall_direction} wall perpendicularly")
+        
+        # Execute perpendicular approach
+        approach_duration = 0.4
+        approach_speed = 0.35
+        
+        # Move forward toward the goal
+        self.hardware.move_forward(duration=approach_duration, speed=approach_speed)
+        
+        # Check if we've reached the target area
+        current_distance = self.current_target.distance_from_center
+        if current_distance < 50:  # Close enough to target
+            self.logger.info("📦 Reached delivery zone - proceeding to delivery")
+            self.approach_phase = "deliver"
+            self.phase_start_time = time.time()
+            self.delivery_vision.approach_phase = "deliver"
+        
+        # Timeout check
+        if time.time() - self.phase_start_time > 10.0:
+            self.logger.warning("⏰ Approach timeout - proceeding to delivery")
+            self.approach_phase = "deliver"
+    
+    def handle_deliver_phase(self):
+        """Phase 5: Deliver balls and back away"""
+        self.logger.info("📦 Executing delivery sequence")
+        
+        # Release balls if we have any
         if self.hardware.has_balls():
-            self.logger.info("📦 Reached delivery zone - releasing balls!")
             released_count = self.hardware.release_balls()
-            self.logger.info(f"✅ Released {released_count} balls at green delivery zone")
-            
-            # Back away from delivery zone with steps
-            self.logger.info("⬅️ Backing away from delivery zone")
-            for back_step in range(3):
-                self.hardware.move_backward(duration=0.4, speed=self.approach_speed)
-                time.sleep(0.2)
+            self.logger.info(f"✅ Released {released_count} balls at {self.current_target.wall_direction} wall goal")
         else:
-            self.logger.info("ℹ️  No balls to deliver - backing away from target")
-            self.hardware.move_backward(duration=0.5, speed=self.approach_speed)
-            time.sleep(0.2)
+            self.logger.info("ℹ️  No balls to deliver")
+        
+        # Back away from the goal in the opposite direction of approach
+        self.logger.info("⬅️ Backing away from delivery zone")
+        
+        # Back away perpendicular to the wall (opposite of approach direction)
+        if self.current_target.wall_direction == 'top':
+            # Approached upward, back away downward
+            self.hardware.move_backward(duration=1.0, speed=0.4)
+        elif self.current_target.wall_direction == 'bottom':
+            # Approached downward, back away upward  
+            self.hardware.move_forward(duration=1.0, speed=0.4)
+        elif self.current_target.wall_direction == 'left':
+            # Approached leftward, back away rightward
+            self.hardware.turn_right(duration=0.5, speed=0.4)
+            self.hardware.move_forward(duration=0.8, speed=0.4)
+        elif self.current_target.wall_direction == 'right':
+            # Approached rightward, back away leftward
+            self.hardware.turn_left(duration=0.5, speed=0.4) 
+            self.hardware.move_forward(duration=0.8, speed=0.4)
+        
+        # Reset for next target
+        self.approach_phase = "detect"
+        self.current_target = None
+        self.delivery_vision.approach_phase = "detect"
+        
+        self.logger.info("🔄 Delivery complete - searching for next target")
     
     def search_for_targets(self, direction: int):
         """Search for green targets by turning"""
         if direction > 0:
             if config.DEBUG_MOVEMENT:
                 self.logger.debug("🔍 Searching right for green targets")
-            self.hardware.turn_right(duration=self.base_search_turn_duration, speed=self.search_speed)
+            self.hardware.turn_right(duration=0.8, speed=0.5)
         else:
             if config.DEBUG_MOVEMENT:
                 self.logger.debug("🔍 Searching left for green targets")
-            self.hardware.turn_left(duration=self.base_search_turn_duration, speed=self.search_speed)
+            self.hardware.turn_left(duration=0.8, speed=0.5)
         
         time.sleep(0.2)
     
     def stop_delivery(self):
-        """Stop delivery mode"""
+        """Stop enhanced delivery mode"""
         self.delivery_active = False
         self.hardware.stop_motors()
         
         elapsed = time.time() - self.start_time if self.start_time else 0
-        self.logger.info("🏁 DELIVERY MODE COMPLETED")
+        self.logger.info("🏁 ENHANCED DELIVERY MODE COMPLETED")
         self.logger.info(f"   Total time: {elapsed:.1f} seconds")
         self.logger.info(f"   Final ball count: {self.hardware.get_ball_count()}")
-        self.logger.info(f"   Oscillation events: {self.delivery_vision.direction_change_count}")
-        
-        # Wall avoidance stats
-        wall_status = self.delivery_vision.boundary_system.get_status()
-        self.logger.info(f"   Walls detected: {wall_status['walls_detected']}")
-        self.logger.info(f"   Wall avoidance triggers: {wall_status['walls_triggered']}")
+        self.logger.info(f"   Final phase: {self.approach_phase}")
         
         cv2.destroyAllWindows()
 
-def run_delivery_test():
-    """Main entry point for delivery testing with step-by-step approach"""
-    print("\n🚚 GOLFBOT DELIVERY SYSTEM TEST (Step-by-Step + Wall Avoidance)")
-    print("="*70)
-    print("This mode will:")
-    print("1. Search for GREEN targets (delivery zones)")
-    print("2. Detect and avoid RED walls/boundaries")
-    print("3. Center on detected green areas with oscillation prevention")
-    print("4. Approach using STEP-BY-STEP movement (like ball centering)")
-    print("5. Release balls if any are collected")
-    print("\nStep-by-Step Approach Features:")
-    print("• Short forward steps (0.3s each)")
-    print("• Wall checking between each step")
-    print("• Target size monitoring (gets larger as we approach)")
-    print("• Maximum 8 steps before giving up")
-    print("• Automatic backing away after delivery")
-    print("\nOther Features:")
-    print("• Wall/boundary detection and avoidance")
-    print("• Oscillation detection and prevention")
-    print("• Adaptive centering tolerances")
-    print("• Movement damping when oscillating")
-    print("• Wall avoidance priority over target centering")
-    print("\nPress 'q' in the camera window to quit")
-    print("="*70)
+def run__delivery_test():
+    """Main entry point for enhanced delivery testing with perpendicular approach"""
+    print("\n🚚 ENHANCED GOLFBOT DELIVERY SYSTEM TEST (Perpendicular Wall Approach)")
+    print("="*80)
+    print("This enhanced mode will:")
+    print("1. Search for GREEN targets (delivery zones/goals)")
+    print("2. Detect RED walls and determine wall orientation") 
+    print("3. Position robot for PERPENDICULAR approach to the wall")
+    print("4. Align robot to face the goal straight-on")
+    print("5. Approach the goal PERPENDICULAR to the wall (straight |, not angled /\\)")
+    print("6. Release balls and back away perpendicular to wall")
+    print()
+    print("Enhanced Approach Phases:")
+    print("• DETECT: Find green target and identify which wall it's on")
+    print("• POSITION: Move to optimal position for perpendicular approach")
+    print("• ALIGN: Orient robot to face the goal straight-on")
+    print("• APPROACH: Drive straight toward goal (perpendicular to wall)")
+    print("• DELIVER: Release balls and back away straight")
+    print()
+    print("Key Improvements:")
+    print("• Wall orientation detection (top/bottom/left/right)")
+    print("• Smart positioning for perpendicular approach")
+    print("• Straight-line approach instead of angled approach")
+    print("• Proper backing away perpendicular to wall")
+    print("• Phase-based state machine for reliable execution")
+    print()
+    print("Visual Indicators:")
+    print("• Red lines: Detected wall segments with direction labels")
+    print("• Yellow arrows: Planned approach vector (perpendicular to wall)")
+    print("• Green rectangles: Detected delivery zones")
+    print("• Phase indicator: Current execution phase")
+    print()
+    print("Press 'q' in the camera window to quit")
+    print("="*80)
     
-    input("Press Enter to start delivery test...")
+    input("Press Enter to start enhanced delivery test...")
     
     try:
         # Import and initialize systems
@@ -742,17 +772,17 @@ def run_delivery_test():
         
         print("✅ Systems initialized successfully!")
         
-        # Create and start delivery system
-        delivery_system = DeliverySystem(hardware, vision)
-        delivery_system.start_delivery_mode()
+        # Create and start enhanced delivery system
+        delivery_system = EnhancedDeliverySystem(hardware, vision)
+        delivery_system.start_enhanced_delivery_mode()
         
         return True
         
     except KeyboardInterrupt:
-        print("\n⚠️ Delivery test interrupted by user")
+        print("\n⚠️ Enhanced delivery test interrupted by user")
         return True
     except Exception as e:
-        print(f"❌ Delivery test error: {e}")
+        print(f"❌ Enhanced delivery test error: {e}")
         return False
     finally:
         # Cleanup
@@ -764,7 +794,104 @@ def run_delivery_test():
         except:
             pass
 
+# Additional helper functions for wall analysis
+def analyze_wall_structure(frame):
+    """Analyze the overall wall structure of the arena"""
+    if frame is None:
+        return {}
+    
+    h, w = frame.shape[:2]
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    
+    # Create red wall mask
+    red_lower1 = np.array([0, 150, 100])
+    red_upper1 = np.array([15, 255, 255])
+    red_lower2 = np.array([165, 150, 100])
+    red_upper2 = np.array([180, 255, 255])
+    
+    mask1 = cv2.inRange(hsv, red_lower1, red_upper1)
+    mask2 = cv2.inRange(hsv, red_lower2, red_upper2)
+    red_mask = mask1 + mask2
+    
+    # Analyze wall coverage in each region
+    regions = {
+        'top': red_mask[0:h//4, :],
+        'bottom': red_mask[3*h//4:h, :], 
+        'left': red_mask[:, 0:w//4],
+        'right': red_mask[:, 3*w//4:w]
+    }
+    
+    wall_analysis = {}
+    for region_name, region_mask in regions.items():
+        wall_coverage = np.sum(region_mask > 0) / region_mask.size
+        wall_analysis[region_name] = {
+            'coverage': wall_coverage,
+            'has_wall': wall_coverage > 0.1  # 10% threshold
+        }
+    
+    return wall_analysis
+
+def find_wall_gaps(wall_segments, frame_width, frame_height):
+    """Find gaps in walls that might be goals"""
+    gaps = []
+    
+    # Sort wall segments by position
+    horizontal_walls = [w for w in wall_segments if w.direction in ['top', 'bottom']]
+    vertical_walls = [w for w in wall_segments if w.direction in ['left', 'right']]
+    
+    # Find horizontal gaps (in top/bottom walls)
+    for wall_type in ['top', 'bottom']:
+        walls_of_type = [w for w in horizontal_walls if w.direction == wall_type]
+        if len(walls_of_type) >= 2:
+            # Sort by x position
+            walls_of_type.sort(key=lambda w: w.start_point[0])
+            
+            for i in range(len(walls_of_type) - 1):
+                gap_start = walls_of_type[i].end_point[0]
+                gap_end = walls_of_type[i + 1].start_point[0]
+                gap_width = gap_end - gap_start
+                
+                if gap_width > 50:  # Minimum gap width for a goal
+                    gap_center_x = (gap_start + gap_end) // 2
+                    gap_center_y = walls_of_type[i].center_point[1]
+                    
+                    gaps.append({
+                        'type': 'horizontal_gap',
+                        'wall_side': wall_type,
+                        'center': (gap_center_x, gap_center_y),
+                        'width': gap_width,
+                        'start': gap_start,
+                        'end': gap_end
+                    })
+    
+    # Find vertical gaps (in left/right walls)  
+    for wall_type in ['left', 'right']:
+        walls_of_type = [w for w in vertical_walls if w.direction == wall_type]
+        if len(walls_of_type) >= 2:
+            # Sort by y position
+            walls_of_type.sort(key=lambda w: w.start_point[1])
+            
+            for i in range(len(walls_of_type) - 1):
+                gap_start = walls_of_type[i].end_point[1]
+                gap_end = walls_of_type[i + 1].start_point[1] 
+                gap_height = gap_end - gap_start
+                
+                if gap_height > 50:  # Minimum gap height for a goal
+                    gap_center_x = walls_of_type[i].center_point[0]
+                    gap_center_y = (gap_start + gap_end) // 2
+                    
+                    gaps.append({
+                        'type': 'vertical_gap',
+                        'wall_side': wall_type,
+                        'center': (gap_center_x, gap_center_y),
+                        'height': gap_height,
+                        'start': gap_start,
+                        'end': gap_end
+                    })
+    
+    return gaps
+
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
-    run_delivery_test()
+    run_enhanced_delivery_test()
