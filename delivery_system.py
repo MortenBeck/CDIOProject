@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Delivery System with Oscillation Prevention
-Adapted from the main vision system's successful anti-oscillation strategies
+GolfBot Delivery System - Green Target Detection and Navigation
+Enhanced with oscillation prevention and proper function exports
 """
 
 import cv2
@@ -152,9 +152,9 @@ class DeliveryVisionSystem:
         self.oscillation_detected = False
         self.stable_frames = 0
         self.logger.info("🔄 Centering state reset")
-    
+        
     def detect_green_targets(self, frame) -> List[GreenTarget]:
-        """Detect green targets in the frame (unchanged)"""
+        """Detect green targets in the frame"""
         green_targets = []
         
         if frame is None:
@@ -523,7 +523,7 @@ class DeliverySystem:
                 time.sleep(0.5)
     
     def approach_target(self, target: GreenTarget):
-        """Approach the centered green target (unchanged)"""
+        """Approach the centered green target"""
         # Calculate approach distance based on target size
         approach_time = self.calculate_approach_time(target)
         
@@ -549,7 +549,7 @@ class DeliverySystem:
             self.hardware.move_backward(duration=0.5, speed=self.approach_speed)
     
     def search_for_targets(self, direction: int):
-        """Search for green targets by turning (unchanged)"""
+        """Search for green targets by turning"""
         if direction > 0:
             if config.DEBUG_MOVEMENT:
                 self.logger.debug("🔍 Searching right for green targets")
@@ -562,10 +562,16 @@ class DeliverySystem:
         time.sleep(0.2)
     
     def calculate_approach_time(self, target: GreenTarget) -> float:
-        """Calculate approach time (unchanged)"""
-        base_time = 2.0
-        area_factor = max(0.3, min(1.5, 5000 / max(target.area, 1000)))
+        """Calculate how long to approach based on target size and distance"""
+        # Larger targets are likely closer, smaller targets are farther
+        # Base approach time inversely related to target area
+        
+        base_time = 2.0  # Base approach time
+        area_factor = max(0.3, min(1.5, 5000 / max(target.area, 1000)))  # Scale by area
+        
         approach_time = base_time * area_factor
+        
+        # Bounds
         return max(0.5, min(3.0, approach_time))
     
     def stop_delivery(self):
@@ -580,3 +586,64 @@ class DeliverySystem:
         self.logger.info(f"   Oscillation events: {self.delivery_vision.direction_change_count}")
         
         cv2.destroyAllWindows()
+
+def run_delivery_test():
+    """Main entry point for delivery testing - FIXED INDENTATION"""
+    print("\n🚚 GOLFBOT DELIVERY SYSTEM TEST (Anti-Oscillation)")
+    print("="*60)
+    print("This mode will:")
+    print("1. Search for GREEN targets (delivery zones)")
+    print("2. Center on detected green areas with oscillation prevention")
+    print("3. Approach when properly aligned")
+    print("4. Release balls if any are collected")
+    print("\nNew Features:")
+    print("• Oscillation detection and prevention")
+    print("• Adaptive centering tolerances")
+    print("• Movement damping when oscillating")
+    print("• Stability verification before approach")
+    print("\nPress 'q' in the camera window to quit")
+    print("="*60)
+    
+    input("Press Enter to start delivery test...")
+    
+    try:
+        # Import and initialize systems
+        from hardware import GolfBotHardware
+        from vision import VisionSystem
+        
+        print("Initializing hardware and vision systems...")
+        hardware = GolfBotHardware()
+        vision = VisionSystem()
+        
+        if not vision.start():
+            print("❌ Failed to initialize camera")
+            return False
+        
+        print("✅ Systems initialized successfully!")
+        
+        # Create and start delivery system
+        delivery_system = DeliverySystem(hardware, vision)
+        delivery_system.start_delivery_mode()
+        
+        return True
+        
+    except KeyboardInterrupt:
+        print("\n⚠️ Delivery test interrupted by user")
+        return True
+    except Exception as e:
+        print(f"❌ Delivery test error: {e}")
+        return False
+    finally:
+        # Cleanup
+        try:
+            if 'hardware' in locals():
+                hardware.emergency_stop()
+            if 'vision' in locals():
+                vision.cleanup()
+        except:
+            pass
+
+if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    run_delivery_test()
