@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 import time
 import logging
+from triangle_delivery_system import TriangularDeliverySystem, run_triangular_delivery_test
 from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import config
@@ -588,10 +589,43 @@ class EnhancedDeliverySystem:
 
 # Update the main test function to use enhanced system
 def run_delivery_test():
-    """Main entry point for enhanced delivery system"""
-    print("\n🚚 ENHANCED GOLFBOT DELIVERY SYSTEM v2.0")
+    """Main entry point for delivery system - now supports triangular targets"""
+    print("\n🚚 GOLFBOT DELIVERY SYSTEM v3.0")
     print("="*60)
-    print("NEW FEATURES:")
+    print("DELIVERY OPTIONS:")
+    print("1. Triangular Green Targets (NEW) - Tips pointing toward robot")
+    print("2. Rectangular Green Targets (Legacy)")
+    print("="*60)
+    
+    while True:
+        try:
+            choice = input("Select delivery mode (1 or 2): ").strip()
+            
+            if choice == '1':
+                print("\n🔺 TRIANGULAR DELIVERY MODE SELECTED")
+                print("Target: Green triangles with tips pointing toward robot")
+                return run_triangular_delivery_test()
+                
+            elif choice == '2':
+                print("\n🟫 RECTANGULAR DELIVERY MODE SELECTED")
+                print("Target: Green rectangular zones")
+                return run_rectangular_delivery_test()  # Your existing system
+                
+            else:
+                print("Invalid choice. Enter 1 or 2.")
+                
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            return True
+        except EOFError:
+            print("\nExiting...")
+            return True
+
+def run_rectangular_delivery_test():
+    """Your existing rectangular delivery system"""
+    print("\n🟫 RECTANGULAR GOLFBOT DELIVERY SYSTEM")
+    print("="*60)
+    print("FEATURES:")
     print("• Perpendicular alignment to short sides")
     print("• Smart approach positioning calculation")
     print("• Fine angle alignment before approach")
@@ -599,13 +633,13 @@ def run_delivery_test():
     print("• Improved approach accuracy")
     print("="*60)
     
-    input("Press Enter to start enhanced delivery test...")
+    input("Press Enter to start rectangular delivery test...")
     
     try:
         from hardware import GolfBotHardware
         from vision import VisionSystem
         
-        print("Initializing enhanced systems...")
+        print("Initializing rectangular delivery systems...")
         hardware = GolfBotHardware()
         vision = VisionSystem()
         
@@ -613,8 +647,9 @@ def run_delivery_test():
             print("❌ Camera initialization failed")
             return False
         
-        print("✅ Enhanced systems ready!")
+        print("✅ Rectangular delivery systems ready!")
         
+        # Use your existing EnhancedDeliverySystem
         delivery_system = EnhancedDeliverySystem(hardware, vision)
         delivery_system.start_enhanced_delivery_mode()
         
