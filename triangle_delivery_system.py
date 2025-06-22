@@ -568,12 +568,12 @@ class TriangularDeliverySystem:
         
         # Execute movement commands
         move_duration = 0.4
-        move_speed = 0.4
+        move_speed = 0.45
         
         if positioning_command in ['align_turn_left', 'align_turn_right']:
             # Fine alignment
             move_duration = 0.3
-            move_speed = 0.35
+            move_speed = 0.45
         
         # Execute the movement
         if positioning_command == 'move_right':
