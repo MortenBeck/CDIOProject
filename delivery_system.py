@@ -15,11 +15,13 @@ import config
 # FIXED IMPORTS - Use the new precision system
 # Import the precision triangular system from triangle_delivery_system.py
 try:
-    from triangle_delivery_system import run_delivery_test as run_precision_triangular_test
-except ImportError:
+    from triangle_delivery_system import run_precision_triangular_delivery_test
+except ImportError as e:
+    print(f"Import error: {e}")
     # Fallback if file not found
-    def run_precision_triangular_test():
+    def run_precision_triangular_delivery_test():
         print("❌ Precision triangular delivery system not found!")
+        print("Make sure triangle_delivery_system.py exists and contains run_precision_triangular_delivery_test()")
         return False
 
 @dataclass
@@ -614,7 +616,7 @@ def run_delivery_test():
                 print("\n🎯 PRECISION TRIANGULAR DELIVERY MODE SELECTED")
                 print("Target: Green triangles with EXTREME precision tip alignment")
                 print("Purpose: Dead-straight delivery through precise holes in walls")
-                return run_precision_triangular_test()  # Use the imported function
+                return run_precision_triangular_delivery_test()  # Use the correct function name
                 
             elif choice == '2':
                 print("\n🟫 RECTANGULAR DELIVERY MODE SELECTED")
