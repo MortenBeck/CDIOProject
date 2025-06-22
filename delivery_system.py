@@ -137,94 +137,36 @@ class SimpleDeliveryVisionSystem:
         return green_targets[:2]
     
     def get_parallel_parking_command(self, target: GreenTarget) -> Optional[str]:
-        """Get positioning command for parallel parking approach"""
+        """Get positioning command for parallel parking approach - SIMPLIFIED"""
         robot_x = self.frame_center_x
         robot_y = self.frame_center_y
+        target_x, target_y = target.center
         
-        if hasattr(target, 'box_points') and target.box_points is not None:
-            box_pts = target.box_points
-            
-            # Calculate side lengths to identify short sides
-            side_data = []
-            for i in range(4):
-                p1 = box_pts[i]
-                p2 = box_pts[(i + 1) % 4]
-                length = np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
-                mid_x = (p1[0] + p2[0]) // 2
-                mid_y = (p1[1] + p2[1]) // 2
-                robot_dist = np.sqrt((robot_x - mid_x)**2 + (robot_y - mid_y)**2)
-                
-                side_data.append({
-                    'length': length,
-                    'midpoint': (mid_x, mid_y),
-                    'robot_distance': robot_dist,
-                    'p1': p1,
-                    'p2': p2
-                })
-            
-            # Find shortest sides
-            side_data.sort(key=lambda x: x['length'])
-            short_sides = side_data[:2]
-            
-            # Choose closest short side
-            closest_short_side = min(short_sides, key=lambda x: x['robot_distance'])
-            target_x, target_y = closest_short_side['midpoint']
-            
-            # Calculate perpendicular approach vector
-            p1, p2 = closest_short_side['p1'], closest_short_side['p2']
-            side_vec_x = p2[0] - p1[0]
-            side_vec_y = p2[1] - p1[1]
-            
-            # Perpendicular vector
-            perp_vec_x = -side_vec_y
-            perp_vec_y = side_vec_x
-            
-            # Normalize
-            perp_length = np.sqrt(perp_vec_x**2 + perp_vec_y**2)
-            if perp_length > 0:
-                perp_vec_x /= perp_length
-                perp_vec_y /= perp_length
-            
-            # Choose direction toward robot
-            robot_vec_x = robot_x - target_x
-            robot_vec_y = robot_y - target_y
-            dot_product = robot_vec_x * perp_vec_x + robot_vec_y * perp_vec_y
-            if dot_product < 0:
-                perp_vec_x = -perp_vec_x
-                perp_vec_y = -perp_vec_y
-            
-            # Desired position
-            desired_x = target_x + int(self.approach_distance * perp_vec_x)
-            desired_y = target_y + int(self.approach_distance * perp_vec_y)
-            
-        else:
-            # Fallback
-            target_x, target_y = target.center
-            if target.orientation == 'horizontal':
-                desired_x = target_x
-                desired_y = target_y - self.approach_distance
+        # Calculate basic errors
+        x_error = target_x - robot_x  # Positive = target is to the right
+        y_error = target_y - robot_y  # Positive = target is below robot
+        
+        # SIMPLIFIED APPROACH: Just center on the target first
+        # Priority 1: Get horizontally aligned (X-axis)
+        if abs(x_error) > self.centering_tolerance:
+            if x_error > 0:
+                return 'move_right'  # Target is right, turn right
             else:
-                desired_x = target_x - self.approach_distance
-                desired_y = target_y
+                return 'move_left'   # Target is left, turn left
         
-        # Calculate positioning commands
-        x_error = robot_x - desired_x
-        y_error = robot_y - desired_y
+        # Priority 2: Get to proper distance (Y-axis)
+        # We want to be slightly above the target for approach
+        desired_distance = -50  # Negative = above target
+        distance_error = y_error - desired_distance
         
-        # Prioritize larger error
-        if abs(x_error) > abs(y_error):
-            if abs(x_error) > self.centering_tolerance:
-                return 'move_left' if x_error > 0 else 'move_right'
-        else:
-            if abs(y_error) > self.centering_tolerance:
-                return 'move_backward' if y_error > 0 else 'move_forward'
+        if abs(distance_error) > self.centering_tolerance:
+            if distance_error > 0:
+                return 'move_backward'  # Too close, back up
+            else:
+                return 'move_forward'   # Too far, move closer
         
-        # Close enough
-        if (abs(x_error) <= self.centering_tolerance and 
-            abs(y_error) <= self.centering_tolerance):
-            return 'approach_target'
-        
-        return None
+        # Close enough - ready to approach
+        return 'approach_target'
     
     def get_final_approach_command(self, target: GreenTarget) -> str:
         """Get final approach command"""
@@ -465,12 +407,22 @@ class SimpleDeliverySystem:
                 time.sleep(0.5)
     
     def handle_positioning_phase(self):
-        """Handle positioning"""
+        """Handle positioning with debug info"""
         if not self.current_target:
             self.current_phase = "search"
             return
         
         parking_command = self.delivery_vision.get_parallel_parking_command(self.current_target)
+        
+        # Debug info
+        robot_x = self.delivery_vision.frame_center_x
+        robot_y = self.delivery_vision.frame_center_y
+        target_x, target_y = self.current_target.center
+        x_error = target_x - robot_x
+        y_error = target_y - robot_y
+        
+        self.logger.info(f"🎯 Robot: ({robot_x}, {robot_y}), Target: ({target_x}, {target_y})")
+        self.logger.info(f"🎯 Errors: X={x_error}, Y={y_error}, Command: {parking_command}")
         
         if parking_command == 'approach_target':
             self.logger.info("✅ Position achieved - starting approach")
@@ -483,12 +435,16 @@ class SimpleDeliverySystem:
         move_speed = 0.4
         
         if parking_command == 'move_right':
+            self.logger.info("🚗 Positioning: Turn right")
             self.hardware.turn_right(duration=move_duration, speed=move_speed)
         elif parking_command == 'move_left':
+            self.logger.info("🚗 Positioning: Turn left")
             self.hardware.turn_left(duration=move_duration, speed=move_speed)
         elif parking_command == 'move_forward':
+            self.logger.info("🚗 Positioning: Move forward")
             self.hardware.move_forward(duration=move_duration, speed=move_speed)
         elif parking_command == 'move_backward':
+            self.logger.info("🚗 Positioning: Move backward")
             self.hardware.move_backward(duration=move_duration, speed=move_speed)
         
         # Timeout
