@@ -91,15 +91,16 @@ class CompetitionManager:
                     continue
                 
                 # Get current vision data
-                balls, _, near_boundary, nav_command, debug_frame = self.vision.process_frame(
+                balls, _, near_boundary, nav_command, debug_frame, delivery_zones = self.vision.process_frame(
                     dashboard_mode=self.use_dashboard and self.dashboard is not None
                 )
                 
                 if balls is None:  # Frame capture failed
                     continue
                 
-                # Store detected balls for dashboard access
+                # Store detected data for dashboard access
                 self.vision._last_detected_balls = balls if balls else []
+                self.vision._last_detected_delivery_zones = delivery_zones if delivery_zones else []
                 
                 # Update ball tracking
                 if balls:
@@ -121,7 +122,7 @@ class CompetitionManager:
                 
                 # State machine execution
                 old_state = self.state_machine.state
-                self.state_machine.execute_state_machine(balls, near_boundary, nav_command)
+                self.state_machine.execute_state_machine(balls, near_boundary, nav_command, delivery_zones)
                 
                 # Adaptive sleep based on detection results and state
                 if self.state_machine.state == RobotState.CENTERING_BALL:

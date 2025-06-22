@@ -12,6 +12,9 @@ class RobotState(Enum):
     COLLECTING_BALL = "collecting_ball"
     AVOIDING_BOUNDARY = "avoiding_boundary"
     DELIVERY_MODE = "delivery_mode"
+    DELIVERY_ZONE_SEARCH = "delivery_zone_search"
+    DELIVERY_ZONE_CENTERING = "delivery_zone_centering"
+    DELIVERY_RELEASING = "delivery_releasing"
     POST_DELIVERY_TURN = "post_delivery_turn"
     EMERGENCY_STOP = "emergency_stop"
 
@@ -43,16 +46,27 @@ class RobotStateMachine:
         # Delivery cycle tracking
         self.delivery_system = None
         self.post_delivery_start_time = None
+        self.delivery_release_start_time = None
+        self.delivery_search_start_time = None
         
-    def execute_state_machine(self, balls, near_boundary, nav_command):
+    def execute_state_machine(self, balls, near_boundary, nav_command, delivery_zones=None):
         """Execute state logic with ball detection priority and delivery cycle"""
         
         # HIGH PRIORITY: Never interrupt active collection or delivery operations
-        if self.state in [RobotState.COLLECTING_BALL, RobotState.DELIVERY_MODE, RobotState.POST_DELIVERY_TURN]:
+        if self.state in [RobotState.COLLECTING_BALL, RobotState.DELIVERY_MODE, 
+                         RobotState.DELIVERY_ZONE_SEARCH, RobotState.DELIVERY_ZONE_CENTERING,
+                         RobotState.DELIVERY_RELEASING, RobotState.POST_DELIVERY_TURN]:
+            
             if self.state == RobotState.COLLECTING_BALL:
                 self.handle_collecting_ball()
             elif self.state == RobotState.DELIVERY_MODE:
-                self.handle_delivery_mode()
+                self.handle_delivery_mode(delivery_zones)
+            elif self.state == RobotState.DELIVERY_ZONE_SEARCH:
+                self.handle_delivery_zone_search(delivery_zones)
+            elif self.state == RobotState.DELIVERY_ZONE_CENTERING:
+                self.handle_delivery_zone_centering(delivery_zones)
+            elif self.state == RobotState.DELIVERY_RELEASING:
+                self.handle_delivery_releasing()
             elif self.state == RobotState.POST_DELIVERY_TURN:
                 self.handle_post_delivery_turn()
             return
@@ -108,21 +122,110 @@ class RobotStateMachine:
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
 
-    def handle_delivery_mode(self):
-        """Handle delivery mode - simple ball release and proceed to turn"""
-        if not hasattr(self, '_delivery_started'):
-            self.logger.info("🚚 STARTING DELIVERY MODE - Releasing balls")
-            released_count = self.hardware.release_balls()
-            self.logger.info(f"✅ Released {released_count} balls for delivery")
-            self._delivery_started = True
+    def handle_delivery_mode(self, delivery_zones=None):
+        """Start delivery sequence - look for green zones"""
+        self.logger.info("🚚 DELIVERY MODE: Looking for green delivery zones")
+        self.state = RobotState.DELIVERY_ZONE_SEARCH
+        self.delivery_search_start_time = time.time()
+    
+    def handle_delivery_zone_search(self, delivery_zones=None):
+        """Search for green delivery zones"""
+        if delivery_zones and len(delivery_zones) > 0:
+            # Found delivery zone(s)
+            target_zone = self.vision.get_target_delivery_zone(delivery_zones)
+            if target_zone:
+                self.logger.info(f"🎯 Found delivery zone at {target_zone.center}, centering on it")
+                self.state = RobotState.DELIVERY_ZONE_CENTERING
+                return
+        
+        # No zones found - keep searching
+        elapsed_search = time.time() - self.delivery_search_start_time if self.delivery_search_start_time else 0
+        
+        if elapsed_search > 15.0:  # Search timeout
+            self.logger.warning("⏰ Delivery zone search timeout - delivering in place")
+            self.state = RobotState.DELIVERY_RELEASING
+            self.delivery_release_start_time = time.time()
+            return
+        
+        # Continue searching pattern
+        if config.DEBUG_MOVEMENT:
+            self.logger.info("🔍 Searching for green delivery zones...")
+        
+        # Simple search pattern
+        self.hardware.turn_right(duration=0.8, speed=0.4)
+        time.sleep(0.2)
+    
+    def handle_delivery_zone_centering(self, delivery_zones=None):
+        """Center robot on delivery zone"""
+        if not delivery_zones:
+            self.logger.warning("Lost delivery zone during centering - searching again")
+            self.state = RobotState.DELIVERY_ZONE_SEARCH
+            self.delivery_search_start_time = time.time()
+            return
+        
+        target_zone = self.vision.get_target_delivery_zone(delivery_zones)
+        if not target_zone:
+            self.logger.warning("No target delivery zone - searching again")
+            self.state = RobotState.DELIVERY_ZONE_SEARCH
+            self.delivery_search_start_time = time.time()
+            return
+        
+        # Check if centered
+        if target_zone.is_centered:
+            self.logger.info("✅ Delivery zone CENTERED - starting ball release!")
+            self.state = RobotState.DELIVERY_RELEASING
+            self.delivery_release_start_time = time.time()
+            return
+        
+        # Get centering command
+        centering_command = self.vision.get_delivery_zone_centering_command(target_zone)
+        
+        if centering_command == "turn_right":
+            self.hardware.turn_right(duration=0.3, speed=0.35)
+            if config.DEBUG_MOVEMENT:
+                self.logger.info("🎯 Centering delivery zone: turn right")
+        elif centering_command == "turn_left":
+            self.hardware.turn_left(duration=0.3, speed=0.35)
+            if config.DEBUG_MOVEMENT:
+                self.logger.info("🎯 Centering delivery zone: turn left")
+        elif centering_command == "centered":
+            # Already centered - move to release
+            self.logger.info("✅ Delivery zone centered - starting release")
+            self.state = RobotState.DELIVERY_RELEASING
+            self.delivery_release_start_time = time.time()
+        
+        time.sleep(0.1)
+    
+    def handle_delivery_releasing(self):
+        """Handle ball release sequence with timing"""
+        if not hasattr(self, '_delivery_release_started'):
+            self.logger.info("📦 STARTING BALL RELEASE SEQUENCE")
             
-            # Small pause after ball release
-            time.sleep(1.0)
+            # Set SS to collect position and open SF
+            self.hardware.servo_ss_to_collect()
+            time.sleep(0.3)
+            self.hardware.servo_sf_to_open()
+            
+            self.logger.info(f"🔓 SF door opened for {config.DELIVERY_DOOR_OPEN_TIME} seconds")
+            self._delivery_release_started = True
+            self.delivery_release_start_time = time.time()
+        
+        # Check if door open time has elapsed
+        elapsed = time.time() - self.delivery_release_start_time
+        if elapsed >= config.DELIVERY_DOOR_OPEN_TIME:
+            # Close door and finish release
+            self.hardware.servo_sf_to_closed()
+            self.logger.info("🔒 SF door closed - delivery complete")
+            
+            # Clear ball count
+            balls_released = len(self.hardware.collected_balls)
+            self.hardware.collected_balls.clear()
+            self.logger.info(f"✅ Released {balls_released} balls")
             
             # Move to post-delivery turn
             self.state = RobotState.POST_DELIVERY_TURN
             self.post_delivery_start_time = time.time()
-            del self._delivery_started  # Clean up flag
+            del self._delivery_release_started
     
     def handle_post_delivery_turn(self):
         """Handle post-delivery turn and restart collection cycle"""
@@ -133,6 +236,10 @@ class RobotStateMachine:
         
         elapsed = time.time() - self.post_delivery_start_time
         if elapsed >= config.POST_DELIVERY_TURN_DURATION + 0.5:  # Add small buffer
+            # Set servos back to competition positions
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_closed()
+            
             self.logger.info("🔄 POST-DELIVERY COMPLETE: Restarting collection cycle")
             self.state = RobotState.SEARCHING
             self.post_delivery_start_time = None

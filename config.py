@@ -7,7 +7,8 @@ VIP_BALL_COLOR = "orange"
 
 # === COLLECTION AND DELIVERY CYCLE ===
 BALLS_BEFORE_DELIVERY = 1  # Number of balls to collect before moving to delivery phase
-POST_DELIVERY_TURN_DURATION = 2.0  # Seconds to turn right after delivery
+POST_DELIVERY_TURN_DURATION = 3.0  # Seconds to turn right after delivery
+DELIVERY_DOOR_OPEN_TIME = 5.0  # Seconds to keep SF door open during delivery
 
 # === SCORING ===
 GOAL_A_POINTS = 150  # Smaller goal
@@ -146,6 +147,10 @@ TARGET_ZONE_VERTICAL_POSITION = 0.65  # 65% down from top (was centered at 50%)
 TARGET_ZONE_WIDTH = 60   # Reduced from 80 pixels
 TARGET_ZONE_HEIGHT = 45  # Reduced from 60 pixels
 
-# General collection area
-COLLECTION_ZONE_HORIZONTAL_MARGIN = 0.35  # Increased from 0.3 (smaller area)
-COLLECTION_ZONE_VERTICAL_START = 0.55     # Start at 55% down (was 40%)
+# === DELIVERY ZONE DETECTION ===
+# Green delivery zone detection (extension of outer wall)
+DELIVERY_ZONE_HSV_LOWER = np.array([40, 50, 50])   # Green detection
+DELIVERY_ZONE_HSV_UPPER = np.array([80, 255, 255])
+DELIVERY_ZONE_MIN_AREA = 500    # Minimum area for delivery zone
+DELIVERY_ZONE_MAX_AREA = 50000  # Maximum area for delivery zone
+DELIVERY_CENTERING_TOLERANCE = 30  # Pixels tolerance for centering on delivery zone
