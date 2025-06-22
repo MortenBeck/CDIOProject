@@ -488,9 +488,9 @@ class DeliverySystem:
         return False
     
     def start_delivery_mode(self):
-        """Start delivery mode with oscillation prevention and wall avoidance"""
+        """Start delivery mode with step-by-step approach and wall avoidance"""
         self.logger.info("🚚 STARTING DELIVERY MODE - Green Target Detection")
-        self.logger.info("   Features: Adaptive tolerances, oscillation detection, wall avoidance")
+        self.logger.info("   Features: Step-by-step approach, adaptive tolerances, oscillation detection, wall avoidance")
         
         self.delivery_active = True
         self.start_time = time.time()
@@ -605,17 +605,53 @@ class DeliverySystem:
                 time.sleep(0.5)
     
     def approach_target(self, target: GreenTarget):
-        """Approach the centered green target"""
-        # Calculate approach distance based on target size
-        approach_time = self.calculate_approach_time(target)
+        """Approach the centered green target using step-by-step movement"""
+        self.logger.info(f"🚚 Starting step-by-step approach to green delivery zone")
         
-        self.logger.info(f"🚚 Approaching green delivery zone for {approach_time:.1f} seconds")
+        # Approach parameters
+        approach_step_duration = 0.3  # Short steps forward
+        approach_step_speed = 0.4     # Moderate speed
+        max_approach_steps = 8        # Maximum steps before giving up
+        min_target_size = target.area * 1.5  # Target should grow as we approach
         
-        # Move forward towards target
-        self.hardware.move_forward(duration=approach_time, speed=self.approach_speed)
+        for step in range(max_approach_steps):
+            # Take a step forward
+            self.logger.info(f"🚶 Approach step {step + 1}/{max_approach_steps}")
+            self.hardware.move_forward(duration=approach_step_duration, speed=approach_step_speed)
+            time.sleep(0.2)
+            
+            # Check current frame to see if target is getting larger/closer
+            ret, frame = self.vision_system.get_frame()
+            if ret:
+                # Check for walls first
+                wall_danger = self.delivery_vision.detect_walls(frame)
+                if wall_danger:
+                    self.logger.warning("⚠️ Wall detected during approach - stopping")
+                    break
+                
+                # Re-detect green targets to see if we're getting closer
+                current_targets = self.delivery_vision.detect_green_targets(frame)
+                
+                if current_targets:
+                    current_target = current_targets[0]
+                    
+                    # Check if target is getting significantly larger (we're approaching)
+                    if current_target.area >= min_target_size:
+                        self.logger.info(f"🎯 Target area increased to {current_target.area} - close enough!")
+                        break
+                    
+                    # Update minimum target size for next iteration
+                    min_target_size = max(min_target_size, current_target.area * 1.2)
+                    
+                    self.logger.debug(f"Target area: {current_target.area}, target size: {min_target_size:.0f}")
+                else:
+                    self.logger.warning("❌ Lost sight of green target during approach")
+                    break
+            
+            time.sleep(0.1)
         
-        # Brief pause
-        time.sleep(0.5)
+        # We've either reached the target or hit max steps
+        self.logger.info("📦 Approach complete - checking for ball delivery")
         
         # Check if we should release balls here
         if self.hardware.has_balls():
@@ -623,12 +659,15 @@ class DeliverySystem:
             released_count = self.hardware.release_balls()
             self.logger.info(f"✅ Released {released_count} balls at green delivery zone")
             
-            # Back away from delivery zone
-            self.hardware.move_backward(duration=1.0, speed=self.approach_speed)
-            time.sleep(0.5)
+            # Back away from delivery zone with steps
+            self.logger.info("⬅️ Backing away from delivery zone")
+            for back_step in range(3):
+                self.hardware.move_backward(duration=0.4, speed=self.approach_speed)
+                time.sleep(0.2)
         else:
             self.logger.info("ℹ️  No balls to deliver - backing away from target")
             self.hardware.move_backward(duration=0.5, speed=self.approach_speed)
+            time.sleep(0.2)
     
     def search_for_targets(self, direction: int):
         """Search for green targets by turning"""
@@ -642,19 +681,6 @@ class DeliverySystem:
             self.hardware.turn_left(duration=self.base_search_turn_duration, speed=self.search_speed)
         
         time.sleep(0.2)
-    
-    def calculate_approach_time(self, target: GreenTarget) -> float:
-        """Calculate how long to approach based on target size and distance"""
-        # Larger targets are likely closer, smaller targets are farther
-        # Base approach time inversely related to target area
-        
-        base_time = 2.0  # Base approach time
-        area_factor = max(0.3, min(1.5, 5000 / max(target.area, 1000)))  # Scale by area
-        
-        approach_time = base_time * area_factor
-        
-        # Bounds
-        return max(0.5, min(3.0, approach_time))
     
     def stop_delivery(self):
         """Stop delivery mode"""
@@ -675,22 +701,27 @@ class DeliverySystem:
         cv2.destroyAllWindows()
 
 def run_delivery_test():
-    """Main entry point for delivery testing with wall avoidance"""
-    print("\n🚚 GOLFBOT DELIVERY SYSTEM TEST (Anti-Oscillation + Wall Avoidance)")
+    """Main entry point for delivery testing with step-by-step approach"""
+    print("\n🚚 GOLFBOT DELIVERY SYSTEM TEST (Step-by-Step + Wall Avoidance)")
     print("="*70)
     print("This mode will:")
     print("1. Search for GREEN targets (delivery zones)")
     print("2. Detect and avoid RED walls/boundaries")
     print("3. Center on detected green areas with oscillation prevention")
-    print("4. Approach when properly aligned and walls are clear")
+    print("4. Approach using STEP-BY-STEP movement (like ball centering)")
     print("5. Release balls if any are collected")
-    print("\nNew Features:")
+    print("\nStep-by-Step Approach Features:")
+    print("• Short forward steps (0.3s each)")
+    print("• Wall checking between each step")
+    print("• Target size monitoring (gets larger as we approach)")
+    print("• Maximum 8 steps before giving up")
+    print("• Automatic backing away after delivery")
+    print("\nOther Features:")
     print("• Wall/boundary detection and avoidance")
     print("• Oscillation detection and prevention")
     print("• Adaptive centering tolerances")
     print("• Movement damping when oscillating")
     print("• Wall avoidance priority over target centering")
-    print("• Stability verification before approach")
     print("\nPress 'q' in the camera window to quit")
     print("="*70)
     
