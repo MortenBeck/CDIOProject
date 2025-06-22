@@ -133,27 +133,29 @@ class TriangularDeliveryVisionSystem:
         # Find the point closest to the robot (triangle tip)
         distances_to_robot = [np.linalg.norm(point - robot_pos) for point in hull_points]
         tip_idx = np.argmin(distances_to_robot)
-        tip_point = tuple(hull_points[tip_idx])
+        tip_point = tuple(hull_points[tip_idx].astype(int))  # Convert to int
         distance_to_tip = distances_to_robot[tip_idx]
         
         # Find the base (line segment farthest from robot)
         # This is the line formed by the two points farthest from the tip
-        other_points = [hull_points[i] for i in range(len(hull_points)) if i != tip_idx]
+        other_indices = [i for i in range(len(hull_points)) if i != tip_idx]
         
-        if len(other_points) < 2:
+        if len(other_indices) < 2:
             # Try to use the two points farthest from the robot
             far_distances = [(i, dist) for i, dist in enumerate(distances_to_robot) if i != tip_idx]
             far_distances.sort(key=lambda x: x[1], reverse=True)
             
             if len(far_distances) >= 2:
-                base_point1 = hull_points[far_distances[0][0]]
-                base_point2 = hull_points[far_distances[1][0]]
+                base_point1 = hull_points[far_distances[0][0]].astype(int)
+                base_point2 = hull_points[far_distances[1][0]].astype(int)
             else:
                 return None
         else:
             # Use the two points that are not the tip
+            other_points = [hull_points[i] for i in other_indices]
+            
             if len(other_points) == 2:
-                base_point1, base_point2 = other_points
+                base_point1, base_point2 = other_points[0].astype(int), other_points[1].astype(int)
             else:
                 # Find the two points that form the longest edge (likely the base)
                 max_dist = 0
@@ -163,24 +165,28 @@ class TriangularDeliveryVisionSystem:
                         dist = np.linalg.norm(other_points[i] - other_points[j])
                         if dist > max_dist:
                             max_dist = dist
-                            best_pair = (other_points[i], other_points[j])
+                            best_pair = (other_points[i].astype(int), other_points[j].astype(int))
                 
-                if best_pair:
+                if best_pair is not None:
                     base_point1, base_point2 = best_pair
                 else:
                     return None
         
         # Calculate base center
-        base_center = tuple(((base_point1 + base_point2) / 2).astype(int))
+        base_center = tuple(((base_point1 + base_point2) // 2).astype(int))
         
         # Calculate approach vector (from base to tip - this is the direction to approach)
         approach_vector = np.array(tip_point) - np.array(base_center)
-        approach_vector_norm = approach_vector / (np.linalg.norm(approach_vector) + 1e-6)
+        approach_length = np.linalg.norm(approach_vector)
+        if approach_length > 0:
+            approach_vector_norm = approach_vector / approach_length
+        else:
+            approach_vector_norm = np.array([0, 1])  # Default downward
         
         return {
             'tip': tip_point,
             'base': base_center,
-            'base_points': (tuple(base_point1.astype(int)), tuple(base_point2.astype(int))),
+            'base_points': (tuple(base_point1), tuple(base_point2)),
             'approach_vector': approach_vector_norm,
             'distance_to_tip': distance_to_tip,
             'hull_points': hull_points
@@ -201,7 +207,8 @@ class TriangularDeliveryVisionSystem:
             shape_confidence = 0.0
         
         # Aspect ratio confidence (triangles shouldn't be too elongated)
-        bbox_area = triangle_info.get('bbox_area', area)
+        x, y, w, h = cv2.boundingRect(contour)
+        bbox_area = w * h
         fill_ratio = area / max(bbox_area, 1)
         fill_confidence = min(1.0, fill_ratio * 2)  # Triangles fill ~50% of bbox
         
@@ -217,64 +224,73 @@ class TriangularDeliveryVisionSystem:
     
     def get_triangle_positioning_command(self, triangle: GreenTriangle) -> Optional[str]:
         """Get positioning command to approach triangle tip properly"""
-        if not triangle.triangle_tip or not triangle.approach_direction:
+        if not triangle.triangle_tip or triangle.approach_direction is None:
             return self._fallback_positioning(triangle)
         
-        robot_pos = np.array([self.frame_center_x, self.frame_center_y])
-        tip_pos = np.array(triangle.triangle_tip)
-        approach_vector = triangle.approach_direction
-        
-        # Calculate ideal approach position (back from tip along approach vector)
-        ideal_approach_pos = tip_pos - (approach_vector * self.optimal_distance_from_tip)
-        
-        # Current position error
-        position_error = ideal_approach_pos - robot_pos
-        position_distance = np.linalg.norm(position_error)
-        
-        # Current direction to triangle tip
-        direction_to_tip = tip_pos - robot_pos
-        direction_to_tip_norm = direction_to_tip / (np.linalg.norm(direction_to_tip) + 1e-6)
-        
-        # Check alignment with approach vector
-        alignment_dot = np.dot(direction_to_tip_norm, approach_vector)
-        alignment_angle = np.degrees(np.arccos(np.clip(alignment_dot, -1.0, 1.0)))
-        
-        self.logger.info(f"🎯 Triangle approach: pos_dist={position_distance:.1f}px, angle_error={alignment_angle:.1f}°")
-        self.logger.info(f"🎯 Tip at {triangle.triangle_tip}, Robot at ({robot_pos[0]:.0f}, {robot_pos[1]:.0f})")
-        
-        # PHASE 1: Rough positioning - get into general area
-        if position_distance > 60:
-            # Move toward ideal approach position
-            if abs(position_error[0]) > self.position_tolerance:
-                if position_error[0] > 0:
-                    return 'move_right'
-                else:
-                    return 'move_left'
+        try:
+            robot_pos = np.array([self.frame_center_x, self.frame_center_y])
+            tip_pos = np.array(triangle.triangle_tip)
+            approach_vector = triangle.approach_direction
             
-            if abs(position_error[1]) > self.position_tolerance:
-                if position_error[1] > 0:
-                    return 'move_backward'
-                else:
-                    return 'move_forward'
-        
-        # PHASE 2: Alignment - ensure we're pointing toward triangle tip along approach vector
-        elif alignment_angle > self.alignment_tolerance:
-            # Determine turn direction using cross product
-            cross_product = np.cross(direction_to_tip_norm, approach_vector)
+            # Calculate ideal approach position (back from tip along approach vector)
+            ideal_approach_pos = tip_pos - (approach_vector * self.optimal_distance_from_tip)
             
-            if cross_product > 0:
-                return 'align_turn_left'
+            # Current position error
+            position_error = ideal_approach_pos - robot_pos
+            position_distance = np.linalg.norm(position_error)
+            
+            # Current direction to triangle tip
+            direction_to_tip = tip_pos - robot_pos
+            tip_distance = np.linalg.norm(direction_to_tip)
+            if tip_distance > 0:
+                direction_to_tip_norm = direction_to_tip / tip_distance
             else:
-                return 'align_turn_right'
-        
-        # PHASE 3: Final distance check
-        else:
-            current_distance_to_tip = np.linalg.norm(robot_pos - tip_pos)
+                direction_to_tip_norm = np.array([0, 1])
             
-            if current_distance_to_tip > self.final_approach_distance:
-                return 'final_approach'
+            # Check alignment with approach vector
+            alignment_dot = np.clip(np.dot(direction_to_tip_norm, approach_vector), -1.0, 1.0)
+            alignment_angle = np.degrees(np.arccos(abs(alignment_dot)))
+            
+            self.logger.info(f"🎯 Triangle approach: pos_dist={position_distance:.1f}px, angle_error={alignment_angle:.1f}°")
+            self.logger.info(f"🎯 Tip at {triangle.triangle_tip}, Robot at ({robot_pos[0]:.0f}, {robot_pos[1]:.0f})")
+            
+            # PHASE 1: Rough positioning - get into general area
+            if position_distance > 60:
+                # Move toward ideal approach position
+                if abs(position_error[0]) > self.position_tolerance:
+                    if position_error[0] > 0:
+                        return 'move_right'
+                    else:
+                        return 'move_left'
+                
+                if abs(position_error[1]) > self.position_tolerance:
+                    if position_error[1] > 0:
+                        return 'move_backward'
+                    else:
+                        return 'move_forward'
+            
+            # PHASE 2: Alignment - ensure we're pointing toward triangle tip along approach vector
+            elif alignment_angle > self.alignment_tolerance:
+                # Determine turn direction using cross product
+                cross_product = np.cross(direction_to_tip_norm, approach_vector)
+                
+                if cross_product > 0:
+                    return 'align_turn_left'
+                else:
+                    return 'align_turn_right'
+            
+            # PHASE 3: Final distance check
             else:
-                return 'approach_complete'
+                current_distance_to_tip = np.linalg.norm(robot_pos - tip_pos)
+                
+                if current_distance_to_tip > self.final_approach_distance:
+                    return 'final_approach'
+                else:
+                    return 'approach_complete'
+                    
+        except Exception as e:
+            self.logger.warning(f"Triangle positioning calculation error: {e}")
+            return self._fallback_positioning(triangle)
     
     def _fallback_positioning(self, triangle: GreenTriangle) -> Optional[str]:
         """Fallback positioning if triangle analysis fails"""
@@ -451,9 +467,21 @@ class TriangularDeliverySystem:
                     frames_without_target = 0
                     primary_triangle = triangles[0]
                     
-                    # Check for new target
-                    if (self.current_target is None or 
-                        abs(primary_triangle.center[0] - self.current_target.center[0]) > 80):
+                    # Check for new target - fix numpy array comparison
+                    target_changed = False
+                    if self.current_target is None:
+                        target_changed = True
+                    else:
+                        try:
+                            # Safe comparison of centers
+                            curr_x, curr_y = self.current_target.center
+                            new_x, new_y = primary_triangle.center
+                            if abs(new_x - curr_x) > 80 or abs(new_y - curr_y) > 80:
+                                target_changed = True
+                        except (TypeError, AttributeError):
+                            target_changed = True
+                    
+                    if target_changed:
                         self.logger.info("🔺 New triangle detected - starting positioning")
                         self.current_target = primary_triangle
                         self.current_phase = "triangle_position"
