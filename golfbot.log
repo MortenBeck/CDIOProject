@@ -320,3 +320,634 @@
 2025-06-22 21:41:06,707 - hardware - INFO - ✅ Hardware cleanup completed
 2025-06-22 21:41:06,707 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
 2025-06-22 21:41:06,708 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-22 21:45:38,784 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-22 21:45:38,785 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-22 21:45:38,785 - motor_controller - INFO - Initializing motor controllers...
+2025-06-22 21:45:38,789 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-22 21:45:38,789 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-22 21:45:38,789 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-22 21:45:38,789 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-22 21:45:38,801 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-22 21:45:38,801 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-22 21:45:38,801 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-22 21:45:38,801 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-22 21:45:38,801 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-22 21:45:38,801 - __main__ - INFO - Detecting arena boundaries...
+2025-06-22 21:45:39,650 - boundary_avoidance - INFO - Using fallback arena mask (conservative edges)
+2025-06-22 21:45:39,650 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-22 21:45:39,650 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-22 21:45:39,656 - competition_manager - INFO - Using new dashboard interface
+2025-06-22 21:45:39,784 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 21:45:39,785 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 21:45:39,785 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 21:45:40,088 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 21:45:40,592 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-22 21:45:41,593 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-22 21:45:41,593 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-22 21:45:41,593 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-22 21:45:41,593 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-22 21:45:41,593 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-22 21:45:42,513 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.83)
+2025-06-22 21:45:43,491 - robot_state_machine - INFO - Starting centering session
+2025-06-22 21:45:43,491 - robot_state_machine - INFO - Ball far from target (119px) - using aggressive centering
+2025-06-22 21:45:43,741 - robot_state_machine - INFO - Centering: turn right (x_error: 73px, dist: 119px)
+2025-06-22 21:45:44,740 - robot_state_machine - INFO - Ball far from target (104px) - using aggressive centering
+2025-06-22 21:45:44,990 - robot_state_machine - INFO - Centering: turn right (x_error: 49px, dist: 104px)
+2025-06-22 21:45:45,946 - robot_state_machine - INFO - Ball far from target (97px) - using aggressive centering
+2025-06-22 21:45:46,197 - robot_state_machine - INFO - Centering: turn right (x_error: 26px, dist: 97px)
+2025-06-22 21:45:47,138 - robot_state_machine - INFO - Ball far from target (94px) - using aggressive centering
+2025-06-22 21:45:47,539 - robot_state_machine - INFO - Centering: forward (y_error: 94px, dist: 94px)
+2025-06-22 21:45:48,475 - robot_state_machine - INFO - Ball moderately close (75px) - using balanced centering
+2025-06-22 21:45:48,875 - robot_state_machine - INFO - Centering: forward (y_error: 75px, dist: 75px)
+2025-06-22 21:45:49,876 - robot_state_machine - INFO - Ball moderately close (57px) - using balanced centering
+2025-06-22 21:45:50,276 - robot_state_machine - INFO - Centering: forward (y_error: 57px, dist: 57px)
+2025-06-22 21:45:51,243 - robot_state_machine - INFO - Ball moderately close (48px) - using balanced centering
+2025-06-22 21:45:51,444 - robot_state_machine - INFO - Centering: turn right (x_error: 26px, dist: 48px)
+2025-06-22 21:45:52,407 - robot_state_machine - INFO - Ball moderately close (46px) - using balanced centering
+2025-06-22 21:45:52,807 - robot_state_machine - INFO - Centering: forward (y_error: 45px, dist: 46px)
+2025-06-22 21:45:53,773 - robot_state_machine - WARNING - HARD centering timeout (10.3s) - returning to search
+2025-06-22 21:45:54,751 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.82)
+2025-06-22 21:45:55,742 - robot_state_machine - INFO - Starting centering session
+2025-06-22 21:45:55,742 - robot_state_machine - INFO - Ball moderately close (53px) - using balanced centering
+2025-06-22 21:45:55,943 - robot_state_machine - INFO - Centering: turn right (x_error: 49px, dist: 53px)
+2025-06-22 21:45:56,923 - robot_state_machine - INFO - Ball very close (27px) - using precise centering
+2025-06-22 21:45:57,324 - robot_state_machine - INFO - Centering: forward (y_error: 27px, dist: 27px)
+2025-06-22 21:45:58,314 - robot_state_machine - INFO - Ball moderately close (60px) - using balanced centering
+2025-06-22 21:45:58,514 - robot_state_machine - INFO - Centering: turn right (x_error: 60px, dist: 60px)
+2025-06-22 21:45:59,472 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-22 21:46:00,505 - robot_state_machine - INFO - Ball very close (33px) - using precise centering
+2025-06-22 21:46:00,680 - robot_state_machine - INFO - Centering: turn right (x_error: 32px, dist: 33px)
+2025-06-22 21:46:01,696 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-22 21:46:02,718 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-22 21:46:03,745 - robot_state_machine - INFO - White ball STABLE in target zone! (took 8.0s, 4 attempts)
+2025-06-22 21:46:04,676 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.71)
+2025-06-22 21:46:04,676 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-22 21:46:04,676 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-22 21:46:04,676 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-22 21:46:04,676 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-22 21:46:04,676 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-22 21:46:04,676 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-22 21:46:05,285 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-22 21:46:06,436 - ball_collection - INFO - Step 3: SS collect position
+2025-06-22 21:46:06,436 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (20°)
+2025-06-22 21:46:07,196 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure)
+2025-06-22 21:46:07,196 - servo_controller - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-22 21:46:08,412 - ball_collection - INFO - Step 5: Returning SS to driving position
+2025-06-22 21:46:08,412 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 21:46:09,379 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-22 21:46:09,379 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-22 21:46:09,379 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-22 21:46:09,379 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-22 21:46:09,379 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-22 21:46:10,403 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-22 21:46:11,372 - robot_state_machine - INFO - 🎯 Found delivery zone at (133, 115), centering on it
+2025-06-22 21:46:12,658 - robot_state_machine - INFO - 🎯 Centering delivery zone: turn left
+2025-06-22 21:46:13,981 - robot_state_machine - INFO - 🎯 Centering delivery zone: turn left
+2025-06-22 21:46:15,087 - competition_manager - INFO - ============================================================
+2025-06-22 21:46:15,087 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-22 21:46:15,088 - competition_manager - INFO - ============================================================
+2025-06-22 21:46:15,088 - competition_manager - INFO - Total time: 33.5 seconds
+2025-06-22 21:46:15,088 - competition_manager - INFO - White balls collected: 1
+2025-06-22 21:46:15,088 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-22 21:46:15,088 - competition_manager - INFO - Final state: delivery_zone_centering
+2025-06-22 21:46:15,088 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-22 21:46:15,088 - competition_manager - INFO - Arena detection: Fallback
+2025-06-22 21:46:15,088 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-22 21:46:15,088 - competition_manager - INFO - ============================================================
+2025-06-22 21:46:15,089 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 21:46:15,089 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 21:46:15,193 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 21:46:15,496 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 21:46:15,497 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 21:46:15,497 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-22 21:46:15,497 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 21:46:15,497 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 21:46:15,497 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 21:46:15,601 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 21:46:15,905 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 21:46:15,905 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 21:46:15,906 - vision - INFO - Enhanced vision system (with delivery zones) cleanup completed
+2025-06-22 21:46:15,906 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-22 21:46:15,906 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-22 21:46:15,907 - motor_controller - INFO - ✅ Motor cleanup completed
+2025-06-22 21:46:15,907 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-22 21:46:15,907 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 21:46:15,907 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 21:46:16,011 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 21:46:16,315 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 21:46:16,319 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-22 21:46:16,320 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-22 21:46:16,320 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 21:46:16,320 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-22 22:18:41,715 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-22 22:18:41,717 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-22 22:18:41,717 - motor_controller - INFO - Initializing motor controllers...
+2025-06-22 22:18:41,723 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-22 22:18:41,723 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-22 22:18:41,723 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-22 22:18:41,724 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-22 22:18:41,755 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-22 22:18:41,755 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-22 22:18:41,755 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-22 22:18:41,755 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-22 22:18:41,755 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-22 22:18:41,756 - __main__ - INFO - Detecting arena boundaries...
+2025-06-22 22:18:42,990 - boundary_avoidance - INFO - Using fallback arena mask (conservative edges)
+2025-06-22 22:18:42,990 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-22 22:18:42,990 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-22 22:18:42,996 - competition_manager - INFO - Using new dashboard interface
+2025-06-22 22:18:43,728 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 22:18:43,728 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 22:18:43,728 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:18:44,639 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:18:45,864 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-22 22:18:46,864 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-22 22:18:46,864 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-22 22:18:46,864 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-22 22:18:46,864 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-22 22:18:46,864 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-22 22:18:47,779 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.56)
+2025-06-22 22:18:48,750 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:18:48,750 - robot_state_machine - INFO - Ball far from target (125px) - using aggressive centering
+2025-06-22 22:18:49,000 - robot_state_machine - INFO - Centering: turn right (x_error: 53px, dist: 125px)
+2025-06-22 22:18:49,914 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=506.0, width=36
+2025-06-22 22:18:49,914 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:18:49,937 - robot_state_machine - INFO - Ball far from target (113px) - using aggressive centering
+2025-06-22 22:18:50,338 - robot_state_machine - INFO - Centering: forward (y_error: 112px, dist: 113px)
+2025-06-22 22:18:51,258 - robot_state_machine - INFO - Ball far from target (107px) - using aggressive centering
+2025-06-22 22:18:51,658 - robot_state_machine - INFO - Centering: forward (y_error: 107px, dist: 107px)
+2025-06-22 22:18:52,604 - robot_state_machine - INFO - Ball far from target (82px) - using aggressive centering
+2025-06-22 22:18:52,854 - robot_state_machine - INFO - Centering: turn left (x_error: 33px, dist: 82px)
+2025-06-22 22:18:53,863 - robot_state_machine - INFO - Ball far from target (108px) - using aggressive centering
+2025-06-22 22:18:54,114 - robot_state_machine - INFO - Centering: turn right (x_error: 72px, dist: 108px)
+2025-06-22 22:18:55,088 - robot_state_machine - INFO - Ball far from target (87px) - using aggressive centering
+2025-06-22 22:18:55,338 - robot_state_machine - INFO - Centering: turn left (x_error: 41px, dist: 87px)
+2025-06-22 22:18:56,302 - robot_state_machine - INFO - Ball far from target (108px) - using aggressive centering
+2025-06-22 22:18:56,552 - robot_state_machine - INFO - Centering: turn right (x_error: 67px, dist: 108px)
+2025-06-22 22:18:57,501 - robot_state_machine - INFO - Ball far from target (92px) - using aggressive centering
+2025-06-22 22:18:57,751 - robot_state_machine - INFO - Centering: turn left (x_error: 47px, dist: 92px)
+2025-06-22 22:18:58,712 - robot_state_machine - INFO - Ball far from target (108px) - using aggressive centering
+2025-06-22 22:18:58,962 - robot_state_machine - INFO - Centering: turn right (x_error: 65px, dist: 108px)
+2025-06-22 22:18:59,910 - robot_state_machine - WARNING - HARD centering timeout (11.2s) - returning to search
+2025-06-22 22:19:02,217 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.55)
+2025-06-22 22:19:03,113 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:19:03,113 - robot_state_machine - INFO - Ball far from target (83px) - using aggressive centering
+2025-06-22 22:19:03,364 - robot_state_machine - INFO - Centering: turn left (x_error: 46px, dist: 83px)
+2025-06-22 22:19:04,323 - robot_state_machine - INFO - Ball far from target (84px) - using aggressive centering
+2025-06-22 22:19:04,574 - robot_state_machine - INFO - Centering: turn right (x_error: 54px, dist: 84px)
+2025-06-22 22:19:05,519 - robot_state_machine - INFO - Ball far from target (88px) - using aggressive centering
+2025-06-22 22:19:05,769 - robot_state_machine - INFO - Centering: turn left (x_error: 55px, dist: 88px)
+2025-06-22 22:19:06,714 - robot_state_machine - INFO - Ball far from target (85px) - using aggressive centering
+2025-06-22 22:19:06,965 - robot_state_machine - INFO - Centering: turn right (x_error: 55px, dist: 85px)
+2025-06-22 22:19:07,898 - robot_state_machine - INFO - Ball far from target (91px) - using aggressive centering
+2025-06-22 22:19:08,148 - robot_state_machine - INFO - Centering: turn left (x_error: 59px, dist: 91px)
+2025-06-22 22:19:09,112 - robot_state_machine - INFO - Ball far from target (82px) - using aggressive centering
+2025-06-22 22:19:09,363 - robot_state_machine - INFO - Centering: turn right (x_error: 47px, dist: 82px)
+2025-06-22 22:19:10,292 - robot_state_machine - INFO - Ball far from target (95px) - using aggressive centering
+2025-06-22 22:19:10,542 - robot_state_machine - INFO - Centering: turn left (x_error: 66px, dist: 95px)
+2025-06-22 22:19:11,483 - robot_state_machine - INFO - Ball far from target (82px) - using aggressive centering
+2025-06-22 22:19:11,734 - robot_state_machine - INFO - Centering: turn right (x_error: 47px, dist: 82px)
+2025-06-22 22:19:12,659 - robot_state_machine - INFO - Ball far from target (99px) - using aggressive centering
+2025-06-22 22:19:12,909 - robot_state_machine - INFO - Centering: turn left (x_error: 72px, dist: 99px)
+2025-06-22 22:19:13,851 - robot_state_machine - WARNING - HARD centering timeout (10.7s) - returning to search
+2025-06-22 22:19:14,839 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.60)
+2025-06-22 22:19:15,752 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:19:15,753 - robot_state_machine - INFO - Ball far from target (82px) - using aggressive centering
+2025-06-22 22:19:16,003 - robot_state_machine - INFO - Centering: turn right (x_error: 43px, dist: 82px)
+2025-06-22 22:19:16,924 - robot_state_machine - INFO - Ball far from target (98px) - using aggressive centering
+2025-06-22 22:19:17,174 - robot_state_machine - INFO - Centering: turn left (x_error: 69px, dist: 98px)
+2025-06-22 22:19:18,120 - robot_state_machine - INFO - Ball far from target (84px) - using aggressive centering
+2025-06-22 22:19:18,371 - robot_state_machine - INFO - Centering: turn right (x_error: 45px, dist: 84px)
+2025-06-22 22:19:19,305 - robot_state_machine - INFO - Ball far from target (98px) - using aggressive centering
+2025-06-22 22:19:19,555 - robot_state_machine - INFO - Centering: turn left (x_error: 69px, dist: 98px)
+2025-06-22 22:19:20,543 - robot_state_machine - INFO - Ball far from target (86px) - using aggressive centering
+2025-06-22 22:19:20,793 - robot_state_machine - INFO - Centering: turn right (x_error: 44px, dist: 86px)
+2025-06-22 22:19:21,728 - robot_state_machine - INFO - Ball far from target (96px) - using aggressive centering
+2025-06-22 22:19:21,979 - robot_state_machine - INFO - Centering: turn left (x_error: 65px, dist: 96px)
+2025-06-22 22:19:22,926 - robot_state_machine - INFO - Ball far from target (90px) - using aggressive centering
+2025-06-22 22:19:23,177 - robot_state_machine - INFO - Centering: turn right (x_error: 49px, dist: 90px)
+2025-06-22 22:19:24,112 - robot_state_machine - INFO - Ball far from target (100px) - using aggressive centering
+2025-06-22 22:19:24,362 - robot_state_machine - INFO - Centering: turn left (x_error: 69px, dist: 100px)
+2025-06-22 22:19:25,311 - robot_state_machine - INFO - Ball far from target (89px) - using aggressive centering
+2025-06-22 22:19:25,561 - robot_state_machine - INFO - Centering: turn right (x_error: 44px, dist: 89px)
+2025-06-22 22:19:26,493 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=708.5, width=56
+2025-06-22 22:19:26,493 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:19:26,515 - robot_state_machine - WARNING - HARD centering timeout (10.8s) - returning to search
+2025-06-22 22:19:27,456 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.54)
+2025-06-22 22:19:28,334 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=533.5, width=36
+2025-06-22 22:19:28,334 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:19:28,356 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:19:28,356 - robot_state_machine - INFO - Ball far from target (109px) - using aggressive centering
+2025-06-22 22:19:28,606 - robot_state_machine - INFO - Centering: turn left (x_error: 81px, dist: 109px)
+2025-06-22 22:19:29,537 - robot_state_machine - INFO - Ball far from target (85px) - using aggressive centering
+2025-06-22 22:19:29,788 - robot_state_machine - INFO - Centering: turn right (x_error: 30px, dist: 85px)
+2025-06-22 22:19:30,697 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=781.0, width=42
+2025-06-22 22:19:30,697 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:19:30,719 - competition_manager - INFO - ============================================================
+2025-06-22 22:19:30,720 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-22 22:19:30,720 - competition_manager - INFO - ============================================================
+2025-06-22 22:19:30,720 - competition_manager - INFO - Total time: 43.9 seconds
+2025-06-22 22:19:30,720 - competition_manager - INFO - White balls collected: 0
+2025-06-22 22:19:30,720 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-22 22:19:30,720 - competition_manager - INFO - Final state: centering_ball
+2025-06-22 22:19:30,720 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-22 22:19:30,720 - competition_manager - INFO - Arena detection: Fallback
+2025-06-22 22:19:30,720 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-22 22:19:30,720 - competition_manager - INFO - ============================================================
+2025-06-22 22:19:30,720 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:19:30,720 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:19:30,824 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:19:31,127 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:19:31,128 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 22:19:31,128 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-22 22:19:31,128 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 22:19:31,128 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:19:31,128 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:19:31,232 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:19:31,536 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:19:31,536 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 22:19:31,537 - vision - INFO - Enhanced vision system (with delivery zones) cleanup completed
+2025-06-22 22:19:31,537 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-22 22:19:31,537 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-22 22:19:31,537 - motor_controller - INFO - ✅ Motor cleanup completed
+2025-06-22 22:19:31,537 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-22 22:19:31,537 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:19:31,537 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:19:31,641 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:19:31,945 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:19:31,945 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-22 22:19:31,945 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-22 22:19:31,945 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 22:19:31,945 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-22 22:27:05,614 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-22 22:27:05,614 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-22 22:27:05,614 - motor_controller - INFO - Initializing motor controllers...
+2025-06-22 22:27:05,617 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-22 22:27:05,617 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-22 22:27:05,617 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-22 22:27:05,618 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-22 22:27:05,618 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-22 22:27:05,628 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-22 22:27:05,629 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-22 22:27:05,629 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-22 22:27:05,629 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-22 22:27:05,629 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-22 22:27:05,629 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-22 22:27:05,629 - __main__ - INFO - Detecting arena boundaries...
+2025-06-22 22:27:06,469 - boundary_avoidance - INFO - Using fallback arena mask (conservative edges)
+2025-06-22 22:27:06,470 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-22 22:27:06,470 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-22 22:27:06,475 - competition_manager - INFO - Using new dashboard interface
+2025-06-22 22:27:06,603 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 22:27:06,603 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 22:27:06,603 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:27:06,907 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:27:07,410 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-22 22:27:08,411 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-22 22:27:08,411 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-22 22:27:08,411 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-22 22:27:08,411 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-22 22:27:08,411 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-22 22:27:09,259 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=574.0, width=32
+2025-06-22 22:27:09,259 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:27:09,279 - robot_state_machine - INFO - ⚠️ Boundary avoidance triggered: searching
+2025-06-22 22:27:09,279 - robot_state_machine - WARNING - ⚠️ Executing boundary avoidance maneuver
+2025-06-22 22:27:09,282 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=574.0, width=32
+2025-06-22 22:27:09,282 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:27:10,785 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=1695.0, width=123
+2025-06-22 22:27:10,785 - boundary_avoidance - INFO - CENTER wall detected in BOTTOM 30%: area=927.5, pos=(434, 336)
+2025-06-22 22:27:10,785 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom', 'center_forward']
+2025-06-22 22:27:10,801 - robot_state_machine - INFO - ⚠️ Boundary avoidance triggered: critical_proximity
+2025-06-22 22:27:10,801 - robot_state_machine - WARNING - ⚠️ Executing boundary avoidance maneuver
+2025-06-22 22:27:10,805 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=1695.0, width=123
+2025-06-22 22:27:10,805 - boundary_avoidance - INFO - CENTER wall detected in BOTTOM 30%: area=927.5, pos=(434, 336)
+2025-06-22 22:27:10,805 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom', 'center_forward']
+2025-06-22 22:27:10,905 - robot_state_machine - WARNING - CENTER wall detected - backing up and turning
+2025-06-22 22:27:12,987 - robot_state_machine - INFO - ✅ Clear of boundary - resuming ball detection
+2025-06-22 22:27:13,913 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.46)
+2025-06-22 22:27:14,823 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:27:14,824 - robot_state_machine - INFO - Ball far from target (246px) - using aggressive centering
+2025-06-22 22:27:15,224 - robot_state_machine - INFO - Centering: forward (y_error: 245px, dist: 246px)
+2025-06-22 22:27:16,157 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=787.0, width=64
+2025-06-22 22:27:16,157 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:27:16,174 - robot_state_machine - INFO - ⚠️ Boundary avoidance triggered: no_balls
+2025-06-22 22:27:16,175 - robot_state_machine - WARNING - ⚠️ Executing boundary avoidance maneuver
+2025-06-22 22:27:16,177 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=787.0, width=64
+2025-06-22 22:27:16,178 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:27:17,739 - robot_state_machine - INFO - ✅ Clear of boundary - resuming ball detection
+2025-06-22 22:27:18,678 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.57)
+2025-06-22 22:27:19,572 - robot_state_machine - INFO - Ball far from target (262px) - using aggressive centering
+2025-06-22 22:27:19,823 - robot_state_machine - INFO - Centering: turn left (x_error: 221px, dist: 262px)
+2025-06-22 22:27:20,767 - robot_state_machine - INFO - Ball far from target (241px) - using aggressive centering
+2025-06-22 22:27:21,168 - robot_state_machine - INFO - Centering: forward (y_error: 241px, dist: 241px)
+2025-06-22 22:27:22,098 - robot_state_machine - INFO - Ball far from target (164px) - using aggressive centering
+2025-06-22 22:27:22,349 - robot_state_machine - INFO - Centering: turn left (x_error: 93px, dist: 164px)
+2025-06-22 22:27:23,327 - robot_state_machine - INFO - Ball far from target (141px) - using aggressive centering
+2025-06-22 22:27:23,727 - robot_state_machine - INFO - Centering: forward (y_error: 140px, dist: 141px)
+2025-06-22 22:27:24,661 - robot_state_machine - INFO - Ball far from target (172px) - using aggressive centering
+2025-06-22 22:27:24,912 - robot_state_machine - INFO - Centering: turn left (x_error: 79px, dist: 172px)
+2025-06-22 22:27:25,849 - robot_state_machine - WARNING - HARD centering timeout (11.0s) - returning to search
+2025-06-22 22:27:26,758 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.46)
+2025-06-22 22:27:27,671 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:27:27,672 - robot_state_machine - INFO - Ball far from target (141px) - using aggressive centering
+2025-06-22 22:27:27,922 - robot_state_machine - INFO - Centering: turn right (x_error: 68px, dist: 141px)
+2025-06-22 22:27:28,880 - robot_state_machine - INFO - Ball far from target (173px) - using aggressive centering
+2025-06-22 22:27:29,131 - robot_state_machine - INFO - Centering: turn left (x_error: 72px, dist: 173px)
+2025-06-22 22:27:30,105 - robot_state_machine - INFO - Ball far from target (151px) - using aggressive centering
+2025-06-22 22:27:30,356 - robot_state_machine - INFO - Centering: turn right (x_error: 80px, dist: 151px)
+2025-06-22 22:27:31,278 - robot_state_machine - INFO - Ball far from target (128px) - using aggressive centering
+2025-06-22 22:27:31,528 - robot_state_machine - INFO - Centering: turn left (x_error: 29px, dist: 128px)
+2025-06-22 22:27:32,451 - robot_state_machine - INFO - Ball far from target (161px) - using aggressive centering
+2025-06-22 22:27:32,701 - robot_state_machine - INFO - Centering: turn right (x_error: 97px, dist: 161px)
+2025-06-22 22:27:33,637 - robot_state_machine - INFO - Ball far from target (164px) - using aggressive centering
+2025-06-22 22:27:33,887 - robot_state_machine - INFO - Centering: turn left (x_error: 33px, dist: 164px)
+2025-06-22 22:27:34,816 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=334.0, width=85
+2025-06-22 22:27:34,816 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:27:34,843 - robot_state_machine - INFO - ⚠️ Boundary avoidance triggered: no_balls
+2025-06-22 22:27:34,843 - robot_state_machine - WARNING - ⚠️ Executing boundary avoidance maneuver
+2025-06-22 22:27:34,846 - boundary_avoidance - INFO - Bottom wall detected in BOTTOM 30%: area=334.0, width=85
+2025-06-22 22:27:34,846 - boundary_avoidance - INFO - Wall avoidance triggered in BOTTOM 30% - zones: ['bottom']
+2025-06-22 22:27:36,385 - robot_state_machine - INFO - ✅ Clear of boundary - resuming ball detection
+2025-06-22 22:27:40,383 - competition_manager - INFO - ============================================================
+2025-06-22 22:27:40,384 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-22 22:27:40,384 - competition_manager - INFO - ============================================================
+2025-06-22 22:27:40,384 - competition_manager - INFO - Total time: 32.0 seconds
+2025-06-22 22:27:40,384 - competition_manager - INFO - White balls collected: 0
+2025-06-22 22:27:40,384 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-22 22:27:40,384 - competition_manager - INFO - Final state: searching
+2025-06-22 22:27:40,384 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-22 22:27:40,384 - competition_manager - INFO - Arena detection: Fallback
+2025-06-22 22:27:40,384 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-22 22:27:40,384 - competition_manager - INFO - ============================================================
+2025-06-22 22:27:40,384 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:27:40,384 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:27:40,488 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:27:40,792 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:27:40,792 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 22:27:40,792 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-22 22:27:40,792 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 22:27:40,792 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:27:40,792 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:27:40,896 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:27:41,200 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:27:41,200 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 22:27:41,201 - vision - INFO - Enhanced vision system (with delivery zones) cleanup completed
+2025-06-22 22:27:41,202 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-22 22:27:41,202 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-22 22:27:41,202 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-22 22:27:41,202 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-22 22:27:41,202 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-22 22:27:41,202 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-22 22:27:41,202 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:27:41,202 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:27:41,306 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:27:41,610 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:27:41,610 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-22 22:27:41,610 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-22 22:27:41,610 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 22:27:41,611 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-22 22:28:07,849 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-22 22:28:07,849 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-22 22:28:07,849 - motor_controller - INFO - Initializing motor controllers...
+2025-06-22 22:28:07,853 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-22 22:28:07,853 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-22 22:28:07,853 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-22 22:28:07,853 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-22 22:28:07,853 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-22 22:28:07,865 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-22 22:28:07,865 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-22 22:28:07,865 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-22 22:28:07,865 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-22 22:28:07,865 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-22 22:28:07,865 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-22 22:28:07,865 - __main__ - INFO - Detecting arena boundaries...
+2025-06-22 22:28:08,690 - boundary_avoidance - INFO - Using fallback arena mask (conservative edges)
+2025-06-22 22:28:08,690 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-22 22:28:08,690 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-22 22:28:08,695 - competition_manager - INFO - Using new dashboard interface
+2025-06-22 22:28:08,820 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 22:28:08,821 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-22 22:28:08,821 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:28:09,124 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:28:09,628 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-22 22:28:10,629 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-22 22:28:10,629 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-22 22:28:10,629 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-22 22:28:10,629 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-22 22:28:10,629 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-22 22:28:11,509 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.54)
+2025-06-22 22:28:12,408 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:28:12,408 - robot_state_machine - INFO - Ball far from target (95px) - using aggressive centering
+2025-06-22 22:28:12,808 - robot_state_machine - INFO - Centering: forward (y_error: 95px, dist: 95px)
+2025-06-22 22:28:13,774 - robot_state_machine - INFO - Ball far from target (88px) - using aggressive centering
+2025-06-22 22:28:14,024 - robot_state_machine - INFO - Centering: turn right (x_error: 63px, dist: 88px)
+2025-06-22 22:28:14,956 - robot_state_machine - INFO - Ball far from target (81px) - using aggressive centering
+2025-06-22 22:28:15,207 - robot_state_machine - INFO - Centering: turn left (x_error: 45px, dist: 81px)
+2025-06-22 22:28:16,147 - robot_state_machine - INFO - Ball far from target (93px) - using aggressive centering
+2025-06-22 22:28:16,397 - robot_state_machine - INFO - Centering: turn right (x_error: 63px, dist: 93px)
+2025-06-22 22:28:17,356 - robot_state_machine - INFO - Ball far from target (88px) - using aggressive centering
+2025-06-22 22:28:17,607 - robot_state_machine - INFO - Centering: turn left (x_error: 54px, dist: 88px)
+2025-06-22 22:28:18,570 - robot_state_machine - INFO - Ball far from target (87px) - using aggressive centering
+2025-06-22 22:28:18,821 - robot_state_machine - INFO - Centering: turn right (x_error: 47px, dist: 87px)
+2025-06-22 22:28:19,768 - robot_state_machine - INFO - Ball far from target (100px) - using aggressive centering
+2025-06-22 22:28:20,019 - robot_state_machine - INFO - Centering: turn left (x_error: 70px, dist: 100px)
+2025-06-22 22:28:20,960 - robot_state_machine - INFO - Ball far from target (85px) - using aggressive centering
+2025-06-22 22:28:21,210 - robot_state_machine - INFO - Centering: turn right (x_error: 37px, dist: 85px)
+2025-06-22 22:28:22,151 - robot_state_machine - INFO - Ball far from target (113px) - using aggressive centering
+2025-06-22 22:28:22,401 - robot_state_machine - INFO - Centering: turn left (x_error: 85px, dist: 113px)
+2025-06-22 22:28:23,331 - robot_state_machine - WARNING - HARD centering timeout (10.9s) - returning to search
+2025-06-22 22:28:24,286 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.58)
+2025-06-22 22:28:25,192 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:28:25,192 - robot_state_machine - INFO - Ball far from target (85px) - using aggressive centering
+2025-06-22 22:28:25,442 - robot_state_machine - INFO - Centering: turn right (x_error: 27px, dist: 85px)
+2025-06-22 22:28:26,370 - robot_state_machine - INFO - Ball far from target (119px) - using aggressive centering
+2025-06-22 22:28:26,620 - robot_state_machine - INFO - Centering: turn left (x_error: 91px, dist: 119px)
+2025-06-22 22:28:27,545 - robot_state_machine - INFO - Ball far from target (84px) - using aggressive centering
+2025-06-22 22:28:27,946 - robot_state_machine - INFO - Centering: forward (y_error: 82px, dist: 84px)
+2025-06-22 22:28:28,907 - robot_state_machine - INFO - Ball moderately close (55px) - using balanced centering
+2025-06-22 22:28:29,108 - robot_state_machine - INFO - Centering: turn right (x_error: 38px, dist: 55px)
+2025-06-22 22:28:30,064 - robot_state_machine - INFO - Ball moderately close (49px) - using balanced centering
+2025-06-22 22:28:30,265 - robot_state_machine - INFO - Centering: turn left (x_error: 27px, dist: 49px)
+2025-06-22 22:28:31,218 - robot_state_machine - INFO - Ball moderately close (57px) - using balanced centering
+2025-06-22 22:28:31,418 - robot_state_machine - INFO - Centering: turn right (x_error: 37px, dist: 57px)
+2025-06-22 22:28:32,368 - robot_state_machine - INFO - Ball moderately close (56px) - using balanced centering
+2025-06-22 22:28:32,568 - robot_state_machine - INFO - Centering: turn left (x_error: 31px, dist: 56px)
+2025-06-22 22:28:33,534 - robot_state_machine - INFO - Ball moderately close (51px) - using balanced centering
+2025-06-22 22:28:33,734 - robot_state_machine - INFO - Centering: turn right (x_error: 26px, dist: 51px)
+2025-06-22 22:28:34,730 - robot_state_machine - INFO - Ball moderately close (59px) - using balanced centering
+2025-06-22 22:28:34,930 - robot_state_machine - INFO - Centering: turn left (x_error: 36px, dist: 59px)
+2025-06-22 22:28:35,914 - robot_state_machine - WARNING - HARD centering timeout (10.7s) - returning to search
+2025-06-22 22:28:36,846 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.60)
+2025-06-22 22:28:37,763 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:28:37,764 - robot_state_machine - INFO - Ball moderately close (50px) - using balanced centering
+2025-06-22 22:28:37,964 - robot_state_machine - INFO - Centering: turn right (x_error: 19px, dist: 50px)
+2025-06-22 22:28:38,925 - robot_state_machine - INFO - Ball moderately close (63px) - using balanced centering
+2025-06-22 22:28:39,125 - robot_state_machine - INFO - Centering: turn left (x_error: 39px, dist: 63px)
+2025-06-22 22:28:40,076 - robot_state_machine - INFO - Ball moderately close (47px) - using balanced centering
+2025-06-22 22:28:40,477 - robot_state_machine - INFO - Centering: forward (y_error: 45px, dist: 47px)
+2025-06-22 22:28:41,446 - robot_state_machine - INFO - Ball far from target (93px) - using aggressive centering
+2025-06-22 22:28:41,697 - robot_state_machine - INFO - Centering: turn right (x_error: 93px, dist: 93px)
+2025-06-22 22:28:42,635 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-22 22:28:43,653 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-22 22:28:44,663 - robot_state_machine - INFO - White ball STABLE in target zone! (took 6.9s, 4 attempts)
+2025-06-22 22:28:45,578 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.60)
+2025-06-22 22:28:45,578 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-22 22:28:45,578 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-22 22:28:45,578 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-22 22:28:45,578 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-22 22:28:45,578 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-22 22:28:45,578 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-22 22:28:46,188 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-22 22:28:47,338 - ball_collection - INFO - Step 3: SS collect position
+2025-06-22 22:28:47,338 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (20°)
+2025-06-22 22:28:48,098 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure)
+2025-06-22 22:28:48,099 - servo_controller - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-22 22:28:49,314 - ball_collection - INFO - Step 5: Returning SS to driving position
+2025-06-22 22:28:49,314 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:28:50,281 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-22 22:28:50,281 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-22 22:28:50,281 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-22 22:28:50,281 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-22 22:28:50,281 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-22 22:28:51,276 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-22 22:28:52,252 - robot_state_machine - INFO - 🎯 Found delivery zone at (191, 123), centering on it
+2025-06-22 22:28:53,533 - robot_state_machine - INFO - 🎯 Centering delivery zone: turn left
+2025-06-22 22:28:54,609 - robot_state_machine - INFO - ✅ Delivery zone centered - starting release
+2025-06-22 22:28:55,708 - robot_state_machine - INFO - 📦 STARTING BALL RELEASE SEQUENCE
+2025-06-22 22:28:55,709 - servo_controller - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-22 22:28:56,825 - servo_controller - INFO - 🔓 Moving servo SF to OPEN position (70°)
+2025-06-22 22:28:57,738 - robot_state_machine - INFO - 🔓 SF door opened for 5.0 seconds
+2025-06-22 22:29:03,379 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:29:04,316 - robot_state_machine - INFO - 🔒 SF door closed - delivery complete
+2025-06-22 22:29:04,316 - robot_state_machine - INFO - ✅ Released 1 balls
+2025-06-22 22:29:08,272 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:29:09,041 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:29:09,044 - robot_state_machine - INFO - 🔄 POST-DELIVERY COMPLETE: Restarting collection cycle
+2025-06-22 22:29:16,238 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.59)
+2025-06-22 22:29:17,175 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:29:17,176 - robot_state_machine - INFO - Ball far from target (81px) - using aggressive centering
+2025-06-22 22:29:17,426 - robot_state_machine - INFO - Centering: turn left (x_error: 63px, dist: 81px)
+2025-06-22 22:29:18,349 - robot_state_machine - INFO - Ball moderately close (64px) - using balanced centering
+2025-06-22 22:29:18,550 - robot_state_machine - INFO - Centering: turn right (x_error: 38px, dist: 64px)
+2025-06-22 22:29:19,496 - robot_state_machine - INFO - Ball moderately close (61px) - using balanced centering
+2025-06-22 22:29:19,697 - robot_state_machine - INFO - Centering: turn left (x_error: 30px, dist: 61px)
+2025-06-22 22:29:20,638 - robot_state_machine - INFO - Ball moderately close (72px) - using balanced centering
+2025-06-22 22:29:20,839 - robot_state_machine - INFO - Centering: turn right (x_error: 42px, dist: 72px)
+2025-06-22 22:29:21,841 - robot_state_machine - INFO - Ball moderately close (65px) - using balanced centering
+2025-06-22 22:29:22,042 - robot_state_machine - INFO - Centering: turn left (x_error: 31px, dist: 65px)
+2025-06-22 22:29:23,011 - robot_state_machine - INFO - Ball moderately close (72px) - using balanced centering
+2025-06-22 22:29:23,212 - robot_state_machine - INFO - Centering: turn right (x_error: 38px, dist: 72px)
+2025-06-22 22:29:24,174 - robot_state_machine - INFO - Ball moderately close (71px) - using balanced centering
+2025-06-22 22:29:24,374 - robot_state_machine - INFO - Centering: turn left (x_error: 39px, dist: 71px)
+2025-06-22 22:29:25,326 - robot_state_machine - INFO - Ball moderately close (69px) - using balanced centering
+2025-06-22 22:29:25,526 - robot_state_machine - INFO - Centering: turn right (x_error: 30px, dist: 69px)
+2025-06-22 22:29:26,486 - robot_state_machine - INFO - Ball moderately close (77px) - using balanced centering
+2025-06-22 22:29:26,687 - robot_state_machine - INFO - Centering: turn left (x_error: 45px, dist: 77px)
+2025-06-22 22:29:27,655 - robot_state_machine - WARNING - HARD centering timeout (10.5s) - returning to search
+2025-06-22 22:29:28,622 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.57)
+2025-06-22 22:29:29,550 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:29:29,550 - robot_state_machine - INFO - Ball moderately close (68px) - using balanced centering
+2025-06-22 22:29:29,750 - robot_state_machine - INFO - Centering: turn right (x_error: 25px, dist: 68px)
+2025-06-22 22:29:30,702 - robot_state_machine - INFO - Ball moderately close (79px) - using balanced centering
+2025-06-22 22:29:30,903 - robot_state_machine - INFO - Centering: turn left (x_error: 47px, dist: 79px)
+2025-06-22 22:29:31,869 - robot_state_machine - INFO - Ball moderately close (69px) - using balanced centering
+2025-06-22 22:29:32,069 - robot_state_machine - INFO - Centering: turn right (x_error: 23px, dist: 69px)
+2025-06-22 22:29:33,047 - robot_state_machine - INFO - Ball moderately close (79px) - using balanced centering
+2025-06-22 22:29:33,248 - robot_state_machine - INFO - Centering: turn left (x_error: 52px, dist: 79px)
+2025-06-22 22:29:34,208 - robot_state_machine - INFO - Ball moderately close (68px) - using balanced centering
+2025-06-22 22:29:34,608 - robot_state_machine - INFO - Centering: forward (y_error: 67px, dist: 68px)
+2025-06-22 22:29:35,580 - robot_state_machine - INFO - Ball moderately close (47px) - using balanced centering
+2025-06-22 22:29:35,780 - robot_state_machine - INFO - Centering: turn right (x_error: 39px, dist: 47px)
+2025-06-22 22:29:36,733 - robot_state_machine - INFO - Ball moderately close (42px) - using balanced centering
+2025-06-22 22:29:36,933 - robot_state_machine - INFO - Centering: turn left (x_error: 29px, dist: 42px)
+2025-06-22 22:29:37,889 - robot_state_machine - INFO - Ball moderately close (49px) - using balanced centering
+2025-06-22 22:29:38,090 - robot_state_machine - INFO - Centering: turn right (x_error: 37px, dist: 49px)
+2025-06-22 22:29:39,058 - robot_state_machine - INFO - Ball moderately close (51px) - using balanced centering
+2025-06-22 22:29:39,259 - robot_state_machine - INFO - Centering: turn left (x_error: 37px, dist: 51px)
+2025-06-22 22:29:40,208 - robot_state_machine - WARNING - HARD centering timeout (10.7s) - returning to search
+2025-06-22 22:29:41,129 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.62)
+2025-06-22 22:29:42,039 - robot_state_machine - INFO - Starting centering session
+2025-06-22 22:29:42,039 - robot_state_machine - INFO - Ball moderately close (44px) - using balanced centering
+2025-06-22 22:29:42,240 - robot_state_machine - INFO - Centering: turn right (x_error: 24px, dist: 44px)
+2025-06-22 22:29:43,206 - robot_state_machine - INFO - Ball moderately close (60px) - using balanced centering
+2025-06-22 22:29:43,406 - robot_state_machine - INFO - Centering: turn left (x_error: 46px, dist: 60px)
+2025-06-22 22:29:44,379 - robot_state_machine - INFO - Ball moderately close (43px) - using balanced centering
+2025-06-22 22:29:44,780 - robot_state_machine - INFO - Centering: forward (y_error: 40px, dist: 43px)
+2025-06-22 22:29:45,739 - robot_state_machine - INFO - Ball moderately close (48px) - using balanced centering
+2025-06-22 22:29:45,939 - robot_state_machine - INFO - Centering: turn right (x_error: 47px, dist: 48px)
+2025-06-22 22:29:46,903 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-22 22:29:47,899 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-22 22:29:48,916 - robot_state_machine - INFO - White ball STABLE in target zone! (took 6.9s, 4 attempts)
+2025-06-22 22:29:49,842 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.45)
+2025-06-22 22:29:49,842 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-22 22:29:49,842 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-22 22:29:49,842 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> driving
+2025-06-22 22:29:49,842 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-22 22:29:49,843 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-22 22:29:49,843 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-22 22:29:50,452 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-22 22:29:51,602 - ball_collection - INFO - Step 3: SS collect position
+2025-06-22 22:29:51,602 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (20°)
+2025-06-22 22:29:52,362 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure)
+2025-06-22 22:29:52,362 - servo_controller - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-22 22:29:53,577 - ball_collection - INFO - Step 5: Returning SS to driving position
+2025-06-22 22:29:53,577 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:29:54,544 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-22 22:29:54,544 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-22 22:29:54,544 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-22 22:29:54,544 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-22 22:29:54,545 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-22 22:29:55,561 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-22 22:29:56,525 - robot_state_machine - INFO - 🔍 Searching for green delivery zones...
+2025-06-22 22:29:58,457 - robot_state_machine - INFO - 🔍 Searching for green delivery zones...
+2025-06-22 22:30:00,405 - robot_state_machine - INFO - 🔍 Searching for green delivery zones...
+2025-06-22 22:30:02,390 - robot_state_machine - INFO - 🔍 Searching for green delivery zones...
+2025-06-22 22:30:04,317 - robot_state_machine - INFO - 🔍 Searching for green delivery zones...
+2025-06-22 22:30:06,320 - robot_state_machine - INFO - 🎯 Found delivery zone at (410, 137), centering on it
+2025-06-22 22:30:07,618 - robot_state_machine - INFO - 🎯 Centering delivery zone: turn right
+2025-06-22 22:30:08,688 - robot_state_machine - INFO - ✅ Delivery zone centered - starting release
+2025-06-22 22:30:09,752 - robot_state_machine - INFO - 📦 STARTING BALL RELEASE SEQUENCE
+2025-06-22 22:30:09,752 - servo_controller - INFO - 📦 Moving servo SS to STORE position (110°)
+2025-06-22 22:30:10,867 - servo_controller - INFO - 🔓 Moving servo SF to OPEN position (70°)
+2025-06-22 22:30:11,779 - robot_state_machine - INFO - 🔓 SF door opened for 5.0 seconds
+2025-06-22 22:30:17,422 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:30:18,357 - robot_state_machine - INFO - 🔒 SF door closed - delivery complete
+2025-06-22 22:30:18,357 - robot_state_machine - INFO - ✅ Released 1 balls
+2025-06-22 22:30:22,263 - competition_manager - INFO - ============================================================
+2025-06-22 22:30:22,263 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-22 22:30:22,263 - competition_manager - INFO - ============================================================
+2025-06-22 22:30:22,263 - competition_manager - INFO - Total time: 131.6 seconds
+2025-06-22 22:30:22,263 - competition_manager - INFO - White balls collected: 0
+2025-06-22 22:30:22,263 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-22 22:30:22,263 - competition_manager - INFO - Final state: post_delivery_turn
+2025-06-22 22:30:22,263 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-22 22:30:22,263 - competition_manager - INFO - Arena detection: Fallback
+2025-06-22 22:30:22,263 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-22 22:30:22,263 - competition_manager - INFO - ============================================================
+2025-06-22 22:30:22,263 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:30:22,263 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:30:23,127 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:30:23,431 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:30:23,431 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 22:30:23,431 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-22 22:30:23,431 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 22:30:23,431 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:30:23,431 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:30:23,535 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:30:23,839 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:30:23,839 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-22 22:30:23,840 - vision - INFO - Enhanced vision system (with delivery zones) cleanup completed
+2025-06-22 22:30:23,840 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-22 22:30:23,840 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-22 22:30:23,840 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-22 22:30:23,840 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-22 22:30:23,841 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-22 22:30:23,841 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-22 22:30:23,841 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-22 22:30:23,841 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-22 22:30:23,945 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-22 22:30:24,248 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-22 22:30:24,249 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-22 22:30:24,249 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-22 22:30:24,249 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-22 22:30:24,249 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
