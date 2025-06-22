@@ -153,4 +153,4 @@ DELIVERY_ZONE_HSV_LOWER = np.array([40, 50, 50])   # Green detection
 DELIVERY_ZONE_HSV_UPPER = np.array([80, 255, 255])
 DELIVERY_ZONE_MIN_AREA = 500    # Minimum area for delivery zone
 DELIVERY_ZONE_MAX_AREA = 50000  # Maximum area for delivery zone
-DELIVERY_CENTERING_TOLERANCE = 30  # Pixels tolerance for centering on delivery zone
+DELIVERY_CENTERING_TOLERANCE = 50  # Pixels tolerance for centering on delivery zone (increased)

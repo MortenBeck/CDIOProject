@@ -201,8 +201,8 @@ class RobotStateMachine:
         if not hasattr(self, '_delivery_release_started'):
             self.logger.info("📦 STARTING BALL RELEASE SEQUENCE")
             
-            # Set SS to collect position and open SF
-            self.hardware.servo_ss_to_collect()
+            # Set SS to STORE position and open SF
+            self.hardware.servo_ss_to_store()
             time.sleep(0.3)
             self.hardware.servo_sf_to_open()
             
