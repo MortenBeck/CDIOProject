@@ -34,6 +34,11 @@ class TriangularDeliveryVisionSystem:
         self.frame_center_x = config.CAMERA_WIDTH // 2
         self.frame_center_y = config.CAMERA_HEIGHT // 2
         
+        # IMPORTANT: Robot position should be at bottom center of frame, not center
+        # This is where the robot actually is relative to the camera view
+        self.robot_position_x = config.CAMERA_WIDTH // 2
+        self.robot_position_y = int(config.CAMERA_HEIGHT * 0.9)  # 90% down from top
+        
         # Green detection parameters for triangles
         self.green_lower = np.array([35, 40, 40])  # Slightly broader green range
         self.green_upper = np.array([85, 255, 255])
@@ -67,7 +72,8 @@ class TriangularDeliveryVisionSystem:
         # Find contours
         contours, _ = cv2.findContours(green_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        robot_pos = np.array([self.frame_center_x, self.frame_center_y])
+        # Use actual robot position (bottom center of frame)
+        robot_pos = np.array([self.robot_position_x, self.robot_position_y])
         
         for contour in contours:
             area = cv2.contourArea(contour)
@@ -130,18 +136,45 @@ class TriangularDeliveryVisionSystem:
         if len(hull_points) < 3:
             return None
         
-        # Find the point closest to the robot (triangle tip)
-        distances_to_robot = [np.linalg.norm(point - robot_pos) for point in hull_points]
-        tip_idx = np.argmin(distances_to_robot)
-        tip_point = tuple(hull_points[tip_idx].astype(int))  # Convert to int
-        distance_to_tip = distances_to_robot[tip_idx]
+        # IMPROVED TIP DETECTION: Find point closest to robot AND most "downward pointing"
+        # The tip should be both close to robot and pointing toward the bottom of the image
         
-        # Find the base (line segment farthest from robot)
-        # This is the line formed by the two points farthest from the tip
+        # First, find points that are in the bottom half of the triangle
+        triangle_center_y = np.mean(hull_points[:, 1])
+        bottom_candidates = []
+        
+        for i, point in enumerate(hull_points):
+            distance_to_robot = np.linalg.norm(point - robot_pos)
+            # Prefer points that are lower (higher Y value) and closer to robot
+            y_score = point[1] - triangle_center_y  # Positive for points below center
+            robot_distance_score = 1.0 / (distance_to_robot + 1)  # Higher for closer points
+            
+            # Combined score: prefer points that are both low and close to robot
+            combined_score = y_score * 0.7 + robot_distance_score * 100  # Weight robot distance more
+            
+            bottom_candidates.append({
+                'index': i,
+                'point': point,
+                'distance': distance_to_robot,
+                'y_position': point[1],
+                'score': combined_score
+            })
+        
+        # Sort by combined score (highest = best tip candidate)
+        bottom_candidates.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Take the best candidate as the tip
+        tip_candidate = bottom_candidates[0]
+        tip_point = tuple(tip_candidate['point'].astype(int))
+        distance_to_tip = tip_candidate['distance']
+        tip_idx = tip_candidate['index']
+        
+        # Find the base (points farthest from the tip)
         other_indices = [i for i in range(len(hull_points)) if i != tip_idx]
         
         if len(other_indices) < 2:
-            # Try to use the two points farthest from the robot
+            # Fallback: use two points farthest from robot
+            distances_to_robot = [np.linalg.norm(point - robot_pos) for point in hull_points]
             far_distances = [(i, dist) for i, dist in enumerate(distances_to_robot) if i != tip_idx]
             far_distances.sort(key=lambda x: x[1], reverse=True)
             
@@ -151,24 +184,23 @@ class TriangularDeliveryVisionSystem:
             else:
                 return None
         else:
-            # Use the two points that are not the tip
+            # Use the remaining points to find the base edge
             other_points = [hull_points[i] for i in other_indices]
             
             if len(other_points) == 2:
                 base_point1, base_point2 = other_points[0].astype(int), other_points[1].astype(int)
             else:
-                # Find the two points that form the longest edge (likely the base)
-                max_dist = 0
-                best_pair = None
-                for i in range(len(other_points)):
-                    for j in range(i+1, len(other_points)):
-                        dist = np.linalg.norm(other_points[i] - other_points[j])
-                        if dist > max_dist:
-                            max_dist = dist
-                            best_pair = (other_points[i].astype(int), other_points[j].astype(int))
+                # Find the two points that are farthest from the tip (should be base points)
+                tip_distances = []
+                for i, point in enumerate(other_points):
+                    dist_to_tip = np.linalg.norm(point - tip_candidate['point'])
+                    tip_distances.append((i, dist_to_tip, point))
                 
-                if best_pair is not None:
-                    base_point1, base_point2 = best_pair
+                tip_distances.sort(key=lambda x: x[1], reverse=True)
+                
+                if len(tip_distances) >= 2:
+                    base_point1 = tip_distances[0][2].astype(int)
+                    base_point2 = tip_distances[1][2].astype(int)
                 else:
                     return None
         
@@ -228,7 +260,7 @@ class TriangularDeliveryVisionSystem:
             return self._fallback_positioning(triangle)
         
         try:
-            robot_pos = np.array([self.frame_center_x, self.frame_center_y])
+            robot_pos = np.array([self.robot_position_x, self.robot_position_y])  # Use actual robot position
             tip_pos = np.array(triangle.triangle_tip)
             approach_vector = triangle.approach_direction
             
@@ -294,8 +326,8 @@ class TriangularDeliveryVisionSystem:
     
     def _fallback_positioning(self, triangle: GreenTriangle) -> Optional[str]:
         """Fallback positioning if triangle analysis fails"""
-        robot_x = self.frame_center_x
-        robot_y = self.frame_center_y
+        robot_x = self.robot_position_x  # Use actual robot position
+        robot_y = self.robot_position_y
         target_x, target_y = triangle.center
         
         x_error = target_x - robot_x
