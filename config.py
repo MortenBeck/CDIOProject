@@ -6,7 +6,7 @@ BALL_COUNT = 11
 VIP_BALL_COLOR = "orange"
 
 # === COLLECTION AND DELIVERY CYCLE ===
-BALLS_BEFORE_DELIVERY = 3  # Number of balls to collect before moving to delivery phase
+BALLS_BEFORE_DELIVERY = 1  # Number of balls to collect before moving to delivery phase
 POST_DELIVERY_TURN_DURATION = 2.0  # Seconds to turn right after delivery
 
 # === SCORING ===

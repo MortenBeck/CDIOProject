@@ -326,7 +326,7 @@ class RobotStateMachine:
         self.state = RobotState.CENTERING_BALL
 
     def handle_collecting_ball(self):
-        """Handle ball collection with PROPER sequence"""
+        """Handle ball collection using the proper collection system"""
         current_target = self.vision.current_target
         
         if current_target:
@@ -335,29 +335,12 @@ class RobotStateMachine:
         else:
             self.logger.info("Starting collection: white ball")
         
-        # Get the fixed drive time from vision system
-        drive_time = self.vision.get_drive_time_to_collection()
-        self.logger.info(f"Using collection sequence: servo up -> drive {drive_time:.2f}s -> servo down")
-        
-        # STEP 1: PREPARE SERVOS FOR COLLECTION (SERVO UP)
-        self.logger.info("Step 1: Preparing servos for collection (UP)")
-        success = self._prepare_servos_for_collection()
-        if not success:
-            self.logger.warning("Failed to prepare servos - aborting collection")
-            self.state = RobotState.SEARCHING
-            return
-        
-        # STEP 2: DRIVE FORWARD TO BALL
-        self.logger.info("Step 2: Driving forward to ball")
-        self.hardware.move_forward(duration=drive_time, speed=config.COLLECTION_SPEED)
-        time.sleep(0.1)
-        
-        # STEP 3: COMPLETE COLLECTION (SERVO DOWN/GRAB)
-        self.logger.info("Step 3: Completing collection (DOWN)")
+        # Use the proper collection system instead of manual servo control
         ball_count_before = self.hardware.get_ball_count()
         self.logger.info(f"Ball count before collection: {ball_count_before}")
         
-        success = self._complete_servo_collection()
+        # This method properly handles ball counting
+        success = self.hardware.enhanced_collection_sequence()
         
         ball_count_after = self.hardware.get_ball_count()
         self.logger.info(f"Ball count after collection: {ball_count_after}")
@@ -367,7 +350,7 @@ class RobotStateMachine:
         else:
             self.logger.warning(f"❌ White ball collection failed")
         
-        # Check if we should trigger delivery
+        # Check delivery trigger
         current_ball_count = self.hardware.get_ball_count()
         delivery_target = config.BALLS_BEFORE_DELIVERY
         self.logger.info(f"Checking delivery trigger: {current_ball_count} >= {delivery_target}?")
@@ -430,63 +413,6 @@ class RobotStateMachine:
         
         self.search_pattern_index += 1
         time.sleep(0.2)
-
-    def _prepare_servos_for_collection(self):
-        """Prepare servos for collection - put them in position to catch ball"""
-        try:
-            if config.DEBUG_COLLECTION:
-                self.logger.info("🚀 Preparing servos for collection...")
-            
-            self.hardware.servo_sf_to_ready()
-            time.sleep(0.2)
-            self.hardware.servo_ss_to_pre_collect()
-            time.sleep(0.2)
-            
-            if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Servos prepared for collection")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to prepare servos for collection: {e}")
-            self.hardware.servo_ss_to_driving()
-            self.hardware.servo_sf_to_ready()
-            return False
-
-    def _complete_servo_collection(self):
-        """Complete the servo collection sequence after driving"""
-        try:
-            if config.DEBUG_COLLECTION:
-                self.logger.info("🤏 Completing servo collection sequence...")
-            
-            self.hardware.servo_ss_to_collect()
-            time.sleep(0.15)
-            self.hardware.servo_sf_to_catch()
-            time.sleep(0.3)
-            
-            self.hardware.servo_ss_to_store()
-            time.sleep(0.3)
-            
-            self.hardware.servo_ss_to_driving()
-            time.sleep(0.1)
-            self.hardware.servo_sf_to_ready()
-            time.sleep(0.2)
-            
-            # Record collection
-            self.hardware.collected_balls.append(time.time())
-            
-            if config.DEBUG_COLLECTION:
-                ss_state = self.hardware.get_servo_ss_state()
-                self.logger.info(f"✅ Collection sequence complete! SS state: {ss_state.upper()}")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Collection sequence failed: {e}")
-            self.hardware.stop_motors()
-            self.hardware.servo_ss_to_driving()
-            self.hardware.servo_sf_to_ready()
-            return False
 
     def _reset_centering_state(self):
         """Reset centering state tracking"""
