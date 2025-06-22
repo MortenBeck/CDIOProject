@@ -7,7 +7,7 @@ import config
 from robot_state_machine import RobotStateMachine, RobotState
 
 class CompetitionManager:
-    """Manages the competition loop, timing, and display"""
+    """Manages the competition loop, timing, and display with delivery cycle"""
     
     def __init__(self, hardware, vision, use_dashboard=True):
         self.logger = logging.getLogger(__name__)
@@ -61,8 +61,9 @@ class CompetitionManager:
         self.competition_active = True
         self.state_machine.state = RobotState.SEARCHING
         
-        self.logger.info("COMPETITION STARTED - WHITE BALLS ONLY!")
+        self.logger.info("COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!")
         self.logger.info(f"Time limit: {config.COMPETITION_TIME} seconds")
+        self.logger.info(f"Delivery trigger: {config.BALLS_BEFORE_DELIVERY} balls")
         self.logger.info("Using enhanced collection: Ball centering (X+Y) + Enhanced sequence")
         
         try:
@@ -72,7 +73,7 @@ class CompetitionManager:
             self.emergency_stop()
 
     def main_loop(self):
-        """Main competition control loop with enhanced collection - WHITE BALLS ONLY"""
+        """Main competition control loop with delivery cycle - WHITE BALLS ONLY"""
         while self.competition_active and not self.is_time_up():
             try:
                 frame_start = time.time()
@@ -119,6 +120,8 @@ class CompetitionManager:
                 # Adaptive sleep based on detection results and state
                 if self.state_machine.state == RobotState.CENTERING_BALL:
                     time.sleep(0.03)  # Faster when centering
+                elif self.state_machine.state in [RobotState.DELIVERY_MODE, RobotState.POST_DELIVERY_TURN]:
+                    time.sleep(0.1)   # Normal when in delivery cycle
                 elif balls and len(balls) > 0:
                     time.sleep(0.05)  # Faster when balls detected
                 else:
@@ -139,12 +142,12 @@ class CompetitionManager:
                 dashboard_frame = self.dashboard.create_dashboard(
                     debug_frame, self.state_machine.state, self.vision, self.hardware, None
                 )
-                key = self.dashboard.show("GolfBot Dashboard - White Ball Collection")
+                key = self.dashboard.show("GolfBot Dashboard - White Ball Collection + Delivery")
             else:
                 # LEGACY OVERLAY MODE  
                 if debug_frame is not None and debug_frame.size > 0:
                     self._add_status_overlay(debug_frame)
-                    cv2.imshow('GolfBot Debug - White Ball Collection', debug_frame)
+                    cv2.imshow('GolfBot Debug - White Ball Collection + Delivery', debug_frame)
                     key = cv2.waitKey(1) & 0xFF
                 else:
                     key = -1
@@ -157,7 +160,7 @@ class CompetitionManager:
             return -1
 
     def _add_status_overlay(self, frame):
-        """LEGACY: Enhanced status overlay with new collection states - WHITE BALLS ONLY"""
+        """LEGACY: Enhanced status overlay with delivery cycle info - WHITE BALLS ONLY"""
         y = 30
         line_height = 25
         
@@ -168,22 +171,50 @@ class CompetitionManager:
         y += line_height
         
         # Current state with enhanced info
-        state_text = f"State: {self.state_machine.state.value}"
+        state_text = f"State: {self.state_machine.state.value.replace('_', ' ').title()}"
         if self.state_machine.state == RobotState.COLLECTING_BALL:
             state_text += " (Enhanced)"
         elif self.state_machine.state == RobotState.CENTERING_BALL and self.vision.current_target:
             x_dir, y_dir = self.vision.get_centering_adjustment(self.vision.current_target)
             centered = self.vision.is_ball_centered(self.vision.current_target)
             state_text += f" ({'✓' if centered else f'{x_dir[:1].upper()}{y_dir[:1].upper()}'})"
+        elif self.state_machine.state == RobotState.DELIVERY_MODE:
+            state_text += " (Releasing Balls)"
+        elif self.state_machine.state == RobotState.POST_DELIVERY_TURN:
+            state_text += " (Turning Right)"
         
         cv2.putText(frame, state_text, (10, y), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
         y += line_height
         
-        # Ball count
+        # Ball count with delivery progress
         ball_count = self.hardware.get_ball_count()
-        cv2.putText(frame, f"White Balls Collected: {ball_count}", (10, y), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+        delivery_target = config.BALLS_BEFORE_DELIVERY
+        progress_text = f"White Balls: {ball_count}/{delivery_target}"
+        
+        # Color based on progress and state
+        if self.state_machine.state in [RobotState.DELIVERY_MODE, RobotState.POST_DELIVERY_TURN]:
+            progress_color = (255, 0, 255)  # Magenta during delivery cycle
+            if self.state_machine.state == RobotState.DELIVERY_MODE:
+                progress_text += " (DELIVERING)"
+            else:
+                progress_text += " (TURNING)"
+        elif ball_count >= delivery_target:
+            progress_color = (0, 255, 0)  # Green when ready for delivery
+            progress_text += " (DELIVERY READY)"
+        elif ball_count >= delivery_target - 1:
+            progress_color = (0, 255, 255)  # Yellow when close
+        else:
+            progress_color = (255, 255, 255)  # White normally
+        
+        cv2.putText(frame, progress_text, (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, progress_color, 2)
+        y += line_height
+        
+        # Delivery cycle info
+        cycle_text = f"Delivery cycle: {config.BALLS_BEFORE_DELIVERY} balls -> Release -> Turn -> Repeat"
+        cv2.putText(frame, cycle_text, (10, y), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
         y += line_height
         
         # Vision status
@@ -227,10 +258,11 @@ class CompetitionManager:
         elapsed_time = time.time() - self.start_time if self.start_time else 0
         
         self.logger.info("=" * 60)
-        self.logger.info("COMPETITION ENDED - WHITE BALLS ONLY!")
+        self.logger.info("COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!")
         self.logger.info("=" * 60)
         self.logger.info(f"Total time: {elapsed_time:.1f} seconds")
         self.logger.info(f"White balls collected: {self.hardware.get_ball_count()}")
+        self.logger.info(f"Delivery target: {config.BALLS_BEFORE_DELIVERY} balls per cycle")
         self.logger.info(f"Final state: {self.state_machine.state.value}")
         self.logger.info(f"Collection system: Enhanced (X+Y Centering + Servo Sequence)")
         self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
@@ -241,10 +273,12 @@ class CompetitionManager:
         competition_result = {
             "elapsed_time": elapsed_time,
             "balls_collected": self.hardware.get_ball_count(),
+            "delivery_target": config.BALLS_BEFORE_DELIVERY,
             "final_state": self.state_machine.state.value,
             "vision_system": "hough_circles_hybrid_white_only",
             "collection_system": "enhanced_xy_centering_servo_sequence",
             "boundary_system": "modular_avoidance_system",
+            "delivery_system": "cycle_based_collection_delivery",
             "arena_detected": self.vision.arena_detected
         }
         

@@ -11,10 +11,12 @@ class RobotState(Enum):
     APPROACHING_BALL = "approaching_ball"
     COLLECTING_BALL = "collecting_ball"
     AVOIDING_BOUNDARY = "avoiding_boundary"
+    DELIVERY_MODE = "delivery_mode"
+    POST_DELIVERY_TURN = "post_delivery_turn"
     EMERGENCY_STOP = "emergency_stop"
 
 class RobotStateMachine:
-    """Handles all robot state transitions and behavior logic"""
+    """Handles all robot state transitions and behavior logic with delivery cycle"""
     
     def __init__(self, hardware, vision):
         self.logger = logging.getLogger(__name__)
@@ -37,13 +39,29 @@ class RobotStateMachine:
         self.centering_start_time = None
         self.centering_attempts = 0
         self.last_significant_progress = None
-    
-    def execute_state_machine(self, balls, near_boundary, nav_command):
-        """Execute state logic with ball detection priority - WHITE BALLS ONLY"""
         
-        # HIGH PRIORITY: Never interrupt active collection
-        if self.state == RobotState.COLLECTING_BALL:
-            self.handle_collecting_ball()
+        # Delivery cycle tracking
+        self.delivery_system = None
+        self.post_delivery_start_time = None
+        
+    def execute_state_machine(self, balls, near_boundary, nav_command):
+        """Execute state logic with ball detection priority and delivery cycle"""
+        
+        # HIGH PRIORITY: Never interrupt active collection or delivery operations
+        if self.state in [RobotState.COLLECTING_BALL, RobotState.DELIVERY_MODE, RobotState.POST_DELIVERY_TURN]:
+            if self.state == RobotState.COLLECTING_BALL:
+                self.handle_collecting_ball()
+            elif self.state == RobotState.DELIVERY_MODE:
+                self.handle_delivery_mode()
+            elif self.state == RobotState.POST_DELIVERY_TURN:
+                self.handle_post_delivery_turn()
+            return
+        
+        # CHECK FOR DELIVERY TRIGGER
+        ball_count = self.hardware.get_ball_count()
+        if ball_count >= config.BALLS_BEFORE_DELIVERY and self.state != RobotState.DELIVERY_MODE:
+            self.logger.info(f"🚚 DELIVERY TRIGGERED: {ball_count}/{config.BALLS_BEFORE_DELIVERY} balls collected")
+            self.state = RobotState.DELIVERY_MODE
             return
         
         # MEDIUM PRIORITY: Protect ball operations if we have good targets
@@ -89,6 +107,36 @@ class RobotStateMachine:
             
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
+
+    def handle_delivery_mode(self):
+        """Handle delivery mode - simple ball release and proceed to turn"""
+        if not hasattr(self, '_delivery_started'):
+            self.logger.info("🚚 STARTING DELIVERY MODE - Releasing balls")
+            released_count = self.hardware.release_balls()
+            self.logger.info(f"✅ Released {released_count} balls for delivery")
+            self._delivery_started = True
+            
+            # Small pause after ball release
+            time.sleep(1.0)
+            
+            # Move to post-delivery turn
+            self.state = RobotState.POST_DELIVERY_TURN
+            self.post_delivery_start_time = time.time()
+            del self._delivery_started  # Clean up flag
+    
+    def handle_post_delivery_turn(self):
+        """Handle post-delivery turn and restart collection cycle"""
+        if self.post_delivery_start_time is None:
+            self.post_delivery_start_time = time.time()
+            self.logger.info(f"🔄 POST-DELIVERY: Turning right for {config.POST_DELIVERY_TURN_DURATION}s")
+            self.hardware.turn_right(duration=config.POST_DELIVERY_TURN_DURATION, speed=0.5)
+        
+        elapsed = time.time() - self.post_delivery_start_time
+        if elapsed >= config.POST_DELIVERY_TURN_DURATION + 0.5:  # Add small buffer
+            self.logger.info("🔄 POST-DELIVERY COMPLETE: Restarting collection cycle")
+            self.state = RobotState.SEARCHING
+            self.post_delivery_start_time = None
+            self.search_pattern_index = 0  # Reset search pattern
 
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
@@ -306,16 +354,31 @@ class RobotStateMachine:
         
         # STEP 3: COMPLETE COLLECTION (SERVO DOWN/GRAB)
         self.logger.info("Step 3: Completing collection (DOWN)")
+        ball_count_before = self.hardware.get_ball_count()
+        self.logger.info(f"Ball count before collection: {ball_count_before}")
+        
         success = self._complete_servo_collection()
         
+        ball_count_after = self.hardware.get_ball_count()
+        self.logger.info(f"Ball count after collection: {ball_count_after}")
+        
         if success:
-            total_balls = self.hardware.get_ball_count()
-            self.logger.info(f"✅ White ball collected with proper sequence! Total: {total_balls}")
+            self.logger.info(f"✅ White ball collected! Total: {ball_count_after}/{config.BALLS_BEFORE_DELIVERY}")
         else:
             self.logger.warning(f"❌ White ball collection failed")
         
-        # Return to searching
-        self.state = RobotState.SEARCHING
+        # Check if we should trigger delivery
+        current_ball_count = self.hardware.get_ball_count()
+        delivery_target = config.BALLS_BEFORE_DELIVERY
+        self.logger.info(f"Checking delivery trigger: {current_ball_count} >= {delivery_target}?")
+        
+        if current_ball_count >= delivery_target:
+            self.logger.info(f"🚚 DELIVERY THRESHOLD REACHED: {current_ball_count}/{delivery_target}")
+            self.state = RobotState.DELIVERY_MODE
+        else:
+            # Continue searching for more balls
+            self.logger.info(f"Need more balls: {current_ball_count}/{delivery_target} - continuing search")
+            self.state = RobotState.SEARCHING
 
     def handle_avoiding_boundary(self, near_boundary):
         """Handle boundary avoidance with simplified approach"""

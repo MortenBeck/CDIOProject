@@ -5,7 +5,7 @@ from typing import List, Optional
 import config
 
 class GolfBotDashboard:
-    """Clean dashboard interface for GolfBot with organized data panels - WHITE BALLS ONLY"""
+    """Clean dashboard interface for GolfBot with delivery cycle tracking - WHITE BALLS ONLY"""
     
     def __init__(self, camera_width=640, camera_height=480):
         self.camera_width = camera_width
@@ -25,6 +25,7 @@ class GolfBotDashboard:
         self.success_color = (0, 255, 0)   # Green
         self.warning_color = (0, 165, 255) # Orange
         self.danger_color = (0, 0, 255)    # Red
+        self.delivery_color = (255, 0, 255) # Magenta for delivery
         
         # Font settings
         self.font = cv2.FONT_HERSHEY_SIMPLEX
@@ -43,7 +44,7 @@ class GolfBotDashboard:
                                 self.bg_color, dtype=np.uint8)
     
     def create_dashboard(self, camera_frame, robot_state, vision_system, hardware, telemetry=None):
-        """Create complete dashboard with camera and data panels - WHITE BALLS ONLY"""
+        """Create complete dashboard with camera and data panels + delivery cycle - WHITE BALLS ONLY"""
         
         # Create fresh dashboard
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
@@ -52,13 +53,14 @@ class GolfBotDashboard:
         # 1. Place clean camera preview (already processed by vision system)
         self._place_camera_preview(camera_frame)
         
-        # 2. Add top status bar
+        # 2. Add top status bar with delivery cycle
         self._add_top_status_bar(robot_state, hardware)
         
         # 3. Add right side panels
         self._add_vision_status_panel(vision_system)
         self._add_robot_status_panel(robot_state, hardware)
         self._add_detection_details_panel(vision_system)
+        self._add_delivery_cycle_panel(hardware, robot_state)
         self._add_controls_legend_panel()
         
         # 4. Add performance info if available
@@ -86,13 +88,13 @@ class GolfBotDashboard:
                          self.accent_color, 2)
     
     def _add_top_status_bar(self, robot_state, hardware):
-        """Add top status bar with critical info - WHITE BALLS ONLY"""
+        """Add top status bar with critical info + delivery cycle - WHITE BALLS ONLY"""
         # Background
         cv2.rectangle(self.dashboard, (0, 0), (self.dashboard_width, self.top_panel_height), 
                      self.panel_color, -1)
         
         # Title
-        cv2.putText(self.dashboard, "GolfBot White Ball Collection Dashboard", 
+        cv2.putText(self.dashboard, "GolfBot Collection + Delivery Cycle Dashboard", 
                    (10, 30), self.font, self.font_scale_large, self.accent_color, 2)
         
         # Time and state info
@@ -103,17 +105,29 @@ class GolfBotDashboard:
         cv2.putText(self.dashboard, time_text, (10, y_pos), 
                    self.font, self.font_scale_medium, self.text_color, 1)
         
-        # Current state
+        # Current state with delivery emphasis
         state_text = f"State: {robot_state.value.replace('_', ' ').title()}"
         state_color = self._get_state_color(robot_state)
         cv2.putText(self.dashboard, state_text, (200, y_pos), 
                    self.font, self.font_scale_medium, state_color, 1)
         
-        # White balls collected
+        # Ball count with delivery progress
         ball_count = hardware.get_ball_count() if hardware else 0
-        balls_text = f"White Balls: {ball_count}"
+        delivery_target = config.BALLS_BEFORE_DELIVERY
+        balls_text = f"Balls: {ball_count}/{delivery_target}"
+        
+        # Color based on delivery status
+        if robot_state.value in ['delivery_mode', 'post_delivery_turn']:
+            balls_color = self.delivery_color
+        elif ball_count >= delivery_target:
+            balls_color = self.success_color
+        elif ball_count >= delivery_target - 1:
+            balls_color = self.warning_color
+        else:
+            balls_color = self.text_color
+        
         cv2.putText(self.dashboard, balls_text, (400, y_pos), 
-                   self.font, self.font_scale_medium, self.success_color, 1)
+                   self.font, self.font_scale_medium, balls_color, 1)
         
         # Emergency stop indicator
         cv2.putText(self.dashboard, "Press 'Q' to quit", (self.dashboard_width - 150, y_pos), 
@@ -163,8 +177,6 @@ class GolfBotDashboard:
         else:
             cv2.putText(self.dashboard, "Target: SEARCHING", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
-    
-        # In dashboard.py, find this section in _add_robot_status_panel method and replace it:
 
     def _add_robot_status_panel(self, robot_state, hardware):
         """Add robot hardware status panel"""
@@ -270,10 +282,81 @@ class GolfBotDashboard:
         cv2.putText(self.dashboard, f"Walls: {wall_status} ({wall_count})", 
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, wall_color, 1)
     
-    def _add_controls_legend_panel(self):
-        """Add controls and legend panel - WHITE BALLS ONLY"""
+    def _add_delivery_cycle_panel(self, hardware, robot_state):
+        """Add delivery cycle progress panel"""
         panel_y = self.right_panel_y + 410
         panel_height = 100
+        
+        # Panel background
+        cv2.rectangle(self.dashboard, 
+                     (self.right_panel_x, panel_y), 
+                     (self.right_panel_x + self.panel_width, panel_y + panel_height), 
+                     self.panel_color, -1)
+        
+        # Panel title
+        cv2.putText(self.dashboard, "DELIVERY CYCLE", 
+                   (self.right_panel_x + 5, panel_y + 20), 
+                   self.font, self.font_scale_medium, self.accent_color, 1)
+        
+        y = panel_y + 40
+        line_height = 16
+        
+        # Progress bar
+        ball_count = hardware.get_ball_count() if hardware else 0
+        delivery_target = config.BALLS_BEFORE_DELIVERY
+        progress_ratio = min(1.0, ball_count / delivery_target)
+        
+        # Progress bar background
+        bar_x = self.right_panel_x + 5
+        bar_y = y
+        bar_width = self.panel_width - 10
+        bar_height = 12
+        
+        cv2.rectangle(self.dashboard, (bar_x, bar_y), (bar_x + bar_width, bar_y + bar_height), 
+                     (100, 100, 100), -1)
+        
+        # Progress bar fill
+        fill_width = int(bar_width * progress_ratio)
+        if robot_state.value in ['delivery_mode', 'post_delivery_turn']:
+            fill_color = self.delivery_color
+        elif ball_count >= delivery_target:
+            fill_color = self.success_color
+        else:
+            fill_color = self.warning_color
+        
+        if fill_width > 0:
+            cv2.rectangle(self.dashboard, (bar_x, bar_y), (bar_x + fill_width, bar_y + bar_height), 
+                         fill_color, -1)
+        
+        y += bar_height + 8
+        
+        # Progress text
+        cv2.putText(self.dashboard, f"Progress: {ball_count}/{delivery_target} balls", 
+                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+        y += line_height
+        
+        # Cycle status
+        if robot_state.value == 'delivery_mode':
+            status_text = "DELIVERING BALLS"
+            status_color = self.delivery_color
+        elif robot_state.value == 'post_delivery_turn':
+            status_text = "TURNING TO RESTART"
+            status_color = self.delivery_color
+        elif ball_count >= delivery_target:
+            status_text = "READY FOR DELIVERY"
+            status_color = self.success_color
+        else:
+            remaining = delivery_target - ball_count
+            status_text = f"Need {remaining} more balls"
+            status_color = self.text_color
+        
+        cv2.putText(self.dashboard, status_text, 
+                   (self.right_panel_x + 5, y), self.font, self.font_scale_small, status_color, 1)
+    
+    def _add_controls_legend_panel(self):
+        """Add controls and legend panel - WHITE BALLS ONLY"""
+        panel_y = self.right_panel_y + 520
+        panel_height = 80
         
         # Panel background
         cv2.rectangle(self.dashboard, 
@@ -287,15 +370,14 @@ class GolfBotDashboard:
                    self.font, self.font_scale_medium, self.accent_color, 1)
         
         y = panel_y + 40
-        line_height = 14
+        line_height = 12
         
         # Legend items (WHITE BALLS ONLY)
         legend_items = [
             ("Green Zone: Collection area", self.success_color),
-            ("Cyan Lines: Centering tolerance (X+Y)", self.accent_color),
-            ("Cyan Arrow: Target direction", self.accent_color),
+            ("Cyan Lines: Centering tolerance", self.accent_color),
             ("B: White ball", self.text_color),
-            ("Red Outline: Wall danger", self.danger_color),
+            ("Magenta: Delivery cycle", self.delivery_color),
         ]
         
         for item, color in legend_items:
@@ -305,7 +387,7 @@ class GolfBotDashboard:
     
     def _add_performance_panel(self, telemetry):
         """Add performance metrics panel"""
-        panel_y = self.right_panel_y + 520
+        panel_y = self.right_panel_y + 610
         panel_height = 60
         
         # Panel background
@@ -337,6 +419,8 @@ class GolfBotDashboard:
             'APPROACHING_BALL': self.success_color,
             'COLLECTING_BALL': self.success_color,
             'AVOIDING_BOUNDARY': self.danger_color,
+            'DELIVERY_MODE': self.delivery_color,
+            'POST_DELIVERY_TURN': self.delivery_color,
             'EMERGENCY_STOP': self.danger_color,
         }
         return state_colors.get(robot_state.value.upper(), self.text_color)
@@ -349,6 +433,8 @@ class GolfBotDashboard:
             'APPROACHING_BALL': "Moving toward target",
             'COLLECTING_BALL': "Enhanced collection sequence",
             'AVOIDING_BOUNDARY': "Avoiding walls",
+            'DELIVERY_MODE': "Releasing balls",
+            'POST_DELIVERY_TURN': "Turning to restart cycle",
             'EMERGENCY_STOP': "System stopped",
         }
         return state_details.get(robot_state.value.upper(), "Unknown")

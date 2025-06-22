@@ -5,6 +5,10 @@ COMPETITION_TIME = 8 * 60  # 8 minutes in seconds
 BALL_COUNT = 11
 VIP_BALL_COLOR = "orange"
 
+# === COLLECTION AND DELIVERY CYCLE ===
+BALLS_BEFORE_DELIVERY = 3  # Number of balls to collect before moving to delivery phase
+POST_DELIVERY_TURN_DURATION = 2.0  # Seconds to turn right after delivery
+
 # === SCORING ===
 GOAL_A_POINTS = 150  # Smaller goal
 GOAL_B_POINTS = 100  # Larger goal
@@ -93,7 +97,7 @@ BOUNDARY_DETECTION_THRESHOLD = 50  # Pixels from edge to consider boundary
 
 # === COLLECTION BEHAVIOR ===
 CENTERING_TOLERANCE = 25  # Pixels - more lenient X centering (was 15)
-CENTERING_DISTANCE_TOLERANCE = 5  # Pixels - more lenient Y centering (was 20)
+CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
 COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
 MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
 MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
@@ -111,7 +115,7 @@ SEARCH_PATTERN = [
 ]
 
 # === BALL COLLECTION ===
-COLLECTION_DISTANCE_THRESHOLD = 30  # Pixels - how close before attempting collection
+COLLECTION_DISTANCE_THRESHOLD = 20  # Pixels - how close before attempting collection
 BALL_LOST_TIMEOUT = 2.0  # Seconds before giving up on a ball
 MAX_COLLECTION_ATTEMPTS = 3
 
