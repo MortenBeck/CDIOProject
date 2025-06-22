@@ -52,11 +52,15 @@ class EnhancedDeliveryVisionSystem:
         self.min_green_area = 500
         self.max_green_area = 50000
         
-        # Wall detection parameters
-        self.red_lower1 = np.array([0, 150, 100])
-        self.red_upper1 = np.array([15, 255, 255])
-        self.red_lower2 = np.array([165, 150, 100])
+        # Wall detection parameters - BROADENED for better detection
+        self.red_lower1 = np.array([0, 80, 80])     # More permissive red detection
+        self.red_upper1 = np.array([20, 255, 255])
+        self.red_lower2 = np.array([160, 80, 80])   # More permissive red detection
         self.red_upper2 = np.array([180, 255, 255])
+        
+        # Also detect orange/brown walls that might appear reddish
+        self.orange_lower = np.array([5, 100, 100])
+        self.orange_upper = np.array([25, 255, 255])
         
         # Approach state tracking
         self.approach_phase = "detect"  # "detect", "position", "align", "approach"
@@ -64,7 +68,7 @@ class EnhancedDeliveryVisionSystem:
         self.positioning_complete = False
         
     def detect_wall_segments(self, frame) -> List[WallSegment]:
-        """Detect wall segments and their orientations around green targets"""
+        """Detect wall segments and their orientations around green targets - IMPROVED"""
         wall_segments = []
         
         if frame is None:
@@ -73,55 +77,95 @@ class EnhancedDeliveryVisionSystem:
         h, w = frame.shape[:2]
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         
-        # Create red wall mask
+        # Create red/orange wall mask with broader detection
         mask1 = cv2.inRange(hsv, self.red_lower1, self.red_upper1)
         mask2 = cv2.inRange(hsv, self.red_lower2, self.red_upper2)
-        red_mask = mask1 + mask2
+        mask3 = cv2.inRange(hsv, self.orange_lower, self.orange_upper)
+        red_mask = mask1 + mask2 + mask3
         
         # Clean up the mask
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
-        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         
-        # Find contours
-        contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # SIMPLIFIED WALL DETECTION - look for walls in specific regions
+        # Check top region for horizontal wall
+        top_region = red_mask[0:h//3, :]
+        if np.sum(top_region > 0) > (w * h//3) * 0.05:  # 5% threshold
+            # Found top wall
+            wall_segment = WallSegment(
+                direction='top',
+                start_point=(0, h//6),
+                end_point=(w, h//6),
+                center_point=(w//2, h//6),
+                length=w,
+                angle=0.0
+            )
+            wall_segments.append(wall_segment)
+            if config.DEBUG_VISION:
+                self.logger.info("Detected TOP wall")
         
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area > 1000:  # Minimum wall area
-                # Get bounding rectangle
-                x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                
-                # Determine wall direction based on position and shape
-                wall_direction = self._classify_wall_direction(x, y, w_rect, h_rect, w, h)
-                
-                if wall_direction:
-                    # Calculate wall center and angle
-                    center_x = x + w_rect // 2
-                    center_y = y + h_rect // 2
-                    
-                    if wall_direction in ['top', 'bottom']:
-                        # Horizontal wall
-                        start_point = (x, center_y)
-                        end_point = (x + w_rect, center_y)
-                        angle = 0.0  # Horizontal
-                        length = w_rect
-                    else:
-                        # Vertical wall
-                        start_point = (center_x, y)
-                        end_point = (center_x, y + h_rect)
-                        angle = 90.0  # Vertical
-                        length = h_rect
-                    
-                    wall_segment = WallSegment(
-                        direction=wall_direction,
-                        start_point=start_point,
-                        end_point=end_point,
-                        center_point=(center_x, center_y),
-                        length=length,
-                        angle=angle
-                    )
-                    wall_segments.append(wall_segment)
+        # Check bottom region for horizontal wall
+        bottom_region = red_mask[2*h//3:h, :]
+        if np.sum(bottom_region > 0) > (w * h//3) * 0.05:
+            # Found bottom wall
+            wall_segment = WallSegment(
+                direction='bottom',
+                start_point=(0, 5*h//6),
+                end_point=(w, 5*h//6),
+                center_point=(w//2, 5*h//6),
+                length=w,
+                angle=0.0
+            )
+            wall_segments.append(wall_segment)
+            if config.DEBUG_VISION:
+                self.logger.info("Detected BOTTOM wall")
+        
+        # Check left region for vertical wall
+        left_region = red_mask[:, 0:w//3]
+        if np.sum(left_region > 0) > (h * w//3) * 0.05:
+            # Found left wall
+            wall_segment = WallSegment(
+                direction='left',
+                start_point=(w//6, 0),
+                end_point=(w//6, h),
+                center_point=(w//6, h//2),
+                length=h,
+                angle=90.0
+            )
+            wall_segments.append(wall_segment)
+            if config.DEBUG_VISION:
+                self.logger.info("Detected LEFT wall")
+        
+        # Check right region for vertical wall
+        right_region = red_mask[:, 2*w//3:w]
+        if np.sum(right_region > 0) > (h * w//3) * 0.05:
+            # Found right wall
+            wall_segment = WallSegment(
+                direction='right',
+                start_point=(5*w//6, 0),
+                end_point=(5*w//6, h),
+                center_point=(5*w//6, h//2),
+                length=h,
+                angle=90.0
+            )
+            wall_segments.append(wall_segment)
+            if config.DEBUG_VISION:
+                self.logger.info("Detected RIGHT wall")
+        
+        # FALLBACK: If no walls detected but green target exists, assume it's on the top wall
+        if not wall_segments:
+            if config.DEBUG_VISION:
+                self.logger.warning("No walls detected - using fallback top wall assumption")
+            wall_segment = WallSegment(
+                direction='top',
+                start_point=(0, h//4),
+                end_point=(w, h//4),
+                center_point=(w//2, h//4),
+                length=w,
+                angle=0.0
+            )
+            wall_segments.append(wall_segment)
         
         return wall_segments
     
@@ -552,9 +596,35 @@ class EnhancedDeliverySystem:
                 time.sleep(0.5)
     
     def handle_detect_phase(self):
-        """Phase 1: Detect target and determine wall orientation"""
-        if not self.current_target or not self.current_target.wall_direction:
+        """Phase 1: Detect target and determine wall orientation - IMPROVED"""
+        if not self.current_target:
             return
+        
+        # If wall direction is not determined, try to infer it from target position
+        if not self.current_target.wall_direction:
+            # Infer wall direction based on green target position
+            target_x, target_y = self.current_target.center
+            frame_w, frame_h = config.CAMERA_WIDTH, config.CAMERA_HEIGHT
+            
+            # Simple position-based inference
+            if target_y < frame_h * 0.4:
+                self.current_target.wall_direction = 'top'
+                self.current_target.approach_angle = 270.0  # Approach upward
+            elif target_y > frame_h * 0.6:
+                self.current_target.wall_direction = 'bottom'
+                self.current_target.approach_angle = 90.0   # Approach downward
+            elif target_x < frame_w * 0.4:
+                self.current_target.wall_direction = 'left'
+                self.current_target.approach_angle = 0.0    # Approach rightward
+            elif target_x > frame_w * 0.6:
+                self.current_target.wall_direction = 'right'
+                self.current_target.approach_angle = 180.0  # Approach leftward
+            else:
+                # Default to top wall if in center
+                self.current_target.wall_direction = 'top'
+                self.current_target.approach_angle = 270.0
+            
+            self.logger.info(f"📍 Inferred target at {self.current_target.wall_direction} wall based on position")
         
         self.logger.info(f"📍 Target detected at {self.current_target.wall_direction} wall - moving to positioning")
         self.approach_phase = "position"
@@ -720,7 +790,7 @@ class EnhancedDeliverySystem:
         
         cv2.destroyAllWindows()
 
-def run_delivery_test():
+def run_enhanced_delivery_test():
     """Main entry point for enhanced delivery testing with perpendicular approach"""
     print("\n🚚 ENHANCED GOLFBOT DELIVERY SYSTEM TEST (Perpendicular Wall Approach)")
     print("="*80)
