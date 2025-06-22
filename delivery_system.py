@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 GolfBot Delivery System - Green Target Detection and Navigation
-Enhanced with oscillation prevention and proper function exports
+Enhanced with oscillation prevention, wall detection, and proper function exports
 """
 
 import cv2
@@ -11,6 +11,7 @@ import logging
 from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import config
+from boundary_avoidance import BoundaryAvoidanceSystem
 
 @dataclass
 class GreenTarget:
@@ -22,13 +23,16 @@ class GreenTarget:
     bbox: Tuple[int, int, int, int]  # x, y, width, height
 
 class DeliveryVisionSystem:
-    """Vision system specifically for green target detection with oscillation prevention"""
+    """Vision system specifically for green target detection with oscillation prevention and wall detection"""
     
     def __init__(self, vision_system):
         self.logger = logging.getLogger(__name__)
         self.vision = vision_system  # Reuse main vision system for camera
         self.frame_center_x = config.CAMERA_WIDTH // 2
         self.frame_center_y = config.CAMERA_HEIGHT // 2
+        
+        # Initialize boundary detection system
+        self.boundary_system = BoundaryAvoidanceSystem()
         
         # Green detection parameters
         self.green_lower = np.array([40, 50, 50])   # Lower green HSV
@@ -215,13 +219,24 @@ class DeliveryVisionSystem:
         
         return green_targets[:3]  # Return top 3 targets
     
+    def detect_walls(self, frame) -> bool:
+        """Detect wall boundaries that should be avoided"""
+        return self.boundary_system.detect_boundaries(frame)
+    
+    def get_wall_avoidance_command(self, frame) -> Optional[str]:
+        """Get wall avoidance command if walls are detected"""
+        return self.boundary_system.get_avoidance_command(frame)
+    
     def draw_green_detection(self, frame, targets: List[GreenTarget]) -> np.ndarray:
-        """Draw green target detection overlays with oscillation info"""
+        """Draw green target detection overlays with oscillation and wall info"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
+        
+        # === WALL DETECTION VISUALIZATION ===
+        result = self.boundary_system.draw_boundary_visualization(result)
         
         # Draw adaptive centering zone for primary target
         if targets:
@@ -295,18 +310,33 @@ class DeliveryVisionSystem:
         cv2.line(result, (self.frame_center_x, self.frame_center_y - 10), 
                 (self.frame_center_x, self.frame_center_y + 10), (255, 255, 255), 2)
         
-        # Status overlay with oscillation info
-        overlay_height = 100
+        # Status overlay with oscillation and wall info
+        overlay_height = 120  # Increased for wall info
         overlay = np.zeros((overlay_height, w, 3), dtype=np.uint8)
         result[0:overlay_height, :] = cv2.addWeighted(result[0:overlay_height, :], 0.6, overlay, 0.4, 0)
         
         # Status text
-        cv2.putText(result, "DELIVERY MODE - Green Target Detection", (10, 25), 
+        cv2.putText(result, "DELIVERY MODE - Green Target Detection + Wall Avoidance", (10, 25), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         
         target_count = len(targets)
         primary_target = targets[0] if targets else None
         
+        # Wall status
+        wall_status = self.boundary_system.get_status()
+        wall_danger = wall_status['walls_triggered'] > 0
+        wall_text = f"Walls: {wall_status['walls_detected']} detected"
+        if wall_danger:
+            wall_text += " - DANGER!"
+            wall_color = (0, 0, 255)
+        else:
+            wall_text += " - Safe"
+            wall_color = (0, 255, 0)
+        
+        cv2.putText(result, wall_text, (10, 55), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, wall_color, 1)
+        
+        # Target status
         if primary_target:
             centered = self.is_target_centered(primary_target)
             if centered:
@@ -322,19 +352,28 @@ class DeliveryVisionSystem:
             status = "SCANNING FOR GREEN TARGETS..."
             status_color = (255, 255, 255)
         
-        cv2.putText(result, f"Targets: {target_count} | Status: {status}", (10, 55), 
+        cv2.putText(result, f"Targets: {target_count} | Status: {status}", (10, 80), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, status_color, 1)
         
-        # Oscillation debug info
+        # Oscillation and wall debug info
+        debug_info = []
         if self.oscillation_detected or self.direction_change_count > 0:
-            debug_text = f"Dir Changes: {self.direction_change_count} | Oscillation: {'YES' if self.oscillation_detected else 'NO'}"
-            cv2.putText(result, debug_text, (10, 80), 
+            debug_info.append(f"Dir Changes: {self.direction_change_count}")
+            debug_info.append(f"Oscillation: {'YES' if self.oscillation_detected else 'NO'}")
+        
+        if wall_danger:
+            triggered_zones = wall_status.get('danger_zones', [])
+            debug_info.append(f"Wall zones: {', '.join(triggered_zones)}")
+        
+        if debug_info:
+            debug_text = " | ".join(debug_info)
+            cv2.putText(result, debug_text, (10, 105), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 165, 255), 1)
         
         return result
 
 class DeliverySystem:
-    """Enhanced delivery system with oscillation prevention"""
+    """Enhanced delivery system with oscillation prevention and wall avoidance"""
     
     def __init__(self, hardware, vision_system):
         self.logger = logging.getLogger(__name__)
@@ -417,10 +456,41 @@ class DeliverySystem:
         else:
             time.sleep(0.1)  # Normal pause
     
+    def handle_wall_avoidance(self, frame):
+        """Handle wall avoidance during delivery"""
+        avoidance_command = self.delivery_vision.get_wall_avoidance_command(frame)
+        
+        if avoidance_command:
+            self.logger.warning(f"⚠️ Wall detected - executing avoidance: {avoidance_command}")
+            
+            # Stop current movement
+            self.hardware.stop_motors()
+            time.sleep(0.1)
+            
+            # Execute avoidance maneuver
+            if avoidance_command == 'turn_right':
+                self.hardware.turn_right(duration=0.4, speed=0.5)
+            elif avoidance_command == 'turn_left':
+                self.hardware.turn_left(duration=0.4, speed=0.5)
+            elif avoidance_command == 'backup_and_turn':
+                self.hardware.move_backward(duration=0.3, speed=0.4)
+                time.sleep(0.1)
+                self.hardware.turn_right(duration=0.6, speed=0.5)
+            else:
+                # Default avoidance
+                self.hardware.move_backward(duration=0.3, speed=0.4)
+                time.sleep(0.1)
+                self.hardware.turn_right(duration=0.4, speed=0.5)
+            
+            time.sleep(0.2)
+            return True
+        
+        return False
+    
     def start_delivery_mode(self):
-        """Start delivery mode with oscillation prevention"""
-        self.logger.info("🚚 STARTING DELIVERY MODE - Green Target Detection (with Anti-Oscillation)")
-        self.logger.info("   Features: Adaptive tolerances, oscillation detection, movement damping")
+        """Start delivery mode with oscillation prevention and wall avoidance"""
+        self.logger.info("🚚 STARTING DELIVERY MODE - Green Target Detection")
+        self.logger.info("   Features: Adaptive tolerances, oscillation detection, wall avoidance")
         
         self.delivery_active = True
         self.start_time = time.time()
@@ -435,7 +505,7 @@ class DeliverySystem:
             self.stop_delivery()
     
     def delivery_main_loop(self):
-        """Main delivery loop with oscillation handling"""
+        """Main delivery loop with oscillation and wall handling"""
         search_direction = 1  # 1 for right, -1 for left
         frames_without_target = 0
         max_frames_without_target = 30
@@ -448,7 +518,17 @@ class DeliverySystem:
                     time.sleep(0.1)
                     continue
                 
-                # Detect green targets
+                # === PRIORITY 1: WALL AVOIDANCE ===
+                wall_danger = self.delivery_vision.detect_walls(frame)
+                if wall_danger:
+                    wall_avoided = self.handle_wall_avoidance(frame)
+                    if wall_avoided:
+                        # Reset target tracking after wall avoidance
+                        self.current_target = None
+                        self.delivery_vision.reset_centering_state()
+                        continue  # Skip this frame after avoidance
+                
+                # === PRIORITY 2: GREEN TARGET PROCESSING ===
                 green_targets = self.delivery_vision.detect_green_targets(frame)
                 
                 # Create visualization
@@ -456,7 +536,7 @@ class DeliverySystem:
                 
                 # Show frame if display available
                 if config.SHOW_CAMERA_FEED:
-                    cv2.imshow('GolfBot Delivery Mode (Anti-Oscillation)', debug_frame)
+                    cv2.imshow('GolfBot Delivery Mode (Anti-Oscillation + Wall Avoidance)', debug_frame)
                     key = cv2.waitKey(1) & 0xFF
                     if key == ord('q'):
                         break
@@ -514,6 +594,8 @@ class DeliverySystem:
                 # Control loop timing - adaptive based on state
                 if self.current_target and self.delivery_vision.oscillation_detected:
                     time.sleep(0.15)  # Slower when oscillating
+                elif wall_danger:
+                    time.sleep(0.2)   # Slower when walls detected
                 else:
                     time.sleep(0.1)   # Normal timing
                 
@@ -585,24 +667,32 @@ class DeliverySystem:
         self.logger.info(f"   Final ball count: {self.hardware.get_ball_count()}")
         self.logger.info(f"   Oscillation events: {self.delivery_vision.direction_change_count}")
         
+        # Wall avoidance stats
+        wall_status = self.delivery_vision.boundary_system.get_status()
+        self.logger.info(f"   Walls detected: {wall_status['walls_detected']}")
+        self.logger.info(f"   Wall avoidance triggers: {wall_status['walls_triggered']}")
+        
         cv2.destroyAllWindows()
 
 def run_delivery_test():
-    """Main entry point for delivery testing - FIXED INDENTATION"""
-    print("\n🚚 GOLFBOT DELIVERY SYSTEM TEST (Anti-Oscillation)")
-    print("="*60)
+    """Main entry point for delivery testing with wall avoidance"""
+    print("\n🚚 GOLFBOT DELIVERY SYSTEM TEST (Anti-Oscillation + Wall Avoidance)")
+    print("="*70)
     print("This mode will:")
     print("1. Search for GREEN targets (delivery zones)")
-    print("2. Center on detected green areas with oscillation prevention")
-    print("3. Approach when properly aligned")
-    print("4. Release balls if any are collected")
+    print("2. Detect and avoid RED walls/boundaries")
+    print("3. Center on detected green areas with oscillation prevention")
+    print("4. Approach when properly aligned and walls are clear")
+    print("5. Release balls if any are collected")
     print("\nNew Features:")
+    print("• Wall/boundary detection and avoidance")
     print("• Oscillation detection and prevention")
     print("• Adaptive centering tolerances")
     print("• Movement damping when oscillating")
+    print("• Wall avoidance priority over target centering")
     print("• Stability verification before approach")
     print("\nPress 'q' in the camera window to quit")
-    print("="*60)
+    print("="*70)
     
     input("Press Enter to start delivery test...")
     
