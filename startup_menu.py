@@ -8,7 +8,8 @@ def show_startup_menu():
     print("1. Start Competition (Dashboard Mode)")
     print("2. Start Competition (Legacy Overlay Mode)")
     print("3. Hardware Testing") 
-    print("4. Exit")
+    print("4. Delivery System Test (Green Target Detection)")
+    print("5. Exit")
     print("="*60)
     print("FEATURES:")
     print("• White ball detection and collection only")
@@ -18,11 +19,12 @@ def show_startup_menu():
     print("• Modular boundary avoidance system")
     print("• Clean dashboard interface (option 1) - Camera + Side panels")
     print("• Legacy overlay mode (option 2) - All info on camera")
+    print("• NEW: Green delivery zone detection and navigation (option 4)")
     print("="*60)
     
     while True:
         try:
-            choice = input("Select option (1-4): ").strip()
+            choice = input("Select option (1-5): ").strip()
             
             if choice == '1':
                 return 'competition_dashboard'
@@ -31,9 +33,11 @@ def show_startup_menu():
             elif choice == '3':
                 return 'testing'
             elif choice == '4':
+                return 'delivery'
+            elif choice == '5':
                 return 'exit'
             else:
-                print("Invalid choice. Enter 1, 2, 3, or 4.")
+                print("Invalid choice. Enter 1, 2, 3, 4, or 5.")
                 
         except KeyboardInterrupt:
             print("\nExiting...")
@@ -68,4 +72,32 @@ def show_competition_info(use_dashboard):
     print(f"   - Target: WHITE BALLS ONLY")
     print(f"   - Boundary system: Modular avoidance")
     print("\nPress Enter to start competition...")
+    input()
+
+def show_delivery_info():
+    """Show delivery system information before starting"""
+    print(f"\n🚚 Entering Delivery System Test Mode...")
+    
+    print("\n🎯 Delivery system features:")
+    print("   - Green target/zone detection using HSV color filtering")
+    print("   - Smart search pattern (left/right scanning)")
+    print("   - Target centering before approach")
+    print("   - Automatic ball release at delivery zones")
+    print("   - Real-time visual feedback with overlay")
+    print("   - Confidence-based target selection")
+    
+    print(f"\n⚙️  Delivery Configuration:")
+    print(f"   - Green HSV range: [40-80, 50-255, 50-255]")
+    print(f"   - Centering tolerance: ±30px X, ±25px Y")
+    print(f"   - Search turn duration: 0.8s")
+    print(f"   - Approach speed: 40%")
+    print(f"   - Min target area: 500 pixels")
+    print(f"   - Max target area: 50,000 pixels")
+    
+    print("\n🎮 Controls:")
+    print("   - Press 'q' in camera window to quit")
+    print("   - System will automatically search, center, and approach green targets")
+    print("   - Balls will be released automatically when delivery zone is reached")
+    
+    print("\nPress Enter to start delivery test...")
     input()

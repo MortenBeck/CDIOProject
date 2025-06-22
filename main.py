@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 GolfBot Main Entry Point - Simplified and Modular
-White ball collection system with enhanced features
+White ball collection system with enhanced features + Delivery System
 """
 
 import logging
@@ -11,8 +11,9 @@ import os
 from hardware import GolfBotHardware
 from vision import VisionSystem
 from competition_manager import CompetitionManager
-from startup_menu import show_startup_menu, show_competition_info
+from startup_menu import show_startup_menu, show_competition_info, show_delivery_info
 from hardware_test import run_hardware_test
+from delivery_system import run_delivery_test
 
 class GolfBot:
     """Main GolfBot class - simplified to coordinate components"""
@@ -131,6 +132,21 @@ def main():
                 print("❌ Testing failed!")
         except Exception as e:
             print(f"Testing error: {e}")
+        return 0
+        
+    elif mode == 'delivery':
+        print("\n🚚 Entering Delivery System Test Mode...")
+        
+        # Show delivery info
+        show_delivery_info()
+        
+        try:
+            if run_delivery_test():
+                print("✅ Delivery test completed successfully!")
+            else:
+                print("❌ Delivery test failed!")
+        except Exception as e:
+            print(f"Delivery test error: {e}")
         return 0
         
     elif mode in ['competition_dashboard', 'competition_legacy']:
