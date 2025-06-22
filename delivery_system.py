@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced GolfBot Delivery System - Wall-Perpendicular Approach
-Detects wall orientation and approaches green targets perpendicular to the wall
+Simple Green Target Delivery System - Parallel Parking Approach
+Uses the working green detection to line up with green target's short end
 """
 
 import cv2
@@ -11,31 +11,20 @@ import logging
 from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import config
-from boundary_avoidance import BoundaryAvoidanceSystem
 
 @dataclass
 class GreenTarget:
-    """Class to store detected green target information"""
+    """Simple green target data"""
     center: Tuple[int, int]
     area: int
     confidence: float
-    distance_from_center: float
     bbox: Tuple[int, int, int, int]  # x, y, width, height
-    wall_direction: Optional[str] = None  # 'top', 'bottom', 'left', 'right'
-    approach_angle: Optional[float] = None  # Angle to approach perpendicular
+    orientation: str  # 'horizontal' or 'vertical'
+    short_side_length: int
+    long_side_length: int
 
-@dataclass 
-class WallSegment:
-    """Class to store wall segment information"""
-    direction: str  # 'top', 'bottom', 'left', 'right'
-    start_point: Tuple[int, int]
-    end_point: Tuple[int, int]
-    center_point: Tuple[int, int]
-    length: int
-    angle: float  # Wall angle in degrees
-
-class EnhancedDeliveryVisionSystem:
-    """Enhanced vision system with wall orientation detection for perpendicular approach"""
+class SimpleDeliveryVisionSystem:
+    """Simplified vision system focused on green target detection and parallel parking approach"""
     
     def __init__(self, vision_system):
         self.logger = logging.getLogger(__name__)
@@ -43,176 +32,19 @@ class EnhancedDeliveryVisionSystem:
         self.frame_center_x = config.CAMERA_WIDTH // 2
         self.frame_center_y = config.CAMERA_HEIGHT // 2
         
-        # Initialize boundary detection system
-        self.boundary_system = BoundaryAvoidanceSystem()
-        
-        # Green detection parameters
+        # Green detection parameters (working well)
         self.green_lower = np.array([40, 50, 50])
         self.green_upper = np.array([80, 255, 255])
         self.min_green_area = 500
         self.max_green_area = 50000
         
-        # Wall detection parameters - BROADENED for better detection
-        self.red_lower1 = np.array([0, 80, 80])     # More permissive red detection
-        self.red_upper1 = np.array([20, 255, 255])
-        self.red_lower2 = np.array([160, 80, 80])   # More permissive red detection
-        self.red_upper2 = np.array([180, 255, 255])
+        # Parallel parking approach parameters
+        self.approach_distance = 120  # Distance to maintain during positioning
+        self.alignment_tolerance = 15  # Tolerance for alignment in pixels
+        self.centering_tolerance = 20  # Tolerance for centering
         
-        # Also detect orange/brown walls that might appear reddish
-        self.orange_lower = np.array([5, 100, 100])
-        self.orange_upper = np.array([25, 255, 255])
-        
-        # Approach state tracking
-        self.approach_phase = "detect"  # "detect", "position", "align", "approach"
-        self.target_approach_angle = None
-        self.positioning_complete = False
-        
-    def detect_wall_segments(self, frame) -> List[WallSegment]:
-        """Detect wall segments and their orientations around green targets - IMPROVED"""
-        wall_segments = []
-        
-        if frame is None:
-            return wall_segments
-        
-        h, w = frame.shape[:2]
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # Create red/orange wall mask with broader detection
-        mask1 = cv2.inRange(hsv, self.red_lower1, self.red_upper1)
-        mask2 = cv2.inRange(hsv, self.red_lower2, self.red_upper2)
-        mask3 = cv2.inRange(hsv, self.orange_lower, self.orange_upper)
-        red_mask = mask1 + mask2 + mask3
-        
-        # Clean up the mask
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
-        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
-        
-        # SIMPLIFIED WALL DETECTION - look for walls in specific regions
-        # Check top region for horizontal wall
-        top_region = red_mask[0:h//3, :]
-        if np.sum(top_region > 0) > (w * h//3) * 0.05:  # 5% threshold
-            # Found top wall
-            wall_segment = WallSegment(
-                direction='top',
-                start_point=(0, h//6),
-                end_point=(w, h//6),
-                center_point=(w//2, h//6),
-                length=w,
-                angle=0.0
-            )
-            wall_segments.append(wall_segment)
-            if config.DEBUG_VISION:
-                self.logger.info("Detected TOP wall")
-        
-        # Check bottom region for horizontal wall
-        bottom_region = red_mask[2*h//3:h, :]
-        if np.sum(bottom_region > 0) > (w * h//3) * 0.05:
-            # Found bottom wall
-            wall_segment = WallSegment(
-                direction='bottom',
-                start_point=(0, 5*h//6),
-                end_point=(w, 5*h//6),
-                center_point=(w//2, 5*h//6),
-                length=w,
-                angle=0.0
-            )
-            wall_segments.append(wall_segment)
-            if config.DEBUG_VISION:
-                self.logger.info("Detected BOTTOM wall")
-        
-        # Check left region for vertical wall
-        left_region = red_mask[:, 0:w//3]
-        if np.sum(left_region > 0) > (h * w//3) * 0.05:
-            # Found left wall
-            wall_segment = WallSegment(
-                direction='left',
-                start_point=(w//6, 0),
-                end_point=(w//6, h),
-                center_point=(w//6, h//2),
-                length=h,
-                angle=90.0
-            )
-            wall_segments.append(wall_segment)
-            if config.DEBUG_VISION:
-                self.logger.info("Detected LEFT wall")
-        
-        # Check right region for vertical wall
-        right_region = red_mask[:, 2*w//3:w]
-        if np.sum(right_region > 0) > (h * w//3) * 0.05:
-            # Found right wall
-            wall_segment = WallSegment(
-                direction='right',
-                start_point=(5*w//6, 0),
-                end_point=(5*w//6, h),
-                center_point=(5*w//6, h//2),
-                length=h,
-                angle=90.0
-            )
-            wall_segments.append(wall_segment)
-            if config.DEBUG_VISION:
-                self.logger.info("Detected RIGHT wall")
-        
-        # FALLBACK: If no walls detected but green target exists, assume it's on the top wall
-        if not wall_segments:
-            if config.DEBUG_VISION:
-                self.logger.warning("No walls detected - using fallback top wall assumption")
-            wall_segment = WallSegment(
-                direction='top',
-                start_point=(0, h//4),
-                end_point=(w, h//4),
-                center_point=(w//2, h//4),
-                length=w,
-                angle=0.0
-            )
-            wall_segments.append(wall_segment)
-        
-        return wall_segments
-    
-    def _classify_wall_direction(self, x, y, w_rect, h_rect, frame_w, frame_h) -> Optional[str]:
-        """Classify wall direction based on position and shape"""
-        aspect_ratio = w_rect / max(h_rect, 1)
-        
-        # Determine if wall is more horizontal or vertical
-        if aspect_ratio > 2.0:  # Wide wall (horizontal)
-            if y < frame_h * 0.3:
-                return 'top'
-            elif y > frame_h * 0.7:
-                return 'bottom'
-        elif aspect_ratio < 0.5:  # Tall wall (vertical)
-            if x < frame_w * 0.3:
-                return 'left'
-            elif x > frame_w * 0.7:
-                return 'right'
-        
-        return None
-    
-    def detect_green_targets_with_walls(self, frame) -> List[GreenTarget]:
-        """Detect green targets and determine which wall they're associated with"""
-        green_targets = []
-        
-        if frame is None:
-            return green_targets
-        
-        # First detect wall segments
-        wall_segments = self.detect_wall_segments(frame)
-        
-        # Then detect green targets
-        targets = self.detect_green_targets(frame)
-        
-        # Associate each green target with the nearest wall
-        for target in targets:
-            nearest_wall = self._find_nearest_wall(target, wall_segments)
-            if nearest_wall:
-                target.wall_direction = nearest_wall.direction
-                target.approach_angle = self._calculate_approach_angle(target, nearest_wall)
-            
-            green_targets.append(target)
-        
-        return green_targets
-    
     def detect_green_targets(self, frame) -> List[GreenTarget]:
-        """Basic green target detection (unchanged from original)"""
+        """Detect green targets and determine their orientation"""
         green_targets = []
         
         if frame is None:
@@ -240,172 +72,127 @@ class EnhancedDeliveryVisionSystem:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
                 center = (x + w_rect // 2, y + h_rect // 2)
                 
+                # Determine orientation and which is the short side
+                if w_rect > h_rect:
+                    orientation = 'horizontal'
+                    short_side = h_rect
+                    long_side = w_rect
+                else:
+                    orientation = 'vertical'
+                    short_side = w_rect
+                    long_side = h_rect
+                
                 # Calculate confidence
                 perimeter = cv2.arcLength(contour, True)
                 if perimeter > 0:
-                    aspect_ratio = w_rect / max(h_rect, 1)
+                    aspect_ratio = max(w_rect, h_rect) / max(min(w_rect, h_rect), 1)
                     area_ratio = area / (w_rect * h_rect)
                     
+                    # Prefer rectangular shapes (higher aspect ratio = more rectangular)
                     size_confidence = min(1.0, area / 5000)
-                    shape_confidence = area_ratio * 0.7
+                    shape_confidence = min(1.0, aspect_ratio / 3.0)  # Rectangles have higher aspect ratios
+                    fill_confidence = area_ratio
                     
-                    confidence = (size_confidence + shape_confidence) / 2
+                    confidence = (size_confidence + shape_confidence + fill_confidence) / 3
                     
                     if confidence > 0.3:
-                        distance_from_center = np.sqrt(
-                            (center[0] - self.frame_center_x)**2 + 
-                            (center[1] - self.frame_center_y)**2
-                        )
-                        
                         target = GreenTarget(
                             center=center,
                             area=area,
                             confidence=confidence,
-                            distance_from_center=distance_from_center,
-                            bbox=(x, y, w_rect, h_rect)
+                            bbox=(x, y, w_rect, h_rect),
+                            orientation=orientation,
+                            short_side_length=short_side,
+                            long_side_length=long_side
                         )
                         green_targets.append(target)
         
         # Sort by confidence and size
         green_targets.sort(key=lambda t: (-t.confidence, -t.area))
-        return green_targets[:3]
+        return green_targets[:2]  # Keep top 2 targets
     
-    def _find_nearest_wall(self, target: GreenTarget, wall_segments: List[WallSegment]) -> Optional[WallSegment]:
-        """Find the nearest wall segment to a green target"""
-        if not wall_segments:
-            return None
+    def get_parallel_parking_command(self, target: GreenTarget) -> Optional[str]:
+        """
+        Get command for parallel parking approach to line up with green target's short end
         
-        min_distance = float('inf')
-        nearest_wall = None
-        
-        for wall in wall_segments:
-            # Calculate distance from target to wall
-            distance = self._point_to_line_distance(target.center, wall.start_point, wall.end_point)
-            
-            if distance < min_distance:
-                min_distance = distance
-                nearest_wall = wall
-        
-        return nearest_wall
-    
-    def _point_to_line_distance(self, point: Tuple[int, int], line_start: Tuple[int, int], line_end: Tuple[int, int]) -> float:
-        """Calculate distance from point to line segment"""
-        x0, y0 = point
-        x1, y1 = line_start
-        x2, y2 = line_end
-        
-        # Calculate line length
-        line_length = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-        if line_length == 0:
-            return np.sqrt((x0 - x1)**2 + (y0 - y1)**2)
-        
-        # Calculate distance
-        t = max(0, min(1, ((x0 - x1) * (x2 - x1) + (y0 - y1) * (y2 - y1)) / (line_length**2)))
-        projection_x = x1 + t * (x2 - x1)
-        projection_y = y1 + t * (y2 - y1)
-        
-        return np.sqrt((x0 - projection_x)**2 + (y0 - projection_y)**2)
-    
-    def _calculate_approach_angle(self, target: GreenTarget, wall: WallSegment) -> float:
-        """Calculate the angle needed to approach the target perpendicular to the wall"""
-        if wall.direction == 'top':
-            return 270.0  # Approach from bottom (upward)
-        elif wall.direction == 'bottom':
-            return 90.0   # Approach from top (downward)  
-        elif wall.direction == 'left':
-            return 0.0    # Approach from right (leftward)
-        elif wall.direction == 'right':
-            return 180.0  # Approach from left (rightward)
-        else:
-            return 0.0
-    
-    def get_positioning_command(self, target: GreenTarget) -> Optional[str]:
-        """Get command to position robot for perpendicular approach"""
-        if not target.wall_direction or target.approach_angle is None:
-            return None
+        Strategy:
+        1. Position robot to the side of the target (perpendicular to short side)
+        2. Back up to create space
+        3. Turn to align with the short side
+        4. Drive straight toward the short side
+        """
         
         robot_x = self.frame_center_x
         robot_y = self.frame_center_y
         target_x, target_y = target.center
         
-        # Calculate where robot needs to be positioned for perpendicular approach
-        approach_distance = 100  # Distance to maintain from target during positioning
-        
-        if target.wall_direction == 'top':
-            # Position below target for upward approach
-            desired_x = target_x
-            desired_y = target_y + approach_distance
-        elif target.wall_direction == 'bottom':
-            # Position above target for downward approach
-            desired_x = target_x
-            desired_y = target_y - approach_distance
-        elif target.wall_direction == 'left':
-            # Position to the right of target for leftward approach
-            desired_x = target_x + approach_distance
-            desired_y = target_y
-        elif target.wall_direction == 'right':
-            # Position to the left of target for rightward approach
-            desired_x = target_x - approach_distance
-            desired_y = target_y
-        else:
-            return None
-        
-        # Calculate movement needed
-        dx = desired_x - robot_x
-        dy = desired_y - robot_y
-        
-        # Determine primary movement direction
-        if abs(dx) > abs(dy):
-            if dx > 20:
-                return 'move_right'
-            elif dx < -20:
-                return 'move_left'
-        else:
-            if dy > 20:
-                return 'move_backward'
-            elif dy < -20:
-                return 'move_forward'
-        
-        # If close enough, robot is positioned
-        if abs(dx) < 20 and abs(dy) < 20:
-            return 'positioned'
-        
-        return None
+        # Calculate positioning based on target orientation
+        if target.orientation == 'horizontal':
+            # Target is horizontal rectangle - approach from top or bottom (short sides)
+            # Choose top approach for simplicity
+            desired_x = target_x  # Same X as target
+            desired_y = target_y - self.approach_distance  # Above the target
+            
+            # Phase 1: Get to the side of the target
+            if abs(robot_x - target_x) > self.centering_tolerance:
+                if robot_x < target_x:
+                    return 'move_right'  # Turn right to get more to the right
+                else:
+                    return 'move_left'   # Turn left to get more to the left
+            
+            # Phase 2: Position at correct distance (above target)
+            if robot_y > desired_y + self.alignment_tolerance:
+                return 'move_forward'  # Too far below, move up
+            elif robot_y < desired_y - self.alignment_tolerance:
+                return 'move_backward'  # Too far above, move down
+            
+            # Phase 3: We're positioned - ready to approach
+            return 'approach_target'
+            
+        else:  # vertical orientation
+            # Target is vertical rectangle - approach from left or right (short sides)
+            # Choose left approach for simplicity
+            desired_x = target_x - self.approach_distance  # To the left of target
+            desired_y = target_y  # Same Y as target
+            
+            # Phase 1: Get above/below the target first
+            if abs(robot_y - target_y) > self.centering_tolerance:
+                if robot_y < target_y:
+                    return 'move_backward'  # Too far above, move down
+                else:
+                    return 'move_forward'   # Too far below, move up
+            
+            # Phase 2: Position at correct distance (left of target)
+            if robot_x > desired_x + self.alignment_tolerance:
+                return 'move_left'    # Too far right, move left
+            elif robot_x < desired_x - self.alignment_tolerance:
+                return 'move_right'   # Too far left, move right
+            
+            # Phase 3: We're positioned - ready to approach
+            return 'approach_target'
     
-    def get_alignment_command(self, target: GreenTarget) -> Optional[str]:
-        """Get command to align robot perpendicular to wall before approach"""
-        if not target.wall_direction:
-            return None
+    def get_final_approach_command(self, target: GreenTarget) -> str:
+        """Get command for final straight approach to target"""
+        robot_x = self.frame_center_x
+        robot_y = self.frame_center_y
+        target_x, target_y = target.center
         
-        # For simplicity, assume robot needs to turn to face the correct direction
-        # In practice, you'd need to track robot's current orientation
-        
-        # This is a simplified alignment - you may need IMU/compass data for precise alignment
-        if target.wall_direction in ['top', 'bottom']:
-            return 'align_vertical'
+        if target.orientation == 'horizontal':
+            # Approach from above - drive straight down
+            return 'approach_vertical'
         else:
-            return 'align_horizontal'
+            # Approach from left - drive straight right
+            return 'approach_horizontal'
     
-    def draw_enhanced_detection(self, frame, targets: List[GreenTarget]) -> np.ndarray:
-        """Draw enhanced detection with wall information and approach vectors"""
+    def draw_delivery_visualization(self, frame, targets: List[GreenTarget], current_phase: str) -> np.ndarray:
+        """Draw delivery system visualization"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # Draw wall segments
-        wall_segments = self.detect_wall_segments(frame)
-        for wall in wall_segments:
-            color = (0, 0, 255)  # Red for walls
-            cv2.line(result, wall.start_point, wall.end_point, color, 3)
-            
-            # Label wall direction
-            label_pos = (wall.center_point[0] - 20, wall.center_point[1] - 10)
-            cv2.putText(result, wall.direction.upper(), label_pos, 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
-        
-        # Draw green targets with approach information
+        # Draw green targets with orientation info
         for i, target in enumerate(targets):
             x, y, w_rect, h_rect = target.bbox
             
@@ -413,30 +200,42 @@ class EnhancedDeliveryVisionSystem:
                 color = (0, 255, 0)    # Bright green for primary target
                 thickness = 3
                 
-                # Draw target
+                # Draw target rectangle
                 cv2.rectangle(result, (x, y), (x + w_rect, y + h_rect), color, thickness)
                 cv2.circle(result, target.center, 5, color, -1)
                 
-                # Show wall association and approach angle
-                if target.wall_direction:
-                    info_text = f"Wall: {target.wall_direction.upper()}"
-                    cv2.putText(result, info_text, (target.center[0] - 40, target.center[1] - 30), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+                # Show orientation and short side
+                orientation_text = f"{target.orientation.upper()}"
+                cv2.putText(result, orientation_text, (target.center[0] - 30, target.center[1] - 40), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+                
+                short_side_text = f"Short: {target.short_side_length}px"
+                cv2.putText(result, short_side_text, (target.center[0] - 30, target.center[1] - 20), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
+                
+                # Highlight the short sides we want to approach
+                if target.orientation == 'horizontal':
+                    # Horizontal rectangle - highlight top and bottom edges (short sides)
+                    cv2.line(result, (x, y), (x + w_rect, y), (255, 255, 0), 4)  # Top edge
+                    cv2.line(result, (x, y + h_rect), (x + w_rect, y + h_rect), (255, 255, 0), 4)  # Bottom edge
                     
-                    if target.approach_angle is not None:
-                        angle_text = f"Approach: {target.approach_angle:.0f}°"
-                        cv2.putText(result, angle_text, (target.center[0] - 40, target.center[1] - 10), 
-                                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
-                        
-                        # Draw approach vector
-                        approach_length = 60
-                        angle_rad = np.radians(target.approach_angle)
-                        end_x = target.center[0] + int(approach_length * np.cos(angle_rad))
-                        end_y = target.center[1] + int(approach_length * np.sin(angle_rad))
-                        
-                        cv2.arrowedLine(result, target.center, (end_x, end_y), (255, 255, 0), 2)
-                        cv2.putText(result, "APPROACH", (end_x - 30, end_y - 10), 
-                                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
+                    # Show approach direction (from top)
+                    approach_start = (target.center[0], y - 30)
+                    cv2.arrowedLine(result, approach_start, (target.center[0], y), (255, 255, 0), 3)
+                    cv2.putText(result, "APPROACH", (approach_start[0] - 30, approach_start[1] - 10), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
+                    
+                else:
+                    # Vertical rectangle - highlight left and right edges (short sides)
+                    cv2.line(result, (x, y), (x, y + h_rect), (255, 255, 0), 4)  # Left edge
+                    cv2.line(result, (x + w_rect, y), (x + w_rect, y + h_rect), (255, 255, 0), 4)  # Right edge
+                    
+                    # Show approach direction (from left)
+                    approach_start = (x - 30, target.center[1])
+                    cv2.arrowedLine(result, approach_start, (x, target.center[1]), (255, 255, 0), 3)
+                    cv2.putText(result, "APPROACH", (approach_start[0] - 20, approach_start[1] - 10), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
+                
             else:
                 color = (0, 150, 0)    # Darker green for secondary targets
                 thickness = 2
@@ -447,85 +246,86 @@ class EnhancedDeliveryVisionSystem:
             cv2.putText(result, f"G{i+1}", (target.center[0] - 10, target.center[1] + 5), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
         
-        # Frame center crosshair
+        # Frame center crosshair (robot position reference)
         cv2.line(result, (self.frame_center_x - 10, self.frame_center_y), 
                 (self.frame_center_x + 10, self.frame_center_y), (255, 255, 255), 2)
         cv2.line(result, (self.frame_center_x, self.frame_center_y - 10), 
                 (self.frame_center_x, self.frame_center_y + 10), (255, 255, 255), 2)
+        cv2.putText(result, "ROBOT", (self.frame_center_x - 20, self.frame_center_y + 20), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
         
         # Status overlay
-        overlay_height = 140
+        overlay_height = 120
         overlay = np.zeros((overlay_height, w, 3), dtype=np.uint8)
         result[0:overlay_height, :] = cv2.addWeighted(result[0:overlay_height, :], 0.6, overlay, 0.4, 0)
         
         # Status text
-        cv2.putText(result, "ENHANCED DELIVERY - Perpendicular Wall Approach", (10, 25), 
+        cv2.putText(result, "SIMPLE DELIVERY - Parallel Parking Approach", (10, 25), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         
         target_count = len(targets)
         primary_target = targets[0] if targets else None
         
-        if primary_target and primary_target.wall_direction:
-            status = f"Target: Green at {primary_target.wall_direction.upper()} wall"
-            approach_status = f"Approach Phase: {self.approach_phase.upper()}"
+        if primary_target:
+            status = f"Target: {primary_target.orientation.upper()} green rectangle"
+            phase_status = f"Phase: {current_phase.upper()}"
         else:
-            status = "Scanning for green targets near walls..."
-            approach_status = "Phase: DETECT"
+            status = "Scanning for green targets..."
+            phase_status = "Phase: SEARCHING"
         
         cv2.putText(result, f"Targets: {target_count} | {status}", (10, 55), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
         
-        cv2.putText(result, approach_status, (10, 80), 
+        cv2.putText(result, phase_status, (10, 80), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
         
-        # Wall detection info
-        wall_count = len(wall_segments)
-        cv2.putText(result, f"Walls detected: {wall_count}", (10, 105), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+        # Instructions
+        cv2.putText(result, "Strategy: Position to side -> Align -> Drive straight at short end", (10, 105), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
         
         return result
 
-class EnhancedDeliverySystem:
-    """Enhanced delivery system with perpendicular wall approach"""
+class SimpleDeliverySystem:
+    """Simple delivery system using parallel parking approach"""
     
     def __init__(self, hardware, vision_system):
         self.logger = logging.getLogger(__name__)
         self.hardware = hardware
         self.vision_system = vision_system
-        self.delivery_vision = EnhancedDeliveryVisionSystem(vision_system)
+        self.delivery_vision = SimpleDeliveryVisionSystem(vision_system)
         
-        # Enhanced state management for perpendicular approach
+        # Simple state management
         self.current_target = None
         self.delivery_active = False
         self.start_time = None
         
-        # Approach phases: detect -> position -> align -> approach -> deliver
-        self.approach_phase = "detect"
+        # Simple phases: search -> position -> approach -> deliver
+        self.current_phase = "search"
         self.phase_start_time = None
         
-    def start_enhanced_delivery_mode(self):
-        """Start enhanced delivery mode with perpendicular approach"""
-        self.logger.info("🚚 STARTING ENHANCED DELIVERY MODE - Perpendicular Wall Approach")
-        self.logger.info("   Features: Wall orientation detection, perpendicular positioning, straight approach")
+    def start_simple_delivery_mode(self):
+        """Start simple delivery mode"""
+        self.logger.info("🚚 STARTING SIMPLE DELIVERY MODE - Parallel Parking to Green Targets")
+        self.logger.info("   Strategy: Detect green rectangles -> Position to side -> Drive at short end")
         
         self.delivery_active = True
         self.start_time = time.time()
-        self.approach_phase = "detect"
+        self.current_phase = "search"
         
         try:
-            self.enhanced_delivery_main_loop()
+            self.simple_delivery_main_loop()
         except KeyboardInterrupt:
-            self.logger.info("Enhanced delivery mode interrupted by user")
+            self.logger.info("Simple delivery mode interrupted by user")
         except Exception as e:
-            self.logger.error(f"Enhanced delivery mode error: {e}")
+            self.logger.error(f"Simple delivery mode error: {e}")
         finally:
             self.stop_delivery()
     
-    def enhanced_delivery_main_loop(self):
-        """Main delivery loop with phase-based perpendicular approach"""
+    def simple_delivery_main_loop(self):
+        """Main delivery loop with simple parallel parking logic"""
         search_direction = 1
         frames_without_target = 0
-        max_frames_without_target = 30
+        max_frames_without_target = 25
         
         while self.delivery_active:
             try:
@@ -535,20 +335,21 @@ class EnhancedDeliverySystem:
                     time.sleep(0.1)
                     continue
                 
-                # Detect green targets with wall associations
-                green_targets = self.delivery_vision.detect_green_targets_with_walls(frame)
+                # Detect green targets
+                green_targets = self.delivery_vision.detect_green_targets(frame)
                 
                 # Create visualization
-                debug_frame = self.delivery_vision.draw_enhanced_detection(frame, green_targets)
+                debug_frame = self.delivery_vision.draw_delivery_visualization(
+                    frame, green_targets, self.current_phase)
                 
                 # Show frame if display available
                 if config.SHOW_CAMERA_FEED:
-                    cv2.imshow('Enhanced Delivery - Perpendicular Approach', debug_frame)
+                    cv2.imshow('Simple Delivery - Parallel Parking', debug_frame)
                     key = cv2.waitKey(1) & 0xFF
                     if key == ord('q'):
                         break
                 
-                # PHASE-BASED PROCESSING
+                # SIMPLE PHASE PROCESSING
                 if green_targets:
                     frames_without_target = 0
                     primary_target = green_targets[0]
@@ -556,30 +357,29 @@ class EnhancedDeliverySystem:
                     # Check if this is a new target
                     if (self.current_target is None or 
                         abs(primary_target.center[0] - self.current_target.center[0]) > 50):
-                        self.logger.info("🎯 New target detected - starting approach sequence")
+                        self.logger.info("🎯 New green target detected - starting parallel parking")
                         self.current_target = primary_target
-                        self.approach_phase = "detect"
+                        self.current_phase = "position"
                         self.phase_start_time = time.time()
                     
                     self.current_target = primary_target
                     
                     # Execute current phase
-                    if self.approach_phase == "detect":
-                        self.handle_detect_phase()
-                    elif self.approach_phase == "position":
-                        self.handle_position_phase()
-                    elif self.approach_phase == "align":
-                        self.handle_align_phase()
-                    elif self.approach_phase == "approach":
+                    if self.current_phase == "search":
+                        self.current_phase = "position"
+                        self.phase_start_time = time.time()
+                    elif self.current_phase == "position":
+                        self.handle_positioning_phase()
+                    elif self.current_phase == "approach":
                         self.handle_approach_phase()
-                    elif self.approach_phase == "deliver":
+                    elif self.current_phase == "deliver":
                         self.handle_deliver_phase()
                 
                 else:
                     # No targets - search
                     frames_without_target += 1
                     self.current_target = None
-                    self.approach_phase = "detect"
+                    self.current_phase = "search"
                     
                     if frames_without_target >= max_frames_without_target:
                         search_direction *= -1
@@ -588,179 +388,101 @@ class EnhancedDeliverySystem:
                     
                     self.search_for_targets(search_direction)
                 
-                time.sleep(0.1)
+                time.sleep(0.15)
                 
             except Exception as e:
-                self.logger.error(f"Enhanced delivery loop error: {e}")
+                self.logger.error(f"Simple delivery loop error: {e}")
                 self.hardware.stop_motors()
                 time.sleep(0.5)
     
-    def handle_detect_phase(self):
-        """Phase 1: Detect target and determine wall orientation - IMPROVED"""
+    def handle_positioning_phase(self):
+        """Handle parallel parking positioning"""
         if not self.current_target:
+            self.current_phase = "search"
             return
         
-        # If wall direction is not determined, try to infer it from target position
-        if not self.current_target.wall_direction:
-            # Infer wall direction based on green target position
-            target_x, target_y = self.current_target.center
-            frame_w, frame_h = config.CAMERA_WIDTH, config.CAMERA_HEIGHT
-            
-            # Simple position-based inference
-            if target_y < frame_h * 0.4:
-                self.current_target.wall_direction = 'top'
-                self.current_target.approach_angle = 270.0  # Approach upward
-            elif target_y > frame_h * 0.6:
-                self.current_target.wall_direction = 'bottom'
-                self.current_target.approach_angle = 90.0   # Approach downward
-            elif target_x < frame_w * 0.4:
-                self.current_target.wall_direction = 'left'
-                self.current_target.approach_angle = 0.0    # Approach rightward
-            elif target_x > frame_w * 0.6:
-                self.current_target.wall_direction = 'right'
-                self.current_target.approach_angle = 180.0  # Approach leftward
-            else:
-                # Default to top wall if in center
-                self.current_target.wall_direction = 'top'
-                self.current_target.approach_angle = 270.0
-            
-            self.logger.info(f"📍 Inferred target at {self.current_target.wall_direction} wall based on position")
+        # Get parallel parking command
+        parking_command = self.delivery_vision.get_parallel_parking_command(self.current_target)
         
-        self.logger.info(f"📍 Target detected at {self.current_target.wall_direction} wall - moving to positioning")
-        self.approach_phase = "position"
-        self.phase_start_time = time.time()
-        self.delivery_vision.approach_phase = "position"
-    
-    def handle_position_phase(self):
-        """Phase 2: Position robot for perpendicular approach"""
-        if not self.current_target:
-            self.approach_phase = "detect"
-            return
-        
-        # Get positioning command
-        pos_command = self.delivery_vision.get_positioning_command(self.current_target)
-        
-        if pos_command == 'positioned':
-            self.logger.info("✅ Robot positioned for perpendicular approach - moving to alignment")
-            self.approach_phase = "align"
+        if parking_command == 'approach_target':
+            self.logger.info("✅ Parallel parking position achieved - starting final approach")
+            self.current_phase = "approach"
             self.phase_start_time = time.time()
-            self.delivery_vision.approach_phase = "align"
             return
         
         # Execute positioning movement
-        if pos_command == 'move_right':
-            self.hardware.turn_right(duration=0.3, speed=0.4)
-        elif pos_command == 'move_left':
-            self.hardware.turn_left(duration=0.3, speed=0.4)
-        elif pos_command == 'move_forward':
-            self.hardware.move_forward(duration=0.3, speed=0.4)
-        elif pos_command == 'move_backward':
-            self.hardware.move_backward(duration=0.3, speed=0.4)
+        move_duration = 0.4
+        move_speed = 0.4
+        
+        if parking_command == 'move_right':
+            self.logger.info(f"🚗 Positioning: Turn right")
+            self.hardware.turn_right(duration=move_duration, speed=move_speed)
+        elif parking_command == 'move_left':
+            self.logger.info(f"🚗 Positioning: Turn left")
+            self.hardware.turn_left(duration=move_duration, speed=move_speed)
+        elif parking_command == 'move_forward':
+            self.logger.info(f"🚗 Positioning: Move forward")
+            self.hardware.move_forward(duration=move_duration, speed=move_speed)
+        elif parking_command == 'move_backward':
+            self.logger.info(f"🚗 Positioning: Move backward")
+            self.hardware.move_backward(duration=move_duration, speed=move_speed)
         
         # Timeout check
-        if time.time() - self.phase_start_time > 15.0:
-            self.logger.warning("⏰ Positioning timeout - proceeding to alignment")
-            self.approach_phase = "align"
-    
-    def handle_align_phase(self):
-        """Phase 3: Align robot perpendicular to wall"""
-        if not self.current_target:
-            self.approach_phase = "detect"
-            return
-        
-        # Get alignment command
-        align_command = self.delivery_vision.get_alignment_command(self.current_target)
-        
-        if align_command == 'align_vertical':
-            # For top/bottom walls, ensure robot is facing up/down
-            if self.current_target.wall_direction == 'top':
-                self.logger.info("🧭 Aligning to face upward (toward top wall)")
-            else:
-                self.logger.info("🧭 Aligning to face downward (toward bottom wall)")
-            
-            # Simple alignment turn (you may need more sophisticated alignment)
-            self.hardware.turn_right(duration=0.2, speed=0.3)
-            
-        elif align_command == 'align_horizontal':
-            # For left/right walls, ensure robot is facing left/right
-            if self.current_target.wall_direction == 'left':
-                self.logger.info("🧭 Aligning to face left (toward left wall)")
-            else:
-                self.logger.info("🧭 Aligning to face right (toward right wall)")
-            
-            # Simple alignment turn
-            self.hardware.turn_left(duration=0.2, speed=0.3)
-        
-        # Move to approach phase after alignment attempt
-        time.sleep(0.5)
-        self.logger.info("⚡ Alignment complete - starting perpendicular approach")
-        self.approach_phase = "approach"
-        self.phase_start_time = time.time()
-        self.delivery_vision.approach_phase = "approach"
+        if time.time() - self.phase_start_time > 20.0:
+            self.logger.warning("⏰ Positioning timeout - attempting approach anyway")
+            self.current_phase = "approach"
     
     def handle_approach_phase(self):
-        """Phase 4: Approach target perpendicular to wall"""
+        """Handle final straight approach to green target"""
         if not self.current_target:
-            self.approach_phase = "detect"
+            self.current_phase = "search"
             return
         
-        # Move straight toward the target (should now be perpendicular to wall)
-        self.logger.info(f"🚀 Approaching {self.current_target.wall_direction} wall perpendicularly")
+        # Get final approach command
+        approach_command = self.delivery_vision.get_final_approach_command(self.current_target)
         
-        # Execute perpendicular approach
-        approach_duration = 0.4
+        self.logger.info(f"🚀 Final approach: {approach_command}")
+        
+        # Execute straight approach
+        approach_duration = 1.0
         approach_speed = 0.35
         
-        # Move forward toward the goal
-        self.hardware.move_forward(duration=approach_duration, speed=approach_speed)
+        if approach_command == 'approach_vertical':
+            # Drive straight toward horizontal target (from above)
+            self.hardware.move_forward(duration=approach_duration, speed=approach_speed)
+        elif approach_command == 'approach_horizontal':
+            # For horizontal approach, we need to turn and drive
+            # Since we can't move sideways, turn toward target and drive
+            self.hardware.turn_right(duration=0.3, speed=approach_speed)
+            time.sleep(0.1)
+            self.hardware.move_forward(duration=approach_duration, speed=approach_speed)
         
-        # Check if we've reached the target area
-        current_distance = self.current_target.distance_from_center
-        if current_distance < 50:  # Close enough to target
-            self.logger.info("📦 Reached delivery zone - proceeding to delivery")
-            self.approach_phase = "deliver"
-            self.phase_start_time = time.time()
-            self.delivery_vision.approach_phase = "deliver"
-        
-        # Timeout check
-        if time.time() - self.phase_start_time > 10.0:
-            self.logger.warning("⏰ Approach timeout - proceeding to delivery")
-            self.approach_phase = "deliver"
+        # Move to delivery phase
+        self.logger.info("📦 Reached target area - proceeding to delivery")
+        self.current_phase = "deliver"
+        self.phase_start_time = time.time()
     
     def handle_deliver_phase(self):
-        """Phase 5: Deliver balls and back away"""
+        """Handle ball delivery and reset"""
         self.logger.info("📦 Executing delivery sequence")
         
         # Release balls if we have any
         if self.hardware.has_balls():
             released_count = self.hardware.release_balls()
-            self.logger.info(f"✅ Released {released_count} balls at {self.current_target.wall_direction} wall goal")
+            self.logger.info(f"✅ Released {released_count} balls at green target")
         else:
             self.logger.info("ℹ️  No balls to deliver")
         
-        # Back away from the goal in the opposite direction of approach
+        # Back away from the target
         self.logger.info("⬅️ Backing away from delivery zone")
+        self.hardware.move_backward(duration=1.2, speed=0.4)
         
-        # Back away perpendicular to the wall (opposite of approach direction)
-        if self.current_target.wall_direction == 'top':
-            # Approached upward, back away downward
-            self.hardware.move_backward(duration=1.0, speed=0.4)
-        elif self.current_target.wall_direction == 'bottom':
-            # Approached downward, back away upward  
-            self.hardware.move_forward(duration=1.0, speed=0.4)
-        elif self.current_target.wall_direction == 'left':
-            # Approached leftward, back away rightward
-            self.hardware.turn_right(duration=0.5, speed=0.4)
-            self.hardware.move_forward(duration=0.8, speed=0.4)
-        elif self.current_target.wall_direction == 'right':
-            # Approached rightward, back away leftward
-            self.hardware.turn_left(duration=0.5, speed=0.4) 
-            self.hardware.move_forward(duration=0.8, speed=0.4)
+        # Turn to create separation
+        self.hardware.turn_left(duration=0.6, speed=0.4)
         
         # Reset for next target
-        self.approach_phase = "detect"
+        self.current_phase = "search"
         self.current_target = None
-        self.delivery_vision.approach_phase = "detect"
         
         self.logger.info("🔄 Delivery complete - searching for next target")
     
@@ -769,63 +491,59 @@ class EnhancedDeliverySystem:
         if direction > 0:
             if config.DEBUG_MOVEMENT:
                 self.logger.debug("🔍 Searching right for green targets")
-            self.hardware.turn_right(duration=0.8, speed=0.5)
+            self.hardware.turn_right(duration=0.6, speed=0.5)
         else:
             if config.DEBUG_MOVEMENT:
                 self.logger.debug("🔍 Searching left for green targets")
-            self.hardware.turn_left(duration=0.8, speed=0.5)
+            self.hardware.turn_left(duration=0.6, speed=0.5)
         
-        time.sleep(0.2)
+        time.sleep(0.3)
     
     def stop_delivery(self):
-        """Stop enhanced delivery mode"""
+        """Stop simple delivery mode"""
         self.delivery_active = False
         self.hardware.stop_motors()
         
         elapsed = time.time() - self.start_time if self.start_time else 0
-        self.logger.info("🏁 ENHANCED DELIVERY MODE COMPLETED")
+        self.logger.info("🏁 SIMPLE DELIVERY MODE COMPLETED")
         self.logger.info(f"   Total time: {elapsed:.1f} seconds")
         self.logger.info(f"   Final ball count: {self.hardware.get_ball_count()}")
-        self.logger.info(f"   Final phase: {self.approach_phase}")
+        self.logger.info(f"   Final phase: {self.current_phase}")
         
         cv2.destroyAllWindows()
 
-def run_delivery_test():
-    """Main entry point for enhanced delivery testing with perpendicular approach"""
-    print("\n🚚 ENHANCED GOLFBOT DELIVERY SYSTEM TEST (Perpendicular Wall Approach)")
-    print("="*80)
-    print("This enhanced mode will:")
-    print("1. Search for GREEN targets (delivery zones/goals)")
-    print("2. Detect RED walls and determine wall orientation") 
-    print("3. Position robot for PERPENDICULAR approach to the wall")
-    print("4. Align robot to face the goal straight-on")
-    print("5. Approach the goal PERPENDICULAR to the wall (straight |, not angled /\\)")
-    print("6. Release balls and back away perpendicular to wall")
+def run_simple_delivery_test():
+    """Main entry point for simple delivery testing"""
+    print("\n🚚 SIMPLE GOLFBOT DELIVERY SYSTEM TEST")
+    print("="*60)
+    print("This simplified delivery system will:")
+    print("1. Search for GREEN rectangular targets")
+    print("2. Identify target orientation (horizontal/vertical)")
+    print("3. Use 'parallel parking' approach to position robot")
+    print("4. Drive straight toward the target's SHORT SIDE")
+    print("5. Release balls and back away")
     print()
-    print("Enhanced Approach Phases:")
-    print("• DETECT: Find green target and identify which wall it's on")
-    print("• POSITION: Move to optimal position for perpendicular approach")
-    print("• ALIGN: Orient robot to face the goal straight-on")
-    print("• APPROACH: Drive straight toward goal (perpendicular to wall)")
-    print("• DELIVER: Release balls and back away straight")
-    print()
-    print("Key Improvements:")
-    print("• Wall orientation detection (top/bottom/left/right)")
-    print("• Smart positioning for perpendicular approach")
-    print("• Straight-line approach instead of angled approach")
-    print("• Proper backing away perpendicular to wall")
-    print("• Phase-based state machine for reliable execution")
+    print("Parallel Parking Strategy:")
+    print("• For HORIZONTAL targets: Position above -> Drive down at short side")
+    print("• For VERTICAL targets: Position to left -> Turn and drive at short side")
+    print("• Uses only forward/backward/turn movements (no sideways)")
     print()
     print("Visual Indicators:")
-    print("• Red lines: Detected wall segments with direction labels")
-    print("• Yellow arrows: Planned approach vector (perpendicular to wall)")
-    print("• Green rectangles: Detected delivery zones")
-    print("• Phase indicator: Current execution phase")
+    print("• Green rectangles: Detected delivery targets")
+    print("• Yellow highlights: Short sides we want to hit")
+    print("• Yellow arrows: Planned approach direction")
+    print("• White crosshair: Robot position reference")
+    print()
+    print("Phases:")
+    print("• SEARCH: Looking for green targets")
+    print("• POSITION: Parallel parking positioning")
+    print("• APPROACH: Final straight drive at target")
+    print("• DELIVER: Release balls and back away")
     print()
     print("Press 'q' in the camera window to quit")
-    print("="*80)
+    print("="*60)
     
-    input("Press Enter to start enhanced delivery test...")
+    input("Press Enter to start simple delivery test...")
     
     try:
         # Import and initialize systems
@@ -842,17 +560,17 @@ def run_delivery_test():
         
         print("✅ Systems initialized successfully!")
         
-        # Create and start enhanced delivery system
-        delivery_system = EnhancedDeliverySystem(hardware, vision)
-        delivery_system.start_enhanced_delivery_mode()
+        # Create and start simple delivery system
+        delivery_system = SimpleDeliverySystem(hardware, vision)
+        delivery_system.start_simple_delivery_mode()
         
         return True
         
     except KeyboardInterrupt:
-        print("\n⚠️ Enhanced delivery test interrupted by user")
+        print("\n⚠️ Simple delivery test interrupted by user")
         return True
     except Exception as e:
-        print(f"❌ Enhanced delivery test error: {e}")
+        print(f"❌ Simple delivery test error: {e}")
         return False
     finally:
         # Cleanup
@@ -864,104 +582,44 @@ def run_delivery_test():
         except:
             pass
 
-# Additional helper functions for wall analysis
-def analyze_wall_structure(frame):
-    """Analyze the overall wall structure of the arena"""
-    if frame is None:
-        return {}
+def show_simple_delivery_info():
+    """Show simple delivery system information"""
+    print(f"\n🚚 Entering Simple Delivery System Test Mode...")
     
-    h, w = frame.shape[:2]
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    print("\n🎯 Simple delivery system features:")
+    print("   - Green rectangle detection using HSV color filtering")
+    print("   - Automatic orientation detection (horizontal/vertical)")
+    print("   - Parallel parking positioning strategy")
+    print("   - Straight-line approach to target's short side")
+    print("   - Simple search pattern (left/right scanning)")
+    print("   - Automatic ball release at delivery targets")
     
-    # Create red wall mask
-    red_lower1 = np.array([0, 150, 100])
-    red_upper1 = np.array([15, 255, 255])
-    red_lower2 = np.array([165, 150, 100])
-    red_upper2 = np.array([180, 255, 255])
+    print(f"\n⚙️ Configuration:")
+    print(f"   - Green HSV range: [40-80, 50-255, 50-255]")
+    print(f"   - Approach distance: 120 pixels")
+    print(f"   - Alignment tolerance: ±15px")
+    print(f"   - Centering tolerance: ±20px")
+    print(f"   - Min target area: 500 pixels")
+    print(f"   - Max target area: 50,000 pixels")
     
-    mask1 = cv2.inRange(hsv, red_lower1, red_upper1)
-    mask2 = cv2.inRange(hsv, red_lower2, red_upper2)
-    red_mask = mask1 + mask2
+    print("\n🚗 Parallel Parking Strategy:")
+    print("   - HORIZONTAL targets: Position above → Drive down at short end")
+    print("   - VERTICAL targets: Position to left → Turn and drive at short end")
+    print("   - Uses only forward/backward/turn movements")
     
-    # Analyze wall coverage in each region
-    regions = {
-        'top': red_mask[0:h//4, :],
-        'bottom': red_mask[3*h//4:h, :], 
-        'left': red_mask[:, 0:w//4],
-        'right': red_mask[:, 3*w//4:w]
-    }
+    print("\n🎮 Controls:")
+    print("   - Press 'q' in camera window to quit")
+    print("   - System automatically: Search → Position → Approach → Deliver")
     
-    wall_analysis = {}
-    for region_name, region_mask in regions.items():
-        wall_coverage = np.sum(region_mask > 0) / region_mask.size
-        wall_analysis[region_name] = {
-            'coverage': wall_coverage,
-            'has_wall': wall_coverage > 0.1  # 10% threshold
-        }
-    
-    return wall_analysis
+    print("\nPress Enter to start simple delivery test...")
+    input()
 
-def find_wall_gaps(wall_segments, frame_width, frame_height):
-    """Find gaps in walls that might be goals"""
-    gaps = []
-    
-    # Sort wall segments by position
-    horizontal_walls = [w for w in wall_segments if w.direction in ['top', 'bottom']]
-    vertical_walls = [w for w in wall_segments if w.direction in ['left', 'right']]
-    
-    # Find horizontal gaps (in top/bottom walls)
-    for wall_type in ['top', 'bottom']:
-        walls_of_type = [w for w in horizontal_walls if w.direction == wall_type]
-        if len(walls_of_type) >= 2:
-            # Sort by x position
-            walls_of_type.sort(key=lambda w: w.start_point[0])
-            
-            for i in range(len(walls_of_type) - 1):
-                gap_start = walls_of_type[i].end_point[0]
-                gap_end = walls_of_type[i + 1].start_point[0]
-                gap_width = gap_end - gap_start
-                
-                if gap_width > 50:  # Minimum gap width for a goal
-                    gap_center_x = (gap_start + gap_end) // 2
-                    gap_center_y = walls_of_type[i].center_point[1]
-                    
-                    gaps.append({
-                        'type': 'horizontal_gap',
-                        'wall_side': wall_type,
-                        'center': (gap_center_x, gap_center_y),
-                        'width': gap_width,
-                        'start': gap_start,
-                        'end': gap_end
-                    })
-    
-    # Find vertical gaps (in left/right walls)  
-    for wall_type in ['left', 'right']:
-        walls_of_type = [w for w in vertical_walls if w.direction == wall_type]
-        if len(walls_of_type) >= 2:
-            # Sort by y position
-            walls_of_type.sort(key=lambda w: w.start_point[1])
-            
-            for i in range(len(walls_of_type) - 1):
-                gap_start = walls_of_type[i].end_point[1]
-                gap_end = walls_of_type[i + 1].start_point[1] 
-                gap_height = gap_end - gap_start
-                
-                if gap_height > 50:  # Minimum gap height for a goal
-                    gap_center_x = walls_of_type[i].center_point[0]
-                    gap_center_y = (gap_start + gap_end) // 2
-                    
-                    gaps.append({
-                        'type': 'vertical_gap',
-                        'wall_side': wall_type,
-                        'center': (gap_center_x, gap_center_y),
-                        'height': gap_height,
-                        'start': gap_start,
-                        'end': gap_end
-                    })
-    
-    return gaps
+# Function to replace the complex delivery system
+def run_delivery_test():
+    """Replacement function for the main system"""
+    return run_simple_delivery_test()
 
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
-    run_delivery_test()
+    run_simple_delivery_test()
