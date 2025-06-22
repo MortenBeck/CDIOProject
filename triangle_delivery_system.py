@@ -1,4 +1,17 @@
-#!/usr/bin/env python3
+def _analyze_triangle_shape(self, contour, robot_pos):
+        """Analyze contour to determine if it's a triangle and find tip/base"""
+        # Approximate contour to reduce noise
+        epsilon = 0.02 * cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, epsilon, True)
+        
+        # For triangles, we expect 3-4 vertices after approximation
+        if len(approx) < 3 or len(approx) > 6:
+            return None
+        
+        # Get all points in the contour
+        points = contour.reshape(-1, 2)
+        
+        ##!/usr/bin/env python3
 """
 Triangular Green Target Delivery System
 Designed for green triangles with their points facing toward the robot
@@ -50,6 +63,14 @@ class TriangularDeliveryVisionSystem:
         self.alignment_tolerance = 15          # Degrees for approach alignment
         self.position_tolerance = 20           # Pixels for position alignment
         self.final_approach_distance = 50      # Final distance before delivery
+        
+        # Turn parameters - ADJUST THESE FOR DIFFERENT TURN BEHAVIOR
+        self.normal_turn_duration = getattr(config, 'DELIVERY_TURN_DURATION', 0.5)
+        self.normal_turn_speed = getattr(config, 'DELIVERY_TURN_SPEED', 0.4)
+        self.fine_turn_duration = getattr(config, 'DELIVERY_FINE_TURN_DURATION', 0.3)
+        self.fine_turn_speed = getattr(config, 'DELIVERY_FINE_TURN_SPEED', 0.35)
+        self.search_turn_duration = getattr(config, 'DELIVERY_SEARCH_TURN_DURATION', 0.8)
+        self.search_turn_speed = getattr(config, 'DELIVERY_SEARCH_TURN_SPEED', 0.45)
         
     def detect_green_triangles(self, frame) -> List[GreenTriangle]:
         """Detect triangular green targets and identify tip/base"""
@@ -169,45 +190,63 @@ class TriangularDeliveryVisionSystem:
         distance_to_tip = tip_candidate['distance']
         tip_idx = tip_candidate['index']
         
-        # Find the base (points farthest from the tip)
+        # CORRECTED BASE DETECTION: Find the edge (two points) farthest from the tip
+        # The base should be the edge opposite to the tip, not a single point
         other_indices = [i for i in range(len(hull_points)) if i != tip_idx]
         
         if len(other_indices) < 2:
-            # Fallback: use two points farthest from robot
-            distances_to_robot = [np.linalg.norm(point - robot_pos) for point in hull_points]
-            far_distances = [(i, dist) for i, dist in enumerate(distances_to_robot) if i != tip_idx]
-            far_distances.sort(key=lambda x: x[1], reverse=True)
-            
-            if len(far_distances) >= 2:
-                base_point1 = hull_points[far_distances[0][0]].astype(int)
-                base_point2 = hull_points[far_distances[1][0]].astype(int)
-            else:
-                return None
-        else:
-            # Use the remaining points to find the base edge
-            other_points = [hull_points[i] for i in other_indices]
-            
-            if len(other_points) == 2:
-                base_point1, base_point2 = other_points[0].astype(int), other_points[1].astype(int)
-            else:
-                # Find the two points that are farthest from the tip (should be base points)
-                tip_distances = []
-                for i, point in enumerate(other_points):
-                    dist_to_tip = np.linalg.norm(point - tip_candidate['point'])
-                    tip_distances.append((i, dist_to_tip, point))
-                
-                tip_distances.sort(key=lambda x: x[1], reverse=True)
-                
-                if len(tip_distances) >= 2:
-                    base_point1 = tip_distances[0][2].astype(int)
-                    base_point2 = tip_distances[1][2].astype(int)
-                else:
-                    return None
+            return None
         
-        # Calculate base center
+        # Get all the other points (not the tip)
+        other_points = [hull_points[i] for i in other_indices]
+        
+        if len(other_points) == 2:
+            # Perfect triangle - the other two points form the base
+            base_point1, base_point2 = other_points[0].astype(int), other_points[1].astype(int)
+        else:
+            # More than 3 points - find the two points that are:
+            # 1. Farthest from the tip
+            # 2. Form the longest edge (most likely to be the base)
+            
+            tip_pos = tip_candidate['point']
+            
+            # Calculate distances from tip for all other points
+            tip_distances = []
+            for i, point in enumerate(other_points):
+                dist_to_tip = np.linalg.norm(point - tip_pos)
+                tip_distances.append((i, dist_to_tip, point))
+            
+            # Sort by distance from tip (farthest first)
+            tip_distances.sort(key=lambda x: x[1], reverse=True)
+            
+            # Take the two points farthest from the tip as base candidates
+            base_candidates = tip_distances[:min(3, len(tip_distances))]  # Take top 2-3 candidates
+            
+            # Among these candidates, find the pair that forms the longest edge
+            max_edge_length = 0
+            best_base_pair = None
+            
+            for i in range(len(base_candidates)):
+                for j in range(i+1, len(base_candidates)):
+                    point1 = base_candidates[i][2]
+                    point2 = base_candidates[j][2]
+                    edge_length = np.linalg.norm(point1 - point2)
+                    
+                    if edge_length > max_edge_length:
+                        max_edge_length = edge_length
+                        best_base_pair = (point1.astype(int), point2.astype(int))
+            
+            if best_base_pair is None:
+                # Fallback: just take the two farthest points from tip
+                base_point1 = tip_distances[0][2].astype(int)
+                base_point2 = tip_distances[1][2].astype(int)
+            else:
+                base_point1, base_point2 = best_base_pair
+        
+        # Calculate base center (center of the base edge)
         base_center = tuple(((base_point1 + base_point2) // 2).astype(int))
         
-        # Calculate approach vector (from base to tip - this is the direction to approach)
+        # Calculate approach vector (from base center to tip - this is the direction to approach)
         approach_vector = np.array(tip_point) - np.array(base_center)
         approach_length = np.linalg.norm(approach_vector)
         if approach_length > 0:
@@ -217,8 +256,8 @@ class TriangularDeliveryVisionSystem:
         
         return {
             'tip': tip_point,
-            'base': base_center,
-            'base_points': (tuple(base_point1), tuple(base_point2)),
+            'base': base_center,  # Center of the base edge
+            'base_points': (tuple(base_point1), tuple(base_point2)),  # The two base corner points
             'approach_vector': approach_vector_norm,
             'distance_to_tip': distance_to_tip,
             'hull_points': hull_points
@@ -369,21 +408,34 @@ class TriangularDeliveryVisionSystem:
                 cv2.putText(result, "TIP", (triangle.triangle_tip[0] - 15, triangle.triangle_tip[1] - 15), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
                 
-                # Highlight triangle base
+                # Highlight triangle base CENTER
                 cv2.circle(result, triangle.triangle_base, 6, (255, 0, 255), 2)
                 cv2.putText(result, "BASE", (triangle.triangle_base[0] - 20, triangle.triangle_base[1] + 20), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 255), 1)
                 
-                # Draw approach vector (from base to tip)
+                # NEW: Draw the actual base EDGE (the wall between the two base points)
+                if hasattr(triangle, 'contour') and triangle.contour is not None:
+                    triangle_info = self._analyze_triangle_shape(triangle.contour, 
+                                                               np.array([self.robot_position_x, self.robot_position_y]))
+                    if triangle_info and 'base_points' in triangle_info:
+                        base_p1, base_p2 = triangle_info['base_points']
+                        # Draw the base edge as a thick magenta line
+                        cv2.line(result, base_p1, base_p2, (255, 0, 255), 4)
+                        cv2.putText(result, "BASE EDGE", (base_p1[0], base_p1[1] - 10), 
+                                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 255), 1)
+                
+                # Draw approach vector (from base center to tip)
                 if triangle.approach_direction is not None:
                     tip_pos = np.array(triangle.triangle_tip)
-                    approach_end = tip_pos + (triangle.approach_direction * 60)
-                    cv2.arrowedLine(result, triangle.triangle_tip, tuple(approach_end.astype(int)), 
+                    base_pos = np.array(triangle.triangle_base)
+                    
+                    # Draw vector from base to tip (showing approach direction)
+                    cv2.arrowedLine(result, triangle.triangle_base, triangle.triangle_tip, 
                                    (255, 255, 0), 3)
-                    cv2.putText(result, "APPROACH", tuple((approach_end + 10).astype(int)), 
+                    cv2.putText(result, "APPROACH", (triangle.triangle_tip[0] + 15, triangle.triangle_tip[1]), 
                                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
                 
-                # Draw ideal approach position
+                # Draw ideal approach position (behind the tip)
                 ideal_pos = tip_pos - (triangle.approach_direction * self.optimal_distance_from_tip)
                 cv2.circle(result, tuple(ideal_pos.astype(int)), 10, (255, 0, 255), 2)
                 cv2.putText(result, "IDEAL", tuple((ideal_pos - [25, 0]).astype(int)), 
@@ -567,13 +619,17 @@ class TriangularDeliverySystem:
             return
         
         # Execute movement commands
-        move_duration = 0.4
-        move_speed = 0.45
-        
-        if positioning_command in ['align_turn_left', 'align_turn_right']:
-            # Fine alignment
-            move_duration = 0.3
-            move_speed = 0.45
+        if positioning_command in ['move_right', 'move_left', 'move_forward', 'move_backward']:
+            # Standard positioning movements
+            move_duration = self.normal_turn_duration
+            move_speed = self.normal_turn_speed
+        elif positioning_command in ['align_turn_left', 'align_turn_right']:
+            # Fine alignment turns - shorter and slower for precision
+            move_duration = self.fine_turn_duration
+            move_speed = self.fine_turn_speed
+        else:
+            move_duration = self.normal_turn_duration
+            move_speed = self.normal_turn_speed
         
         # Execute the movement
         if positioning_command == 'move_right':
@@ -643,9 +699,11 @@ class TriangularDeliverySystem:
     def search_for_triangles(self, direction: int):
         """Search for triangular targets"""
         if direction > 0:
-            self.hardware.turn_right(duration=0.7, speed=0.45)
+            self.hardware.turn_right(duration=self.delivery_vision.search_turn_duration, 
+                                   speed=self.delivery_vision.search_turn_speed)
         else:
-            self.hardware.turn_left(duration=0.7, speed=0.45)
+            self.hardware.turn_left(duration=self.delivery_vision.search_turn_duration, 
+                                  speed=self.delivery_vision.search_turn_speed)
         time.sleep(0.3)
     
     def stop_delivery(self):
