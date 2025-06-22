@@ -790,7 +790,7 @@ class EnhancedDeliverySystem:
         
         cv2.destroyAllWindows()
 
-def run_enhanced_delivery_test():
+def run_delivery_test():
     """Main entry point for enhanced delivery testing with perpendicular approach"""
     print("\n🚚 ENHANCED GOLFBOT DELIVERY SYSTEM TEST (Perpendicular Wall Approach)")
     print("="*80)
@@ -964,4 +964,4 @@ def find_wall_gaps(wall_segments, frame_width, frame_height):
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
-    run_enhanced_delivery_test()
+    run_delivery_test()
