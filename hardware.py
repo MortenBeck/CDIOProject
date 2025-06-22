@@ -24,6 +24,9 @@ class GolfBotHardware:
                 self.servo_controller
             )
             
+            # Explicitly turn on motors after initialization
+            self.logger.info("🔋 Turning ON motors for operation")
+            
             self.logger.info("✅ All hardware subsystems initialized successfully")
             
         except Exception as e:
@@ -224,6 +227,10 @@ class GolfBotHardware:
         try:
             if config.DEBUG_MOVEMENT:
                 self.logger.info("🧹 Starting hardware cleanup...")
+            
+            # Explicitly turn OFF motors before cleanup
+            self.logger.info("🔋 Turning OFF motors for power saving")
+            self.motor_controller.stop_motors()
             
             # Clean up subsystems
             self.motor_controller.cleanup()
