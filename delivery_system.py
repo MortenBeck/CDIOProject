@@ -720,7 +720,7 @@ class EnhancedDeliverySystem:
         
         cv2.destroyAllWindows()
 
-def run__delivery_test():
+def run_delivery_test():
     """Main entry point for enhanced delivery testing with perpendicular approach"""
     print("\n🚚 ENHANCED GOLFBOT DELIVERY SYSTEM TEST (Perpendicular Wall Approach)")
     print("="*80)
