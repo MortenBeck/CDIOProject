@@ -147,9 +147,6 @@ class TriangularDeliveryVisionSystem:
         if len(approx) < 3 or len(approx) > 6:
             return None
         
-        # Get all points in the contour
-        points = contour.reshape(-1, 2)
-        
         # Find the convex hull to get the main triangle points
         hull = cv2.convexHull(contour)
         hull_points = hull.reshape(-1, 2)
@@ -157,102 +154,85 @@ class TriangularDeliveryVisionSystem:
         if len(hull_points) < 3:
             return None
         
-        # IMPROVED TIP DETECTION: Find point closest to robot AND most "downward pointing"
-        # The tip should be both close to robot and pointing toward the bottom of the image
+        # STEP 1: Find the tip (point closest to robot)
+        distances_to_robot = [np.linalg.norm(point - robot_pos) for point in hull_points]
+        tip_idx = np.argmin(distances_to_robot)
+        tip_point = tuple(hull_points[tip_idx].astype(int))
+        distance_to_tip = distances_to_robot[tip_idx]
         
-        # First, find points that are in the bottom half of the triangle
-        triangle_center_y = np.mean(hull_points[:, 1])
-        bottom_candidates = []
+        self.logger.info(f"🔺 Found tip at {tip_point}, distance: {distance_to_tip:.1f}px")
         
-        for i, point in enumerate(hull_points):
-            distance_to_robot = np.linalg.norm(point - robot_pos)
-            # Prefer points that are lower (higher Y value) and closer to robot
-            y_score = point[1] - triangle_center_y  # Positive for points below center
-            robot_distance_score = 1.0 / (distance_to_robot + 1)  # Higher for closer points
-            
-            # Combined score: prefer points that are both low and close to robot
-            combined_score = y_score * 0.7 + robot_distance_score * 100  # Weight robot distance more
-            
-            bottom_candidates.append({
-                'index': i,
-                'point': point,
-                'distance': distance_to_robot,
-                'y_position': point[1],
-                'score': combined_score
-            })
-        
-        # Sort by combined score (highest = best tip candidate)
-        bottom_candidates.sort(key=lambda x: x['score'], reverse=True)
-        
-        # Take the best candidate as the tip
-        tip_candidate = bottom_candidates[0]
-        tip_point = tuple(tip_candidate['point'].astype(int))
-        distance_to_tip = tip_candidate['distance']
-        tip_idx = tip_candidate['index']
-        
-        # CORRECTED BASE DETECTION: Find the edge (two points) farthest from the tip
-        # The base should be the edge opposite to the tip, not a single point
+        # STEP 2: Find the base edge (the edge OPPOSITE to the tip)
+        # Get all points except the tip
         other_indices = [i for i in range(len(hull_points)) if i != tip_idx]
         
         if len(other_indices) < 2:
+            self.logger.warning("🔺 Not enough points for base edge")
             return None
         
-        # Get all the other points (not the tip)
+        # Get all the non-tip points
         other_points = [hull_points[i] for i in other_indices]
         
-        if len(other_points) == 2:
-            # Perfect triangle - the other two points form the base
-            base_point1, base_point2 = other_points[0].astype(int), other_points[1].astype(int)
+        # SIMPLE APPROACH: Find the two points that are farthest from the tip
+        # These should form the base edge
+        tip_pos = hull_points[tip_idx]
+        
+        # Calculate distance from tip to each other point
+        distances_from_tip = []
+        for i, point in enumerate(other_points):
+            dist = np.linalg.norm(point - tip_pos)
+            distances_from_tip.append((i, dist, point))
+        
+        # Sort by distance from tip (farthest first)
+        distances_from_tip.sort(key=lambda x: x[1], reverse=True)
+        
+        # The two points farthest from the tip should be the base corners
+        if len(distances_from_tip) >= 2:
+            base_point1 = distances_from_tip[0][2].astype(int)
+            base_point2 = distances_from_tip[1][2].astype(int)
         else:
-            # More than 3 points - find the two points that are:
-            # 1. Farthest from the tip
-            # 2. Form the longest edge (most likely to be the base)
+            self.logger.warning("🔺 Could not find two base points")
+            return None
+        
+        # STEP 3: Verify this makes sense (base edge should be longer than tip-to-base distances)
+        base_edge_length = np.linalg.norm(base_point1 - base_point2)
+        tip_to_base1 = np.linalg.norm(tip_pos - base_point1)
+        tip_to_base2 = np.linalg.norm(tip_pos - base_point2)
+        
+        self.logger.info(f"🔺 Base edge length: {base_edge_length:.1f}px")
+        self.logger.info(f"🔺 Tip to base corners: {tip_to_base1:.1f}px, {tip_to_base2:.1f}px")
+        
+        # If the base edge is too short compared to the triangle sides, something's wrong
+        min_side_length = min(tip_to_base1, tip_to_base2)
+        if base_edge_length < min_side_length * 0.3:  # Base should be at least 30% of side length
+            self.logger.warning(f"🔺 Base edge too short ({base_edge_length:.1f} vs {min_side_length:.1f})")
+            # Try a different approach - use the longest edge among all possible pairs
+            all_pairs = []
+            for i in range(len(other_points)):
+                for j in range(i+1, len(other_points)):
+                    edge_length = np.linalg.norm(other_points[i] - other_points[j])
+                    all_pairs.append((edge_length, other_points[i], other_points[j]))
             
-            tip_pos = tip_candidate['point']
-            
-            # Calculate distances from tip for all other points
-            tip_distances = []
-            for i, point in enumerate(other_points):
-                dist_to_tip = np.linalg.norm(point - tip_pos)
-                tip_distances.append((i, dist_to_tip, point))
-            
-            # Sort by distance from tip (farthest first)
-            tip_distances.sort(key=lambda x: x[1], reverse=True)
-            
-            # Take the two points farthest from the tip as base candidates
-            base_candidates = tip_distances[:min(3, len(tip_distances))]  # Take top 2-3 candidates
-            
-            # Among these candidates, find the pair that forms the longest edge
-            max_edge_length = 0
-            best_base_pair = None
-            
-            for i in range(len(base_candidates)):
-                for j in range(i+1, len(base_candidates)):
-                    point1 = base_candidates[i][2]
-                    point2 = base_candidates[j][2]
-                    edge_length = np.linalg.norm(point1 - point2)
-                    
-                    if edge_length > max_edge_length:
-                        max_edge_length = edge_length
-                        best_base_pair = (point1.astype(int), point2.astype(int))
-            
-            if best_base_pair is None:
-                # Fallback: just take the two farthest points from tip
-                base_point1 = tip_distances[0][2].astype(int)
-                base_point2 = tip_distances[1][2].astype(int)
-            else:
-                base_point1, base_point2 = best_base_pair
+            if all_pairs:
+                # Use the longest edge as the base
+                all_pairs.sort(key=lambda x: x[0], reverse=True)
+                base_point1 = all_pairs[0][1].astype(int)
+                base_point2 = all_pairs[0][2].astype(int)
+                base_edge_length = all_pairs[0][0]
+                self.logger.info(f"🔺 Using longest edge as base: {base_edge_length:.1f}px")
         
         # Calculate base center (center of the base edge)
         base_center = tuple(((base_point1 + base_point2) // 2).astype(int))
         
-        # Calculate approach vector (from base center to tip - this is the direction to approach)
+        # Calculate approach vector (from base center to tip)
         approach_vector = np.array(tip_point) - np.array(base_center)
         approach_length = np.linalg.norm(approach_vector)
         if approach_length > 0:
             approach_vector_norm = approach_vector / approach_length
         else:
             approach_vector_norm = np.array([0, 1])  # Default downward
+        
+        self.logger.info(f"🔺 Base center: {base_center}, Base points: {tuple(base_point1)} to {tuple(base_point2)}")
         
         return {
             'tip': tip_point,
@@ -621,15 +601,15 @@ class TriangularDeliverySystem:
         # Execute movement commands
         if positioning_command in ['move_right', 'move_left', 'move_forward', 'move_backward']:
             # Standard positioning movements
-            move_duration = self.normal_turn_duration
-            move_speed = self.normal_turn_speed
+            move_duration = self.delivery_vision.normal_turn_duration
+            move_speed = self.delivery_vision.normal_turn_speed
         elif positioning_command in ['align_turn_left', 'align_turn_right']:
             # Fine alignment turns - shorter and slower for precision
-            move_duration = self.fine_turn_duration
-            move_speed = self.fine_turn_speed
+            move_duration = self.delivery_vision.fine_turn_duration
+            move_speed = self.delivery_vision.fine_turn_speed
         else:
-            move_duration = self.normal_turn_duration
-            move_speed = self.normal_turn_speed
+            move_duration = self.delivery_vision.normal_turn_duration
+            move_speed = self.delivery_vision.normal_turn_speed
         
         # Execute the movement
         if positioning_command == 'move_right':
