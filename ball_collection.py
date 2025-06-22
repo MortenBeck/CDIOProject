@@ -12,51 +12,41 @@ class BallCollectionSystem:
         self.collected_balls = []
         
     def enhanced_collection_sequence(self):
-        """New collection sequence using SS four-state system and SF assist"""
+        """Enhanced collection sequence using SS only - SF stays closed"""
         try:
             if config.DEBUG_COLLECTION:
-                self.logger.info("🚀 Starting enhanced collection sequence with two-servo system...")
+                self.logger.info("🚀 Starting enhanced collection sequence with SS only...")
                 self.logger.info("   Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> driving")
-                self.logger.info("   SF: ready -> catch -> ready")
+                self.logger.info("   SF: stays closed during collection")
             
-            # Step 1: Prepare SF for catching
+            # Step 1: Move SS from driving to pre-collect position
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 1: Preparing SF for catching")
-            self.servos.servo_sf_to_ready()
-            time.sleep(0.2)
-            
-            # Step 2: Move SS from driving to pre-collect position
-            if config.DEBUG_COLLECTION:
-                self.logger.info("Step 2: Moving SS from DRIVING to PRE-COLLECT")
+                self.logger.info("Step 1: Moving SS from DRIVING to PRE-COLLECT")
             self.servos.servo_ss_to_pre_collect()
             time.sleep(0.2)
             
-            # Step 3: Drive forward for collection
+            # Step 2: Drive forward for collection
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 3: Driving forward for collection")
+                self.logger.info("Step 2: Driving forward for collection")
             self.motors.move_forward(duration=1.05, speed=config.COLLECTION_SPEED)
             time.sleep(0.1)
             
-            # Step 4: Coordinate collection - SS captures, SF assists
+            # Step 3: SS captures ball
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 4: Coordinated collection - SS collect, SF catch")
+                self.logger.info("Step 3: SS collect position")
             self.servos.servo_ss_to_collect()
-            time.sleep(0.15)
-            self.servos.servo_sf_to_catch()
             time.sleep(0.3)
             
-            # Step 5: Move SS to store position (secure ball)
+            # Step 4: Move SS to store position (secure ball)
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 5: Moving SS to STORE position (secure)")
+                self.logger.info("Step 4: Moving SS to STORE position (secure)")
             self.servos.servo_ss_to_store()
             time.sleep(0.3)
             
-            # Step 6: Return both servos to ready positions
+            # Step 5: Return SS to driving position
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 6: Returning servos to ready positions")
+                self.logger.info("Step 5: Returning SS to driving position")
             self.servos.servo_ss_to_driving()
-            time.sleep(0.1)
-            self.servos.servo_sf_to_ready()
             time.sleep(0.2)
             
             # Record collection
@@ -73,26 +63,21 @@ class BallCollectionSystem:
             self.motors.stop_motors()
             # Ensure we return to ready positions on error
             self.servos.servo_ss_to_driving()
-            self.servos.servo_sf_to_ready()
             return False
     
     def collection_position(self):
         """Move servos to ball collection position (legacy method)"""
         try:
             use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
             
             if config.DEBUG_COLLECTION:
                 self.logger.info("🔧 Moving to legacy collection position...")
             
             if use_gradual:
                 self.servos.set_servo_angle_gradual(self.servos.servo_ss, config.SERVO_COLLECT_OPEN)
-                time.sleep(sequential_delay)
-                self.servos.set_servo_angle_gradual(self.servos.servo_sf, config.SERVO_COLLECT_OPEN)
                 time.sleep(0.3)
             else:
                 self.servos.set_servo_angle(self.servos.servo_ss, config.SERVO_COLLECT_OPEN)
-                self.servos.set_servo_angle(self.servos.servo_sf, config.SERVO_COLLECT_OPEN)
                 time.sleep(0.5)
                 
             if config.DEBUG_COLLECTION:
@@ -105,20 +90,15 @@ class BallCollectionSystem:
         """Close servos to grab a ball (legacy method)"""
         try:
             use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
-            sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
             
             if config.DEBUG_COLLECTION:
                 self.logger.info("🔒 Grabbing ball with legacy method...")
             
             if use_gradual:
-                # Move servos sequentially for smoother operation
                 self.servos.set_servo_angle_smooth(self.servos.servo_ss, config.SERVO_COLLECT_CLOSE, duration=0.4)
-                time.sleep(sequential_delay)
-                self.servos.set_servo_angle_smooth(self.servos.servo_sf, config.SERVO_COLLECT_CLOSE, duration=0.4)
                 time.sleep(0.5)  # Give time to secure ball
             else:
                 self.servos.set_servo_angle(self.servos.servo_ss, config.SERVO_COLLECT_CLOSE)
-                self.servos.set_servo_angle(self.servos.servo_sf, config.SERVO_COLLECT_CLOSE)
                 time.sleep(0.8)  # Give time to secure ball
                 
             self.collected_balls.append(time.time())  # Track collection time
@@ -130,7 +110,7 @@ class BallCollectionSystem:
             self.logger.error(f"Failed to grab ball: {e}")
     
     def release_balls(self):
-        """Release all collected balls"""
+        """Release all collected balls - opens SF for delivery"""
         try:
             use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
             sequential_delay = getattr(config, 'SERVO_SEQUENTIAL_DELAY', 0.1)
@@ -138,27 +118,27 @@ class BallCollectionSystem:
             balls_to_release = len(self.collected_balls)
             
             if config.DEBUG_COLLECTION:
-                self.logger.info(f"🔓 Releasing {balls_to_release} balls...")
+                self.logger.info(f"🔓 Releasing {balls_to_release} balls for delivery...")
             
             if use_gradual:
                 # Move SS to store position for release
                 self.servos.servo_ss_to_store()
                 time.sleep(sequential_delay)
-                # Move SF to release position
-                self.servos.servo_sf_to_release()
-                time.sleep(1.0)  # Allow balls to fall out
+                # Open SF for ball release
+                self.servos.servo_sf_to_open()
+                time.sleep(1.5)  # Allow balls to fall out
                 
                 # Return servos to ready positions after release
                 self.servos.servo_ss_to_driving()
                 time.sleep(0.1)
-                self.servos.servo_sf_to_ready()
+                self.servos.servo_sf_to_closed()  # Close SF after delivery
                 time.sleep(0.2)
             else:
                 self.servos.servo_ss_to_store()
-                self.servos.servo_sf_to_release()
-                time.sleep(1.0)  # Allow balls to fall out
+                self.servos.servo_sf_to_open()
+                time.sleep(1.5)  # Allow balls to fall out
                 self.servos.servo_ss_to_driving()  # Return to driving
-                self.servos.servo_sf_to_ready()    # Return to ready
+                self.servos.servo_sf_to_closed()   # Close SF after delivery
                 
             self.collected_balls.clear()
             
@@ -185,5 +165,5 @@ class BallCollectionSystem:
             'balls_collected': len(self.collected_balls),
             'collection_times': self.collected_balls.copy(),
             'has_balls': self.has_balls(),
-            'collection_method': 'enhanced_two_servo_collection'
+            'collection_method': 'enhanced_ss_only_collection'
         }

@@ -326,7 +326,7 @@ class RobotStateMachine:
         self.state = RobotState.CENTERING_BALL
 
     def handle_collecting_ball(self):
-        """Handle ball collection using the proper collection system"""
+        """Handle ball collection using the proper collection system - SS only"""
         current_target = self.vision.current_target
         
         if current_target:
@@ -339,7 +339,7 @@ class RobotStateMachine:
         ball_count_before = self.hardware.get_ball_count()
         self.logger.info(f"Ball count before collection: {ball_count_before}")
         
-        # This method properly handles ball counting
+        # This method properly handles ball counting and uses SS only
         success = self.hardware.enhanced_collection_sequence()
         
         ball_count_after = self.hardware.get_ball_count()

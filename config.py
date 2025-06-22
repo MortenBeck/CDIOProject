@@ -76,9 +76,8 @@ SERVO_SS_COLLECT = 20      # Collect position
 SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 
 # === SERVO SF (SERVO 2) POSITIONS ===
-SERVO_SF_READY = 90         # Ready position
-SERVO_SF_CATCH = 135        # Catch position
-SERVO_SF_RELEASE = 0        # Release position
+SERVO_SF_OPEN = 70          # Open position
+SERVO_SF_CLOSED = 160       # Closed position (default state)
 
 # === ENHANCED COLLECTION POSITIONS ===
 SERVO_READY_POSITION = 90  # Servos up and ready to catch

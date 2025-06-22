@@ -57,6 +57,11 @@ class CompetitionManager:
 
     def start_competition(self):
         """Start the competition timer and main loop"""
+        # Initialize servos for competition start - SS driving, SF closed
+        self.logger.info("🚀 Initializing servos for competition start...")
+        self.hardware.initialize_servos_for_competition()
+        time.sleep(1.0)  # Allow servos to reach position
+        
         self.start_time = time.time()
         self.competition_active = True
         self.state_machine.state = RobotState.SEARCHING
@@ -65,6 +70,7 @@ class CompetitionManager:
         self.logger.info(f"Time limit: {config.COMPETITION_TIME} seconds")
         self.logger.info(f"Delivery trigger: {config.BALLS_BEFORE_DELIVERY} balls")
         self.logger.info("Using enhanced collection: Ball centering (X+Y) + Enhanced sequence")
+        self.logger.info("Servo setup: SS at driving, SF closed")
         
         try:
             self.main_loop()
@@ -264,7 +270,7 @@ class CompetitionManager:
         self.logger.info(f"White balls collected: {self.hardware.get_ball_count()}")
         self.logger.info(f"Delivery target: {config.BALLS_BEFORE_DELIVERY} balls per cycle")
         self.logger.info(f"Final state: {self.state_machine.state.value}")
-        self.logger.info(f"Collection system: Enhanced (X+Y Centering + Servo Sequence)")
+        self.logger.info(f"Collection system: Enhanced (X+Y Centering + SS Only)")
         self.logger.info(f"Arena detection: {'Success' if self.vision.arena_detected else 'Fallback'}")
         self.logger.info(f"Boundary avoidance: Modular system")
         self.logger.info("=" * 60)
@@ -276,7 +282,7 @@ class CompetitionManager:
             "delivery_target": config.BALLS_BEFORE_DELIVERY,
             "final_state": self.state_machine.state.value,
             "vision_system": "hough_circles_hybrid_white_only",
-            "collection_system": "enhanced_xy_centering_servo_sequence",
+            "collection_system": "enhanced_xy_centering_ss_only",
             "boundary_system": "modular_avoidance_system",
             "delivery_system": "cycle_based_collection_delivery",
             "arena_detected": self.vision.arena_detected
