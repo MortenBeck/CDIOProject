@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-GolfBot Delivery System - Green Target Detection and Navigation
-Standalone system for finding and moving towards green delivery zones
+Enhanced Delivery System with Oscillation Prevention
+Adapted from the main vision system's successful anti-oscillation strategies
 """
 
 import cv2
@@ -22,7 +22,7 @@ class GreenTarget:
     bbox: Tuple[int, int, int, int]  # x, y, width, height
 
 class DeliveryVisionSystem:
-    """Vision system specifically for green target detection"""
+    """Vision system specifically for green target detection with oscillation prevention"""
     
     def __init__(self, vision_system):
         self.logger = logging.getLogger(__name__)
@@ -36,12 +36,125 @@ class DeliveryVisionSystem:
         self.min_green_area = 500   # Minimum area for green target
         self.max_green_area = 50000 # Maximum area for green target
         
-        # Centering tolerances for delivery
-        self.centering_tolerance_x = 30  # pixels
-        self.centering_tolerance_y = 25  # pixels
+        # ADAPTIVE CENTERING TOLERANCES with oscillation prevention
+        self.base_centering_tolerance_x = 30  # Base X tolerance
+        self.base_centering_tolerance_y = 25  # Base Y tolerance
         
+        # OSCILLATION DETECTION AND PREVENTION
+        self.last_direction = None
+        self.direction_change_count = 0
+        self.centering_start_time = None
+        self.centering_attempts = 0
+        self.oscillation_detected = False
+        self.stable_frames = 0
+        self.min_stable_frames = 2  # Must be stable for 2 frames before proceeding
+        
+    def get_adaptive_tolerances(self, target: GreenTarget) -> tuple:
+        """Get adaptive tolerances based on distance and oscillation state"""
+        distance = target.distance_from_center
+        
+        # Base tolerances based on distance
+        if distance > 100:
+            # Far away - larger tolerances
+            x_tolerance = self.base_centering_tolerance_x + 15
+            y_tolerance = self.base_centering_tolerance_y + 10
+        elif distance > 60:
+            # Medium distance - standard tolerances
+            x_tolerance = self.base_centering_tolerance_x
+            y_tolerance = self.base_centering_tolerance_y
+        else:
+            # Close - tighter tolerances
+            x_tolerance = self.base_centering_tolerance_x - 5
+            y_tolerance = self.base_centering_tolerance_y - 5
+        
+        # OSCILLATION COMPENSATION - increase tolerances when oscillating
+        if self.oscillation_detected or self.direction_change_count >= 3:
+            self.logger.info("🔄 Oscillation detected - increasing tolerances")
+            x_tolerance = int(x_tolerance * 1.8)  # 80% increase
+            y_tolerance = int(y_tolerance * 1.6)  # 60% increase
+        
+        return max(15, x_tolerance), max(10, y_tolerance)
+    
+    def is_target_centered(self, target: GreenTarget) -> bool:
+        """Check if green target is centered with adaptive tolerances"""
+        x_tolerance, y_tolerance = self.get_adaptive_tolerances(target)
+        
+        x_offset = abs(target.center[0] - self.frame_center_x)
+        y_offset = abs(target.center[1] - self.frame_center_y)
+        
+        centered = (x_offset <= x_tolerance and y_offset <= y_tolerance)
+        
+        if centered:
+            self.stable_frames += 1
+            if self.stable_frames >= self.min_stable_frames:
+                return True
+            else:
+                self.logger.info(f"Target centered but verifying stability ({self.stable_frames}/{self.min_stable_frames})")
+                return False
+        else:
+            self.stable_frames = 0
+            return False
+    
+    def get_centering_direction(self, target: GreenTarget) -> tuple:
+        """Get direction to center on green target with oscillation detection"""
+        x_tolerance, y_tolerance = self.get_adaptive_tolerances(target)
+        
+        x_offset = target.center[0] - self.frame_center_x
+        y_offset = target.center[1] - self.frame_center_y
+        
+        # Hysteresis to prevent rapid direction changes
+        hysteresis = 5 if not self.oscillation_detected else 10
+        
+        # X-axis (turning) with hysteresis
+        if abs(x_offset) <= x_tolerance:
+            x_direction = 'centered'
+        elif x_offset > (x_tolerance + hysteresis):
+            x_direction = 'right'
+        elif x_offset < -(x_tolerance + hysteresis):
+            x_direction = 'left'
+        else:
+            x_direction = 'centered'  # In hysteresis zone - don't move
+        
+        # Y-axis (distance) with hysteresis
+        if abs(y_offset) <= y_tolerance:
+            y_direction = 'centered'
+        elif y_offset > (y_tolerance + hysteresis):
+            y_direction = 'backward'
+        elif y_offset < -(y_tolerance + hysteresis):
+            y_direction = 'forward'
+        else:
+            y_direction = 'centered'  # In hysteresis zone - don't move
+        
+        # OSCILLATION DETECTION
+        current_direction = x_direction if x_direction != 'centered' else y_direction
+        
+        if (self.last_direction and 
+            current_direction != 'centered' and 
+            self.last_direction != 'centered' and
+            current_direction != self.last_direction):
+            
+            self.direction_change_count += 1
+            self.logger.info(f"Direction change detected: {self.last_direction} -> {current_direction} (count: {self.direction_change_count})")
+            
+            if self.direction_change_count >= 3:
+                self.oscillation_detected = True
+                self.logger.warning("🔄 OSCILLATION DETECTED - applying countermeasures")
+        
+        self.last_direction = current_direction
+        return x_direction, y_direction
+    
+    def reset_centering_state(self):
+        """Reset centering state when starting new target or after success"""
+        self.last_direction = None
+        self.direction_change_count = 0
+        self.centering_start_time = None
+        self.centering_attempts = 0
+        self.oscillation_detected = False
+        self.stable_frames = 0
+        self.logger.info("🔄 Centering state reset")
+    
     def detect_green_targets(self, frame) -> List[GreenTarget]:
-        """Detect green targets in the frame"""
+        """Detect green targets in the frame (unchanged)"""
         green_targets = []
         
         if frame is None:
@@ -102,55 +215,35 @@ class DeliveryVisionSystem:
         
         return green_targets[:3]  # Return top 3 targets
     
-    def is_target_centered(self, target: GreenTarget) -> bool:
-        """Check if green target is centered for approach"""
-        x_offset = abs(target.center[0] - self.frame_center_x)
-        y_offset = abs(target.center[1] - self.frame_center_y)
-        
-        return (x_offset <= self.centering_tolerance_x and 
-                y_offset <= self.centering_tolerance_y)
-    
-    def get_centering_direction(self, target: GreenTarget) -> tuple:
-        """Get direction to center on green target"""
-        x_offset = target.center[0] - self.frame_center_x
-        y_offset = target.center[1] - self.frame_center_y
-        
-        # X-axis (turning)
-        if abs(x_offset) <= self.centering_tolerance_x:
-            x_direction = 'centered'
-        elif x_offset > 0:
-            x_direction = 'right'
-        else:
-            x_direction = 'left'
-        
-        # Y-axis (distance)
-        if abs(y_offset) <= self.centering_tolerance_y:
-            y_direction = 'centered'
-        elif y_offset > 0:
-            y_direction = 'backward'
-        else:
-            y_direction = 'forward'
-        
-        return x_direction, y_direction
-    
     def draw_green_detection(self, frame, targets: List[GreenTarget]) -> np.ndarray:
-        """Draw green target detection overlays"""
+        """Draw green target detection overlays with oscillation info"""
         if frame is None:
             return np.zeros((config.CAMERA_HEIGHT, config.CAMERA_WIDTH, 3), dtype=np.uint8)
         
         result = frame.copy()
         h, w = result.shape[:2]
         
-        # Draw centering zone
-        center_left = self.frame_center_x - self.centering_tolerance_x
-        center_right = self.frame_center_x + self.centering_tolerance_x
-        center_top = self.frame_center_y - self.centering_tolerance_y
-        center_bottom = self.frame_center_y + self.centering_tolerance_y
-        
-        cv2.rectangle(result, (center_left, center_top), (center_right, center_bottom), 
-                     (255, 255, 0), 2)
-        cv2.putText(result, "DELIVERY CENTER ZONE", (center_left + 5, center_top - 5), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
+        # Draw adaptive centering zone for primary target
+        if targets:
+            primary_target = targets[0]
+            x_tolerance, y_tolerance = self.get_adaptive_tolerances(primary_target)
+            
+            center_left = self.frame_center_x - x_tolerance
+            center_right = self.frame_center_x + x_tolerance
+            center_top = self.frame_center_y - y_tolerance
+            center_bottom = self.frame_center_y + y_tolerance
+            
+            # Color based on oscillation state
+            zone_color = (0, 165, 255) if self.oscillation_detected else (255, 255, 0)  # Orange if oscillating
+            
+            cv2.rectangle(result, (center_left, center_top), (center_right, center_bottom), zone_color, 2)
+            
+            zone_label = "ADAPTIVE CENTER ZONE"
+            if self.oscillation_detected:
+                zone_label += " (ANTI-OSCILLATION)"
+            
+            cv2.putText(result, zone_label, (center_left + 5, center_top - 5), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, zone_color, 1)
         
         # Draw detected green targets
         for i, target in enumerate(targets):
@@ -161,15 +254,19 @@ class DeliveryVisionSystem:
                 color = (0, 255, 0)    # Bright green for primary target
                 thickness = 3
                 
-                # Check if centered
+                # Check if centered with adaptive tolerances
                 centered = self.is_target_centered(target)
                 if centered:
                     cv2.putText(result, "CENTERED - READY!", (target.center[0] - 50, target.center[1] - 30), 
                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 else:
-                    # Show direction arrows
+                    # Show direction arrows with oscillation info
                     x_dir, y_dir = self.get_centering_direction(target)
                     direction_text = f"{x_dir.upper()}, {y_dir.upper()}"
+                    
+                    if self.oscillation_detected:
+                        direction_text += " (DAMPED)"
+                    
                     cv2.putText(result, direction_text, (target.center[0] - 40, target.center[1] - 20), 
                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
                     
@@ -198,8 +295,8 @@ class DeliveryVisionSystem:
         cv2.line(result, (self.frame_center_x, self.frame_center_y - 10), 
                 (self.frame_center_x, self.frame_center_y + 10), (255, 255, 255), 2)
         
-        # Status overlay
-        overlay_height = 80
+        # Status overlay with oscillation info
+        overlay_height = 100
         overlay = np.zeros((overlay_height, w, 3), dtype=np.uint8)
         result[0:overlay_height, :] = cv2.addWeighted(result[0:overlay_height, :], 0.6, overlay, 0.4, 0)
         
@@ -212,8 +309,15 @@ class DeliveryVisionSystem:
         
         if primary_target:
             centered = self.is_target_centered(primary_target)
-            status = "CENTERED - READY TO APPROACH" if centered else "CENTERING ON TARGET"
-            status_color = (0, 255, 0) if centered else (255, 255, 0)
+            if centered:
+                status = "CENTERED - READY TO APPROACH"
+                status_color = (0, 255, 0)
+            elif self.oscillation_detected:
+                status = "CENTERING (ANTI-OSCILLATION MODE)"
+                status_color = (0, 165, 255)
+            else:
+                status = "CENTERING ON TARGET"
+                status_color = (255, 255, 0)
         else:
             status = "SCANNING FOR GREEN TARGETS..."
             status_color = (255, 255, 255)
@@ -221,10 +325,16 @@ class DeliveryVisionSystem:
         cv2.putText(result, f"Targets: {target_count} | Status: {status}", (10, 55), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, status_color, 1)
         
+        # Oscillation debug info
+        if self.oscillation_detected or self.direction_change_count > 0:
+            debug_text = f"Dir Changes: {self.direction_change_count} | Oscillation: {'YES' if self.oscillation_detected else 'NO'}"
+            cv2.putText(result, debug_text, (10, 80), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 165, 255), 1)
+        
         return result
 
 class DeliverySystem:
-    """Main delivery system for green target approach"""
+    """Enhanced delivery system with oscillation prevention"""
     
     def __init__(self, hardware, vision_system):
         self.logger = logging.getLogger(__name__)
@@ -237,17 +347,80 @@ class DeliverySystem:
         self.delivery_active = False
         self.start_time = None
         
-        # Movement parameters
-        self.search_turn_duration = 0.8  # Time to turn while searching
-        self.centering_turn_duration = 0.3  # Time for centering adjustments
-        self.approach_speed = 0.4  # Speed when approaching target
-        self.search_speed = 0.5   # Speed when searching
+        # ADAPTIVE MOVEMENT PARAMETERS
+        self.base_search_turn_duration = 0.8
+        self.base_centering_turn_duration = 0.3
+        self.approach_speed = 0.4
+        self.search_speed = 0.5
         
+    def get_adaptive_movement_params(self, target: Optional[GreenTarget] = None):
+        """Get movement parameters adapted for oscillation state"""
+        if target is None:
+            return self.base_centering_turn_duration, self.search_speed
+        
+        # Base parameters
+        turn_duration = self.base_centering_turn_duration
+        speed = self.search_speed
+        
+        # Adapt based on distance
+        distance = target.distance_from_center
+        if distance > 100:
+            # Far - faster, longer movements
+            turn_duration *= 1.2
+            speed *= 1.0
+        elif distance < 40:
+            # Close - slower, shorter movements
+            turn_duration *= 0.7
+            speed *= 0.8
+        
+        # OSCILLATION COMPENSATION
+        if self.delivery_vision.oscillation_detected:
+            self.logger.info("🔄 Applying oscillation compensation to movement")
+            # Reduce movement duration and speed when oscillating
+            turn_duration *= 0.5  # 50% reduction
+            speed *= 0.7          # 30% speed reduction
+        elif self.delivery_vision.direction_change_count >= 2:
+            # Partial reduction when approaching oscillation
+            turn_duration *= 0.8
+            speed *= 0.9
+        
+        return turn_duration, speed
+    
+    def center_on_target(self, target: GreenTarget):
+        """Center robot on green target with oscillation prevention"""
+        x_direction, y_direction = self.delivery_vision.get_centering_direction(target)
+        
+        # Skip movement if both directions are centered
+        if x_direction == 'centered' and y_direction == 'centered':
+            return
+        
+        # Get adaptive movement parameters
+        turn_duration, speed = self.get_adaptive_movement_params(target)
+        
+        if config.DEBUG_MOVEMENT:
+            oscillation_status = " (DAMPED)" if self.delivery_vision.oscillation_detected else ""
+            self.logger.info(f"🎯 Centering: {x_direction}, {y_direction}{oscillation_status} | Duration: {turn_duration:.2f}s")
+        
+        # Prioritize X-axis centering (turning)
+        if x_direction == 'right':
+            self.hardware.turn_right(duration=turn_duration, speed=speed)
+        elif x_direction == 'left':
+            self.hardware.turn_left(duration=turn_duration, speed=speed)
+        elif y_direction == 'forward':
+            self.hardware.move_forward(duration=turn_duration, speed=speed * 0.8)
+        elif y_direction == 'backward':
+            self.hardware.move_backward(duration=turn_duration, speed=speed * 0.8)
+        
+        # Adaptive post-movement delay
+        if self.delivery_vision.oscillation_detected:
+            time.sleep(0.2)  # Longer pause when oscillating
+        else:
+            time.sleep(0.1)  # Normal pause
+    
     def start_delivery_mode(self):
-        """Start delivery mode - search and approach green targets"""
-        self.logger.info("🚚 STARTING DELIVERY MODE - Green Target Detection")
-        self.logger.info("   Searching for green delivery zones...")
-        self.logger.info("   Will center on target and approach when found")
+        """Start delivery mode with oscillation prevention"""
+        self.logger.info("🚚 STARTING DELIVERY MODE - Green Target Detection (with Anti-Oscillation)")
+        self.logger.info("   Features: Adaptive tolerances, oscillation detection, movement damping")
         
         self.delivery_active = True
         self.start_time = time.time()
@@ -262,10 +435,10 @@ class DeliverySystem:
             self.stop_delivery()
     
     def delivery_main_loop(self):
-        """Main delivery loop - search, center, approach"""
+        """Main delivery loop with oscillation handling"""
         search_direction = 1  # 1 for right, -1 for left
         frames_without_target = 0
-        max_frames_without_target = 30  # ~3 seconds at 10fps
+        max_frames_without_target = 30
         
         while self.delivery_active:
             try:
@@ -283,67 +456,74 @@ class DeliverySystem:
                 
                 # Show frame if display available
                 if config.SHOW_CAMERA_FEED:
-                    cv2.imshow('GolfBot Delivery Mode', debug_frame)
+                    cv2.imshow('GolfBot Delivery Mode (Anti-Oscillation)', debug_frame)
                     key = cv2.waitKey(1) & 0xFF
                     if key == ord('q'):
                         break
                 
-                # TARGET PROCESSING
+                # TARGET PROCESSING WITH OSCILLATION HANDLING
                 if green_targets:
                     frames_without_target = 0
                     primary_target = green_targets[0]
+                    
+                    # Check if this is a new target
+                    if (self.current_target is None or 
+                        abs(primary_target.center[0] - self.current_target.center[0]) > 50 or
+                        abs(primary_target.center[1] - self.current_target.center[1]) > 50):
+                        
+                        self.logger.info("🎯 New target detected - resetting centering state")
+                        self.delivery_vision.reset_centering_state()
+                    
                     self.current_target = primary_target
                     
-                    # Check if target is centered
+                    # Initialize centering session if needed
+                    if self.delivery_vision.centering_start_time is None:
+                        self.delivery_vision.centering_start_time = time.time()
+                        self.delivery_vision.centering_attempts = 0
+                    
+                    # Check if target is centered (with stability verification)
                     if self.delivery_vision.is_target_centered(primary_target):
-                        self.logger.info(f"🎯 Target centered! Approaching green zone (conf: {primary_target.confidence:.2f})")
+                        elapsed_time = time.time() - self.delivery_vision.centering_start_time
+                        self.logger.info(f"🎯 Target centered and stable! Approaching (took {elapsed_time:.1f}s)")
                         self.approach_target(primary_target)
+                        self.delivery_vision.reset_centering_state()  # Reset for next target
                     else:
-                        # Center on target
-                        self.center_on_target(primary_target)
+                        # TIMEOUT CHECK - prevent infinite centering
+                        elapsed_time = time.time() - self.delivery_vision.centering_start_time
+                        if elapsed_time > 15.0:  # 15 second timeout
+                            self.logger.warning(f"⏰ Centering timeout after {elapsed_time:.1f}s - proceeding anyway")
+                            self.approach_target(primary_target)
+                            self.delivery_vision.reset_centering_state()
+                        else:
+                            # Continue centering with oscillation prevention
+                            self.center_on_target(primary_target)
                 
                 else:
                     # No targets found - search
                     frames_without_target += 1
                     self.current_target = None
+                    self.delivery_vision.reset_centering_state()  # Reset when losing target
                     
                     if frames_without_target >= max_frames_without_target:
-                        # Change search direction periodically
                         search_direction *= -1
                         frames_without_target = 0
                         self.logger.info(f"🔍 Changing search direction: {'RIGHT' if search_direction > 0 else 'LEFT'}")
                     
                     self.search_for_targets(search_direction)
                 
-                # Control loop timing
-                time.sleep(0.1)  # 10 FPS
+                # Control loop timing - adaptive based on state
+                if self.current_target and self.delivery_vision.oscillation_detected:
+                    time.sleep(0.15)  # Slower when oscillating
+                else:
+                    time.sleep(0.1)   # Normal timing
                 
             except Exception as e:
                 self.logger.error(f"Delivery loop error: {e}")
                 self.hardware.stop_motors()
                 time.sleep(0.5)
     
-    def center_on_target(self, target: GreenTarget):
-        """Center robot on green target"""
-        x_direction, y_direction = self.delivery_vision.get_centering_direction(target)
-        
-        if config.DEBUG_MOVEMENT:
-            self.logger.info(f"🎯 Centering on green target: {x_direction}, {y_direction}")
-        
-        # Prioritize X-axis centering (turning)
-        if x_direction == 'right':
-            self.hardware.turn_right(duration=self.centering_turn_duration, speed=self.search_speed)
-        elif x_direction == 'left':
-            self.hardware.turn_left(duration=self.centering_turn_duration, speed=self.search_speed)
-        elif y_direction == 'forward':
-            self.hardware.move_forward(duration=self.centering_turn_duration, speed=self.approach_speed)
-        elif y_direction == 'backward':
-            self.hardware.move_backward(duration=self.centering_turn_duration, speed=self.approach_speed)
-        
-        time.sleep(0.1)  # Brief pause between movements
-    
     def approach_target(self, target: GreenTarget):
-        """Approach the centered green target"""
+        """Approach the centered green target (unchanged)"""
         # Calculate approach distance based on target size
         approach_time = self.calculate_approach_time(target)
         
@@ -369,29 +549,23 @@ class DeliverySystem:
             self.hardware.move_backward(duration=0.5, speed=self.approach_speed)
     
     def search_for_targets(self, direction: int):
-        """Search for green targets by turning"""
+        """Search for green targets by turning (unchanged)"""
         if direction > 0:
             if config.DEBUG_MOVEMENT:
                 self.logger.debug("🔍 Searching right for green targets")
-            self.hardware.turn_right(duration=self.search_turn_duration, speed=self.search_speed)
+            self.hardware.turn_right(duration=self.base_search_turn_duration, speed=self.search_speed)
         else:
             if config.DEBUG_MOVEMENT:
                 self.logger.debug("🔍 Searching left for green targets")
-            self.hardware.turn_left(duration=self.search_turn_duration, speed=self.search_speed)
+            self.hardware.turn_left(duration=self.base_search_turn_duration, speed=self.search_speed)
         
         time.sleep(0.2)
     
     def calculate_approach_time(self, target: GreenTarget) -> float:
-        """Calculate how long to approach based on target size and distance"""
-        # Larger targets are likely closer, smaller targets are farther
-        # Base approach time inversely related to target area
-        
-        base_time = 2.0  # Base approach time
-        area_factor = max(0.3, min(1.5, 5000 / max(target.area, 1000)))  # Scale by area
-        
+        """Calculate approach time (unchanged)"""
+        base_time = 2.0
+        area_factor = max(0.3, min(1.5, 5000 / max(target.area, 1000)))
         approach_time = base_time * area_factor
-        
-        # Bounds
         return max(0.5, min(3.0, approach_time))
     
     def stop_delivery(self):
@@ -403,61 +577,6 @@ class DeliverySystem:
         self.logger.info("🏁 DELIVERY MODE COMPLETED")
         self.logger.info(f"   Total time: {elapsed:.1f} seconds")
         self.logger.info(f"   Final ball count: {self.hardware.get_ball_count()}")
+        self.logger.info(f"   Oscillation events: {self.delivery_vision.direction_change_count}")
         
         cv2.destroyAllWindows()
-
-def run_delivery_test():
-    """Main entry point for delivery testing"""
-    print("\n🚚 GOLFBOT DELIVERY SYSTEM TEST")
-    print("="*50)
-    print("This mode will:")
-    print("1. Search for GREEN targets (delivery zones)")
-    print("2. Center on detected green areas")
-    print("3. Approach when properly aligned")
-    print("4. Release balls if any are collected")
-    print("\nPress 'q' in the camera window to quit")
-    print("="*50)
-    
-    input("Press Enter to start delivery test...")
-    
-    try:
-        # Import and initialize systems
-        from hardware import GolfBotHardware
-        from vision import VisionSystem
-        
-        print("Initializing hardware and vision systems...")
-        hardware = GolfBotHardware()
-        vision = VisionSystem()
-        
-        if not vision.start():
-            print("❌ Failed to initialize camera")
-            return False
-        
-        print("✅ Systems initialized successfully!")
-        
-        # Create and start delivery system
-        delivery_system = DeliverySystem(hardware, vision)
-        delivery_system.start_delivery_mode()
-        
-        return True
-        
-    except KeyboardInterrupt:
-        print("\n⚠️ Delivery test interrupted by user")
-        return True
-    except Exception as e:
-        print(f"❌ Delivery test error: {e}")
-        return False
-    finally:
-        # Cleanup
-        try:
-            if 'hardware' in locals():
-                hardware.emergency_stop()
-            if 'vision' in locals():
-                vision.cleanup()
-        except:
-            pass
-
-if __name__ == "__main__":
-    import logging
-    logging.basicConfig(level=logging.INFO)
-    run_delivery_test()
