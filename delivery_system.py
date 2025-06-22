@@ -199,6 +199,14 @@ class DeliveryVisionSystem:
         holes.sort(key=lambda h: (-h.confidence, abs(h.alignment_offset[0]) + abs(h.alignment_offset[1])))
         return holes[:2]  # Return top 2 holes
     
+    def detect_walls(self, frame) -> bool:
+        """Detect wall boundaries that should be avoided"""
+        return self.boundary_system.detect_boundaries(frame)
+    
+    def get_wall_avoidance_command(self, frame) -> Optional[str]:
+        """Get wall avoidance command if walls are detected"""
+        return self.boundary_system.get_avoidance_command(frame)
+    
     def is_hole_aligned(self, hole: RectangularHole) -> bool:
         """Check if hole is perfectly aligned with robot"""
         x_offset, y_offset = hole.alignment_offset
