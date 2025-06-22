@@ -100,8 +100,8 @@ MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
 COLLECTION_SPEED = 0.4  # Slower speed for precise collection
 
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
-CENTERING_TURN_DURATION = 0.15  # Slightly reduced from 0.2
-CENTERING_DRIVE_DURATION = 0.25  # Slightly reduced from 0.3
+CENTERING_TURN_DURATION = 0.3  # Slightly reduced from 0.2
+CENTERING_DRIVE_DURATION = 0.4  # Slightly reduced from 0.3
 CENTERING_SPEED = 0.45  # Slightly reduced from 0.4
 
 # === NAVIGATION STRATEGY ===
