@@ -274,7 +274,7 @@ class EnhancedDeliveryVisionSystem:
         return holes[:3]  # Return top 3 holes
     
     def is_green_area_centered(self, green_target: GreenTarget) -> bool:
-        """Check if green area is centered enough to start hole detection"""
+        """FIXED: More lenient green area centering to prevent infinite loops"""
         x_tolerance = self.green_centering_tolerance_x
         y_tolerance = self.green_centering_tolerance_y
         
@@ -285,7 +285,8 @@ class EnhancedDeliveryVisionSystem:
         
         if centered:
             self.stable_frames += 1
-            return self.stable_frames >= self.min_stable_frames
+            # FIXED: Reduce required stable frames from 3 to 2 for faster progression
+            return self.stable_frames >= max(2, self.min_stable_frames - 1)
         else:
             self.stable_frames = 0
             return False
@@ -691,10 +692,15 @@ class EnhancedDeliverySystem:
             self.stop_delivery()
     
     def enhanced_delivery_main_loop(self):
-        """Main delivery loop with 2-stage targeting: green area → hole alignment"""
+        """FIXED: Main delivery loop with improved green area centering"""
         search_direction = 1  # 1 for right, -1 for left
         frames_without_target = 0
         max_frames_without_target = 25
+        
+        # FIXED: Add timeout and progress tracking for green centering
+        green_centering_timeout = 8.0  # Maximum time to spend centering on green
+        green_centering_start_time = None
+        last_green_center = None
         
         while self.delivery_active:
             try:
@@ -713,6 +719,7 @@ class EnhancedDeliverySystem:
                         self.current_green_target = None
                         self.current_hole_target = None
                         self.delivery_vision.reset_centering_state()
+                        green_centering_start_time = None  # FIXED: Reset centering timeout
                         continue
                 
                 # === PRIORITY 2: DETECTION PHASE ===
@@ -734,34 +741,75 @@ class EnhancedDeliverySystem:
                     if key == ord('q'):
                         break
                 
-                # === STAGE 1: GREEN AREA TARGETING ===
+                # === STAGE 1: GREEN AREA TARGETING (FIXED) ===
                 if self.delivery_vision.current_mode == "seeking_green":
                     if green_targets:
                         frames_without_target = 0
                         primary_green = green_targets[0]
                         
-                        # Check if this is a new green target
-                        if (self.current_green_target is None or 
-                            abs(primary_green.center[0] - self.current_green_target.center[0]) > 50):
-                            self.logger.info("🎯 New green area detected - resetting centering")
+                        # FIXED: Better "new target" detection - only reset if significantly different
+                        is_new_target = False
+                        if self.current_green_target is None:
+                            is_new_target = True
+                            green_centering_start_time = time.time()
+                            self.logger.info("🎯 New green area detected - starting centering")
+                        else:
+                            # Check if this is actually a different green area (not just slight movement)
+                            distance_from_last = np.sqrt(
+                                (primary_green.center[0] - self.current_green_target.center[0])**2 +
+                                (primary_green.center[1] - self.current_green_target.center[1])**2
+                            )
+                            
+                            # FIXED: Only consider it "new" if it moved significantly (>100 pixels)
+                            if distance_from_last > 100:
+                                is_new_target = True
+                                green_centering_start_time = time.time()
+                                self.logger.info(f"🎯 Green area moved significantly ({distance_from_last:.0f}px) - resetting centering")
+                        
+                        if is_new_target:
                             self.delivery_vision.reset_centering_state()
                         
                         self.current_green_target = primary_green
                         
+                        # FIXED: Add centering timeout to prevent infinite loops
+                        if green_centering_start_time:
+                            centering_elapsed = time.time() - green_centering_start_time
+                            
+                            # TIMEOUT: If we've been centering too long, force progression
+                            if centering_elapsed > green_centering_timeout:
+                                self.logger.warning(f"⏰ Green centering timeout ({centering_elapsed:.1f}s) - forcing progression to hole detection")
+                                self.delivery_vision.current_mode = "aligning_hole"
+                                self.delivery_vision.reset_centering_state()
+                                green_centering_start_time = None
+                                time.sleep(0.3)
+                                continue
+                        
                         # Check if green area is centered
                         if self.delivery_vision.is_green_area_centered(primary_green):
-                            self.logger.info("✅ Green area centered! Switching to hole detection mode...")
+                            centering_elapsed = time.time() - green_centering_start_time if green_centering_start_time else 0
+                            self.logger.info(f"✅ Green area centered! (took {centering_elapsed:.1f}s) Switching to hole detection mode...")
                             self.delivery_vision.current_mode = "aligning_hole"
                             self.delivery_vision.reset_centering_state()
+                            green_centering_start_time = None
                             time.sleep(0.3)  # Brief pause for mode switch
                         else:
-                            # Continue centering on green area
-                            self.center_on_green_area(primary_green)
+                            # FIXED: More aggressive centering to avoid getting stuck
+                            centering_elapsed = time.time() - green_centering_start_time if green_centering_start_time else 0
+                            
+                            # Use more aggressive movements if we've been centering for a while
+                            if centering_elapsed > 4.0:
+                                self.logger.info(f"🚀 Using aggressive centering after {centering_elapsed:.1f}s")
+                                # Continue centering on green area with increased aggression
+                                self.center_on_green_area_aggressive(primary_green)
+                            else:
+                                # Normal centering
+                                self.center_on_green_area(primary_green)
                     
                     else:
                         # No green areas found - search
                         frames_without_target += 1
                         self.current_green_target = None
+                        green_centering_start_time = None  # FIXED: Reset timeout when no target
                         
                         if frames_without_target >= max_frames_without_target:
                             search_direction *= -1
@@ -779,6 +827,7 @@ class EnhancedDeliverySystem:
                         self.current_green_target = None
                         self.current_hole_target = None
                         self.delivery_vision.reset_centering_state()
+                        green_centering_start_time = None  # FIXED: Reset timeout
                         continue
                     
                     # Look for holes within the green area
@@ -804,6 +853,7 @@ class EnhancedDeliverySystem:
                             self.current_green_target = None
                             self.current_hole_target = None
                             self.delivery_vision.reset_centering_state()
+                            green_centering_start_time = None  # FIXED: Reset timeout
                         else:
                             # Continue precise alignment with hole
                             self.align_with_hole(primary_hole)
@@ -835,6 +885,32 @@ class EnhancedDeliverySystem:
                 self.logger.error(f"Enhanced delivery loop error: {e}")
                 self.hardware.stop_motors()
                 time.sleep(0.5)
+
+    def center_on_green_area_aggressive(self, green_target: GreenTarget):
+        """FIXED: More aggressive centering for when normal centering gets stuck"""
+        x_direction, y_direction = self.delivery_vision.get_centering_direction(green_target.center, "green")
+        
+        if x_direction == 'centered' and y_direction == 'centered':
+            return
+        
+        # More aggressive parameters
+        turn_duration = self.green_centering_turn_duration * 1.5  # 50% longer movements
+        speed = self.search_speed  # Full speed
+        
+        if config.DEBUG_MOVEMENT:
+            self.logger.info(f"🚀 AGGRESSIVE green centering: {x_direction}, {y_direction}")
+        
+        # Execute more aggressive movement
+        if x_direction == 'right':
+            self.hardware.turn_right(duration=turn_duration, speed=speed)
+        elif x_direction == 'left':
+            self.hardware.turn_left(duration=turn_duration, speed=speed)
+        elif y_direction == 'forward':
+            self.hardware.move_forward(duration=turn_duration, speed=speed * 0.8)
+        elif y_direction == 'backward':
+            self.hardware.move_backward(duration=turn_duration, speed=speed * 0.8)
+        
+        time.sleep(0.2)  # Longer pause for aggressive movements
     
     def stop_delivery(self):
         """Stop enhanced delivery mode"""
