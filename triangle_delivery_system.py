@@ -346,6 +346,49 @@ class PrecisionTriangleVision:
         
         return None
     
+    def _draw_dashed_line(self, img, pt1, pt2, color, thickness):
+        """Draw a dashed line by drawing multiple small segments"""
+        try:
+            x1, y1 = pt1
+            x2, y2 = pt2
+            
+            # Calculate line length and direction
+            dx = x2 - x1
+            dy = y2 - y1
+            length = np.sqrt(dx*dx + dy*dy)
+            
+            if length == 0:
+                return
+            
+            # Normalize direction
+            dx /= length
+            dy /= length
+            
+            # Draw dashed segments
+            dash_length = 8
+            gap_length = 4
+            current_pos = 0
+            
+            while current_pos < length:
+                # Start of dash
+                start_x = int(x1 + dx * current_pos)
+                start_y = int(y1 + dy * current_pos)
+                
+                # End of dash
+                end_pos = min(current_pos + dash_length, length)
+                end_x = int(x1 + dx * end_pos)
+                end_y = int(y1 + dy * end_pos)
+                
+                # Draw dash segment
+                cv2.line(img, (start_x, start_y), (end_x, end_y), color, thickness)
+                
+                # Move to next dash
+                current_pos = end_pos + gap_length
+                
+        except Exception as e:
+            # Fallback to solid line if dashed fails
+            cv2.line(img, pt1, pt2, color, thickness)
+    
     def draw_precision_visualization(self, frame, targets: List[PrecisionTriangleTarget], current_phase: str) -> np.ndarray:
         """Draw PRECISION alignment visualization"""
         if frame is None:
@@ -394,8 +437,8 @@ class PrecisionTriangleVision:
                 alignment_color = (0, 255, 0) if abs(target.x_alignment_error) <= self.precision_x_tolerance else (0, 0, 255)
                 cv2.line(result, (self.robot_x, robot_pos[1]), (tip_x, robot_pos[1]), alignment_color, 3)
                 
-                # Vertical line from tip to robot level
-                cv2.line(result, (tip_x, tip_y), (tip_x, robot_pos[1]), alignment_color, 2, cv2.LINE_DASHED)
+                # Vertical line from tip to robot level (dashed effect with multiple segments)
+                self._draw_dashed_line(result, (tip_x, tip_y), (tip_x, robot_pos[1]), alignment_color, 2)
                 
                 # Distance arc showing optimal approach distance
                 optimal_y = robot_pos[1] - self.optimal_approach_distance
@@ -819,7 +862,7 @@ def run_precision_triangular_delivery_test():
             pass
 
 # ENHANCED DELIVERY SYSTEM SELECTOR
-def run_delivery_test():
+def run_enhanced_delivery_test():
     """Enhanced delivery system selector with precision option"""
     print("\n🚚 GOLFBOT DELIVERY SYSTEM v4.0 - PRECISION EDITION")
     print("="*70)
@@ -866,4 +909,4 @@ def run_delivery_test():
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
-    run_delivery_test()
+    run_enhanced_delivery_test()
