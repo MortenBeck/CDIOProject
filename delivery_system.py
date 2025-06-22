@@ -12,6 +12,16 @@ from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import config
 
+# FIXED IMPORTS - Use the new precision system
+# Import the precision triangular system from triangle_delivery_system.py
+try:
+    from triangle_delivery_system import run_delivery_test as run_precision_triangular_test
+except ImportError:
+    # Fallback if file not found
+    def run_precision_triangular_test():
+        print("❌ Precision triangular delivery system not found!")
+        return False
+
 @dataclass
 class GreenTarget:
     """Green target data with rotated rectangle support"""
@@ -586,24 +596,25 @@ class EnhancedDeliverySystem:
         
         cv2.destroyAllWindows()
 
-# Update the main test function to use enhanced system
+# FIXED: Update the main test function to use the correct imports
 def run_delivery_test():
-    """Main entry point for delivery system - now supports triangular targets"""
-    print("\n🚚 GOLFBOT DELIVERY SYSTEM v3.0")
-    print("="*60)
+    """Main entry point for delivery system - FIXED IMPORTS"""
+    print("\n🚚 GOLFBOT DELIVERY SYSTEM v4.0 - PRECISION EDITION")
+    print("="*70)
     print("DELIVERY OPTIONS:")
-    print("1. Triangular Green Targets (NEW) - Tips pointing toward robot")
+    print("1. PRECISION Triangular Targets (NEW) - Dead-straight alignment")
     print("2. Rectangular Green Targets (Legacy)")
-    print("="*60)
+    print("="*70)
     
     while True:
         try:
             choice = input("Select delivery mode (1 or 2): ").strip()
             
             if choice == '1':
-                print("\n🔺 TRIANGULAR DELIVERY MODE SELECTED")
-                print("Target: Green triangles with tips pointing toward robot")
-                return run_triangular_delivery_test()
+                print("\n🎯 PRECISION TRIANGULAR DELIVERY MODE SELECTED")
+                print("Target: Green triangles with EXTREME precision tip alignment")
+                print("Purpose: Dead-straight delivery through precise holes in walls")
+                return run_precision_triangular_test()  # Use the imported function
                 
             elif choice == '2':
                 print("\n🟫 RECTANGULAR DELIVERY MODE SELECTED")
