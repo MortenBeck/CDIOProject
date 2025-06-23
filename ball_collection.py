@@ -28,7 +28,7 @@ class BallCollectionSystem:
             # Step 2: Drive forward for collection
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 2: Driving forward for collection")
-            self.motors.move_forward(duration=1.05, speed=config.COLLECTION_SPEED)
+            self.motors.move_forward(duration=0.8, speed=config.COLLECTION_SPEED)
             time.sleep(0.1)
             
             # Step 3: SS captures ball
