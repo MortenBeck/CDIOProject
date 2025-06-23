@@ -99,7 +99,7 @@ class BoundaryAvoidanceSystem:
         return False
 
     def detect_boundaries(self, frame) -> bool:
-        """SIMPLIFIED: Only detect BOTTOM walls - disable left/right detection"""
+        """FOCUSED: Only detect walls below the collection zone middle"""
         if frame is None:
             return False
 
@@ -125,24 +125,25 @@ class BoundaryAvoidanceSystem:
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
 
-        # Detection zone - focus on bottom area only
+        # FOCUSED DETECTION ZONE: From top of collection zone downward
         target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)  # 65% down from top
         target_zone_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
         target_zone_top_y = target_zone_center_y - (target_zone_height // 2)
         
-        danger_start_y = target_zone_top_y  # Start from TOP of target zone
+        danger_start_y = target_zone_top_y  # Start detection from TOP of target zone
         danger_end_y = int(h * 0.95)  # Go almost to bottom (95%)
 
         if config.DEBUG_VISION:
-            self.logger.info(f"BOTTOM-ONLY wall detection zone: Y={danger_start_y} to {danger_end_y}")
+            self.logger.info(f"FOCUSED wall detection zone: Y={danger_start_y} to {danger_end_y} (target zone top at {target_zone_top_y})")
 
         danger_detected = False
         min_wall_area = 200   # Minimum area to consider a wall
 
-        # Danger zone size for bottom detection only
-        danger_distance_vertical = int(h * 0.12)    # 12% of frame height for bottom detection
+        # Danger zone sizes (reduced from original)
+        danger_distance_vertical = int(h * 0.1)    # 10% of frame height (reduced)
+        danger_distance_horizontal = int(w * 0.15) # 15% of frame width (slightly increased for sides)
 
-        # === REGION 1: BOTTOM WALL DETECTION ONLY ===
+        # === REGION 1: BOTTOM WALL DETECTION (only in lower area) ===
         bottom_region_start = max(danger_start_y, danger_end_y - danger_distance_vertical)
         if bottom_region_start < danger_end_y:
             bottom_region = red_mask[bottom_region_start:danger_end_y, :]
@@ -152,7 +153,7 @@ class BoundaryAvoidanceSystem:
                 area = cv2.contourArea(contour)
                 if area > min_wall_area:
                     x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    if w_rect > 80:   # Horizontal wall (must be reasonably wide)
+                    if w_rect > 60:   # Horizontal wall (must be reasonably wide)
                         danger_detected = True
                         wall_info = {
                             'zone': 'bottom',
@@ -167,20 +168,55 @@ class BoundaryAvoidanceSystem:
                             self.logger.info(f"Bottom wall detected: area={area}, width={w_rect}")
                         break
 
-        # === DISABLED: LEFT AND RIGHT WALL DETECTION ===
-        # Commenting out left and right detection to prevent false positives
-        
-        # # === REGION 2: LEFT WALL DETECTION (DISABLED) ===
-        # # left_region = red_mask[danger_start_y:danger_end_y, 0:danger_distance_horizontal]
-        # # ... (disabled)
-        
-        # # === REGION 3: RIGHT WALL DETECTION (DISABLED) ===
-        # # right_region = red_mask[danger_start_y:danger_end_y, w-danger_distance_horizontal:w]
-        # # ... (disabled)
+        # === REGION 2: LEFT WALL DETECTION (only in focused area) ===
+        left_region = red_mask[danger_start_y:danger_end_y, 0:danger_distance_horizontal]
+        contours, _ = cv2.findContours(left_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # === REGION 4: CENTER FORWARD WALL DETECTION (keep this for immediate front danger) ===
-        center_width = int(w * 0.3)         # Check center 30% of frame width (reduced from 40%)
-        center_start_x = int(w * 0.35)      # Start at 35% from left (more centered)
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_wall_area:
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                if h_rect > 40:   # Vertical wall (must be reasonably tall)
+                    danger_detected = True
+                    wall_info = {
+                        'zone': 'left',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (x, danger_start_y + y, w_rect, h_rect),
+                        'length': h_rect,
+                        'triggered': True
+                    }
+                    self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"Left wall detected: area={area}, height={h_rect}")
+                    break
+
+        # === REGION 3: RIGHT WALL DETECTION (only in focused area) ===
+        right_region = red_mask[danger_start_y:danger_end_y, w-danger_distance_horizontal:w]
+        contours, _ = cv2.findContours(right_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_wall_area:
+                x, y, w_rect, h_rect = cv2.boundingRect(contour)
+                if h_rect > 40:   # Vertical wall
+                    danger_detected = True
+                    wall_info = {
+                        'zone': 'right',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (w - danger_distance_horizontal + x, danger_start_y + y, w_rect, h_rect),
+                        'length': h_rect,
+                        'triggered': True
+                    }
+                    self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"Right wall detected: area={area}, height={h_rect}")
+                    break
+
+        # === REGION 4: CENTER FORWARD WALL DETECTION (focused area only) ===
+        center_width = int(w * 0.4)         # Check center 40% of frame width (reduced)
+        center_start_x = int(w * 0.3)       # Start at 30% from left
 
         # Check center region in the focused area only
         center_region = red_mask[danger_start_y:danger_end_y, center_start_x:center_start_x + center_width]
@@ -190,30 +226,25 @@ class BoundaryAvoidanceSystem:
             area = cv2.contourArea(contour)
             if area > min_wall_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                # Wall is dangerous if it has significant size AND is close to robot
-                if w_rect > 60 and h_rect > 40:   # Increased thresholds to reduce false positives
-                    # Additional check: wall must be in lower portion of detection zone
-                    wall_center_y = danger_start_y + y + (h_rect // 2)
-                    lower_portion_start = danger_start_y + (danger_end_y - danger_start_y) * 0.4  # Bottom 60% only
-                    
-                    if wall_center_y > lower_portion_start:  # Only trigger for walls in lower portion
-                        danger_detected = True
-                        wall_info = {
-                            'zone': 'center_forward',
-                            'contour': contour,
-                            'area': area,
-                            'bbox': (center_start_x + x, danger_start_y + y, w_rect, h_rect),
-                            'length': max(w_rect, h_rect),
-                            'triggered': True
-                        }
-                        self.detected_walls.append(wall_info)
-                        if config.DEBUG_VISION:
-                            self.logger.info(f"CENTER FORWARD wall detected: area={area}, size=({w_rect}x{h_rect})")
-                        break
+                # Wall is dangerous if it has significant size
+                if w_rect > 40 or h_rect > 30:   # Reasonable size thresholds
+                    danger_detected = True
+                    wall_info = {
+                        'zone': 'center_forward',
+                        'contour': contour,
+                        'area': area,
+                        'bbox': (center_start_x + x, danger_start_y + y, w_rect, h_rect),
+                        'length': max(w_rect, h_rect),
+                        'triggered': True
+                    }
+                    self.detected_walls.append(wall_info)
+                    if config.DEBUG_VISION:
+                        self.logger.info(f"CENTER FORWARD wall detected: area={area}, size=({w_rect}x{h_rect})")
+                    break
 
         if config.DEBUG_VISION and danger_detected:
             triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
-            self.logger.info(f"BOTTOM-ONLY wall avoidance triggered - zones: {triggered_zones}")
+            self.logger.info(f"FOCUSED wall avoidance triggered - zones: {triggered_zones}")
 
         return danger_detected
 
