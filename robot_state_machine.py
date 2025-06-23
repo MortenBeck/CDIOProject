@@ -143,7 +143,7 @@ class RobotStateMachine:
             self.hardware.emergency_stop()
 
     def handle_avoiding_boundary(self, near_boundary):
-        """FIXED: Use the dedicated boundary system with configurable timing"""
+        """UPDATED: Use the dedicated boundary system with improved commands"""
         
         # Get avoidance command from the dedicated boundary system
         avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
@@ -184,6 +184,19 @@ class RobotStateMachine:
                     time.sleep(0.1)
                     self.hardware.turn_right(
                         duration=config.BOUNDARY_COMPOUND_TURN_DURATION, 
+                        speed=config.BOUNDARY_TURN_SPEED
+                    )
+                elif avoidance_command == 'emergency_backup':
+                    # NEW: Emergency backup for immediate danger
+                    self.logger.warning("🚨🚨 EMERGENCY BACKUP: Immediate front danger!")
+                    self.hardware.move_backward(
+                        duration=config.BOUNDARY_BACKUP_DURATION * 1.5,  # Longer backup
+                        speed=config.BOUNDARY_BACKUP_SPEED
+                    )
+                    time.sleep(0.1)
+                    # Follow with a turn to get away from the wall
+                    self.hardware.turn_right(
+                        duration=config.BOUNDARY_COMPOUND_TURN_DURATION * 1.2,  # Longer turn
                         speed=config.BOUNDARY_TURN_SPEED
                     )
                 else:
