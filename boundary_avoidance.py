@@ -125,13 +125,16 @@ class BoundaryAvoidanceSystem:
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
 
-        # FOCUSED DETECTION ZONE: Only below collection zone middle
+        # FOCUSED DETECTION ZONE: From top of collection zone downward
         target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)  # 65% down from top
-        danger_start_y = target_zone_center_y  # Start detection from target zone center
+        target_zone_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
+        target_zone_top_y = target_zone_center_y - (target_zone_height // 2)
+        
+        danger_start_y = target_zone_top_y  # Start detection from TOP of target zone
         danger_end_y = int(h * 0.95)  # Go almost to bottom (95%)
 
         if config.DEBUG_VISION:
-            self.logger.info(f"FOCUSED wall detection zone: Y={danger_start_y} to {danger_end_y} (target center at {target_zone_center_y})")
+            self.logger.info(f"FOCUSED wall detection zone: Y={danger_start_y} to {danger_end_y} (target zone top at {target_zone_top_y})")
 
         danger_detected = False
         min_wall_area = 200   # Minimum area to consider a wall
@@ -285,7 +288,10 @@ class BoundaryAvoidanceSystem:
 
         # === FOCUSED DETECTION ZONE ===
         target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)
-        danger_start_y = target_zone_center_y
+        target_zone_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
+        target_zone_top_y = target_zone_center_y - (target_zone_height // 2)
+        
+        danger_start_y = target_zone_top_y  # Start from TOP of target zone
         danger_end_y = int(h * 0.95)
         danger_distance_horizontal = int(w * 0.15)
 
@@ -294,10 +300,14 @@ class BoundaryAvoidanceSystem:
         cv2.putText(result, "FOCUSED DETECTION ZONE", (10, danger_start_y - 10), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
         
-        # Draw target zone center line
-        cv2.line(result, (0, target_zone_center_y), (w, target_zone_center_y), (255, 255, 0), 2)
-        cv2.putText(result, "TARGET ZONE CENTER", (10, target_zone_center_y - 10), 
+        # Draw target zone boundaries
+        target_zone_bottom_y = target_zone_center_y + (target_zone_height // 2)
+        cv2.line(result, (0, target_zone_top_y), (w, target_zone_top_y), (255, 255, 0), 2)
+        cv2.line(result, (0, target_zone_bottom_y), (w, target_zone_bottom_y), (255, 255, 0), 1)
+        cv2.putText(result, "TARGET ZONE TOP", (10, target_zone_top_y - 10), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
+        cv2.putText(result, "TARGET ZONE BOTTOM", (10, target_zone_bottom_y + 15), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
 
         # Draw side detection zones (only in focused area)
         cv2.rectangle(result, (0, danger_start_y), (danger_distance_horizontal, danger_end_y), (0, 100, 255), 2)
