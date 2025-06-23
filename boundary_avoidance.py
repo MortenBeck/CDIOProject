@@ -289,7 +289,7 @@ class BoundaryAvoidanceSystem:
 
         # === DANGER ZONES ===
         h, w = frame.shape[:2]
-        bottom_30_percent_y = int(h * 0.6) # Start at 60% down from top not 30%
+        bottom_30_percent_y = int(h * 0.7)
         collection_zone_y = int(h * 0.75)
         danger_distance_horizontal = int(w * 0.08)
 
