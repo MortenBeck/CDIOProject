@@ -101,7 +101,7 @@ CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
 COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
 MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
 MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
-COLLECTION_SPEED = 0.4  # Slower speed for precise collection
+COLLECTION_SPEED = 0.35  # Slower speed for precise collection
 
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
 CENTERING_TURN_DURATION = 0.25  # Slightly reduced from 0.2
