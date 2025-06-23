@@ -154,3 +154,10 @@ DELIVERY_ZONE_HSV_UPPER = np.array([80, 255, 255])
 DELIVERY_ZONE_MIN_AREA = 500    # Minimum area for delivery zone
 DELIVERY_ZONE_MAX_AREA = 50000  # Maximum area for delivery zone
 DELIVERY_CENTERING_TOLERANCE = 50  # Pixels tolerance for centering on delivery zone (increased)
+
+# === BOUNDARY AVOIDANCE TIMING ===
+BOUNDARY_TURN_DURATION = 0.6      # Seconds for left/right turns to avoid walls
+BOUNDARY_TURN_SPEED = 0.45         # Speed for avoidance turns
+BOUNDARY_BACKUP_DURATION = 0.5     # Seconds to back up from walls
+BOUNDARY_BACKUP_SPEED = 0.45       # Speed for backing up
+BOUNDARY_COMPOUND_TURN_DURATION = 0.8  # Longer turn for backup_and_turn maneuver

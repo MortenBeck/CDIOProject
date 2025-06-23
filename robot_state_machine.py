@@ -143,7 +143,7 @@ class RobotStateMachine:
             self.hardware.emergency_stop()
 
     def handle_avoiding_boundary(self, near_boundary):
-        """FIXED: Use the dedicated boundary system for all avoidance logic"""
+        """FIXED: Use the dedicated boundary system with configurable timing"""
         
         # Get avoidance command from the dedicated boundary system
         avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
@@ -155,38 +155,59 @@ class RobotStateMachine:
             self.hardware.stop_motors()
             time.sleep(0.1)
             
-            # Execute the command from boundary system
+            # Execute the command from boundary system using config values
             try:
                 if avoidance_command == 'turn_right':
                     self.logger.warning("↗️ Boundary avoidance: Turn right")
-                    self.hardware.turn_right(duration=0.6, speed=0.45)
+                    self.hardware.turn_right(
+                        duration=config.BOUNDARY_TURN_DURATION, 
+                        speed=config.BOUNDARY_TURN_SPEED
+                    )
                 elif avoidance_command == 'turn_left':
                     self.logger.warning("↖️ Boundary avoidance: Turn left")
-                    self.hardware.turn_left(duration=0.6, speed=0.45)
+                    self.hardware.turn_left(
+                        duration=config.BOUNDARY_TURN_DURATION, 
+                        speed=config.BOUNDARY_TURN_SPEED
+                    )
                 elif avoidance_command == 'move_backward':
                     self.logger.warning("⬇️ Boundary avoidance: Move backward")
-                    self.hardware.move_backward(duration=0.5, speed=0.45)
+                    self.hardware.move_backward(
+                        duration=config.BOUNDARY_BACKUP_DURATION, 
+                        speed=config.BOUNDARY_BACKUP_SPEED
+                    )
                 elif avoidance_command == 'backup_and_turn':
                     self.logger.warning("🚨 Boundary avoidance: Backup and turn")
-                    self.hardware.move_backward(duration=0.5, speed=0.45)
+                    self.hardware.move_backward(
+                        duration=config.BOUNDARY_BACKUP_DURATION, 
+                        speed=config.BOUNDARY_BACKUP_SPEED
+                    )
                     time.sleep(0.1)
-                    self.hardware.turn_right(duration=0.8, speed=0.45)
+                    self.hardware.turn_right(
+                        duration=config.BOUNDARY_COMPOUND_TURN_DURATION, 
+                        speed=config.BOUNDARY_TURN_SPEED
+                    )
                 else:
                     # Default fallback
                     self.logger.warning("🚨 Boundary avoidance: Default backup and turn")
-                    self.hardware.move_backward(duration=0.5, speed=0.4)
+                    self.hardware.move_backward(
+                        duration=config.BOUNDARY_BACKUP_DURATION, 
+                        speed=config.BOUNDARY_BACKUP_SPEED
+                    )
                     time.sleep(0.1)
-                    self.hardware.turn_right(duration=0.6, speed=0.4)
+                    self.hardware.turn_right(
+                        duration=config.BOUNDARY_TURN_DURATION, 
+                        speed=config.BOUNDARY_TURN_SPEED
+                    )
                 
                 # Allow movement to complete
                 time.sleep(0.2)
                 
             except Exception as e:
                 self.logger.error(f"❌ Boundary avoidance execution failed: {e}")
-                # Emergency fallback
+                # Emergency fallback using config
                 try:
-                    self.hardware.move_backward(duration=0.5, speed=0.4)
-                    self.hardware.turn_right(duration=0.5, speed=0.4)
+                    self.hardware.move_backward(duration=config.BOUNDARY_BACKUP_DURATION, speed=0.4)
+                    self.hardware.turn_right(duration=config.BOUNDARY_TURN_DURATION, speed=0.4)
                 except:
                     self.logger.error("❌ Emergency fallback also failed!")
         
