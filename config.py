@@ -158,6 +158,6 @@ DELIVERY_CENTERING_TOLERANCE = 50  # Pixels tolerance for centering on delivery 
 # === BOUNDARY AVOIDANCE TIMING ===
 BOUNDARY_TURN_DURATION = 0.6      # Seconds for left/right turns to avoid walls
 BOUNDARY_TURN_SPEED = 0.45         # Speed for avoidance turns
-BOUNDARY_BACKUP_DURATION = 0.5     # Seconds to back up from walls
+BOUNDARY_BACKUP_DURATION = 0.3     # Seconds to back up from walls
 BOUNDARY_BACKUP_SPEED = 0.45       # Speed for backing up
 BOUNDARY_COMPOUND_TURN_DURATION = 0.8  # Longer turn for backup_and_turn maneuver
