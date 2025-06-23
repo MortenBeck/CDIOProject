@@ -19,7 +19,7 @@ class RobotState(Enum):
     EMERGENCY_STOP = "emergency_stop"
 
 class RobotStateMachine:
-    """Handles all robot state transitions and behavior logic with delivery cycle"""
+    """Handles all robot state transitions and behavior logic with delivery cycle - FIXED BOUNDARY PRIORITY"""
     
     def __init__(self, hardware, vision):
         self.logger = logging.getLogger(__name__)
@@ -49,10 +49,14 @@ class RobotStateMachine:
         self.delivery_release_start_time = None
         self.delivery_search_start_time = None
         
-    def execute_state_machine(self, balls, near_boundary, nav_command, delivery_zones=None):
-        """Execute state logic with ball detection priority and delivery cycle"""
+        # BOUNDARY AVOIDANCE TRACKING - NEW
+        self.boundary_avoidance_count = 0
+        self.last_boundary_avoidance_time = None
         
-        # HIGH PRIORITY: Never interrupt active collection or delivery operations
+    def execute_state_machine(self, balls, near_boundary, nav_command, delivery_zones=None):
+        """Execute state logic with PROPER boundary avoidance priority"""
+        
+        # === HIGHEST PRIORITY: Never interrupt active collection or delivery operations ===
         if self.state in [RobotState.COLLECTING_BALL, RobotState.DELIVERY_MODE, 
                          RobotState.DELIVERY_ZONE_SEARCH, RobotState.DELIVERY_ZONE_CENTERING,
                          RobotState.DELIVERY_RELEASING, RobotState.POST_DELIVERY_TURN]:
@@ -71,37 +75,65 @@ class RobotStateMachine:
                 self.handle_post_delivery_turn()
             return
         
-        # CHECK FOR DELIVERY TRIGGER
+        # === SECOND PRIORITY: Check for delivery trigger ===
         ball_count = self.hardware.get_ball_count()
         if ball_count >= config.BALLS_BEFORE_DELIVERY and self.state != RobotState.DELIVERY_MODE:
             self.logger.info(f"🚚 DELIVERY TRIGGERED: {ball_count}/{config.BALLS_BEFORE_DELIVERY} balls collected")
             self.state = RobotState.DELIVERY_MODE
             return
         
-        # MEDIUM PRIORITY: Protect ball operations if we have good targets
+        # === THIRD PRIORITY: CRITICAL BOUNDARY AVOIDANCE ===
+        # This is the KEY FIX - check boundary BEFORE ball operations
+        if near_boundary:
+            # Get detailed boundary info from the vision system
+            boundary_status = self.vision.boundary_system.get_status()
+            triggered_zones = boundary_status.get('danger_zones', [])
+            
+            # ENHANCED LOGIC: Always avoid boundary if detected, regardless of balls
+            should_avoid = len(triggered_zones) > 0
+            
+            if should_avoid:
+                # Track repeated boundary encounters
+                current_time = time.time()
+                if (self.last_boundary_avoidance_time is None or 
+                    current_time - self.last_boundary_avoidance_time > 3.0):
+                    self.boundary_avoidance_count = 1
+                else:
+                    self.boundary_avoidance_count += 1
+                
+                self.last_boundary_avoidance_time = current_time
+                
+                # Log detailed boundary avoidance info
+                self.logger.warning(f"🚨 BOUNDARY AVOIDANCE TRIGGERED (#{self.boundary_avoidance_count})")
+                self.logger.warning(f"   Triggered zones: {triggered_zones}")
+                self.logger.warning(f"   Current state: {self.state.value}")
+                
+                # FORCE boundary avoidance regardless of current state
+                if self.state == RobotState.CENTERING_BALL:
+                    self.logger.warning("   Interrupting ball centering for safety!")
+                    self._reset_centering_state()
+                
+                self.state = RobotState.AVOIDING_BOUNDARY
+                return
+        
+        # === FOURTH PRIORITY: Regular ball operations ===
+        # Only execute ball operations if no boundary detected
+        
         confident_balls = [ball for ball in balls if ball.confidence > 0.4] if balls else []
         has_good_target = bool(confident_balls)
-        
-        # SMART BOUNDARY AVOIDANCE
-        should_avoid_boundary = (
-            near_boundary and (
-                not has_good_target or 
-                self.state == RobotState.SEARCHING or
-                self._is_boundary_critical()
-            )
-        )
-        
-        if should_avoid_boundary:
-            reason = "no_balls" if not has_good_target else "searching" if self.state == RobotState.SEARCHING else "critical_proximity"
-            if config.DEBUG_MOVEMENT:
-                self.logger.info(f"⚠️ Boundary avoidance triggered: {reason}")
-            self.state = RobotState.AVOIDING_BOUNDARY
         
         # Execute current state
         if self.state == RobotState.SEARCHING:
             self.handle_searching(balls, nav_command)
             
         elif self.state == RobotState.CENTERING_BALL:
+            # Extra safety check - abort centering if boundary detected
+            if near_boundary:
+                self.logger.warning("🚨 Boundary detected during centering - aborting centering!")
+                self._reset_centering_state()
+                self.state = RobotState.AVOIDING_BOUNDARY
+                return
+                
             # Check for centering timeout and force progression
             if hasattr(self, 'centering_start_time') and self.centering_start_time:
                 elapsed = time.time() - self.centering_start_time
@@ -122,128 +154,61 @@ class RobotStateMachine:
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
 
-    def handle_delivery_mode(self, delivery_zones=None):
-        """Start delivery sequence - look for green zones"""
-        self.logger.info("🚚 DELIVERY MODE: Looking for green delivery zones")
-        self.state = RobotState.DELIVERY_ZONE_SEARCH
-        self.delivery_search_start_time = time.time()
-    
-    def handle_delivery_zone_search(self, delivery_zones=None):
-        """Search for green delivery zones"""
-        if delivery_zones and len(delivery_zones) > 0:
-            # Found delivery zone(s)
-            target_zone = self.vision.get_target_delivery_zone(delivery_zones)
-            if target_zone:
-                self.logger.info(f"🎯 Found delivery zone at {target_zone.center}, centering on it")
-                self.state = RobotState.DELIVERY_ZONE_CENTERING
-                return
-        
-        # No zones found - keep searching
-        elapsed_search = time.time() - self.delivery_search_start_time if self.delivery_search_start_time else 0
-        
-        if elapsed_search > 60.0:  # Search timeout
-            self.logger.warning("⏰ Delivery zone search timeout - delivering in place")
-            self.state = RobotState.DELIVERY_RELEASING
-            self.delivery_release_start_time = time.time()
-            return
-        
-        # Continue searching pattern
-        if config.DEBUG_MOVEMENT:
-            self.logger.info("🔍 Searching for green delivery zones...")
-        
-        # Simple search pattern
-        self.hardware.turn_right(duration=0.8, speed=0.4)
-        time.sleep(0.2)
-    
-    def handle_delivery_zone_centering(self, delivery_zones=None):
-        """Center robot on delivery zone"""
-        if not delivery_zones:
-            self.logger.warning("Lost delivery zone during centering - searching again")
-            self.state = RobotState.DELIVERY_ZONE_SEARCH
-            self.delivery_search_start_time = time.time()
-            return
-        
-        target_zone = self.vision.get_target_delivery_zone(delivery_zones)
-        if not target_zone:
-            self.logger.warning("No target delivery zone - searching again")
-            self.state = RobotState.DELIVERY_ZONE_SEARCH
-            self.delivery_search_start_time = time.time()
-            return
-        
-        # Check if centered
-        if target_zone.is_centered:
-            self.logger.info("✅ Delivery zone CENTERED - starting ball release!")
-            self.state = RobotState.DELIVERY_RELEASING
-            self.delivery_release_start_time = time.time()
-            return
-        
-        # Get centering command
-        centering_command = self.vision.get_delivery_zone_centering_command(target_zone)
-        
-        if centering_command == "turn_right":
-            self.hardware.turn_right(duration=0.25, speed=config.CENTERING_SPEED)
-            if config.DEBUG_MOVEMENT:
-                self.logger.info("🎯 Centering delivery zone: turn right")
-        elif centering_command == "turn_left":
-            self.hardware.turn_left(duration=0.25, speed=config.CENTERING_SPEED)
-            if config.DEBUG_MOVEMENT:
-                self.logger.info("🎯 Centering delivery zone: turn left")
-        elif centering_command == "centered":
-            # Already centered - move to release
-            self.logger.info("✅ Delivery zone centered - starting release")
-            self.state = RobotState.DELIVERY_RELEASING
-            self.delivery_release_start_time = time.time()
-        
-        time.sleep(0.1)
-    
-    def handle_delivery_releasing(self):
-        """Handle ball release sequence with timing"""
-        if not hasattr(self, '_delivery_release_started'):
-            self.logger.info("📦 STARTING BALL RELEASE SEQUENCE")
+    def handle_avoiding_boundary(self, near_boundary):
+        """ENHANCED boundary avoidance with better logging and safety"""
+        if near_boundary:
+            # Get specific avoidance command from vision system
+            avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
             
-            # Set SS to STORE position and open SF
-            self.hardware.servo_ss_to_store()
-            time.sleep(0.3)
-            self.hardware.servo_sf_to_open()
+            self.logger.warning(f"🚨 EXECUTING BOUNDARY AVOIDANCE: {avoidance_command}")
             
-            self.logger.info(f"🔓 SF door opened for {config.DELIVERY_DOOR_OPEN_TIME} seconds")
-            self._delivery_release_started = True
-            self.delivery_release_start_time = time.time()
-        
-        # Check if door open time has elapsed
-        elapsed = time.time() - self.delivery_release_start_time
-        if elapsed >= config.DELIVERY_DOOR_OPEN_TIME:
-            # Close door and finish release
-            self.hardware.servo_sf_to_closed()
-            self.logger.info("🔒 SF door closed - delivery complete")
+            # Stop and execute avoidance
+            self.hardware.stop_motors()
+            time.sleep(0.15)  # Slightly longer pause for stability
             
-            # Clear ball count
-            balls_released = len(self.hardware.collected_balls)
-            self.hardware.collected_balls.clear()
-            self.logger.info(f"✅ Released {balls_released} balls")
+            if avoidance_command == 'move_backward':
+                self.logger.warning("⬇️ Backing away from boundary")
+                self.hardware.move_backward(duration=0.4, speed=0.4)  # Slightly longer backup
+            elif avoidance_command == 'turn_right':
+                self.logger.warning("↗️ Turning right to avoid boundary")
+                self.hardware.turn_right(duration=0.5, speed=0.4)  # Slightly longer turn
+            elif avoidance_command == 'turn_left':
+                self.logger.warning("↖️ Turning left to avoid boundary")
+                self.hardware.turn_left(duration=0.5, speed=0.4)  # Slightly longer turn
+            elif avoidance_command == 'backup_and_turn':
+                self.logger.warning("🚨 CENTER wall detected - backing up and turning")
+                self.hardware.move_backward(duration=0.4, speed=0.4)
+                time.sleep(0.1)
+                self.hardware.turn_right(duration=0.7, speed=0.4)  # Longer turn for better clearance
+            else:
+                # Default: back up and turn (fallback)
+                self.logger.warning("🚨 Default avoidance: backup and turn right")
+                self.hardware.move_backward(duration=0.4, speed=0.4)
+                time.sleep(0.1)
+                self.hardware.turn_right(duration=0.5, speed=0.4)
             
-            # Move to post-delivery turn
-            self.state = RobotState.POST_DELIVERY_TURN
-            self.post_delivery_start_time = time.time()
-            del self._delivery_release_started
-    
-    def handle_post_delivery_turn(self):
-        """Handle post-delivery turn and restart collection cycle"""
-        if self.post_delivery_start_time is None:
-            self.post_delivery_start_time = time.time()
-            self.logger.info(f"🔄 POST-DELIVERY: Turning right for {config.POST_DELIVERY_TURN_DURATION}s")
-            self.hardware.turn_right(duration=config.POST_DELIVERY_TURN_DURATION, speed=0.5)
-        
-        elapsed = time.time() - self.post_delivery_start_time
-        if elapsed >= config.POST_DELIVERY_TURN_DURATION + 0.5:  # Add small buffer
-            # Set servos back to competition positions
-            self.hardware.servo_ss_to_driving()
-            self.hardware.servo_sf_to_closed()
+            # Longer settling time after avoidance
+            time.sleep(0.2)
             
-            self.logger.info("🔄 POST-DELIVERY COMPLETE: Restarting collection cycle")
-            self.state = RobotState.SEARCHING
-            self.post_delivery_start_time = None
-            self.search_pattern_index = 0  # Reset search pattern
+            # Log completion of avoidance maneuver
+            self.logger.warning(f"✅ Boundary avoidance maneuver #{self.boundary_avoidance_count} completed")
+            
+        else:
+            # Clear of boundary - but be more careful about resuming
+            # Check boundary status one more time before resuming
+            boundary_status = self.vision.boundary_system.get_status()
+            
+            if boundary_status['safe']:
+                self.logger.info("✅ Confirmed clear of boundary - resuming ball detection")
+                self.state = RobotState.SEARCHING
+                
+                # Reset boundary tracking
+                self.boundary_avoidance_count = 0
+                self.last_boundary_avoidance_time = None
+            else:
+                # Still detecting boundaries - stay in avoidance mode
+                self.logger.warning("⚠️ Still detecting boundaries - continuing avoidance")
+                time.sleep(0.3)
 
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
@@ -470,41 +435,128 @@ class RobotStateMachine:
             self.logger.info(f"Need more balls: {current_ball_count}/{delivery_target} - continuing search")
             self.state = RobotState.SEARCHING
 
-    def handle_avoiding_boundary(self, near_boundary):
-        """Handle boundary avoidance with simplified approach"""
-        if near_boundary:
-            self.logger.warning("⚠️ Executing boundary avoidance maneuver")
-            
-            # Get specific avoidance command
-            avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
-            
-            # Stop and execute avoidance
-            self.hardware.stop_motors()
-            time.sleep(0.1)
-            
-            if avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.3)
-            elif avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=0.4)
-            elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=0.4)
-            elif avoidance_command == 'backup_and_turn':
-                self.logger.warning("CENTER wall detected - backing up and turning")
-                self.hardware.move_backward(duration=0.3)
-                time.sleep(0.1)
-                self.hardware.turn_right(duration=0.6)
-            else:
-                # Default: back up and turn (fallback)
-                self.hardware.move_backward(duration=0.3)
-                time.sleep(0.1)
-                self.hardware.turn_right(duration=0.4)
-            
-            time.sleep(0.1)
-        else:
-            # Clear of boundary - return to ball detection immediately
+    def handle_delivery_mode(self, delivery_zones=None):
+        """Start delivery sequence - look for green zones"""
+        self.logger.info("🚚 DELIVERY MODE: Looking for green delivery zones")
+        self.state = RobotState.DELIVERY_ZONE_SEARCH
+        self.delivery_search_start_time = time.time()
+    
+    def handle_delivery_zone_search(self, delivery_zones=None):
+        """Search for green delivery zones"""
+        if delivery_zones and len(delivery_zones) > 0:
+            # Found delivery zone(s)
+            target_zone = self.vision.get_target_delivery_zone(delivery_zones)
+            if target_zone:
+                self.logger.info(f"🎯 Found delivery zone at {target_zone.center}, centering on it")
+                self.state = RobotState.DELIVERY_ZONE_CENTERING
+                return
+        
+        # No zones found - keep searching
+        elapsed_search = time.time() - self.delivery_search_start_time if self.delivery_search_start_time else 0
+        
+        if elapsed_search > 60.0:  # Search timeout
+            self.logger.warning("⏰ Delivery zone search timeout - delivering in place")
+            self.state = RobotState.DELIVERY_RELEASING
+            self.delivery_release_start_time = time.time()
+            return
+        
+        # Continue searching pattern
+        if config.DEBUG_MOVEMENT:
+            self.logger.info("🔍 Searching for green delivery zones...")
+        
+        # Simple search pattern
+        self.hardware.turn_right(duration=0.8, speed=0.4)
+        time.sleep(0.2)
+    
+    def handle_delivery_zone_centering(self, delivery_zones=None):
+        """Center robot on delivery zone"""
+        if not delivery_zones:
+            self.logger.warning("Lost delivery zone during centering - searching again")
+            self.state = RobotState.DELIVERY_ZONE_SEARCH
+            self.delivery_search_start_time = time.time()
+            return
+        
+        target_zone = self.vision.get_target_delivery_zone(delivery_zones)
+        if not target_zone:
+            self.logger.warning("No target delivery zone - searching again")
+            self.state = RobotState.DELIVERY_ZONE_SEARCH
+            self.delivery_search_start_time = time.time()
+            return
+        
+        # Check if centered
+        if target_zone.is_centered:
+            self.logger.info("✅ Delivery zone CENTERED - starting ball release!")
+            self.state = RobotState.DELIVERY_RELEASING
+            self.delivery_release_start_time = time.time()
+            return
+        
+        # Get centering command
+        centering_command = self.vision.get_delivery_zone_centering_command(target_zone)
+        
+        if centering_command == "turn_right":
+            self.hardware.turn_right(duration=0.25, speed=config.CENTERING_SPEED)
             if config.DEBUG_MOVEMENT:
-                self.logger.info("✅ Clear of boundary - resuming ball detection")
+                self.logger.info("🎯 Centering delivery zone: turn right")
+        elif centering_command == "turn_left":
+            self.hardware.turn_left(duration=0.25, speed=config.CENTERING_SPEED)
+            if config.DEBUG_MOVEMENT:
+                self.logger.info("🎯 Centering delivery zone: turn left")
+        elif centering_command == "centered":
+            # Already centered - move to release
+            self.logger.info("✅ Delivery zone centered - starting release")
+            self.state = RobotState.DELIVERY_RELEASING
+            self.delivery_release_start_time = time.time()
+        
+        time.sleep(0.1)
+    
+    def handle_delivery_releasing(self):
+        """Handle ball release sequence with timing"""
+        if not hasattr(self, '_delivery_release_started'):
+            self.logger.info("📦 STARTING BALL RELEASE SEQUENCE")
+            
+            # Set SS to STORE position and open SF
+            self.hardware.servo_ss_to_store()
+            time.sleep(0.3)
+            self.hardware.servo_sf_to_open()
+            
+            self.logger.info(f"🔓 SF door opened for {config.DELIVERY_DOOR_OPEN_TIME} seconds")
+            self._delivery_release_started = True
+            self.delivery_release_start_time = time.time()
+        
+        # Check if door open time has elapsed
+        elapsed = time.time() - self.delivery_release_start_time
+        if elapsed >= config.DELIVERY_DOOR_OPEN_TIME:
+            # Close door and finish release
+            self.hardware.servo_sf_to_closed()
+            self.logger.info("🔒 SF door closed - delivery complete")
+            
+            # Clear ball count
+            balls_released = len(self.hardware.collected_balls)
+            self.hardware.collected_balls.clear()
+            self.logger.info(f"✅ Released {balls_released} balls")
+            
+            # Move to post-delivery turn
+            self.state = RobotState.POST_DELIVERY_TURN
+            self.post_delivery_start_time = time.time()
+            del self._delivery_release_started
+    
+    def handle_post_delivery_turn(self):
+        """Handle post-delivery turn and restart collection cycle"""
+        if self.post_delivery_start_time is None:
+            self.post_delivery_start_time = time.time()
+            self.logger.info(f"🔄 POST-DELIVERY: Turning right for {config.POST_DELIVERY_TURN_DURATION}s")
+            self.hardware.turn_right(duration=config.POST_DELIVERY_TURN_DURATION, speed=0.5)
+        
+        elapsed = time.time() - self.post_delivery_start_time
+        if elapsed >= config.POST_DELIVERY_TURN_DURATION + 0.5:  # Add small buffer
+            # Set servos back to competition positions
+            self.hardware.servo_ss_to_driving()
+            self.hardware.servo_sf_to_closed()
+            
+            self.logger.info("🔄 POST-DELIVERY COMPLETE: Restarting collection cycle")
             self.state = RobotState.SEARCHING
+            self.post_delivery_start_time = None
+            self.search_pattern_index = 0  # Reset search pattern
 
     def execute_search_pattern(self):
         """Execute search pattern with better timing"""
