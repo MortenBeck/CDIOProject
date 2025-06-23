@@ -141,7 +141,7 @@ class RobotStateMachine:
         # No zones found - keep searching
         elapsed_search = time.time() - self.delivery_search_start_time if self.delivery_search_start_time else 0
         
-        if elapsed_search > 15.0:  # Search timeout
+        if elapsed_search > 60.0:  # Search timeout
             self.logger.warning("⏰ Delivery zone search timeout - delivering in place")
             self.state = RobotState.DELIVERY_RELEASING
             self.delivery_release_start_time = time.time()
