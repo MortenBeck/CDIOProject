@@ -39,9 +39,11 @@ class BoundaryAvoidanceSystem:
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # Red boundary detection with wider ranges
-        lower_red1 = np.array([0, 150, 100])
-        upper_red1 = np.array([15, 255, 255])
-        lower_red2 = np.array([165, 150, 100])
+        lower_red1 = np.array([0, 50, 50])      # Lowered saturation from 150 to 50
+        upper_red1 = np.array([15, 255, 255])   # Extended hue range to 15
+        
+        # Range 2: Upper red hues (160-180) - More permissive  
+        lower_red2 = np.array([160, 50, 50])    # Lowered saturation from 150 to 50
         upper_red2 = np.array([180, 255, 255])
 
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
@@ -109,9 +111,11 @@ class BoundaryAvoidanceSystem:
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # Red wall detection - same parameters as before
-        lower_red1 = np.array([0, 150, 100])
-        upper_red1 = np.array([15, 255, 255])
-        lower_red2 = np.array([165, 150, 100])
+        lower_red1 = np.array([0, 50, 50])      # Lowered saturation from 150 to 50
+        upper_red1 = np.array([15, 255, 255])   # Extended hue range to 15
+        
+        # Range 2: Upper red hues (160-180) - More permissive  
+        lower_red2 = np.array([160, 50, 50])    # Lowered saturation from 150 to 50
         upper_red2 = np.array([180, 255, 255])
 
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
