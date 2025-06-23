@@ -19,7 +19,7 @@ class RobotState(Enum):
     EMERGENCY_STOP = "emergency_stop"
 
 class RobotStateMachine:
-    """Handles all robot state transitions and behavior logic with delivery cycle - FIXED BOUNDARY PRIORITY"""
+    """Handles all robot state transitions and behavior logic with delivery cycle - FIXED BOUNDARY SYSTEM"""
     
     def __init__(self, hardware, vision):
         self.logger = logging.getLogger(__name__)
@@ -49,9 +49,12 @@ class RobotStateMachine:
         self.delivery_release_start_time = None
         self.delivery_search_start_time = None
         
+        # REMOVED: Boundary tracking variables - boundary_avoidance.py handles this
+        # self.boundary_avoidance_count = 0
+        # self.last_boundary_avoidance_time = None
         
     def execute_state_machine(self, balls, near_boundary, nav_command, delivery_zones=None):
-        """Execute state logic with PROPER boundary avoidance priority"""
+        """Execute state logic with PROPER boundary avoidance delegation"""
         
         # === HIGHEST PRIORITY: Never interrupt active collection or delivery operations ===
         if self.state in [RobotState.COLLECTING_BALL, RobotState.DELIVERY_MODE, 
@@ -79,39 +82,23 @@ class RobotStateMachine:
             self.state = RobotState.DELIVERY_MODE
             return
         
-        # === THIRD PRIORITY: CRITICAL BOUNDARY AVOIDANCE ===
-        # This is the KEY FIX - check boundary BEFORE ball operations
+        # === THIRD PRIORITY: BOUNDARY AVOIDANCE (using boundary_avoidance.py) ===
         if near_boundary:
-            # Get detailed boundary info from the vision system
+            # Get detailed boundary status from the dedicated boundary system
             boundary_status = self.vision.boundary_system.get_status()
-            triggered_zones = boundary_status.get('danger_zones', [])
             
-            # ENHANCED LOGIC: Always avoid boundary if detected, regardless of balls
-            should_avoid = len(triggered_zones) > 0
-            
-            if should_avoid:
-                # Track repeated boundary encounters
-                current_time = time.time()
-                if (self.last_boundary_avoidance_time is None or 
-                    current_time - self.last_boundary_avoidance_time > 3.0):
-                    self.boundary_avoidance_count = 1
-                else:
-                    self.boundary_avoidance_count += 1
-                
-                self.last_boundary_avoidance_time = current_time
-                
-                # Log detailed boundary avoidance info
-                self.logger.warning(f"🚨 BOUNDARY AVOIDANCE TRIGGERED (#{self.boundary_avoidance_count})")
-                self.logger.warning(f"   Triggered zones: {triggered_zones}")
+            if not boundary_status['safe']:
+                self.logger.warning(f"🚨 BOUNDARY AVOIDANCE TRIGGERED")
+                self.logger.warning(f"   Danger zones: {boundary_status['danger_zones']}")
                 self.logger.warning(f"   Current state: {self.state.value}")
                 
-                # FORCE boundary avoidance regardless of current state
+                # Interrupt centering if necessary for safety
                 if self.state == RobotState.CENTERING_BALL:
                     self.logger.warning("   Interrupting ball centering for safety!")
                     self._reset_centering_state()
                 
                 self.state = RobotState.AVOIDING_BOUNDARY
-                # IMMEDIATE EXECUTION - Don't return, execute avoidance now
+                # Execute boundary avoidance immediately
                 self.handle_avoiding_boundary(near_boundary)
                 return
         
@@ -149,55 +136,80 @@ class RobotStateMachine:
             self.handle_approaching_ball(balls, nav_command)
             
         elif self.state == RobotState.AVOIDING_BOUNDARY:
-            # FIXED: Always handle avoiding boundary when in this state
+            # Handle boundary avoidance using the dedicated system
             self.handle_avoiding_boundary(near_boundary)
             
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
 
     def handle_avoiding_boundary(self, near_boundary):
-        """SIMPLIFIED boundary avoidance using the dedicated boundary system"""
+        """FIXED: Use the dedicated boundary system for all avoidance logic"""
         
         # Get avoidance command from the dedicated boundary system
         avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
         
         if avoidance_command:
-            self.logger.warning(f"?? EXECUTING BOUNDARY AVOIDANCE: {avoidance_command}")
+            self.logger.warning(f"🚨 EXECUTING BOUNDARY AVOIDANCE: {avoidance_command}")
             
             # Stop current movement
             self.hardware.stop_motors()
             time.sleep(0.1)
             
             # Execute the command from boundary system
-            if avoidance_command == 'turn_right':
-                self.hardware.turn_right(duration=0.6, speed=0.45)
-            elif avoidance_command == 'turn_left':
-                self.hardware.turn_left(duration=0.6, speed=0.45)
-            elif avoidance_command == 'move_backward':
-                self.hardware.move_backward(duration=0.5, speed=0.45)
-            elif avoidance_command == 'backup_and_turn':
-                self.hardware.move_backward(duration=0.5, speed=0.45)
-                time.sleep(0.1)
-                self.hardware.turn_right(duration=0.8, speed=0.45)
-            else:
-                # Default fallback
-                self.hardware.move_backward(duration=0.5, speed=0.4)
-                self.hardware.turn_right(duration=0.6, speed=0.4)
+            try:
+                if avoidance_command == 'turn_right':
+                    self.logger.warning("↗️ Boundary avoidance: Turn right")
+                    self.hardware.turn_right(duration=0.6, speed=0.45)
+                elif avoidance_command == 'turn_left':
+                    self.logger.warning("↖️ Boundary avoidance: Turn left")
+                    self.hardware.turn_left(duration=0.6, speed=0.45)
+                elif avoidance_command == 'move_backward':
+                    self.logger.warning("⬇️ Boundary avoidance: Move backward")
+                    self.hardware.move_backward(duration=0.5, speed=0.45)
+                elif avoidance_command == 'backup_and_turn':
+                    self.logger.warning("🚨 Boundary avoidance: Backup and turn")
+                    self.hardware.move_backward(duration=0.5, speed=0.45)
+                    time.sleep(0.1)
+                    self.hardware.turn_right(duration=0.8, speed=0.45)
+                else:
+                    # Default fallback
+                    self.logger.warning("🚨 Boundary avoidance: Default backup and turn")
+                    self.hardware.move_backward(duration=0.5, speed=0.4)
+                    time.sleep(0.1)
+                    self.hardware.turn_right(duration=0.6, speed=0.4)
+                
+                # Allow movement to complete
+                time.sleep(0.2)
+                
+            except Exception as e:
+                self.logger.error(f"❌ Boundary avoidance execution failed: {e}")
+                # Emergency fallback
+                try:
+                    self.hardware.move_backward(duration=0.5, speed=0.4)
+                    self.hardware.turn_right(duration=0.5, speed=0.4)
+                except:
+                    self.logger.error("❌ Emergency fallback also failed!")
+        
+        # Check if we're clear using the boundary system
+        ret, frame = self.vision.get_frame()
+        if ret:
+            # Fresh boundary check using the dedicated system
+            still_near_boundary = self.vision.boundary_system.detect_boundaries(frame)
+            boundary_status = self.vision.boundary_system.get_status()
             
-            # Check if we're clear using the boundary system
-            time.sleep(0.2)
-            ret, frame = self.vision.get_frame()
-            if ret:
-                still_near_boundary = self.vision.boundary_system.detect_boundaries(frame)
-                if not still_near_boundary:
-                    self.logger.info("? Boundary avoidance successful - resuming normal operation")
-                    self.state = RobotState.SEARCHING
-                # If still near boundary, stay in avoidance mode for next iteration
+            if boundary_status['safe'] and not still_near_boundary:
+                self.logger.info("✅ Boundary avoidance successful - resuming normal operation")
+                self.state = RobotState.SEARCHING
+            else:
+                # Still detecting boundaries - log details and continue avoidance
+                self.logger.warning("⚠️ Still detecting boundaries after avoidance")
+                self.logger.warning(f"⚠️ Remaining danger zones: {boundary_status.get('danger_zones', [])}")
+                # Stay in AVOIDING_BOUNDARY state for next iteration
         else:
-            # No boundary detected - return to searching
-            self.logger.info("? No boundary detected - resuming normal operations")
+            # Can't get frame - assume we're clear
+            self.logger.warning("⚠️ Can't verify boundary status - assuming clear")
             self.state = RobotState.SEARCHING
-    
+
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
         if balls:
