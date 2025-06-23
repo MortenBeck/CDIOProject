@@ -246,7 +246,7 @@ class BoundaryAvoidanceSystem:
         return danger_detected
 
     def get_avoidance_command(self, frame) -> Optional[str]:
-        """Get avoidance command based on wall detection"""
+        """Get avoidance command based on wall detection - UNIFIED APPROACH"""
         danger_detected = self.detect_boundaries(frame)
 
         if not danger_detected:
@@ -255,19 +255,12 @@ class BoundaryAvoidanceSystem:
         # Analyze which walls are triggered to determine best avoidance
         triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
 
-        # Simple priority system
-        if 'center_forward' in triggered_zones:
-            return 'backup_and_turn'      # Backup and turn for center walls
-        elif 'left' in triggered_zones and 'right' in triggered_zones:
-            return 'backup_and_turn'      # Both sides blocked - backup
-        elif 'left' in triggered_zones:
-            return 'turn_right'           # Turn away from left wall
-        elif 'right' in triggered_zones:
-            return 'turn_left'            # Turn away from right wall
-        elif 'bottom' in triggered_zones:
-            return 'turn_right'           # Simple turn for bottom wall
-        else:
-            return 'turn_right'           # Default safe action
+        if config.DEBUG_VISION:
+            self.logger.info(f"Wall avoidance: detected zones {triggered_zones} -> backup_and_turn")
+
+        # UNIFIED STRATEGY: Always backup and turn right for any wall detection
+        # This prevents oscillation in corners and provides consistent behavior
+        return 'backup_and_turn'
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
         """Draw boundary detection overlays on frame - FOCUSED VERSION"""
