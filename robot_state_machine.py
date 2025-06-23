@@ -114,6 +114,8 @@ class RobotStateMachine:
                     self._reset_centering_state()
                 
                 self.state = RobotState.AVOIDING_BOUNDARY
+                # IMMEDIATE EXECUTION - Don't return, execute avoidance now
+                self.handle_avoiding_boundary(near_boundary)
                 return
         
         # === FOURTH PRIORITY: Regular ball operations ===
@@ -132,6 +134,7 @@ class RobotStateMachine:
                 self.logger.warning("🚨 Boundary detected during centering - aborting centering!")
                 self._reset_centering_state()
                 self.state = RobotState.AVOIDING_BOUNDARY
+                self.handle_avoiding_boundary(near_boundary)
                 return
                 
             # Check for centering timeout and force progression
@@ -149,67 +152,122 @@ class RobotStateMachine:
             self.handle_approaching_ball(balls, nav_command)
             
         elif self.state == RobotState.AVOIDING_BOUNDARY:
+            # FIXED: Always handle avoiding boundary when in this state
             self.handle_avoiding_boundary(near_boundary)
             
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
 
     def handle_avoiding_boundary(self, near_boundary):
-        """ENHANCED boundary avoidance with better logging and safety"""
-        if near_boundary:
+        """ENHANCED boundary avoidance with better logging and safety - FIXED EXECUTION"""
+        
+        # CRITICAL FIX: Always try to avoid if we're in this state, even if near_boundary becomes False
+        # This prevents getting stuck when boundary detection is intermittent
+        
+        if near_boundary or self.state == RobotState.AVOIDING_BOUNDARY:
             # Get specific avoidance command from vision system
             avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
             
             self.logger.warning(f"🚨 EXECUTING BOUNDARY AVOIDANCE: {avoidance_command}")
             
-            # Stop and execute avoidance
+            # Stop and execute avoidance - ENSURED EXECUTION
             self.hardware.stop_motors()
-            time.sleep(0.15)  # Slightly longer pause for stability
+            time.sleep(0.2)  # Longer pause for stability
             
-            if avoidance_command == 'move_backward':
-                self.logger.warning("⬇️ Backing away from boundary")
-                self.hardware.move_backward(duration=0.4, speed=0.4)  # Slightly longer backup
-            elif avoidance_command == 'turn_right':
-                self.logger.warning("↗️ Turning right to avoid boundary")
-                self.hardware.turn_right(duration=0.5, speed=0.4)  # Slightly longer turn
-            elif avoidance_command == 'turn_left':
-                self.logger.warning("↖️ Turning left to avoid boundary")
-                self.hardware.turn_left(duration=0.5, speed=0.4)  # Slightly longer turn
-            elif avoidance_command == 'backup_and_turn':
-                self.logger.warning("🚨 CENTER wall detected - backing up and turning")
-                self.hardware.move_backward(duration=0.4, speed=0.4)
-                time.sleep(0.1)
-                self.hardware.turn_right(duration=0.7, speed=0.4)  # Longer turn for better clearance
-            else:
-                # Default: back up and turn (fallback)
-                self.logger.warning("🚨 Default avoidance: backup and turn right")
-                self.hardware.move_backward(duration=0.4, speed=0.4)
-                time.sleep(0.1)
-                self.hardware.turn_right(duration=0.5, speed=0.4)
+            # FIXED: Ensure actual movement execution with proper error handling
+            try:
+                if avoidance_command == 'move_backward':
+                    self.logger.warning("⬇️ Backing away from boundary")
+                    self.hardware.move_backward(duration=0.5, speed=0.45)  # Longer backup, higher speed
+                elif avoidance_command == 'turn_right':
+                    self.logger.warning("↗️ Turning right to avoid boundary")
+                    self.hardware.turn_right(duration=0.6, speed=0.45)  # Longer turn, higher speed
+                elif avoidance_command == 'turn_left':
+                    self.logger.warning("↖️ Turning left to avoid boundary")
+                    self.hardware.turn_left(duration=0.6, speed=0.45)  # Longer turn, higher speed
+                elif avoidance_command == 'backup_and_turn':
+                    self.logger.warning("🚨 CENTER wall detected - backing up and turning")
+                    self.hardware.move_backward(duration=0.5, speed=0.45)
+                    time.sleep(0.15)
+                    self.hardware.turn_right(duration=0.8, speed=0.45)  # Longer turn for better clearance
+                else:
+                    # Default: back up and turn (fallback) - ENHANCED
+                    self.logger.warning("🚨 Default avoidance: backup and turn right")
+                    self.hardware.move_backward(duration=0.5, speed=0.45)
+                    time.sleep(0.15)
+                    self.hardware.turn_right(duration=0.6, speed=0.45)
+                
+                # Longer settling time after avoidance
+                time.sleep(0.3)
+                
+                # Log completion of avoidance maneuver
+                self.logger.warning(f"✅ Boundary avoidance maneuver #{self.boundary_avoidance_count} completed")
+                
+            except Exception as e:
+                self.logger.error(f"❌ Boundary avoidance execution failed: {e}")
+                # Fallback emergency maneuver
+                try:
+                    self.hardware.move_backward(duration=0.5, speed=0.4)
+                    self.hardware.turn_right(duration=0.5, speed=0.4)
+                except:
+                    self.logger.error("❌ Emergency fallback maneuver also failed!")
             
-            # Longer settling time after avoidance
+            # ENHANCED: Multiple checks before resuming
+            # Wait a bit and re-check boundary status
             time.sleep(0.2)
             
-            # Log completion of avoidance maneuver
-            self.logger.warning(f"✅ Boundary avoidance maneuver #{self.boundary_avoidance_count} completed")
-            
-        else:
-            # Clear of boundary - but be more careful about resuming
-            # Check boundary status one more time before resuming
-            boundary_status = self.vision.boundary_system.get_status()
-            
-            if boundary_status['safe']:
-                self.logger.info("✅ Confirmed clear of boundary - resuming ball detection")
-                self.state = RobotState.SEARCHING
+            # Force a fresh boundary check
+            ret, frame = self.vision.get_frame()
+            if ret:
+                fresh_boundary_check = self.vision.boundary_system.detect_boundaries(frame)
+                boundary_status = self.vision.boundary_system.get_status()
                 
-                # Reset boundary tracking
-                self.boundary_avoidance_count = 0
-                self.last_boundary_avoidance_time = None
+                if boundary_status['safe'] and not fresh_boundary_check:
+                    self.logger.info("✅ Confirmed clear of boundary after avoidance - resuming ball detection")
+                    self.state = RobotState.SEARCHING
+                    
+                    # Reset boundary tracking
+                    self.boundary_avoidance_count = 0
+                    self.last_boundary_avoidance_time = None
+                    
+                    # Small pause before resuming normal operations
+                    time.sleep(0.2)
+                else:
+                    # Still detecting boundaries - continue avoidance but with more aggressive action
+                    self.logger.warning("⚠️ Still detecting boundaries after avoidance maneuver")
+                    triggered_zones = boundary_status.get('danger_zones', [])
+                    self.logger.warning(f"⚠️ Remaining danger zones: {triggered_zones}")
+                    
+                    # More aggressive avoidance if we're still stuck
+                    if self.boundary_avoidance_count >= 3:
+                        self.logger.warning("🚨 Multiple avoidance attempts - executing aggressive escape")
+                        try:
+                            self.hardware.move_backward(duration=0.8, speed=0.5)  # Longer backup
+                            time.sleep(0.1)
+                            self.hardware.turn_right(duration=1.0, speed=0.5)      # Longer turn
+                            time.sleep(0.3)
+                        except Exception as e:
+                            self.logger.error(f"❌ Aggressive escape failed: {e}")
+                    
+                    # Stay in avoidance mode but with timeout protection
+                    if self.boundary_avoidance_count > 10:
+                        self.logger.error("🚨 Too many boundary avoidance attempts - forcing search mode")
+                        self.state = RobotState.SEARCHING
+                        self.boundary_avoidance_count = 0
             else:
-                # Still detecting boundaries - stay in avoidance mode
-                self.logger.warning("⚠️ Still detecting boundaries - continuing avoidance")
-                time.sleep(0.3)
+                # Can't get frame - assume we're clear and resume
+                self.logger.warning("⚠️ Can't verify boundary status - assuming clear")
+                self.state = RobotState.SEARCHING
+        
+        else:
+            # This should rarely happen now, but keep as fallback
+            self.logger.info("✅ No boundary detected - resuming normal operations")
+            self.state = RobotState.SEARCHING
+            self.boundary_avoidance_count = 0
+            self.last_boundary_avoidance_time = None
 
+    # ... (rest of your existing methods remain the same)
+    
     def handle_searching(self, balls, nav_command):
         """Handle searching with centering requirement - WHITE BALLS ONLY"""
         if balls:
