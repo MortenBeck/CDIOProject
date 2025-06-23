@@ -181,11 +181,11 @@ class RobotStateMachine:
         centering_command = self.vision.get_delivery_zone_centering_command(target_zone)
         
         if centering_command == "turn_right":
-            self.hardware.turn_right(duration=0.25, speed=0.45)
+            self.hardware.turn_right(duration=0.25, speed=config.CENTERING_SPEED)
             if config.DEBUG_MOVEMENT:
                 self.logger.info("🎯 Centering delivery zone: turn right")
         elif centering_command == "turn_left":
-            self.hardware.turn_left(duration=0.25, speed=0.45)
+            self.hardware.turn_left(duration=0.25, speed=config.CENTERING_SPEED)
             if config.DEBUG_MOVEMENT:
                 self.logger.info("🎯 Centering delivery zone: turn left")
         elif centering_command == "centered":
