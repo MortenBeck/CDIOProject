@@ -106,7 +106,7 @@ COLLECTION_SPEED = 0.35  # Slower speed for precise collection
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
 CENTERING_TURN_DURATION = 0.25  # Slightly reduced from 0.2
 CENTERING_DRIVE_DURATION = 0.4  # Slightly reduced from 0.3
-CENTERING_SPEED = 0.45  # Slightly reduced from 0.4
+CENTERING_SPEED = 0.4  # Slightly reduced from 0.4
 
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [

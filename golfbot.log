@@ -1,0 +1,1836 @@
+2025-06-24 21:34:22,959 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-24 21:34:22,959 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-24 21:34:22,959 - motor_controller - INFO - Initializing motor controllers...
+2025-06-24 21:34:22,963 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-24 21:34:22,963 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-24 21:34:22,963 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-24 21:34:22,963 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-24 21:34:22,963 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-24 21:34:22,975 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-24 21:34:22,975 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-24 21:34:22,975 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-24 21:34:22,975 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-24 21:34:22,975 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-24 21:34:22,975 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-24 21:34:22,975 - __main__ - INFO - Detecting arena boundaries...
+2025-06-24 21:34:23,811 - boundary_avoidance - WARNING - ⚠️ Red area too small: 1380 < 30720
+2025-06-24 21:34:23,812 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-24 21:34:23,812 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-24 21:34:23,812 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-24 21:34:23,817 - competition_manager - INFO - Using new dashboard interface
+2025-06-24 21:34:23,945 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:34:23,945 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:34:23,945 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:34:24,249 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:34:24,753 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-24 21:34:25,753 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-24 21:34:25,753 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-24 21:34:25,753 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-24 21:34:25,753 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-24 21:34:25,753 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-24 21:34:26,595 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2882
+2025-06-24 21:34:26,596 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:26,618 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.87)
+2025-06-24 21:34:27,507 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2761
+2025-06-24 21:34:27,507 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:27,526 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:34:27,526 - robot_state_machine - INFO - Ball far from target (159px) - using aggressive centering
+2025-06-24 21:34:27,927 - robot_state_machine - INFO - Centering: forward (y_error: 159px, dist: 159px)
+2025-06-24 21:34:28,869 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3031
+2025-06-24 21:34:28,869 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:28,899 - robot_state_machine - INFO - Ball far from target (138px) - using aggressive centering
+2025-06-24 21:34:29,299 - robot_state_machine - INFO - Centering: forward (y_error: 137px, dist: 138px)
+2025-06-24 21:34:30,228 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3042
+2025-06-24 21:34:30,229 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:30,268 - robot_state_machine - INFO - Ball far from target (117px) - using aggressive centering
+2025-06-24 21:34:30,668 - robot_state_machine - INFO - Centering: forward (y_error: 115px, dist: 117px)
+2025-06-24 21:34:31,567 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3444
+2025-06-24 21:34:31,568 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:31,594 - robot_state_machine - INFO - Ball far from target (90px) - using aggressive centering
+2025-06-24 21:34:31,994 - robot_state_machine - INFO - Centering: forward (y_error: 87px, dist: 90px)
+2025-06-24 21:34:32,896 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3763
+2025-06-24 21:34:32,896 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:32,923 - robot_state_machine - INFO - Ball moderately close (64px) - using balanced centering
+2025-06-24 21:34:33,124 - robot_state_machine - INFO - Centering: turn right (x_error: 33px, dist: 64px)
+2025-06-24 21:34:34,098 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3746
+2025-06-24 21:34:34,098 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:34,123 - robot_state_machine - INFO - Ball moderately close (57px) - using balanced centering
+2025-06-24 21:34:34,523 - robot_state_machine - INFO - Centering: forward (y_error: 57px, dist: 57px)
+2025-06-24 21:34:35,443 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3979
+2025-06-24 21:34:35,443 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:35,474 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 21:34:36,456 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4100
+2025-06-24 21:34:36,456 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:36,481 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 21:34:37,468 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4137
+2025-06-24 21:34:37,468 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:37,498 - robot_state_machine - INFO - White ball STABLE in target zone! (took 10.0s, 6 attempts)
+2025-06-24 21:34:38,408 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3991
+2025-06-24 21:34:38,409 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:38,439 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.91)
+2025-06-24 21:34:38,439 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-24 21:34:38,439 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 21:34:38,439 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 21:34:38,439 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 21:34:38,439 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 21:34:38,439 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 21:34:39,048 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 21:34:40,099 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 21:34:40,099 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:34:40,909 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 21:34:40,909 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:34:42,480 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 21:34:42,480 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:34:44,000 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 21:34:44,000 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:34:45,571 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 21:34:45,571 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:34:46,841 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-24 21:34:46,841 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-24 21:34:46,841 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-24 21:34:46,841 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-24 21:34:46,842 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-24 21:34:47,801 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5413
+2025-06-24 21:34:47,801 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:47,832 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 21:34:48,725 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5341
+2025-06-24 21:34:48,725 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:48,749 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:34:50,848 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5433
+2025-06-24 21:34:50,848 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:50,878 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:34:52,997 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5035
+2025-06-24 21:34:52,997 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:34:53,020 - competition_manager - INFO - ============================================================
+2025-06-24 21:34:53,020 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-24 21:34:53,020 - competition_manager - INFO - ============================================================
+2025-06-24 21:34:53,020 - competition_manager - INFO - Total time: 27.3 seconds
+2025-06-24 21:34:53,020 - competition_manager - INFO - White balls collected: 1
+2025-06-24 21:34:53,020 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-24 21:34:53,020 - competition_manager - INFO - Final state: delivery_zone_search
+2025-06-24 21:34:53,020 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-24 21:34:53,020 - competition_manager - INFO - Arena detection: Fallback
+2025-06-24 21:34:53,020 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-24 21:34:53,020 - competition_manager - INFO - ============================================================
+2025-06-24 21:34:53,020 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:34:53,020 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:34:53,124 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:34:53,428 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:34:53,428 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:34:53,428 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-24 21:34:53,428 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:34:53,428 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:34:53,428 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:34:53,532 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:34:53,835 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:34:53,835 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:34:53,836 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-24 21:34:53,836 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-24 21:34:53,837 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-24 21:34:53,837 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-24 21:34:53,837 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-24 21:34:53,837 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-24 21:34:53,837 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-24 21:34:53,837 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:34:53,837 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:34:53,941 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:34:54,244 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:34:54,245 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-24 21:34:54,245 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-24 21:34:54,245 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:34:54,245 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-24 21:35:50,480 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-24 21:35:50,480 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-24 21:35:50,480 - motor_controller - INFO - Initializing motor controllers...
+2025-06-24 21:35:50,483 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-24 21:35:50,483 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-24 21:35:50,483 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-24 21:35:50,483 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-24 21:35:50,483 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-24 21:35:50,494 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-24 21:35:50,494 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-24 21:35:50,494 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-24 21:35:50,494 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-24 21:35:50,494 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-24 21:35:50,494 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-24 21:35:50,494 - __main__ - INFO - Detecting arena boundaries...
+2025-06-24 21:35:51,320 - boundary_avoidance - WARNING - ⚠️ Red area too small: 2100 < 30720
+2025-06-24 21:35:51,321 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-24 21:35:51,321 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-24 21:35:51,321 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-24 21:35:51,329 - competition_manager - INFO - Using new dashboard interface
+2025-06-24 21:35:51,459 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:35:51,460 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:35:51,460 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:35:51,763 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:35:52,267 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-24 21:35:53,267 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-24 21:35:53,268 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-24 21:35:53,268 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-24 21:35:53,268 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-24 21:35:53,268 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-24 21:35:54,107 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4734
+2025-06-24 21:35:54,107 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:35:54,132 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.86)
+2025-06-24 21:35:55,025 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4791
+2025-06-24 21:35:55,025 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:35:55,044 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:35:55,044 - robot_state_machine - INFO - Ball far from target (211px) - using aggressive centering
+2025-06-24 21:35:55,294 - robot_state_machine - INFO - Centering: turn right (x_error: 133px, dist: 211px)
+2025-06-24 21:35:56,220 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4731
+2025-06-24 21:35:56,220 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:35:56,239 - robot_state_machine - INFO - Ball far from target (185px) - using aggressive centering
+2025-06-24 21:35:56,489 - robot_state_machine - INFO - Centering: turn right (x_error: 81px, dist: 185px)
+2025-06-24 21:35:57,420 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2887
+2025-06-24 21:35:57,420 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:35:57,459 - robot_state_machine - INFO - Ball far from target (171px) - using aggressive centering
+2025-06-24 21:35:57,709 - robot_state_machine - INFO - Centering: turn right (x_error: 26px, dist: 171px)
+2025-06-24 21:35:58,606 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3034
+2025-06-24 21:35:58,606 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:35:58,638 - robot_state_machine - INFO - Ball far from target (169px) - using aggressive centering
+2025-06-24 21:35:59,039 - robot_state_machine - INFO - Centering: forward (y_error: 169px, dist: 169px)
+2025-06-24 21:35:59,952 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2887
+2025-06-24 21:35:59,952 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:35:59,985 - robot_state_machine - INFO - Ball far from target (154px) - using aggressive centering
+2025-06-24 21:36:00,386 - robot_state_machine - INFO - Centering: forward (y_error: 154px, dist: 154px)
+2025-06-24 21:36:01,301 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2918
+2025-06-24 21:36:01,301 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:01,328 - robot_state_machine - INFO - Ball far from target (137px) - using aggressive centering
+2025-06-24 21:36:01,728 - robot_state_machine - INFO - Centering: forward (y_error: 137px, dist: 137px)
+2025-06-24 21:36:02,671 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2979
+2025-06-24 21:36:02,671 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:02,696 - robot_state_machine - INFO - Ball far from target (116px) - using aggressive centering
+2025-06-24 21:36:03,096 - robot_state_machine - INFO - Centering: forward (y_error: 116px, dist: 116px)
+2025-06-24 21:36:03,998 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3466
+2025-06-24 21:36:03,998 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:04,028 - robot_state_machine - INFO - Ball far from target (91px) - using aggressive centering
+2025-06-24 21:36:04,429 - robot_state_machine - INFO - Centering: forward (y_error: 91px, dist: 91px)
+2025-06-24 21:36:05,335 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3658
+2025-06-24 21:36:05,335 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:05,360 - robot_state_machine - WARNING - HARD centering timeout (10.3s) - returning to search
+2025-06-24 21:36:06,259 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3562
+2025-06-24 21:36:06,259 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:06,288 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.77)
+2025-06-24 21:36:07,192 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3631
+2025-06-24 21:36:07,192 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:07,217 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:36:07,217 - robot_state_machine - INFO - Ball moderately close (62px) - using balanced centering
+2025-06-24 21:36:07,417 - robot_state_machine - INFO - Centering: turn right (x_error: 21px, dist: 62px)
+2025-06-24 21:36:08,338 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3748
+2025-06-24 21:36:08,339 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:08,369 - robot_state_machine - INFO - Ball moderately close (61px) - using balanced centering
+2025-06-24 21:36:08,769 - robot_state_machine - INFO - Centering: forward (y_error: 61px, dist: 61px)
+2025-06-24 21:36:09,693 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3995
+2025-06-24 21:36:09,693 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:09,718 - robot_state_machine - INFO - Ball very close (28px) - using precise centering
+2025-06-24 21:36:10,118 - robot_state_machine - INFO - Centering: forward (y_error: 28px, dist: 28px)
+2025-06-24 21:36:11,073 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4376
+2025-06-24 21:36:11,073 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:11,103 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 21:36:12,077 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4420
+2025-06-24 21:36:12,077 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:12,101 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 21:36:13,116 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4419
+2025-06-24 21:36:13,116 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:13,146 - robot_state_machine - INFO - White ball STABLE in target zone! (took 5.9s, 3 attempts)
+2025-06-24 21:36:14,036 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4397
+2025-06-24 21:36:14,037 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:14,061 - robot_state_machine - INFO - Starting collection: white ball (confidence: 1.00)
+2025-06-24 21:36:14,061 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-24 21:36:14,062 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 21:36:14,062 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 21:36:14,062 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 21:36:14,062 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 21:36:14,062 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 21:36:14,671 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 21:36:15,721 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 21:36:15,722 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:36:16,532 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 21:36:16,541 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:36:18,111 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 21:36:18,111 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:36:19,631 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 21:36:19,631 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:36:21,201 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 21:36:21,201 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:36:22,472 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-24 21:36:22,472 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-24 21:36:22,472 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-24 21:36:22,472 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-24 21:36:22,472 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-24 21:36:23,441 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5846
+2025-06-24 21:36:23,441 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:23,470 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 21:36:24,424 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5833
+2025-06-24 21:36:24,424 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:24,449 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:36:26,587 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5218
+2025-06-24 21:36:26,587 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:26,617 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:36:28,776 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5304
+2025-06-24 21:36:28,776 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:28,801 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:36:30,953 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4682
+2025-06-24 21:36:30,953 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:30,983 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:36:33,085 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4643
+2025-06-24 21:36:33,086 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:33,116 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:36:35,223 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3918
+2025-06-24 21:36:35,223 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:35,253 - robot_state_machine - INFO - 🎯 Found delivery zone at (523, 102), centering on it
+2025-06-24 21:36:36,144 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3997
+2025-06-24 21:36:36,144 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:36,168 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=203px, Command=turn_right
+2025-06-24 21:36:36,469 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:37,458 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3855
+2025-06-24 21:36:37,458 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:37,488 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=183px, Command=turn_right
+2025-06-24 21:36:37,789 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:38,789 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3821
+2025-06-24 21:36:38,789 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:38,813 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=165px, Command=turn_right
+2025-06-24 21:36:39,114 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:40,136 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3832
+2025-06-24 21:36:40,136 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:40,172 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=156px, Command=turn_right
+2025-06-24 21:36:40,473 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:41,487 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3891
+2025-06-24 21:36:41,488 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:41,513 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=155px, Command=turn_right
+2025-06-24 21:36:41,813 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:42,819 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3952
+2025-06-24 21:36:42,819 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:42,849 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=149px, Command=turn_right
+2025-06-24 21:36:43,150 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:44,154 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4011
+2025-06-24 21:36:44,154 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:44,178 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=141px, Command=turn_right
+2025-06-24 21:36:44,479 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:45,490 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3786
+2025-06-24 21:36:45,490 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:45,528 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=131px, Command=turn_right
+2025-06-24 21:36:45,828 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:46,841 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3901
+2025-06-24 21:36:46,841 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:46,866 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=109px, Command=turn_right
+2025-06-24 21:36:47,166 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:48,155 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3697
+2025-06-24 21:36:48,156 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:48,185 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=99px, Command=turn_right
+2025-06-24 21:36:48,485 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:49,474 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3785
+2025-06-24 21:36:49,474 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:49,499 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=75px, Command=turn_right
+2025-06-24 21:36:49,799 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:50,816 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3593
+2025-06-24 21:36:50,816 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:50,853 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=61px, Command=turn_right
+2025-06-24 21:36:51,154 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:36:52,178 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3296
+2025-06-24 21:36:52,178 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:52,203 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=17px, Command=centered
+2025-06-24 21:36:52,203 - robot_state_machine - INFO - ✅ Delivery zone HORIZONTALLY CENTERED - starting ball release!
+2025-06-24 21:36:53,092 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3313
+2025-06-24 21:36:53,092 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:53,122 - robot_state_machine - INFO - 📦 STARTING BALL RELEASE SEQUENCE
+2025-06-24 21:36:53,122 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:36:54,541 - servo_controller - INFO - 🔓 Moving servo SF to OPEN position (70°)
+2025-06-24 21:36:55,454 - robot_state_machine - INFO - 🔓 SF door opened for 5.0 seconds
+2025-06-24 21:36:56,355 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1640
+2025-06-24 21:36:56,356 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:57,287 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1638
+2025-06-24 21:36:57,287 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:58,264 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1656
+2025-06-24 21:36:58,264 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:36:59,221 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1605
+2025-06-24 21:36:59,221 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:00,190 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1644
+2025-06-24 21:37:00,191 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:01,103 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1625
+2025-06-24 21:37:01,103 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:01,133 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:37:02,067 - robot_state_machine - INFO - 🔒 SF door closed - delivery complete
+2025-06-24 21:37:02,067 - robot_state_machine - INFO - ✅ Released 1 balls
+2025-06-24 21:37:03,016 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1638
+2025-06-24 21:37:03,017 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:03,996 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1594
+2025-06-24 21:37:03,996 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:04,981 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1627
+2025-06-24 21:37:04,982 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:05,945 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1596
+2025-06-24 21:37:05,945 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:05,975 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:37:07,044 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:37:07,047 - robot_state_machine - INFO - 🔄 POST-DELIVERY COMPLETE: Restarting collection cycle
+2025-06-24 21:37:08,020 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3174
+2025-06-24 21:37:08,020 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:08,045 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.89)
+2025-06-24 21:37:08,927 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3193
+2025-06-24 21:37:08,927 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:08,957 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:37:08,957 - robot_state_machine - INFO - Ball far from target (241px) - using aggressive centering
+2025-06-24 21:37:09,208 - robot_state_machine - INFO - Centering: turn left (x_error: 217px, dist: 241px)
+2025-06-24 21:37:10,118 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3596
+2025-06-24 21:37:10,118 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:10,143 - robot_state_machine - INFO - Ball far from target (195px) - using aggressive centering
+2025-06-24 21:37:10,393 - robot_state_machine - INFO - Centering: turn left (x_error: 159px, dist: 195px)
+2025-06-24 21:37:11,302 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3631
+2025-06-24 21:37:11,302 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:11,332 - robot_state_machine - INFO - Ball far from target (158px) - using aggressive centering
+2025-06-24 21:37:11,583 - robot_state_machine - INFO - Centering: turn left (x_error: 109px, dist: 158px)
+2025-06-24 21:37:12,538 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3785
+2025-06-24 21:37:12,538 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:12,569 - robot_state_machine - INFO - Ball far from target (133px) - using aggressive centering
+2025-06-24 21:37:12,820 - robot_state_machine - INFO - Centering: turn left (x_error: 64px, dist: 133px)
+2025-06-24 21:37:13,742 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3848
+2025-06-24 21:37:13,743 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:13,773 - robot_state_machine - INFO - Ball far from target (119px) - using aggressive centering
+2025-06-24 21:37:14,173 - robot_state_machine - INFO - Centering: forward (y_error: 119px, dist: 119px)
+2025-06-24 21:37:15,078 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4146
+2025-06-24 21:37:15,078 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:15,103 - robot_state_machine - INFO - Ball far from target (94px) - using aggressive centering
+2025-06-24 21:37:15,504 - robot_state_machine - INFO - Centering: forward (y_error: 94px, dist: 94px)
+2025-06-24 21:37:16,427 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4705
+2025-06-24 21:37:16,427 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:16,457 - robot_state_machine - INFO - Ball moderately close (63px) - using balanced centering
+2025-06-24 21:37:16,857 - robot_state_machine - INFO - Centering: forward (y_error: 62px, dist: 63px)
+2025-06-24 21:37:17,801 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5207
+2025-06-24 21:37:17,801 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:17,826 - robot_state_machine - INFO - Ball very close (35px) - using precise centering
+2025-06-24 21:37:18,002 - robot_state_machine - INFO - Centering: turn right (x_error: 19px, dist: 35px)
+2025-06-24 21:37:18,983 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5319
+2025-06-24 21:37:18,984 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:19,013 - robot_state_machine - WARNING - HARD centering timeout (10.1s) - returning to search
+2025-06-24 21:37:19,897 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5244
+2025-06-24 21:37:19,897 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:19,922 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 1.00)
+2025-06-24 21:37:20,805 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5338
+2025-06-24 21:37:20,805 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:20,835 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:37:20,835 - robot_state_machine - INFO - Ball very close (36px) - using precise centering
+2025-06-24 21:37:21,011 - robot_state_machine - INFO - Centering: turn right (x_error: 11px, dist: 36px)
+2025-06-24 21:37:21,975 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5109
+2025-06-24 21:37:21,975 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:21,999 - robot_state_machine - INFO - Ball very close (37px) - using precise centering
+2025-06-24 21:37:22,400 - robot_state_machine - INFO - Centering: forward (y_error: 37px, dist: 37px)
+2025-06-24 21:37:23,365 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5802
+2025-06-24 21:37:23,366 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:23,401 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 21:37:24,399 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6097
+2025-06-24 21:37:24,399 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:24,424 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 21:37:25,409 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5777
+2025-06-24 21:37:25,409 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:25,439 - robot_state_machine - INFO - White ball STABLE in target zone! (took 4.6s, 2 attempts)
+2025-06-24 21:37:26,350 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5902
+2025-06-24 21:37:26,350 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:26,375 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.99)
+2025-06-24 21:37:26,375 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-24 21:37:26,376 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 21:37:26,376 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 21:37:26,376 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 21:37:26,376 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 21:37:26,376 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 21:37:26,985 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 21:37:28,035 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 21:37:28,035 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:37:28,846 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 21:37:28,846 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:37:30,416 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 21:37:30,417 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:37:31,936 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 21:37:31,936 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:37:33,507 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 21:37:33,507 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:37:34,777 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-24 21:37:34,777 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-24 21:37:34,777 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-24 21:37:34,778 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-24 21:37:34,778 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-24 21:37:35,741 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8382
+2025-06-24 21:37:35,741 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:35,771 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 21:37:36,722 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8602
+2025-06-24 21:37:36,723 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:36,747 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:37:38,840 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7184
+2025-06-24 21:37:38,841 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:38,871 - robot_state_machine - INFO - 🎯 Found delivery zone at (557, 165), centering on it
+2025-06-24 21:37:39,822 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7489
+2025-06-24 21:37:39,822 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:39,846 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=237px, Command=turn_right
+2025-06-24 21:37:40,147 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:41,213 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6803
+2025-06-24 21:37:41,214 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:41,243 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=229px, Command=turn_right
+2025-06-24 21:37:41,543 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:42,580 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6696
+2025-06-24 21:37:42,580 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:42,605 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=225px, Command=turn_right
+2025-06-24 21:37:42,906 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:43,909 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6016
+2025-06-24 21:37:43,909 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:43,938 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=212px, Command=turn_right
+2025-06-24 21:37:44,239 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:45,297 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5806
+2025-06-24 21:37:45,298 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:45,322 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=208px, Command=turn_right
+2025-06-24 21:37:45,623 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:46,696 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5336
+2025-06-24 21:37:46,697 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:46,726 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=197px, Command=turn_right
+2025-06-24 21:37:47,027 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:48,077 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4722
+2025-06-24 21:37:48,077 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:48,101 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=170px, Command=turn_right
+2025-06-24 21:37:48,401 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:49,447 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4551
+2025-06-24 21:37:49,447 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:49,477 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=123px, Command=turn_right
+2025-06-24 21:37:49,778 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:50,829 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4559
+2025-06-24 21:37:50,829 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:50,854 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=88px, Command=turn_right
+2025-06-24 21:37:51,154 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:52,236 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4453
+2025-06-24 21:37:52,236 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:52,265 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=83px, Command=turn_right
+2025-06-24 21:37:52,566 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:53,631 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4512
+2025-06-24 21:37:53,631 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:53,656 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=60px, Command=turn_right
+2025-06-24 21:37:53,956 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:37:55,001 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4449
+2025-06-24 21:37:55,001 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:55,031 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=25px, Command=centered
+2025-06-24 21:37:55,031 - robot_state_machine - INFO - ✅ Delivery zone HORIZONTALLY CENTERED - starting ball release!
+2025-06-24 21:37:55,984 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4452
+2025-06-24 21:37:55,984 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:37:56,009 - robot_state_machine - INFO - 📦 STARTING BALL RELEASE SEQUENCE
+2025-06-24 21:37:56,009 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:37:57,428 - servo_controller - INFO - 🔓 Moving servo SF to OPEN position (70°)
+2025-06-24 21:37:58,341 - robot_state_machine - INFO - 🔓 SF door opened for 5.0 seconds
+2025-06-24 21:37:59,326 - boundary_avoidance - INFO - 🔍 Red pixels detected: 130
+2025-06-24 21:37:59,326 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:00,309 - boundary_avoidance - INFO - 🔍 Red pixels detected: 121
+2025-06-24 21:38:00,310 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:01,298 - boundary_avoidance - INFO - 🔍 Red pixels detected: 117
+2025-06-24 21:38:01,298 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:02,288 - boundary_avoidance - INFO - 🔍 Red pixels detected: 115
+2025-06-24 21:38:02,288 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:03,261 - boundary_avoidance - INFO - 🔍 Red pixels detected: 118
+2025-06-24 21:38:03,261 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:04,256 - boundary_avoidance - INFO - 🔍 Red pixels detected: 103
+2025-06-24 21:38:04,257 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:04,281 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:38:05,215 - robot_state_machine - INFO - 🔒 SF door closed - delivery complete
+2025-06-24 21:38:05,216 - robot_state_machine - INFO - ✅ Released 1 balls
+2025-06-24 21:38:06,163 - boundary_avoidance - INFO - 🔍 Red pixels detected: 101
+2025-06-24 21:38:06,164 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:07,145 - boundary_avoidance - INFO - 🔍 Red pixels detected: 103
+2025-06-24 21:38:07,145 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:08,117 - boundary_avoidance - INFO - 🔍 Red pixels detected: 110
+2025-06-24 21:38:08,117 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:09,119 - boundary_avoidance - INFO - 🔍 Red pixels detected: 106
+2025-06-24 21:38:09,119 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:09,148 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:38:10,216 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:38:10,220 - robot_state_machine - INFO - 🔄 POST-DELIVERY COMPLETE: Restarting collection cycle
+2025-06-24 21:38:11,186 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4411
+2025-06-24 21:38:11,186 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:11,216 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.40)
+2025-06-24 21:38:12,086 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4458
+2025-06-24 21:38:12,086 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:12,111 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:38:12,111 - robot_state_machine - INFO - Ball far from target (310px) - using aggressive centering
+2025-06-24 21:38:12,362 - robot_state_machine - INFO - Centering: turn right (x_error: 221px, dist: 310px)
+2025-06-24 21:38:13,268 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4373
+2025-06-24 21:38:13,269 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:13,299 - robot_state_machine - INFO - Ball far from target (266px) - using aggressive centering
+2025-06-24 21:38:13,550 - robot_state_machine - INFO - Centering: turn right (x_error: 157px, dist: 266px)
+2025-06-24 21:38:14,470 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4323
+2025-06-24 21:38:14,470 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:14,495 - robot_state_machine - INFO - Ball far from target (273px) - using aggressive centering
+2025-06-24 21:38:14,745 - robot_state_machine - INFO - Centering: turn right (x_error: 164px, dist: 273px)
+2025-06-24 21:38:15,658 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4327
+2025-06-24 21:38:15,658 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:15,694 - robot_state_machine - INFO - Ball far from target (243px) - using aggressive centering
+2025-06-24 21:38:15,944 - robot_state_machine - INFO - Centering: turn right (x_error: 129px, dist: 243px)
+2025-06-24 21:38:16,887 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4274
+2025-06-24 21:38:16,887 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:16,912 - robot_state_machine - INFO - Ball far from target (243px) - using aggressive centering
+2025-06-24 21:38:17,162 - robot_state_machine - INFO - Centering: turn right (x_error: 105px, dist: 243px)
+2025-06-24 21:38:18,082 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4450
+2025-06-24 21:38:18,082 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:18,111 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-24 21:38:19,071 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4538
+2025-06-24 21:38:19,071 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:19,096 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.75)
+2025-06-24 21:38:19,968 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4573
+2025-06-24 21:38:19,968 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:19,998 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-24 21:38:20,949 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4604
+2025-06-24 21:38:20,949 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:22,355 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4724
+2025-06-24 21:38:22,355 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:24,122 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4953
+2025-06-24 21:38:24,123 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:25,509 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5403
+2025-06-24 21:38:25,509 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:27,432 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5104
+2025-06-24 21:38:27,432 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:27,463 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.52)
+2025-06-24 21:38:28,372 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5031
+2025-06-24 21:38:28,372 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:28,402 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-24 21:38:29,356 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5083
+2025-06-24 21:38:29,356 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:29,381 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.59)
+2025-06-24 21:38:30,275 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5021
+2025-06-24 21:38:30,275 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:30,305 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-24 21:38:31,257 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5058
+2025-06-24 21:38:31,257 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:31,282 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.56)
+2025-06-24 21:38:32,154 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5012
+2025-06-24 21:38:32,154 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:32,184 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-24 21:38:33,159 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5170
+2025-06-24 21:38:33,160 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:38:33,190 - competition_manager - INFO - ============================================================
+2025-06-24 21:38:33,190 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-24 21:38:33,190 - competition_manager - INFO - ============================================================
+2025-06-24 21:38:33,190 - competition_manager - INFO - Total time: 159.9 seconds
+2025-06-24 21:38:33,190 - competition_manager - INFO - White balls collected: 0
+2025-06-24 21:38:33,190 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-24 21:38:33,190 - competition_manager - INFO - Final state: searching
+2025-06-24 21:38:33,190 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-24 21:38:33,190 - competition_manager - INFO - Arena detection: Fallback
+2025-06-24 21:38:33,191 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-24 21:38:33,191 - competition_manager - INFO - ============================================================
+2025-06-24 21:38:33,191 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:38:33,191 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:38:33,295 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:38:33,598 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:38:33,599 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:38:33,599 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-24 21:38:33,599 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:38:33,599 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:38:33,599 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:38:33,703 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:38:34,007 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:38:34,007 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:38:34,008 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-24 21:38:34,008 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-24 21:38:34,008 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-24 21:38:34,009 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-24 21:38:34,009 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-24 21:38:34,009 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-24 21:38:34,009 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-24 21:38:34,009 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:38:34,009 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:38:34,113 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:38:34,417 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:38:34,418 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-24 21:38:34,418 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-24 21:38:34,418 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:38:34,418 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-24 21:44:24,973 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-24 21:44:24,973 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-24 21:44:24,973 - motor_controller - INFO - Initializing motor controllers...
+2025-06-24 21:44:24,977 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-24 21:44:24,977 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-24 21:44:24,977 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-24 21:44:24,977 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-24 21:44:24,977 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-24 21:44:24,989 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-24 21:44:24,989 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-24 21:44:24,989 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-24 21:44:24,989 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-24 21:44:24,989 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-24 21:44:24,989 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-24 21:44:24,989 - __main__ - INFO - Detecting arena boundaries...
+2025-06-24 21:44:25,828 - boundary_avoidance - WARNING - ⚠️ Red area too small: 1706 < 30720
+2025-06-24 21:44:25,828 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-24 21:44:25,828 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-24 21:44:25,828 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-24 21:44:25,833 - competition_manager - INFO - Using new dashboard interface
+2025-06-24 21:44:25,962 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:44:25,962 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:44:25,962 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:44:26,266 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:44:26,770 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-24 21:44:27,770 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-24 21:44:27,770 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-24 21:44:27,770 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-24 21:44:27,770 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-24 21:44:27,770 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-24 21:44:28,616 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4005
+2025-06-24 21:44:28,616 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:28,638 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.97)
+2025-06-24 21:44:29,516 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4306
+2025-06-24 21:44:29,516 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:29,535 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:44:29,535 - robot_state_machine - INFO - Ball far from target (112px) - using aggressive centering
+2025-06-24 21:44:29,935 - robot_state_machine - INFO - Centering: forward (y_error: 111px, dist: 112px)
+2025-06-24 21:44:30,863 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3760
+2025-06-24 21:44:30,863 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:30,881 - robot_state_machine - INFO - Ball moderately close (75px) - using balanced centering
+2025-06-24 21:44:31,282 - robot_state_machine - INFO - Centering: forward (y_error: 74px, dist: 75px)
+2025-06-24 21:44:32,204 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2915
+2025-06-24 21:44:32,205 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:32,243 - robot_state_machine - INFO - Ball moderately close (42px) - using balanced centering
+2025-06-24 21:44:32,643 - robot_state_machine - INFO - Centering: forward (y_error: 41px, dist: 42px)
+2025-06-24 21:44:33,573 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3098
+2025-06-24 21:44:33,573 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:33,604 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 21:44:34,576 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3267
+2025-06-24 21:44:34,576 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:34,608 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 21:44:35,607 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3316
+2025-06-24 21:44:35,607 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:35,639 - robot_state_machine - INFO - White ball STABLE in target zone! (took 6.1s, 3 attempts)
+2025-06-24 21:44:36,553 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3241
+2025-06-24 21:44:36,553 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:36,577 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.97)
+2025-06-24 21:44:36,577 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-24 21:44:36,577 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 21:44:36,577 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 21:44:36,577 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 21:44:36,577 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 21:44:36,577 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 21:44:37,186 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 21:44:38,237 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 21:44:38,237 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:44:39,047 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 21:44:39,047 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:44:40,617 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 21:44:40,617 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:44:42,136 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 21:44:42,136 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:44:43,707 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 21:44:43,707 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:44:44,977 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-24 21:44:44,978 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-24 21:44:44,978 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-24 21:44:44,978 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-24 21:44:44,978 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-24 21:44:45,960 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3655
+2025-06-24 21:44:45,960 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:45,987 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 21:44:46,923 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3697
+2025-06-24 21:44:46,923 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:46,947 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:44:49,087 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3558
+2025-06-24 21:44:49,087 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:49,115 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:44:51,291 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3400
+2025-06-24 21:44:51,291 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:51,316 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:44:53,450 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4875
+2025-06-24 21:44:53,450 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:53,480 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:44:55,641 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4877
+2025-06-24 21:44:55,641 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:55,670 - robot_state_machine - INFO - 🎯 Found delivery zone at (463, 125), centering on it
+2025-06-24 21:44:56,636 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4889
+2025-06-24 21:44:56,636 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:56,664 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=143px, Command=turn_right
+2025-06-24 21:44:56,965 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:44:58,004 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4879
+2025-06-24 21:44:58,004 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:58,028 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=96px, Command=turn_right
+2025-06-24 21:44:58,328 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:44:59,362 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4946
+2025-06-24 21:44:59,362 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:44:59,390 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=65px, Command=turn_right
+2025-06-24 21:44:59,690 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:45:00,736 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4877
+2025-06-24 21:45:00,736 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:00,761 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=28px, Command=centered
+2025-06-24 21:45:00,761 - robot_state_machine - INFO - ✅ Delivery zone HORIZONTALLY CENTERED - starting ball release!
+2025-06-24 21:45:01,727 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4913
+2025-06-24 21:45:01,728 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:01,758 - robot_state_machine - INFO - 📦 STARTING BALL RELEASE SEQUENCE
+2025-06-24 21:45:01,758 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:45:03,177 - servo_controller - INFO - 🔓 Moving servo SF to OPEN position (70°)
+2025-06-24 21:45:04,089 - robot_state_machine - INFO - 🔓 SF door opened for 5.0 seconds
+2025-06-24 21:45:05,032 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1051
+2025-06-24 21:45:05,032 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:05,965 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1052
+2025-06-24 21:45:05,966 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:06,970 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1029
+2025-06-24 21:45:06,971 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:07,886 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1028
+2025-06-24 21:45:07,886 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:08,810 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1036
+2025-06-24 21:45:08,810 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:09,777 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1041
+2025-06-24 21:45:09,778 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:09,807 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:45:10,741 - robot_state_machine - INFO - 🔒 SF door closed - delivery complete
+2025-06-24 21:45:10,742 - robot_state_machine - INFO - ✅ Released 1 balls
+2025-06-24 21:45:11,704 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1017
+2025-06-24 21:45:11,705 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:12,704 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1019
+2025-06-24 21:45:12,704 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:13,680 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1026
+2025-06-24 21:45:13,680 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:45:13,704 - competition_manager - INFO - ============================================================
+2025-06-24 21:45:13,704 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-24 21:45:13,704 - competition_manager - INFO - ============================================================
+2025-06-24 21:45:13,704 - competition_manager - INFO - Total time: 45.9 seconds
+2025-06-24 21:45:13,704 - competition_manager - INFO - White balls collected: 0
+2025-06-24 21:45:13,704 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-24 21:45:13,704 - competition_manager - INFO - Final state: post_delivery_turn
+2025-06-24 21:45:13,704 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-24 21:45:13,705 - competition_manager - INFO - Arena detection: Fallback
+2025-06-24 21:45:13,705 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-24 21:45:13,705 - competition_manager - INFO - ============================================================
+2025-06-24 21:45:13,705 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:45:13,705 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:45:14,873 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:45:15,177 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:45:15,177 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:45:15,177 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-24 21:45:15,177 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:45:15,177 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:45:15,177 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:45:15,281 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:45:15,585 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:45:15,585 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:45:15,586 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-24 21:45:15,586 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-24 21:45:15,586 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-24 21:45:15,586 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-24 21:45:15,586 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-24 21:45:15,587 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-24 21:45:15,587 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-24 21:45:15,587 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:45:15,587 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:45:15,690 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:45:15,994 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:45:15,995 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-24 21:45:15,995 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-24 21:45:15,995 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:45:15,995 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-24 21:53:16,975 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-24 21:53:16,975 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-24 21:53:16,975 - motor_controller - INFO - Initializing motor controllers...
+2025-06-24 21:53:16,979 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-24 21:53:16,979 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-24 21:53:16,979 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-24 21:53:16,979 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-24 21:53:16,979 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-24 21:53:16,991 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-24 21:53:16,991 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-24 21:53:16,991 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-24 21:53:16,991 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-24 21:53:16,991 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-24 21:53:16,991 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-24 21:53:16,991 - __main__ - INFO - Detecting arena boundaries...
+2025-06-24 21:53:17,820 - boundary_avoidance - WARNING - ⚠️ Red area too small: 925 < 30720
+2025-06-24 21:53:17,821 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-24 21:53:17,821 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-24 21:53:17,821 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-24 21:53:17,826 - competition_manager - INFO - Using new dashboard interface
+2025-06-24 21:53:17,954 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:53:17,954 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:53:17,954 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:53:18,258 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:53:18,761 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-24 21:53:19,762 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-24 21:53:19,762 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-24 21:53:19,762 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-24 21:53:19,762 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-24 21:53:19,762 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-24 21:53:20,604 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3596
+2025-06-24 21:53:20,604 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:20,626 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.72)
+2025-06-24 21:53:21,523 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3575
+2025-06-24 21:53:21,523 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:21,542 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:53:21,542 - robot_state_machine - INFO - Ball far from target (185px) - using aggressive centering
+2025-06-24 21:53:21,792 - robot_state_machine - INFO - Centering: turn right (x_error: 69px, dist: 185px)
+2025-06-24 21:53:22,736 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3841
+2025-06-24 21:53:22,736 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:22,757 - robot_state_machine - INFO - Ball far from target (173px) - using aggressive centering
+2025-06-24 21:53:23,007 - robot_state_machine - INFO - Centering: turn right (x_error: 31px, dist: 173px)
+2025-06-24 21:53:23,938 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3837
+2025-06-24 21:53:23,938 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:23,958 - robot_state_machine - INFO - Ball far from target (211px) - using aggressive centering
+2025-06-24 21:53:24,209 - robot_state_machine - INFO - Centering: turn right (x_error: 133px, dist: 211px)
+2025-06-24 21:53:25,131 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3686
+2025-06-24 21:53:25,131 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:25,149 - robot_state_machine - INFO - Ball far from target (184px) - using aggressive centering
+2025-06-24 21:53:25,400 - robot_state_machine - INFO - Centering: turn right (x_error: 71px, dist: 184px)
+2025-06-24 21:53:26,315 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6194
+2025-06-24 21:53:26,315 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:26,333 - robot_state_machine - INFO - Ball far from target (175px) - using aggressive centering
+2025-06-24 21:53:26,734 - robot_state_machine - INFO - Centering: forward (y_error: 175px, dist: 175px)
+2025-06-24 21:53:27,631 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5094
+2025-06-24 21:53:27,631 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:27,650 - robot_state_machine - INFO - Ball far from target (159px) - using aggressive centering
+2025-06-24 21:53:28,050 - robot_state_machine - INFO - Centering: forward (y_error: 158px, dist: 159px)
+2025-06-24 21:53:28,969 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4419
+2025-06-24 21:53:28,969 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:28,987 - robot_state_machine - INFO - Ball far from target (147px) - using aggressive centering
+2025-06-24 21:53:29,237 - robot_state_machine - INFO - Centering: turn right (x_error: 26px, dist: 147px)
+2025-06-24 21:53:30,143 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5571
+2025-06-24 21:53:30,144 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:30,162 - robot_state_machine - INFO - Ball far from target (151px) - using aggressive centering
+2025-06-24 21:53:30,412 - robot_state_machine - INFO - Centering: turn left (x_error: 35px, dist: 151px)
+2025-06-24 21:53:31,320 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4425
+2025-06-24 21:53:31,320 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:31,338 - robot_state_machine - INFO - Ball far from target (147px) - using aggressive centering
+2025-06-24 21:53:31,739 - robot_state_machine - INFO - Centering: forward (y_error: 146px, dist: 147px)
+2025-06-24 21:53:32,645 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4994
+2025-06-24 21:53:32,645 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:32,663 - robot_state_machine - WARNING - HARD centering timeout (11.1s) - returning to search
+2025-06-24 21:53:33,592 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4243
+2025-06-24 21:53:33,592 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:33,614 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.89)
+2025-06-24 21:53:34,525 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4519
+2025-06-24 21:53:34,525 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:34,543 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:53:34,543 - robot_state_machine - INFO - Ball far from target (124px) - using aggressive centering
+2025-06-24 21:53:34,943 - robot_state_machine - INFO - Centering: forward (y_error: 123px, dist: 124px)
+2025-06-24 21:53:35,853 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4138
+2025-06-24 21:53:35,853 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:35,871 - robot_state_machine - INFO - Ball far from target (102px) - using aggressive centering
+2025-06-24 21:53:36,271 - robot_state_machine - INFO - Centering: forward (y_error: 99px, dist: 102px)
+2025-06-24 21:53:37,175 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3803
+2025-06-24 21:53:37,176 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:37,194 - robot_state_machine - INFO - Ball moderately close (72px) - using balanced centering
+2025-06-24 21:53:37,394 - robot_state_machine - INFO - Centering: turn right (x_error: 26px, dist: 72px)
+2025-06-24 21:53:38,324 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4410
+2025-06-24 21:53:38,324 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:38,342 - robot_state_machine - INFO - Ball moderately close (69px) - using balanced centering
+2025-06-24 21:53:38,742 - robot_state_machine - INFO - Centering: forward (y_error: 69px, dist: 69px)
+2025-06-24 21:53:39,693 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4365
+2025-06-24 21:53:39,694 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:39,712 - robot_state_machine - INFO - Ball very close (35px) - using precise centering
+2025-06-24 21:53:40,112 - robot_state_machine - INFO - Centering: forward (y_error: 35px, dist: 35px)
+2025-06-24 21:53:41,068 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4458
+2025-06-24 21:53:41,068 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:41,086 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 21:53:42,056 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4530
+2025-06-24 21:53:42,056 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:42,074 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 21:53:43,055 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4529
+2025-06-24 21:53:43,055 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:43,073 - robot_state_machine - INFO - White ball STABLE in target zone! (took 8.5s, 5 attempts)
+2025-06-24 21:53:43,969 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4542
+2025-06-24 21:53:43,969 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:43,989 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.95)
+2025-06-24 21:53:43,989 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-24 21:53:43,989 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 21:53:43,989 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 21:53:43,989 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 21:53:43,989 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 21:53:43,990 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 21:53:44,599 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 21:53:45,649 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 21:53:45,650 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:53:46,461 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 21:53:46,461 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:53:48,032 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 21:53:48,033 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:53:49,553 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 21:53:49,553 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:53:51,123 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 21:53:51,123 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:53:52,394 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-24 21:53:52,394 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-24 21:53:52,395 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-24 21:53:52,395 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-24 21:53:52,395 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-24 21:53:53,369 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5789
+2025-06-24 21:53:53,369 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:53,387 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 21:53:54,284 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5842
+2025-06-24 21:53:54,285 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:54,302 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:53:56,402 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5997
+2025-06-24 21:53:56,402 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:56,420 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:53:58,527 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6958
+2025-06-24 21:53:58,527 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:53:58,543 - competition_manager - INFO - ============================================================
+2025-06-24 21:53:58,544 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-24 21:53:58,544 - competition_manager - INFO - ============================================================
+2025-06-24 21:53:58,544 - competition_manager - INFO - Total time: 38.8 seconds
+2025-06-24 21:53:58,544 - competition_manager - INFO - White balls collected: 1
+2025-06-24 21:53:58,544 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-24 21:53:58,544 - competition_manager - INFO - Final state: delivery_zone_search
+2025-06-24 21:53:58,544 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-24 21:53:58,544 - competition_manager - INFO - Arena detection: Fallback
+2025-06-24 21:53:58,544 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-24 21:53:58,544 - competition_manager - INFO - ============================================================
+2025-06-24 21:53:58,544 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:53:58,544 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:53:58,648 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:53:58,951 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:53:58,952 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:53:58,952 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-24 21:53:58,952 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:53:58,952 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:53:58,952 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:53:59,055 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:53:59,359 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:53:59,359 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 21:53:59,360 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-24 21:53:59,360 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-24 21:53:59,360 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-24 21:53:59,361 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-24 21:53:59,361 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-24 21:53:59,361 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-24 21:53:59,361 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-24 21:53:59,361 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 21:53:59,361 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:53:59,465 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:53:59,768 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 21:53:59,769 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-24 21:53:59,769 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-24 21:53:59,769 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 21:53:59,769 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-24 21:57:53,935 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-24 21:57:53,935 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-24 21:57:53,935 - motor_controller - INFO - Initializing motor controllers...
+2025-06-24 21:57:53,938 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-24 21:57:53,938 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-24 21:57:53,938 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-24 21:57:53,938 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-24 21:57:53,938 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-24 21:57:53,949 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-24 21:57:53,949 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-24 21:57:53,949 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-24 21:57:53,949 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-24 21:57:53,949 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-24 21:57:53,949 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-24 21:57:53,949 - __main__ - INFO - Detecting arena boundaries...
+2025-06-24 21:57:54,744 - boundary_avoidance - WARNING - ⚠️ Red area too small: 968 < 30720
+2025-06-24 21:57:54,744 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-24 21:57:54,744 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-24 21:57:54,744 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-24 21:57:54,750 - competition_manager - INFO - Using new dashboard interface
+2025-06-24 21:57:54,875 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:57:54,875 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 21:57:54,875 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:57:55,179 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 21:57:55,683 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-24 21:57:56,683 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-24 21:57:56,683 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-24 21:57:56,683 - competition_manager - INFO - Delivery trigger: 2 balls
+2025-06-24 21:57:56,683 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-24 21:57:56,683 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-24 21:57:57,561 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3760
+2025-06-24 21:57:57,562 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:57:57,591 - robot_state_machine - INFO - Found 3 confident white ball(s) (avg conf: 0.92)
+2025-06-24 21:57:58,561 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3680
+2025-06-24 21:57:58,561 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:57:58,590 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:57:58,590 - robot_state_machine - INFO - Ball far from target (203px) - using aggressive centering
+2025-06-24 21:57:58,840 - robot_state_machine - INFO - Centering: turn right (x_error: 111px, dist: 203px)
+2025-06-24 21:57:59,776 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3012
+2025-06-24 21:57:59,776 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:57:59,819 - robot_state_machine - INFO - Ball far from target (182px) - using aggressive centering
+2025-06-24 21:58:00,070 - robot_state_machine - INFO - Centering: turn right (x_error: 55px, dist: 182px)
+2025-06-24 21:58:00,981 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4661
+2025-06-24 21:58:00,982 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:01,008 - robot_state_machine - INFO - Ball far from target (176px) - using aggressive centering
+2025-06-24 21:58:01,409 - robot_state_machine - INFO - Centering: forward (y_error: 175px, dist: 176px)
+2025-06-24 21:58:02,327 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4161
+2025-06-24 21:58:02,328 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:02,361 - robot_state_machine - INFO - Ball far from target (160px) - using aggressive centering
+2025-06-24 21:58:02,761 - robot_state_machine - INFO - Centering: forward (y_error: 160px, dist: 160px)
+2025-06-24 21:58:03,680 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4252
+2025-06-24 21:58:03,681 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:03,705 - robot_state_machine - INFO - Ball far from target (141px) - using aggressive centering
+2025-06-24 21:58:04,106 - robot_state_machine - INFO - Centering: forward (y_error: 140px, dist: 141px)
+2025-06-24 21:58:05,007 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3719
+2025-06-24 21:58:05,008 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:05,038 - robot_state_machine - INFO - Ball far from target (118px) - using aggressive centering
+2025-06-24 21:58:05,438 - robot_state_machine - INFO - Centering: forward (y_error: 117px, dist: 118px)
+2025-06-24 21:58:06,344 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3519
+2025-06-24 21:58:06,344 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:06,369 - robot_state_machine - INFO - Ball far from target (94px) - using aggressive centering
+2025-06-24 21:58:06,769 - robot_state_machine - INFO - Centering: forward (y_error: 93px, dist: 94px)
+2025-06-24 21:58:07,665 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3864
+2025-06-24 21:58:07,665 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:07,695 - robot_state_machine - INFO - Ball moderately close (64px) - using balanced centering
+2025-06-24 21:58:08,095 - robot_state_machine - INFO - Centering: forward (y_error: 64px, dist: 64px)
+2025-06-24 21:58:09,049 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4425
+2025-06-24 21:58:09,049 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:09,074 - robot_state_machine - WARNING - HARD centering timeout (10.5s) - returning to search
+2025-06-24 21:58:09,965 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4394
+2025-06-24 21:58:09,965 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:09,995 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.92)
+2025-06-24 21:58:10,873 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4410
+2025-06-24 21:58:10,874 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:10,899 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:58:10,899 - robot_state_machine - INFO - Ball very close (34px) - using precise centering
+2025-06-24 21:58:11,074 - robot_state_machine - INFO - Centering: turn right (x_error: 15px, dist: 34px)
+2025-06-24 21:58:12,024 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4317
+2025-06-24 21:58:12,025 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:12,055 - robot_state_machine - INFO - Ball very close (34px) - using precise centering
+2025-06-24 21:58:12,456 - robot_state_machine - INFO - Centering: forward (y_error: 34px, dist: 34px)
+2025-06-24 21:58:13,426 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4813
+2025-06-24 21:58:13,427 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:13,456 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 21:58:14,454 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4862
+2025-06-24 21:58:14,455 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:14,485 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 21:58:15,469 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4883
+2025-06-24 21:58:15,469 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:15,493 - robot_state_machine - INFO - White ball STABLE in target zone! (took 4.6s, 2 attempts)
+2025-06-24 21:58:16,398 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4807
+2025-06-24 21:58:16,398 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:16,428 - robot_state_machine - INFO - Starting collection: white ball (confidence: 1.00)
+2025-06-24 21:58:16,429 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-24 21:58:16,429 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 21:58:16,429 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 21:58:16,429 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 21:58:16,429 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 21:58:16,429 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 21:58:17,038 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 21:58:18,089 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 21:58:18,089 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:58:18,900 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 21:58:18,900 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:58:20,470 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 21:58:20,471 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:58:21,990 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 21:58:21,990 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:58:23,561 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 21:58:23,561 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:58:24,832 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-24 21:58:24,832 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-24 21:58:24,832 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/2
+2025-06-24 21:58:24,832 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 2?
+2025-06-24 21:58:24,832 - robot_state_machine - INFO - Need more balls: 1/2 - continuing search
+2025-06-24 21:58:25,743 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6739
+2025-06-24 21:58:25,743 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:27,122 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7304
+2025-06-24 21:58:27,122 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:28,901 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6720
+2025-06-24 21:58:28,901 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:30,286 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7303
+2025-06-24 21:58:30,286 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:32,093 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7156
+2025-06-24 21:58:32,093 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:32,118 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.86)
+2025-06-24 21:58:33,002 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7284
+2025-06-24 21:58:33,002 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:33,032 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:58:33,032 - robot_state_machine - INFO - Ball far from target (301px) - using aggressive centering
+2025-06-24 21:58:33,283 - robot_state_machine - INFO - Centering: turn right (x_error: 248px, dist: 301px)
+2025-06-24 21:58:34,186 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7198
+2025-06-24 21:58:34,186 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:34,211 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-24 21:58:35,151 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7126
+2025-06-24 21:58:35,151 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:35,181 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.88)
+2025-06-24 21:58:36,070 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7223
+2025-06-24 21:58:36,070 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:36,094 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:58:36,094 - robot_state_machine - INFO - Ball far from target (268px) - using aggressive centering
+2025-06-24 21:58:36,344 - robot_state_machine - INFO - Centering: turn right (x_error: 201px, dist: 268px)
+2025-06-24 21:58:37,276 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7218
+2025-06-24 21:58:37,276 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:37,307 - robot_state_machine - INFO - Ball far from target (235px) - using aggressive centering
+2025-06-24 21:58:37,557 - robot_state_machine - INFO - Centering: turn right (x_error: 147px, dist: 235px)
+2025-06-24 21:58:38,473 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7149
+2025-06-24 21:58:38,473 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:38,498 - robot_state_machine - INFO - Ball far from target (211px) - using aggressive centering
+2025-06-24 21:58:38,748 - robot_state_machine - INFO - Centering: turn right (x_error: 96px, dist: 211px)
+2025-06-24 21:58:39,653 - boundary_avoidance - INFO - 🔍 Red pixels detected: 10306
+2025-06-24 21:58:39,653 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:39,683 - robot_state_machine - INFO - Ball far from target (196px) - using aggressive centering
+2025-06-24 21:58:39,933 - robot_state_machine - INFO - Centering: turn right (x_error: 42px, dist: 196px)
+2025-06-24 21:58:40,847 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7102
+2025-06-24 21:58:40,847 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:40,872 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-24 21:58:41,842 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7176
+2025-06-24 21:58:41,842 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:43,224 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7407
+2025-06-24 21:58:43,224 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:45,012 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6998
+2025-06-24 21:58:45,012 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:46,379 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7581
+2025-06-24 21:58:46,380 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:48,194 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5809
+2025-06-24 21:58:48,195 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:49,576 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6356
+2025-06-24 21:58:49,576 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:51,355 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5838
+2025-06-24 21:58:51,356 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:52,743 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6317
+2025-06-24 21:58:52,743 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:54,516 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5519
+2025-06-24 21:58:54,516 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:54,546 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.97)
+2025-06-24 21:58:55,447 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5554
+2025-06-24 21:58:55,448 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:55,472 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:58:55,472 - robot_state_machine - INFO - Ball far from target (202px) - using aggressive centering
+2025-06-24 21:58:55,723 - robot_state_machine - INFO - Centering: turn right (x_error: 188px, dist: 202px)
+2025-06-24 21:58:56,640 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5369
+2025-06-24 21:58:56,641 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:56,671 - robot_state_machine - INFO - Ball far from target (190px) - using aggressive centering
+2025-06-24 21:58:56,921 - robot_state_machine - INFO - Centering: turn right (x_error: 173px, dist: 190px)
+2025-06-24 21:58:57,846 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5187
+2025-06-24 21:58:57,846 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:57,971 - robot_state_machine - INFO - Ball far from target (166px) - using aggressive centering
+2025-06-24 21:58:58,221 - robot_state_machine - INFO - Centering: turn right (x_error: 143px, dist: 166px)
+2025-06-24 21:58:59,159 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5234
+2025-06-24 21:58:59,160 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:58:59,190 - robot_state_machine - INFO - Ball far from target (165px) - using aggressive centering
+2025-06-24 21:58:59,441 - robot_state_machine - INFO - Centering: turn right (x_error: 140px, dist: 165px)
+2025-06-24 21:59:00,342 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5257
+2025-06-24 21:59:00,342 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:00,367 - robot_state_machine - INFO - Ball far from target (165px) - using aggressive centering
+2025-06-24 21:59:00,617 - robot_state_machine - INFO - Centering: turn right (x_error: 140px, dist: 165px)
+2025-06-24 21:59:01,544 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5226
+2025-06-24 21:59:01,544 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:01,575 - robot_state_machine - INFO - Ball far from target (163px) - using aggressive centering
+2025-06-24 21:59:01,825 - robot_state_machine - INFO - Centering: turn right (x_error: 138px, dist: 163px)
+2025-06-24 21:59:02,728 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5172
+2025-06-24 21:59:02,728 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:02,753 - robot_state_machine - INFO - Ball far from target (160px) - using aggressive centering
+2025-06-24 21:59:03,003 - robot_state_machine - INFO - Centering: turn right (x_error: 135px, dist: 160px)
+2025-06-24 21:59:03,934 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5105
+2025-06-24 21:59:03,935 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:03,972 - robot_state_machine - INFO - Ball far from target (144px) - using aggressive centering
+2025-06-24 21:59:04,222 - robot_state_machine - INFO - Centering: turn right (x_error: 111px, dist: 144px)
+2025-06-24 21:59:05,128 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4971
+2025-06-24 21:59:05,128 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:05,154 - robot_state_machine - INFO - Ball far from target (122px) - using aggressive centering
+2025-06-24 21:59:05,405 - robot_state_machine - INFO - Centering: turn right (x_error: 77px, dist: 122px)
+2025-06-24 21:59:06,324 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4889
+2025-06-24 21:59:06,324 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:06,353 - robot_state_machine - WARNING - HARD centering timeout (10.9s) - returning to search
+2025-06-24 21:59:07,255 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4874
+2025-06-24 21:59:07,256 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:07,280 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.99)
+2025-06-24 21:59:08,160 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4828
+2025-06-24 21:59:08,160 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:08,190 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:59:08,191 - robot_state_machine - INFO - Ball far from target (112px) - using aggressive centering
+2025-06-24 21:59:08,441 - robot_state_machine - INFO - Centering: turn right (x_error: 59px, dist: 112px)
+2025-06-24 21:59:09,378 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4943
+2025-06-24 21:59:09,379 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:09,412 - robot_state_machine - INFO - Ball far from target (110px) - using aggressive centering
+2025-06-24 21:59:09,662 - robot_state_machine - INFO - Centering: turn right (x_error: 56px, dist: 110px)
+2025-06-24 21:59:10,602 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4856
+2025-06-24 21:59:10,602 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:10,633 - robot_state_machine - INFO - Ball far from target (109px) - using aggressive centering
+2025-06-24 21:59:10,883 - robot_state_machine - INFO - Centering: turn right (x_error: 53px, dist: 109px)
+2025-06-24 21:59:11,793 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4932
+2025-06-24 21:59:11,794 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:11,818 - robot_state_machine - INFO - Ball far from target (105px) - using aggressive centering
+2025-06-24 21:59:12,068 - robot_state_machine - INFO - Centering: turn right (x_error: 45px, dist: 105px)
+2025-06-24 21:59:12,976 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4849
+2025-06-24 21:59:12,976 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:13,007 - robot_state_machine - INFO - Ball far from target (105px) - using aggressive centering
+2025-06-24 21:59:13,258 - robot_state_machine - INFO - Centering: turn right (x_error: 41px, dist: 105px)
+2025-06-24 21:59:14,162 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4807
+2025-06-24 21:59:14,162 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:14,187 - robot_state_machine - INFO - Ball far from target (105px) - using aggressive centering
+2025-06-24 21:59:14,437 - robot_state_machine - INFO - Centering: turn right (x_error: 39px, dist: 105px)
+2025-06-24 21:59:15,361 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4925
+2025-06-24 21:59:15,361 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:15,398 - robot_state_machine - INFO - Ball far from target (104px) - using aggressive centering
+2025-06-24 21:59:15,648 - robot_state_machine - INFO - Centering: turn right (x_error: 37px, dist: 104px)
+2025-06-24 21:59:16,557 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4867
+2025-06-24 21:59:16,558 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:16,582 - robot_state_machine - INFO - Ball far from target (102px) - using aggressive centering
+2025-06-24 21:59:16,833 - robot_state_machine - INFO - Centering: turn right (x_error: 32px, dist: 102px)
+2025-06-24 21:59:17,745 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4717
+2025-06-24 21:59:17,745 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:17,775 - robot_state_machine - INFO - Ball far from target (99px) - using aggressive centering
+2025-06-24 21:59:18,025 - robot_state_machine - INFO - Centering: turn right (x_error: 29px, dist: 99px)
+2025-06-24 21:59:18,928 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4769
+2025-06-24 21:59:18,929 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:18,953 - robot_state_machine - WARNING - HARD centering timeout (10.8s) - returning to search
+2025-06-24 21:59:19,857 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4752
+2025-06-24 21:59:19,858 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:19,888 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 1.00)
+2025-06-24 21:59:20,768 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4806
+2025-06-24 21:59:20,769 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:20,794 - robot_state_machine - INFO - Starting centering session
+2025-06-24 21:59:20,794 - robot_state_machine - INFO - Ball far from target (100px) - using aggressive centering
+2025-06-24 21:59:21,194 - robot_state_machine - INFO - Centering: forward (y_error: 97px, dist: 100px)
+2025-06-24 21:59:22,108 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5561
+2025-06-24 21:59:22,108 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:22,138 - robot_state_machine - INFO - Ball moderately close (78px) - using balanced centering
+2025-06-24 21:59:22,339 - robot_state_machine - INFO - Centering: turn right (x_error: 33px, dist: 78px)
+2025-06-24 21:59:23,268 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4999
+2025-06-24 21:59:23,268 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:23,292 - robot_state_machine - INFO - Ball moderately close (73px) - using balanced centering
+2025-06-24 21:59:23,692 - robot_state_machine - INFO - Centering: forward (y_error: 73px, dist: 73px)
+2025-06-24 21:59:24,608 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5713
+2025-06-24 21:59:24,609 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:24,639 - robot_state_machine - INFO - Ball moderately close (43px) - using balanced centering
+2025-06-24 21:59:25,039 - robot_state_machine - INFO - Centering: forward (y_error: 43px, dist: 43px)
+2025-06-24 21:59:25,991 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6019
+2025-06-24 21:59:25,991 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:26,021 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 21:59:27,006 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5987
+2025-06-24 21:59:27,006 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:27,036 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 21:59:28,040 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6014
+2025-06-24 21:59:28,041 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:28,065 - robot_state_machine - INFO - White ball STABLE in target zone! (took 7.3s, 4 attempts)
+2025-06-24 21:59:28,973 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6046
+2025-06-24 21:59:28,973 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:29,003 - robot_state_machine - INFO - Starting collection: white ball (confidence: 1.00)
+2025-06-24 21:59:29,003 - robot_state_machine - INFO - Ball count before collection: 1
+2025-06-24 21:59:29,003 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 21:59:29,003 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 21:59:29,003 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 21:59:29,003 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 21:59:29,003 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 21:59:29,612 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 21:59:30,663 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 21:59:30,663 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:59:31,473 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 21:59:31,473 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:59:33,043 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 21:59:33,044 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 21:59:34,563 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 21:59:34,563 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 21:59:36,134 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 21:59:36,134 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 21:59:37,405 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 2
+2025-06-24 21:59:37,405 - robot_state_machine - INFO - Ball count after collection: 2
+2025-06-24 21:59:37,405 - robot_state_machine - INFO - ✅ White ball collected! Total: 2/2
+2025-06-24 21:59:37,405 - robot_state_machine - INFO - Checking delivery trigger: 2 >= 2?
+2025-06-24 21:59:37,405 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 2/2
+2025-06-24 21:59:38,384 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7945
+2025-06-24 21:59:38,384 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:38,408 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 21:59:39,301 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8089
+2025-06-24 21:59:39,301 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:39,331 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:41,435 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9487
+2025-06-24 21:59:41,435 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:41,460 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:43,579 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4217
+2025-06-24 21:59:43,579 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:43,608 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:45,718 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4902
+2025-06-24 21:59:45,718 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:45,742 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:47,859 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4079
+2025-06-24 21:59:47,859 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:47,892 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:50,044 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4624
+2025-06-24 21:59:50,044 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:50,069 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:52,167 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3544
+2025-06-24 21:59:52,167 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:52,197 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:54,320 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4678
+2025-06-24 21:59:54,320 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:54,344 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 21:59:56,444 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8737
+2025-06-24 21:59:56,444 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:56,474 - robot_state_machine - INFO - 🎯 Found delivery zone at (549, 196), centering on it
+2025-06-24 21:59:57,385 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8800
+2025-06-24 21:59:57,385 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:57,410 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=229px, Command=turn_right
+2025-06-24 21:59:57,710 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 21:59:58,783 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9246
+2025-06-24 21:59:58,783 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 21:59:58,820 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=205px, Command=turn_right
+2025-06-24 21:59:59,120 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:00:00,189 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8910
+2025-06-24 22:00:00,189 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:00,215 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=191px, Command=turn_right
+2025-06-24 22:00:00,515 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:00:01,503 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9143
+2025-06-24 22:00:01,503 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:01,533 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=157px, Command=turn_right
+2025-06-24 22:00:01,834 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:00:02,882 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9810
+2025-06-24 22:00:02,882 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:02,906 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=114px, Command=turn_right
+2025-06-24 22:00:03,207 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:00:04,283 - boundary_avoidance - INFO - 🔍 Red pixels detected: 10174
+2025-06-24 22:00:04,283 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:04,283 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=517.0, size=(49x24)
+2025-06-24 22:00:04,284 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-24 22:00:04,284 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-24 22:00:04,284 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-24 22:00:04,284 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-24 22:00:04,320 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during delivery_zone_centering
+2025-06-24 22:00:04,320 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-24 22:00:04,321 - robot_state_machine - WARNING -    Interrupting delivery operation for safety!
+2025-06-24 22:00:04,325 - boundary_avoidance - INFO - 🔍 Red pixels detected: 10174
+2025-06-24 22:00:04,325 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:04,326 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=517.0, size=(49x24)
+2025-06-24 22:00:04,326 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-24 22:00:04,326 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-24 22:00:04,326 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-24 22:00:04,326 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-24 22:00:04,326 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-24 22:00:04,326 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-24 22:00:04,426 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-24 22:00:06,632 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7543
+2025-06-24 22:00:06,632 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:06,632 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-24 22:00:07,569 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7375
+2025-06-24 22:00:07,569 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:07,593 - robot_state_machine - INFO - 🚚 DELIVERY TRIGGERED: 2/2 balls collected
+2025-06-24 22:00:08,549 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7502
+2025-06-24 22:00:08,549 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:08,579 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 22:00:09,490 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7691
+2025-06-24 22:00:09,490 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:09,515 - robot_state_machine - INFO - 🎯 Found delivery zone at (144, 138), centering on it
+2025-06-24 22:00:10,422 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7682
+2025-06-24 22:00:10,422 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:10,452 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=-177px, Command=turn_left
+2025-06-24 22:00:10,753 - robot_state_machine - INFO - ↖️ Centering: Turn left toward delivery zone
+2025-06-24 22:00:11,802 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7113
+2025-06-24 22:00:11,802 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:11,828 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=-79px, Command=turn_left
+2025-06-24 22:00:12,128 - robot_state_machine - INFO - ↖️ Centering: Turn left toward delivery zone
+2025-06-24 22:00:13,130 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6854
+2025-06-24 22:00:13,130 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:13,160 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=12px, Command=centered
+2025-06-24 22:00:13,160 - robot_state_machine - INFO - ✅ Delivery zone HORIZONTALLY CENTERED - starting ball release!
+2025-06-24 22:00:14,063 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6691
+2025-06-24 22:00:14,063 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:14,088 - robot_state_machine - INFO - 📦 STARTING BALL RELEASE SEQUENCE
+2025-06-24 22:00:14,088 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 22:00:15,507 - servo_controller - INFO - 🔓 Moving servo SF to OPEN position (70°)
+2025-06-24 22:00:16,420 - robot_state_machine - INFO - 🔓 SF door opened for 5.0 seconds
+2025-06-24 22:00:17,334 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6522
+2025-06-24 22:00:17,334 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:18,274 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6483
+2025-06-24 22:00:18,274 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:19,192 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6492
+2025-06-24 22:00:19,193 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:20,134 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6504
+2025-06-24 22:00:20,134 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:21,045 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6531
+2025-06-24 22:00:21,045 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:21,991 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6522
+2025-06-24 22:00:21,991 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:22,022 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:00:22,956 - robot_state_machine - INFO - 🔒 SF door closed - delivery complete
+2025-06-24 22:00:22,956 - robot_state_machine - INFO - ✅ Released 2 balls
+2025-06-24 22:00:23,919 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6567
+2025-06-24 22:00:23,920 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:00:23,944 - competition_manager - INFO - ============================================================
+2025-06-24 22:00:23,944 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-24 22:00:23,944 - competition_manager - INFO - ============================================================
+2025-06-24 22:00:23,944 - competition_manager - INFO - Total time: 147.3 seconds
+2025-06-24 22:00:23,944 - competition_manager - INFO - White balls collected: 0
+2025-06-24 22:00:23,944 - competition_manager - INFO - Delivery target: 2 balls per cycle
+2025-06-24 22:00:23,944 - competition_manager - INFO - Final state: post_delivery_turn
+2025-06-24 22:00:23,944 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-24 22:00:23,944 - competition_manager - INFO - Arena detection: Fallback
+2025-06-24 22:00:23,944 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-24 22:00:23,944 - competition_manager - INFO - ============================================================
+2025-06-24 22:00:23,944 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 22:00:23,944 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:00:25,112 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:00:25,416 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 22:00:25,416 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 22:00:25,416 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-24 22:00:25,416 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 22:00:25,416 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 22:00:25,416 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:00:25,519 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:00:25,823 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 22:00:25,823 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 22:00:25,824 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-24 22:00:25,824 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-24 22:00:25,824 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-24 22:00:25,824 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-24 22:00:25,824 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-24 22:00:25,825 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-24 22:00:25,825 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-24 22:00:25,825 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 22:00:25,825 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:00:25,928 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:00:26,232 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 22:00:26,232 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-24 22:00:26,232 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-24 22:00:26,232 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 22:00:26,232 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-24 22:04:04,175 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-24 22:04:04,175 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-24 22:04:04,175 - motor_controller - INFO - Initializing motor controllers...
+2025-06-24 22:04:04,177 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-24 22:04:04,178 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-24 22:04:04,178 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-24 22:04:04,178 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-24 22:04:04,178 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-24 22:04:04,188 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-24 22:04:04,189 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-24 22:04:04,189 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-24 22:04:04,189 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-24 22:04:04,189 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-24 22:04:04,189 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-24 22:04:04,189 - __main__ - INFO - Detecting arena boundaries...
+2025-06-24 22:04:04,996 - boundary_avoidance - WARNING - ⚠️ Red area too small: 576 < 30720
+2025-06-24 22:04:04,996 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-24 22:04:04,996 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-24 22:04:04,996 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-24 22:04:05,001 - competition_manager - INFO - Using new dashboard interface
+2025-06-24 22:04:05,128 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 22:04:05,128 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-24 22:04:05,128 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:04:05,432 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:04:05,936 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-24 22:04:06,936 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-24 22:04:06,936 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-24 22:04:06,936 - competition_manager - INFO - Delivery trigger: 2 balls
+2025-06-24 22:04:06,936 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-24 22:04:06,937 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-24 22:04:07,805 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2879
+2025-06-24 22:04:07,805 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:07,827 - robot_state_machine - INFO - Found 3 confident white ball(s) (avg conf: 0.88)
+2025-06-24 22:04:08,712 - boundary_avoidance - INFO - 🔍 Red pixels detected: 2984
+2025-06-24 22:04:08,712 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:08,731 - robot_state_machine - INFO - Starting centering session
+2025-06-24 22:04:08,731 - robot_state_machine - INFO - Ball far from target (170px) - using aggressive centering
+2025-06-24 22:04:09,131 - robot_state_machine - INFO - Centering: forward (y_error: 169px, dist: 170px)
+2025-06-24 22:04:10,043 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3195
+2025-06-24 22:04:10,043 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:10,062 - robot_state_machine - INFO - Ball far from target (154px) - using aggressive centering
+2025-06-24 22:04:10,462 - robot_state_machine - INFO - Centering: forward (y_error: 153px, dist: 154px)
+2025-06-24 22:04:11,367 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3726
+2025-06-24 22:04:11,367 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:11,400 - robot_state_machine - INFO - Ball far from target (139px) - using aggressive centering
+2025-06-24 22:04:11,801 - robot_state_machine - INFO - Centering: forward (y_error: 137px, dist: 139px)
+2025-06-24 22:04:12,727 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3394
+2025-06-24 22:04:12,727 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:12,766 - robot_state_machine - INFO - Ball far from target (125px) - using aggressive centering
+2025-06-24 22:04:13,167 - robot_state_machine - INFO - Centering: forward (y_error: 124px, dist: 125px)
+2025-06-24 22:04:14,071 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3178
+2025-06-24 22:04:14,071 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:14,105 - robot_state_machine - INFO - Ball far from target (102px) - using aggressive centering
+2025-06-24 22:04:14,505 - robot_state_machine - INFO - Centering: forward (y_error: 99px, dist: 102px)
+2025-06-24 22:04:15,407 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3337
+2025-06-24 22:04:15,407 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:15,434 - robot_state_machine - INFO - Ball moderately close (79px) - using balanced centering
+2025-06-24 22:04:15,634 - robot_state_machine - INFO - Centering: turn right (x_error: 30px, dist: 79px)
+2025-06-24 22:04:16,560 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3411
+2025-06-24 22:04:16,561 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:16,585 - robot_state_machine - INFO - Ball moderately close (76px) - using balanced centering
+2025-06-24 22:04:16,985 - robot_state_machine - INFO - Centering: forward (y_error: 75px, dist: 76px)
+2025-06-24 22:04:17,936 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3460
+2025-06-24 22:04:17,937 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:17,972 - robot_state_machine - INFO - Ball moderately close (55px) - using balanced centering
+2025-06-24 22:04:18,172 - robot_state_machine - INFO - Centering: turn right (x_error: 18px, dist: 55px)
+2025-06-24 22:04:19,134 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3392
+2025-06-24 22:04:19,134 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:19,160 - robot_state_machine - WARNING - HARD centering timeout (10.4s) - returning to search
+2025-06-24 22:04:20,063 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3458
+2025-06-24 22:04:20,063 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:20,093 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.74)
+2025-06-24 22:04:20,983 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3312
+2025-06-24 22:04:20,983 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:21,008 - robot_state_machine - INFO - Starting centering session
+2025-06-24 22:04:21,008 - robot_state_machine - INFO - Ball moderately close (53px) - using balanced centering
+2025-06-24 22:04:21,408 - robot_state_machine - INFO - Centering: forward (y_error: 53px, dist: 53px)
+2025-06-24 22:04:22,319 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3536
+2025-06-24 22:04:22,320 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:22,349 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 22:04:23,338 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3634
+2025-06-24 22:04:23,338 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:23,363 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 22:04:24,358 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3590
+2025-06-24 22:04:24,358 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:24,388 - robot_state_machine - INFO - White ball STABLE in target zone! (took 3.4s, 1 attempts)
+2025-06-24 22:04:25,282 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3548
+2025-06-24 22:04:25,282 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:25,307 - robot_state_machine - INFO - Starting collection: white ball (confidence: 0.98)
+2025-06-24 22:04:25,307 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-24 22:04:25,307 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 22:04:25,307 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 22:04:25,307 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 22:04:25,307 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 22:04:25,307 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 22:04:25,919 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 22:04:26,970 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 22:04:26,970 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 22:04:27,780 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 22:04:27,780 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 22:04:29,350 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 22:04:29,350 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 22:04:30,870 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 22:04:30,870 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 22:04:32,440 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 22:04:32,441 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:04:33,711 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-24 22:04:33,711 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-24 22:04:33,711 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/2
+2025-06-24 22:04:33,711 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 2?
+2025-06-24 22:04:33,711 - robot_state_machine - INFO - Need more balls: 1/2 - continuing search
+2025-06-24 22:04:34,622 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4530
+2025-06-24 22:04:34,622 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:36,009 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4767
+2025-06-24 22:04:36,009 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:37,772 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4834
+2025-06-24 22:04:37,772 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:39,171 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5061
+2025-06-24 22:04:39,171 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:40,964 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4991
+2025-06-24 22:04:40,964 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:40,994 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.98)
+2025-06-24 22:04:41,897 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4997
+2025-06-24 22:04:41,897 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:41,922 - robot_state_machine - INFO - Starting centering session
+2025-06-24 22:04:41,922 - robot_state_machine - INFO - Ball far from target (82px) - using aggressive centering
+2025-06-24 22:04:42,172 - robot_state_machine - INFO - Centering: turn right (x_error: 81px, dist: 82px)
+2025-06-24 22:04:43,079 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4976
+2025-06-24 22:04:43,080 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:43,109 - robot_state_machine - INFO - Ball moderately close (58px) - using balanced centering
+2025-06-24 22:04:43,309 - robot_state_machine - INFO - Centering: turn right (x_error: 54px, dist: 58px)
+2025-06-24 22:04:44,246 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5083
+2025-06-24 22:04:44,247 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:44,271 - robot_state_machine - INFO - Ball moderately close (52px) - using balanced centering
+2025-06-24 22:04:44,471 - robot_state_machine - INFO - Centering: turn right (x_error: 45px, dist: 52px)
+2025-06-24 22:04:45,415 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5024
+2025-06-24 22:04:45,415 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:45,449 - robot_state_machine - INFO - Ball moderately close (52px) - using balanced centering
+2025-06-24 22:04:45,650 - robot_state_machine - INFO - Centering: turn right (x_error: 43px, dist: 52px)
+2025-06-24 22:04:46,614 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4962
+2025-06-24 22:04:46,614 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:46,638 - robot_state_machine - INFO - Ball moderately close (53px) - using balanced centering
+2025-06-24 22:04:46,839 - robot_state_machine - INFO - Centering: turn right (x_error: 42px, dist: 53px)
+2025-06-24 22:04:47,763 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5001
+2025-06-24 22:04:47,763 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:47,793 - robot_state_machine - INFO - Ball moderately close (50px) - using balanced centering
+2025-06-24 22:04:47,993 - robot_state_machine - INFO - Centering: turn right (x_error: 32px, dist: 50px)
+2025-06-24 22:04:48,912 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4872
+2025-06-24 22:04:48,913 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:48,937 - robot_state_machine - INFO - Ball moderately close (54px) - using balanced centering
+2025-06-24 22:04:49,137 - robot_state_machine - INFO - Centering: turn right (x_error: 32px, dist: 54px)
+2025-06-24 22:04:50,063 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4798
+2025-06-24 22:04:50,063 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:50,093 - robot_state_machine - INFO - Ball moderately close (54px) - using balanced centering
+2025-06-24 22:04:50,293 - robot_state_machine - INFO - Centering: turn right (x_error: 29px, dist: 54px)
+2025-06-24 22:04:51,236 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4826
+2025-06-24 22:04:51,236 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:51,266 - robot_state_machine - INFO - Ball moderately close (48px) - using balanced centering
+2025-06-24 22:04:51,466 - robot_state_machine - INFO - Centering: turn right (x_error: 20px, dist: 48px)
+2025-06-24 22:04:52,409 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4840
+2025-06-24 22:04:52,410 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:52,439 - robot_state_machine - WARNING - HARD centering timeout (10.5s) - returning to search
+2025-06-24 22:04:53,337 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4862
+2025-06-24 22:04:53,337 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:53,362 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.99)
+2025-06-24 22:04:54,250 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4873
+2025-06-24 22:04:54,250 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:54,280 - robot_state_machine - INFO - Starting centering session
+2025-06-24 22:04:54,280 - robot_state_machine - INFO - Ball moderately close (53px) - using balanced centering
+2025-06-24 22:04:54,480 - robot_state_machine - INFO - Centering: turn right (x_error: 19px, dist: 53px)
+2025-06-24 22:04:55,416 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4854
+2025-06-24 22:04:55,417 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:55,441 - robot_state_machine - INFO - Ball moderately close (52px) - using balanced centering
+2025-06-24 22:04:55,642 - robot_state_machine - INFO - Centering: turn right (x_error: 17px, dist: 52px)
+2025-06-24 22:04:56,575 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4771
+2025-06-24 22:04:56,575 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:56,605 - robot_state_machine - INFO - Ball moderately close (52px) - using balanced centering
+2025-06-24 22:04:57,005 - robot_state_machine - INFO - Centering: forward (y_error: 50px, dist: 52px)
+2025-06-24 22:04:57,967 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5141
+2025-06-24 22:04:57,968 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:57,992 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-24 22:04:58,973 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5161
+2025-06-24 22:04:58,973 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:04:59,003 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-24 22:04:59,977 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5106
+2025-06-24 22:04:59,977 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:00,001 - robot_state_machine - INFO - White ball STABLE in target zone! (took 5.7s, 3 attempts)
+2025-06-24 22:05:00,890 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5168
+2025-06-24 22:05:00,890 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:00,920 - robot_state_machine - INFO - Starting collection: white ball (confidence: 1.00)
+2025-06-24 22:05:00,920 - robot_state_machine - INFO - Ball count before collection: 1
+2025-06-24 22:05:00,920 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-24 22:05:00,920 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-24 22:05:00,920 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-24 22:05:00,920 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-24 22:05:00,920 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (70°)
+2025-06-24 22:05:01,530 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-24 22:05:02,580 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-24 22:05:02,580 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 22:05:03,391 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-24 22:05:03,391 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 22:05:04,961 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-24 22:05:04,961 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (15°)
+2025-06-24 22:05:06,481 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-24 22:05:06,481 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 22:05:08,051 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-24 22:05:08,052 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:05:09,322 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 2
+2025-06-24 22:05:09,322 - robot_state_machine - INFO - Ball count after collection: 2
+2025-06-24 22:05:09,322 - robot_state_machine - INFO - ✅ White ball collected! Total: 2/2
+2025-06-24 22:05:09,322 - robot_state_machine - INFO - Checking delivery trigger: 2 >= 2?
+2025-06-24 22:05:09,322 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 2/2
+2025-06-24 22:05:10,283 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7031
+2025-06-24 22:05:10,283 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:10,307 - robot_state_machine - INFO - 🚚 DELIVERY MODE: Looking for green delivery zones
+2025-06-24 22:05:11,258 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7035
+2025-06-24 22:05:11,258 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:11,288 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 22:05:13,439 - boundary_avoidance - INFO - 🔍 Red pixels detected: 5797
+2025-06-24 22:05:13,439 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:13,463 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 22:05:15,618 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4848
+2025-06-24 22:05:15,618 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:15,647 - robot_state_machine - INFO - 🔍 Searching for green delivery zones... (with boundary safety)
+2025-06-24 22:05:17,787 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4116
+2025-06-24 22:05:17,787 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:17,811 - robot_state_machine - INFO - 🎯 Found delivery zone at (548, 104), centering on it
+2025-06-24 22:05:18,750 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4256
+2025-06-24 22:05:18,750 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:18,780 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=228px, Command=turn_right
+2025-06-24 22:05:19,081 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:20,159 - boundary_avoidance - INFO - 🔍 Red pixels detected: 4152
+2025-06-24 22:05:20,159 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:20,190 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=212px, Command=turn_right
+2025-06-24 22:05:20,491 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:21,546 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3946
+2025-06-24 22:05:21,547 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:21,577 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=200px, Command=turn_right
+2025-06-24 22:05:21,877 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:22,924 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3884
+2025-06-24 22:05:22,924 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:22,948 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=181px, Command=turn_right
+2025-06-24 22:05:23,248 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:24,303 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3903
+2025-06-24 22:05:24,303 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:24,333 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=153px, Command=turn_right
+2025-06-24 22:05:24,633 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:25,701 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3893
+2025-06-24 22:05:25,701 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:25,730 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=138px, Command=turn_right
+2025-06-24 22:05:26,031 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:27,100 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3700
+2025-06-24 22:05:27,100 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:27,129 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=117px, Command=turn_right
+2025-06-24 22:05:27,430 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:28,488 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3592
+2025-06-24 22:05:28,488 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:28,512 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=99px, Command=turn_right
+2025-06-24 22:05:28,812 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:29,856 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3306
+2025-06-24 22:05:29,856 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:29,883 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=58px, Command=turn_right
+2025-06-24 22:05:30,184 - robot_state_machine - INFO - ↗️ Centering: Turn right toward delivery zone
+2025-06-24 22:05:31,235 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3320
+2025-06-24 22:05:31,235 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:31,259 - robot_state_machine - INFO - 🎯 Delivery zone horizontal centering: X_offset=18px, Command=centered
+2025-06-24 22:05:31,260 - robot_state_machine - INFO - ✅ Delivery zone HORIZONTALLY CENTERED - starting ball release!
+2025-06-24 22:05:32,245 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3360
+2025-06-24 22:05:32,245 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:32,274 - robot_state_machine - INFO - 📦 STARTING BALL RELEASE SEQUENCE
+2025-06-24 22:05:32,274 - servo_controller - INFO - 📦 Moving servo SS to STORE position (140°)
+2025-06-24 22:05:33,694 - servo_controller - INFO - 🔓 Moving servo SF to OPEN position (70°)
+2025-06-24 22:05:34,606 - robot_state_machine - INFO - 🔓 SF door opened for 5.0 seconds
+2025-06-24 22:05:35,555 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1877
+2025-06-24 22:05:35,556 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:36,453 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1949
+2025-06-24 22:05:36,453 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:37,403 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1971
+2025-06-24 22:05:37,403 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:38,369 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1925
+2025-06-24 22:05:38,369 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:39,287 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1915
+2025-06-24 22:05:39,287 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:40,193 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1925
+2025-06-24 22:05:40,193 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:40,223 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:05:41,158 - robot_state_machine - INFO - 🔒 SF door closed - delivery complete
+2025-06-24 22:05:41,158 - robot_state_machine - INFO - ✅ Released 2 balls
+2025-06-24 22:05:42,133 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1878
+2025-06-24 22:05:42,133 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:43,152 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1886
+2025-06-24 22:05:43,152 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:44,124 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1810
+2025-06-24 22:05:44,124 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:45,101 - boundary_avoidance - INFO - 🔍 Red pixels detected: 1830
+2025-06-24 22:05:45,101 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:45,131 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:05:46,200 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:05:46,203 - robot_state_machine - INFO - 🔄 POST-DELIVERY COMPLETE: Restarting collection cycle
+2025-06-24 22:05:47,094 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3323
+2025-06-24 22:05:47,095 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:48,506 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3322
+2025-06-24 22:05:48,506 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:50,275 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3528
+2025-06-24 22:05:50,276 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:51,647 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3627
+2025-06-24 22:05:51,647 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:53,453 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3702
+2025-06-24 22:05:53,454 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:53,534 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.81)
+2025-06-24 22:05:54,424 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3771
+2025-06-24 22:05:54,424 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:54,453 - robot_state_machine - INFO - Starting centering session
+2025-06-24 22:05:54,454 - robot_state_machine - INFO - Ball far from target (218px) - using aggressive centering
+2025-06-24 22:05:54,704 - robot_state_machine - INFO - Centering: turn right (x_error: 149px, dist: 218px)
+2025-06-24 22:05:55,624 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3749
+2025-06-24 22:05:55,624 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:55,649 - robot_state_machine - INFO - Ball far from target (205px) - using aggressive centering
+2025-06-24 22:05:55,900 - robot_state_machine - INFO - Centering: turn right (x_error: 127px, dist: 205px)
+2025-06-24 22:05:56,816 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3713
+2025-06-24 22:05:56,816 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:56,846 - robot_state_machine - INFO - Ball far from target (201px) - using aggressive centering
+2025-06-24 22:05:57,097 - robot_state_machine - INFO - Centering: turn right (x_error: 120px, dist: 201px)
+2025-06-24 22:05:58,009 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3737
+2025-06-24 22:05:58,009 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:58,035 - robot_state_machine - INFO - Ball far from target (197px) - using aggressive centering
+2025-06-24 22:05:58,286 - robot_state_machine - INFO - Centering: turn right (x_error: 114px, dist: 197px)
+2025-06-24 22:05:59,227 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3718
+2025-06-24 22:05:59,227 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:05:59,262 - robot_state_machine - INFO - Ball far from target (195px) - using aggressive centering
+2025-06-24 22:05:59,513 - robot_state_machine - INFO - Centering: turn right (x_error: 110px, dist: 195px)
+2025-06-24 22:06:00,440 - boundary_avoidance - INFO - 🔍 Red pixels detected: 3741
+2025-06-24 22:06:00,441 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-24 22:06:00,465 - competition_manager - INFO - ============================================================
+2025-06-24 22:06:00,465 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-24 22:06:00,465 - competition_manager - INFO - ============================================================
+2025-06-24 22:06:00,465 - competition_manager - INFO - Total time: 113.5 seconds
+2025-06-24 22:06:00,465 - competition_manager - INFO - White balls collected: 0
+2025-06-24 22:06:00,465 - competition_manager - INFO - Delivery target: 2 balls per cycle
+2025-06-24 22:06:00,465 - competition_manager - INFO - Final state: centering_ball
+2025-06-24 22:06:00,465 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-24 22:06:00,465 - competition_manager - INFO - Arena detection: Fallback
+2025-06-24 22:06:00,465 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-24 22:06:00,465 - competition_manager - INFO - ============================================================
+2025-06-24 22:06:00,465 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 22:06:00,465 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:06:00,569 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:06:00,873 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 22:06:00,873 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 22:06:00,873 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-24 22:06:00,873 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 22:06:00,873 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 22:06:00,873 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:06:00,977 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:06:01,280 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 22:06:01,280 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-24 22:06:01,281 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-24 22:06:01,281 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-24 22:06:01,281 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-24 22:06:01,281 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-24 22:06:01,282 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-24 22:06:01,282 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-24 22:06:01,282 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-24 22:06:01,282 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-24 22:06:01,282 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (30°)
+2025-06-24 22:06:01,386 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (160°)
+2025-06-24 22:06:01,689 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-24 22:06:01,690 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-24 22:06:01,690 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-24 22:06:01,690 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-24 22:06:01,690 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
