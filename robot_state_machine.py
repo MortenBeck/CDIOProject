@@ -46,7 +46,6 @@ class RobotStateMachine:
         
         # Failed collection recovery tracking
         self.failed_collection_attempts = 0
-        self.in_recovery_turn = False
         self.recovery_turn_start_time = None
         self.collection_interrupted_by_boundary = False
         
@@ -59,9 +58,12 @@ class RobotStateMachine:
     def execute_state_machine(self, balls, near_boundary, nav_command, delivery_zones=None):
         """Execute state logic with failed collection recovery and boundary avoidance delegation"""
         
-        # === HIGHEST PRIORITY: Emergency boundary avoidance (except during active collection/release) ===
-        # Only skip boundary checking during the actual physical collection and release operations
-        non_interruptible_states = [RobotState.COLLECTING_BALL, RobotState.DELIVERY_RELEASING]
+        # === HIGHEST PRIORITY: Emergency boundary avoidance (except during non-interruptible states) ===
+        non_interruptible_states = [
+            RobotState.COLLECTING_BALL, 
+            RobotState.DELIVERY_RELEASING,
+            RobotState.FAILED_COLLECTION_RECOVERY  # Recovery turn must not be interrupted
+        ]
         
         if self.state not in non_interruptible_states:
             # === BOUNDARY AVOIDANCE (using boundary_avoidance.py) ===
@@ -146,19 +148,16 @@ class RobotStateMachine:
             self.handle_avoiding_boundary(near_boundary)
             
         elif self.state == RobotState.FAILED_COLLECTION_RECOVERY:
-            # Handle failed collection recovery turn
+            # Handle failed collection recovery turn - NON-INTERRUPTIBLE
             self.handle_failed_collection_recovery()
             
         elif self.state == RobotState.DELIVERY_MODE:
-            # NOW includes boundary checking during delivery!
             self.handle_delivery_mode(delivery_zones)
             
         elif self.state == RobotState.DELIVERY_ZONE_SEARCH:
-            # NOW includes boundary checking during search!
             self.handle_delivery_zone_search(delivery_zones)
             
         elif self.state == RobotState.DELIVERY_ZONE_CENTERING:
-            # NOW includes boundary checking during centering!
             self.handle_delivery_zone_centering(delivery_zones)
             
         elif self.state == RobotState.DELIVERY_RELEASING:
@@ -166,7 +165,6 @@ class RobotStateMachine:
             self.handle_delivery_releasing()
             
         elif self.state == RobotState.POST_DELIVERY_TURN:
-            # NOW includes boundary checking during post-delivery turn!
             self.handle_post_delivery_turn()
             
         elif self.state == RobotState.EMERGENCY_STOP:
@@ -296,33 +294,29 @@ class RobotStateMachine:
             self.logger.warning(f"🔄 MAX FAILED ATTEMPTS REACHED ({self.failed_collection_attempts}) - Starting recovery turn")
             self.state = RobotState.FAILED_COLLECTION_RECOVERY
             self.recovery_turn_start_time = time.time()
-            self.in_recovery_turn = True
             return
         
         # Normal return to search if not triggering recovery
         self.state = RobotState.SEARCHING
 
     def handle_failed_collection_recovery(self):
-        """Handle recovery turn after failed collection attempts"""
-        if not self.in_recovery_turn:
-            # Start recovery turn
+        """Handle recovery turn after failed collection attempts - FIXED"""
+        if self.recovery_turn_start_time is None:
+            # Start recovery turn - NON-BLOCKING
             self.logger.warning(f"🔄 STARTING RECOVERY TURN: Left for {config.FAILED_COLLECTION_RECOVERY_TURN_DURATION}s")
-            self.hardware.turn_left(
-                duration=config.FAILED_COLLECTION_RECOVERY_TURN_DURATION, 
-                speed=0.4
-            )
+            self.hardware.turn_left(speed=0.4)  # Start turning left (no duration = non-blocking)
             self.recovery_turn_start_time = time.time()
-            self.in_recovery_turn = True
             return
         
         # Check if recovery turn is complete
         elapsed = time.time() - self.recovery_turn_start_time
-        if elapsed >= config.FAILED_COLLECTION_RECOVERY_TURN_DURATION + 0.2:  # Small buffer
+        if elapsed >= config.FAILED_COLLECTION_RECOVERY_TURN_DURATION:
+            # Stop the turn and complete recovery
+            self.hardware.stop_motors()
             self.logger.info("✅ Recovery turn complete - resetting failed collection tracking")
             
             # Reset failed collection tracking
             self.failed_collection_attempts = 0
-            self.in_recovery_turn = False
             self.recovery_turn_start_time = None
             
             # Return to normal search
