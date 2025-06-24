@@ -92,6 +92,9 @@ class GolfBotDashboard:
         danger_start_y = target_zone_top_y  # Start detection from TOP of target zone
         danger_end_y = int(h * 0.95)  # Go almost to bottom (95%)
         
+        # Calculate detection zone height for consistent calculations
+        detection_zone_height = danger_end_y - danger_start_y
+        
         # Zone colors based on danger status
         zone_color = self.wall_danger_color if walls_detected else self.wall_safe_color
         zone_alpha = 0.4 if walls_detected else 0.15
@@ -99,25 +102,25 @@ class GolfBotDashboard:
         # Create overlay for danger zones
         overlay = result.copy()
         
-        # === ZONE 1: BOTTOM WALL DETECTION AREA ===
+        # === ZONE 1: BOTTOM WALL DETECTION AREA (UPDATED - SHALLOWER) ===
+        # CHANGED: Use same 20% calculation as sides instead of 10% of frame height
+        bottom_detection_height = int(detection_zone_height * 0.20)  # Same as sides: 20% of detection zone
+        bottom_region_start = danger_end_y - bottom_detection_height  # Start from bottom up
+        
         # Exclude edge areas (10% margin from each side)
         bottom_left_margin = int(w * 0.1)
         bottom_right_margin = int(w * 0.1)
         bottom_detection_left = bottom_left_margin
         bottom_detection_right = w - bottom_right_margin
         
-        danger_distance_vertical = int(h * 0.1)  # 10% of frame height
-        bottom_region_start = max(danger_start_y, danger_end_y - danger_distance_vertical)
-        
-        # Draw bottom detection zone
+        # Draw bottom detection zone (now shallower)
         cv2.rectangle(overlay, 
                      (bottom_detection_left, bottom_region_start), 
                      (bottom_detection_right, danger_end_y), 
                      zone_color, -1)
         
-        # === ZONE 2 & 3: LEFT AND RIGHT WALL DETECTION AREAS (BOTTOM 20% ONLY) ===
-        detection_zone_height = danger_end_y - danger_start_y
-        side_detection_height = int(detection_zone_height * 0.20)  # 20% of detection zone
+        # === ZONE 2 & 3: LEFT AND RIGHT WALL DETECTION AREAS (UNCHANGED) ===
+        side_detection_height = int(detection_zone_height * 0.20)  # 20% of detection zone (unchanged)
         side_detection_start_y = danger_end_y - side_detection_height  # Start from bottom up
         
         danger_distance_horizontal = int(w * 0.08)  # 8% of frame width
@@ -141,7 +144,7 @@ class GolfBotDashboard:
                          (right_end_x, danger_end_y), 
                          zone_color, -1)
         
-        # === ZONE 4: CENTER FORWARD WALL DETECTION ===
+        # === ZONE 4: CENTER FORWARD WALL DETECTION (UNCHANGED) ===
         center_width = int(w * 0.4)         # Check center 40% of frame width
         center_start_x = int(w * 0.3)       # Start at 30% from left
         
@@ -161,7 +164,6 @@ class GolfBotDashboard:
         cv2.rectangle(result, (0, danger_start_y), (w, danger_end_y), line_color, line_thickness)
         
         # Zone labels
-        label_color = (255, 255, 255)
         if walls_detected:
             cv2.putText(result, "WALL DANGER ZONES - ACTIVE", (10, danger_start_y - 10), 
                        self.font, 0.5, (0, 0, 255), 2)
