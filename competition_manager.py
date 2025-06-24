@@ -147,7 +147,7 @@ class CompetitionManager:
             if self.use_dashboard and self.dashboard:
                 # NEW DASHBOARD MODE
                 dashboard_frame = self.dashboard.create_dashboard(
-                    debug_frame, self.state_machine.state, self.vision, self.hardware, None
+                    debug_frame, self.state_machine.state, self.vision, self.hardware
                 )
                 key = self.dashboard.show("GolfBot Dashboard - White Ball Collection + Delivery")
             else:

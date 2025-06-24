@@ -5,7 +5,7 @@ from typing import List, Optional
 import config
 
 class GolfBotDashboard:
-    """Clean dashboard interface for GolfBot with delivery cycle tracking - WHITE BALLS ONLY"""
+    """Clean dashboard interface for GolfBot with delivery cycle tracking + Wall Danger Visualization - WHITE BALLS ONLY"""
     
     def __init__(self, camera_width=640, camera_height=480):
         self.camera_width = camera_width
@@ -26,6 +26,8 @@ class GolfBotDashboard:
         self.warning_color = (0, 165, 255) # Orange
         self.danger_color = (0, 0, 255)    # Red
         self.delivery_color = (255, 0, 255) # Magenta for delivery
+        self.wall_safe_color = (0, 100, 0)   # Dark green for safe zones
+        self.wall_danger_color = (0, 0, 200) # Dark red for danger zones
         
         # Font settings
         self.font = cv2.FONT_HERSHEY_SIMPLEX
@@ -43,31 +45,139 @@ class GolfBotDashboard:
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
                                 self.bg_color, dtype=np.uint8)
     
-    def create_dashboard(self, camera_frame, robot_state, vision_system, hardware, telemetry=None):
-        """Create complete dashboard with camera and data panels + delivery cycle - WHITE BALLS ONLY"""
+    def create_dashboard(self, camera_frame, robot_state, vision_system, hardware):
+        """Create complete dashboard with camera and data panels + delivery cycle + Wall Danger Zones - WHITE BALLS ONLY"""
         
         # Create fresh dashboard
         self.dashboard = np.full((self.dashboard_height, self.dashboard_width, 3), 
                                 self.bg_color, dtype=np.uint8)
         
-        # 1. Place clean camera preview (already processed by vision system)
-        self._place_camera_preview(camera_frame)
+        # 1. Add wall danger zone overlays to camera frame FIRST
+        enhanced_camera_frame = self._add_wall_danger_overlays(camera_frame, vision_system)
         
-        # 2. Add top status bar with delivery cycle
+        # 2. Place enhanced camera preview
+        self._place_camera_preview(enhanced_camera_frame)
+        
+        # 3. Add top status bar with delivery cycle
         self._add_top_status_bar(robot_state, hardware)
         
-        # 3. Add right side panels
+        # 4. Add right side panels
         self._add_vision_status_panel(vision_system)
         self._add_robot_status_panel(robot_state, hardware)
         self._add_detection_details_panel(vision_system)
         self._add_delivery_cycle_panel(hardware, robot_state)
+        self._add_wall_danger_panel(vision_system)  # NEW: Wall danger status panel
         self._add_controls_legend_panel()
         
-        # 4. Add performance info if available
-        if telemetry:
-            self._add_performance_panel(telemetry)
-        
         return self.dashboard
+    
+    def _add_wall_danger_overlays(self, camera_frame, vision_system):
+        """Add visual wall danger zone overlays to camera frame"""
+        if camera_frame is None:
+            return np.zeros((self.camera_height, self.camera_width, 3), dtype=np.uint8)
+        
+        result = camera_frame.copy()
+        h, w = result.shape[:2]
+        
+        # Get boundary system status
+        boundary_system = vision_system.boundary_system
+        boundary_status = boundary_system.get_status()
+        walls_detected = boundary_status.get('walls_triggered', 0) > 0
+        
+        # Calculate danger zones (same logic as boundary_avoidance.py)
+        target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)  # 65% down from top
+        target_zone_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
+        target_zone_top_y = target_zone_center_y - (target_zone_height // 2)
+        
+        danger_start_y = target_zone_top_y  # Start detection from TOP of target zone
+        danger_end_y = int(h * 0.95)  # Go almost to bottom (95%)
+        
+        # Zone colors based on danger status
+        zone_color = self.wall_danger_color if walls_detected else self.wall_safe_color
+        zone_alpha = 0.4 if walls_detected else 0.15
+        
+        # Create overlay for danger zones
+        overlay = result.copy()
+        
+        # === ZONE 1: BOTTOM WALL DETECTION AREA ===
+        # Exclude edge areas (10% margin from each side)
+        bottom_left_margin = int(w * 0.1)
+        bottom_right_margin = int(w * 0.1)
+        bottom_detection_left = bottom_left_margin
+        bottom_detection_right = w - bottom_right_margin
+        
+        danger_distance_vertical = int(h * 0.1)  # 10% of frame height
+        bottom_region_start = max(danger_start_y, danger_end_y - danger_distance_vertical)
+        
+        # Draw bottom detection zone
+        cv2.rectangle(overlay, 
+                     (bottom_detection_left, bottom_region_start), 
+                     (bottom_detection_right, danger_end_y), 
+                     zone_color, -1)
+        
+        # === ZONE 2 & 3: LEFT AND RIGHT WALL DETECTION AREAS (BOTTOM 20% ONLY) ===
+        detection_zone_height = danger_end_y - danger_start_y
+        side_detection_height = int(detection_zone_height * 0.20)  # 20% of detection zone
+        side_detection_start_y = danger_end_y - side_detection_height  # Start from bottom up
+        
+        danger_distance_horizontal = int(w * 0.08)  # 8% of frame width
+        side_margin_reduction = int(w * 0.05)       # 5% margin from each side
+        
+        # Left side detection zone
+        left_start_x = side_margin_reduction
+        left_end_x = min(left_start_x + danger_distance_horizontal, w // 2)
+        if left_end_x > left_start_x + 20:  # Only draw if reasonable width
+            cv2.rectangle(overlay, 
+                         (left_start_x, side_detection_start_y), 
+                         (left_end_x, danger_end_y), 
+                         zone_color, -1)
+        
+        # Right side detection zone
+        right_end_x = w - side_margin_reduction
+        right_start_x = max(right_end_x - danger_distance_horizontal, w // 2)
+        if right_end_x > right_start_x + 20:  # Only draw if reasonable width
+            cv2.rectangle(overlay, 
+                         (right_start_x, side_detection_start_y), 
+                         (right_end_x, danger_end_y), 
+                         zone_color, -1)
+        
+        # === ZONE 4: CENTER FORWARD WALL DETECTION ===
+        center_width = int(w * 0.4)         # Check center 40% of frame width
+        center_start_x = int(w * 0.3)       # Start at 30% from left
+        
+        cv2.rectangle(overlay, 
+                     (center_start_x, danger_start_y), 
+                     (center_start_x + center_width, danger_end_y), 
+                     zone_color, -1)
+        
+        # Blend overlay with original frame
+        result = cv2.addWeighted(result, 1 - zone_alpha, overlay, zone_alpha, 0)
+        
+        # Add zone boundary lines
+        line_color = (0, 0, 255) if walls_detected else (0, 255, 0)
+        line_thickness = 3 if walls_detected else 1
+        
+        # Overall danger zone boundary
+        cv2.rectangle(result, (0, danger_start_y), (w, danger_end_y), line_color, line_thickness)
+        
+        # Zone labels
+        label_color = (255, 255, 255)
+        if walls_detected:
+            cv2.putText(result, "WALL DANGER ZONES - ACTIVE", (10, danger_start_y - 10), 
+                       self.font, 0.5, (0, 0, 255), 2)
+        else:
+            cv2.putText(result, "Wall Detection Zones", (10, danger_start_y - 10), 
+                       self.font, 0.4, (0, 200, 0), 1)
+        
+        # Show specific triggered zones
+        if walls_detected and hasattr(boundary_system, 'detected_walls'):
+            triggered_zones = [wall['zone'] for wall in boundary_system.detected_walls if wall.get('triggered', False)]
+            if triggered_zones:
+                zone_text = f"TRIGGERED: {', '.join(triggered_zones).upper()}"
+                cv2.putText(result, zone_text, (10, danger_start_y + 20), 
+                           self.font, 0.4, (0, 0, 255), 1)
+        
+        return result
     
     def _place_camera_preview(self, camera_frame):
         """Place camera preview in dashboard"""
@@ -273,9 +383,9 @@ class GolfBotDashboard:
         
         # Wall detection
         wall_count = 0
-        if hasattr(vision_system, 'detected_walls'):
-            triggered_walls = [w for w in vision_system.detected_walls if w.get('triggered', False)]
-            wall_count = len(triggered_walls)
+        if hasattr(vision_system, 'boundary_system'):
+            boundary_status = vision_system.boundary_system.get_status()
+            wall_count = boundary_status.get('walls_triggered', 0)
         
         wall_color = self.danger_color if wall_count > 0 else self.success_color
         wall_status = "DANGER" if wall_count > 0 else "SAFE"
@@ -353,9 +463,62 @@ class GolfBotDashboard:
         cv2.putText(self.dashboard, status_text, 
                    (self.right_panel_x + 5, y), self.font, self.font_scale_small, status_color, 1)
     
-    def _add_controls_legend_panel(self):
-        """Add controls and legend panel - WHITE BALLS ONLY"""
+    def _add_wall_danger_panel(self, vision_system):
+        """NEW: Add wall danger status panel with zone details"""
         panel_y = self.right_panel_y + 520
+        panel_height = 100
+        
+        # Panel background
+        cv2.rectangle(self.dashboard, 
+                     (self.right_panel_x, panel_y), 
+                     (self.right_panel_x + self.panel_width, panel_y + panel_height), 
+                     self.panel_color, -1)
+        
+        # Panel title
+        cv2.putText(self.dashboard, "WALL DANGER ZONES", 
+                   (self.right_panel_x + 5, panel_y + 20), 
+                   self.font, self.font_scale_medium, self.accent_color, 1)
+        
+        y = panel_y + 40
+        line_height = 14
+        
+        # Get boundary system status
+        if hasattr(vision_system, 'boundary_system'):
+            boundary_status = vision_system.boundary_system.get_status()
+            walls_triggered = boundary_status.get('walls_triggered', 0)
+            danger_zones = boundary_status.get('danger_zones', [])
+            is_safe = boundary_status.get('safe', True)
+            
+            # Overall status
+            status_color = self.success_color if is_safe else self.danger_color
+            status_text = "ALL CLEAR" if is_safe else "WALLS DETECTED"
+            cv2.putText(self.dashboard, f"Status: {status_text}", 
+                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, status_color, 1)
+            y += line_height
+            
+            # Triggered zones
+            if danger_zones:
+                zones_text = f"Zones: {', '.join(danger_zones).upper()}"
+                cv2.putText(self.dashboard, zones_text, 
+                           (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.danger_color, 1)
+                y += line_height
+            
+            # Zone explanations
+            cv2.putText(self.dashboard, "Detection Areas:", 
+                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
+            y += line_height
+            cv2.putText(self.dashboard, "• Bottom (center only)", 
+                       (self.right_panel_x + 5, y), self.font, self.font_scale_small-0.1, (200, 200, 200), 1)
+            y += line_height - 2
+            cv2.putText(self.dashboard, "• Left/Right (bottom 20%)", 
+                       (self.right_panel_x + 5, y), self.font, self.font_scale_small-0.1, (200, 200, 200), 1)
+        else:
+            cv2.putText(self.dashboard, "System: Not Available", 
+                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
+    
+    def _add_controls_legend_panel(self):
+        """Add controls and legend panel - WHITE BALLS ONLY + Wall Zones"""
+        panel_y = self.right_panel_y + 630
         panel_height = 80
         
         # Panel background
@@ -372,44 +535,18 @@ class GolfBotDashboard:
         y = panel_y + 40
         line_height = 12
         
-        # Legend items (WHITE BALLS ONLY)
+        # Legend items (WHITE BALLS ONLY + Wall zones)
         legend_items = [
             ("Green Zone: Collection area", self.success_color),
             ("Cyan Lines: Centering tolerance", self.accent_color),
             ("B: White ball", self.text_color),
-            ("Magenta: Delivery cycle", self.delivery_color),
+            ("Red Overlay: Wall danger zones", self.danger_color),
         ]
         
         for item, color in legend_items:
             cv2.putText(self.dashboard, item, 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small-0.1, color, 1)
             y += line_height
-    
-    def _add_performance_panel(self, telemetry):
-        """Add performance metrics panel"""
-        panel_y = self.right_panel_y + 610
-        panel_height = 60
-        
-        # Panel background
-        cv2.rectangle(self.dashboard, 
-                     (self.right_panel_x, panel_y), 
-                     (self.right_panel_x + self.panel_width, panel_y + panel_height), 
-                     self.panel_color, -1)
-        
-        # Panel title
-        cv2.putText(self.dashboard, "PERFORMANCE", 
-                   (self.right_panel_x + 5, panel_y + 20), 
-                   self.font, self.font_scale_medium, self.accent_color, 1)
-        
-        y = panel_y + 40
-        
-        # Frame count and rate
-        if hasattr(telemetry, 'frame_count'):
-            cv2.putText(self.dashboard, f"Frames: {telemetry.frame_count}", 
-                       (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
-            
-            cv2.putText(self.dashboard, f"Collections: {telemetry.total_collections}", 
-                       (self.right_panel_x + 120, y), self.font, self.font_scale_small, self.success_color, 1)
     
     def _get_state_color(self, robot_state):
         """Get color for robot state"""
