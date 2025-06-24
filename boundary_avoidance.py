@@ -41,7 +41,7 @@ class BoundaryAvoidanceSystem:
         # FIXED RED DETECTION - Much more permissive ranges
         # Range 1: Lower red hues (0-15) - More permissive
         lower_red1 = np.array([0, 50, 50])      # Lowered saturation from 150 to 50
-        upper_red1 = np.array([15, 255, 255])   # Extended hue range to 15
+        upper_red1 = np.array([8, 255, 255])   # Extended hue range to 15
         
         # Range 2: Upper red hues (160-180) - More permissive  
         lower_red2 = np.array([160, 50, 50])    # Lowered saturation from 150 to 50
