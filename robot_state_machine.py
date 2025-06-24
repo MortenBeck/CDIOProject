@@ -11,6 +11,7 @@ class RobotState(Enum):
     APPROACHING_BALL = "approaching_ball"
     COLLECTING_BALL = "collecting_ball"
     AVOIDING_BOUNDARY = "avoiding_boundary"
+    FAILED_COLLECTION_RECOVERY = "failed_collection_recovery"
     DELIVERY_MODE = "delivery_mode"
     DELIVERY_ZONE_SEARCH = "delivery_zone_search"
     DELIVERY_ZONE_CENTERING = "delivery_zone_centering"
@@ -19,7 +20,7 @@ class RobotState(Enum):
     EMERGENCY_STOP = "emergency_stop"
 
 class RobotStateMachine:
-    """Handles all robot state transitions and behavior logic with delivery cycle - FIXED BOUNDARY SYSTEM"""
+    """Handles all robot state transitions and behavior logic with delivery cycle + failed collection recovery"""
     
     def __init__(self, hardware, vision):
         self.logger = logging.getLogger(__name__)
@@ -43,18 +44,21 @@ class RobotStateMachine:
         self.centering_attempts = 0
         self.last_significant_progress = None
         
+        # Failed collection recovery tracking
+        self.failed_collection_attempts = 0
+        self.last_failed_ball_position = None
+        self.in_recovery_turn = False
+        self.recovery_turn_start_time = None
+        self.collection_interrupted_by_boundary = False
+        
         # Delivery cycle tracking
         self.delivery_system = None
         self.post_delivery_start_time = None
         self.delivery_release_start_time = None
         self.delivery_search_start_time = None
         
-        # REMOVED: Boundary tracking variables - boundary_avoidance.py handles this
-        # self.boundary_avoidance_count = 0
-        # self.last_boundary_avoidance_time = None
-        
     def execute_state_machine(self, balls, near_boundary, nav_command, delivery_zones=None):
-        """Execute state logic with PROPER boundary avoidance delegation - FIXED VERSION"""
+        """Execute state logic with failed collection recovery and boundary avoidance delegation"""
         
         # === HIGHEST PRIORITY: Emergency boundary avoidance (except during active collection/release) ===
         # Only skip boundary checking during the actual physical collection and release operations
@@ -69,6 +73,11 @@ class RobotStateMachine:
                 if not boundary_status['safe']:
                     self.logger.warning(f"🚨 BOUNDARY AVOIDANCE TRIGGERED during {self.state.value}")
                     self.logger.warning(f"   Danger zones: {boundary_status['danger_zones']}")
+                    
+                    # Check if this interrupts a collection attempt
+                    if self.state == RobotState.COLLECTING_BALL:
+                        self.collection_interrupted_by_boundary = True
+                        self.logger.warning("   Collection interrupted by boundary detection!")
                     
                     # Interrupt delivery operations if necessary for safety
                     if self.state in [RobotState.DELIVERY_MODE, RobotState.DELIVERY_ZONE_SEARCH, 
@@ -96,7 +105,7 @@ class RobotStateMachine:
             if ball_count >= config.BALLS_BEFORE_DELIVERY and self.state not in [
                 RobotState.DELIVERY_MODE, RobotState.DELIVERY_ZONE_SEARCH, 
                 RobotState.DELIVERY_ZONE_CENTERING, RobotState.DELIVERY_RELEASING, 
-                RobotState.POST_DELIVERY_TURN
+                RobotState.POST_DELIVERY_TURN, RobotState.FAILED_COLLECTION_RECOVERY
             ]:
                 self.logger.info(f"🚚 DELIVERY TRIGGERED: {ball_count}/{config.BALLS_BEFORE_DELIVERY} balls collected")
                 self.state = RobotState.DELIVERY_MODE
@@ -137,6 +146,10 @@ class RobotStateMachine:
             # Handle boundary avoidance using the dedicated system
             self.handle_avoiding_boundary(near_boundary)
             
+        elif self.state == RobotState.FAILED_COLLECTION_RECOVERY:
+            # Handle failed collection recovery turn
+            self.handle_failed_collection_recovery()
+            
         elif self.state == RobotState.DELIVERY_MODE:
             # NOW includes boundary checking during delivery!
             self.handle_delivery_mode(delivery_zones)
@@ -160,9 +173,8 @@ class RobotStateMachine:
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
 
-
     def handle_avoiding_boundary(self, near_boundary):
-        """UPDATED: Use the dedicated boundary system with improved commands"""
+        """UPDATED: Use the dedicated boundary system with failed collection recovery"""
         
         # Get avoidance command from the dedicated boundary system
         avoidance_command = self.vision.boundary_system.get_avoidance_command(self.vision.last_frame)
@@ -251,8 +263,15 @@ class RobotStateMachine:
             boundary_status = self.vision.boundary_system.get_status()
             
             if boundary_status['safe'] and not still_near_boundary:
-                self.logger.info("✅ Boundary avoidance successful - resuming normal operation")
-                self.state = RobotState.SEARCHING
+                self.logger.info("✅ Boundary avoidance successful")
+                
+                # Check if this was due to failed collection attempt
+                if self.collection_interrupted_by_boundary:
+                    self._handle_failed_collection_attempt()
+                    self.collection_interrupted_by_boundary = False
+                else:
+                    # Normal boundary avoidance - return to search
+                    self.state = RobotState.SEARCHING
             else:
                 # Still detecting boundaries - log details and continue avoidance
                 self.logger.warning("⚠️ Still detecting boundaries after avoidance")
@@ -261,6 +280,74 @@ class RobotStateMachine:
         else:
             # Can't get frame - assume we're clear
             self.logger.warning("⚠️ Can't verify boundary status - assuming clear")
+            if self.collection_interrupted_by_boundary:
+                self._handle_failed_collection_attempt()
+                self.collection_interrupted_by_boundary = False
+            else:
+                self.state = RobotState.SEARCHING
+
+    def _handle_failed_collection_attempt(self):
+        """Handle failed collection attempt and track for recovery"""
+        # Record current target position as failed location
+        if self.vision.current_target:
+            current_position = self.vision.current_target.center
+            
+            # Check if this is the same ball we failed on before
+            if self.last_failed_ball_position:
+                distance = np.sqrt((current_position[0] - self.last_failed_ball_position[0])**2 + 
+                                 (current_position[1] - self.last_failed_ball_position[1])**2)
+                
+                if distance <= config.FAILED_COLLECTION_POSITION_TOLERANCE:
+                    # Same ball - increment counter
+                    self.failed_collection_attempts += 1
+                    self.logger.warning(f"🔄 Failed collection attempt #{self.failed_collection_attempts} on same ball at {current_position}")
+                else:
+                    # Different ball - reset counter
+                    self.failed_collection_attempts = 1
+                    self.last_failed_ball_position = current_position
+                    self.logger.warning(f"🔄 Failed collection attempt on new ball at {current_position}")
+            else:
+                # First failed attempt
+                self.failed_collection_attempts = 1
+                self.last_failed_ball_position = current_position
+                self.logger.warning(f"🔄 First failed collection attempt at {current_position}")
+            
+            # Check if we need recovery turn
+            if self.failed_collection_attempts >= config.FAILED_COLLECTION_MAX_ATTEMPTS:
+                self.logger.warning(f"🔄 MAX FAILED ATTEMPTS REACHED ({self.failed_collection_attempts}) - Starting recovery turn")
+                self.state = RobotState.FAILED_COLLECTION_RECOVERY
+                self.recovery_turn_start_time = time.time()
+                self.in_recovery_turn = True
+                return
+        
+        # Normal return to search if not triggering recovery
+        self.state = RobotState.SEARCHING
+
+    def handle_failed_collection_recovery(self):
+        """Handle recovery turn after failed collection attempts"""
+        if not self.in_recovery_turn:
+            # Start recovery turn
+            self.logger.warning(f"🔄 STARTING RECOVERY TURN: Left for {config.FAILED_COLLECTION_RECOVERY_TURN_DURATION}s")
+            self.hardware.turn_left(
+                duration=config.FAILED_COLLECTION_RECOVERY_TURN_DURATION, 
+                speed=0.4
+            )
+            self.recovery_turn_start_time = time.time()
+            self.in_recovery_turn = True
+            return
+        
+        # Check if recovery turn is complete
+        elapsed = time.time() - self.recovery_turn_start_time
+        if elapsed >= config.FAILED_COLLECTION_RECOVERY_TURN_DURATION + 0.2:  # Small buffer
+            self.logger.info("✅ Recovery turn complete - resetting failed collection tracking")
+            
+            # Reset failed collection tracking
+            self.failed_collection_attempts = 0
+            self.last_failed_ball_position = None
+            self.in_recovery_turn = False
+            self.recovery_turn_start_time = None
+            
+            # Return to normal search
             self.state = RobotState.SEARCHING
 
     def handle_searching(self, balls, nav_command):
@@ -270,6 +357,17 @@ class RobotStateMachine:
             confident_balls = [ball for ball in balls if ball.confidence > 0.4]
             
             if confident_balls:
+                # Check if targeting a new ball - reset failed collection tracking
+                target_ball = confident_balls[0]
+                if self.last_failed_ball_position:
+                    distance = np.sqrt((target_ball.center[0] - self.last_failed_ball_position[0])**2 + 
+                                     (target_ball.center[1] - self.last_failed_ball_position[1])**2)
+                    
+                    if distance > config.FAILED_COLLECTION_POSITION_TOLERANCE:
+                        self.logger.info("🔄 Targeting new ball - resetting failed collection tracking")
+                        self.failed_collection_attempts = 0
+                        self.last_failed_ball_position = None
+                
                 ball_count = len(confident_balls)
                 avg_confidence = sum(ball.confidence for ball in confident_balls) / ball_count
                 
@@ -472,6 +570,9 @@ class RobotStateMachine:
         
         if success:
             self.logger.info(f"✅ White ball collected! Total: {ball_count_after}/{config.BALLS_BEFORE_DELIVERY}")
+            # Reset failed collection tracking on successful collection
+            self.failed_collection_attempts = 0
+            self.last_failed_ball_position = None
         else:
             self.logger.warning(f"❌ White ball collection failed")
         
