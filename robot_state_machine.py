@@ -73,10 +73,10 @@ class RobotStateMachine:
                     self.logger.warning(f"🚨 BOUNDARY AVOIDANCE TRIGGERED during {self.state.value}")
                     self.logger.warning(f"   Danger zones: {boundary_status['danger_zones']}")
                     
-                    # Check if this interrupts a collection attempt
-                    if self.state == RobotState.COLLECTING_BALL:
+                    # Check if this interrupts a collection attempt (centering or collecting)
+                    if self.state in [RobotState.COLLECTING_BALL, RobotState.CENTERING_BALL]:
                         self.collection_interrupted_by_boundary = True
-                        self.logger.warning("   Collection interrupted by boundary detection!")
+                        self.logger.warning("   Collection attempt interrupted by boundary detection!")
                     
                     # Interrupt delivery operations if necessary for safety
                     if self.state in [RobotState.DELIVERY_MODE, RobotState.DELIVERY_ZONE_SEARCH, 
