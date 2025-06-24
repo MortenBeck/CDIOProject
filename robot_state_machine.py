@@ -293,7 +293,7 @@ class RobotStateMachine:
         if self.failed_collection_attempts >= config.FAILED_COLLECTION_MAX_ATTEMPTS:
             self.logger.warning(f"🔄 MAX FAILED ATTEMPTS REACHED ({self.failed_collection_attempts}) - Starting recovery turn")
             self.state = RobotState.FAILED_COLLECTION_RECOVERY
-            self.recovery_turn_start_time = time.time()
+            self.recovery_turn_start_time = None  # Will be set when recovery actually starts
             return
         
         # Normal return to search if not triggering recovery
