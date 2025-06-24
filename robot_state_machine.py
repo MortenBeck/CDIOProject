@@ -579,7 +579,7 @@ class RobotStateMachine:
             self.logger.info("🔍 Searching for green delivery zones... (with boundary safety)")
         
         # Simple search pattern - boundary avoidance will interrupt if needed
-        self.hardware.turn_right(duration=0.8, speed=0.4)
+        self.hardware.turn_right(duration=1, speed=0.4)
         time.sleep(0.2)
     
     def handle_delivery_zone_centering(self, delivery_zones=None):
