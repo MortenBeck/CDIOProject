@@ -46,7 +46,6 @@ class RobotStateMachine:
         
         # Failed collection recovery tracking
         self.failed_collection_attempts = 0
-        self.last_failed_ball_position = None
         self.in_recovery_turn = False
         self.recovery_turn_start_time = None
         self.collection_interrupted_by_boundary = False
@@ -288,37 +287,17 @@ class RobotStateMachine:
 
     def _handle_failed_collection_attempt(self):
         """Handle failed collection attempt and track for recovery"""
-        # Record current target position as failed location
-        if self.vision.current_target:
-            current_position = self.vision.current_target.center
-            
-            # Check if this is the same ball we failed on before
-            if self.last_failed_ball_position:
-                distance = np.sqrt((current_position[0] - self.last_failed_ball_position[0])**2 + 
-                                 (current_position[1] - self.last_failed_ball_position[1])**2)
-                
-                if distance <= config.FAILED_COLLECTION_POSITION_TOLERANCE:
-                    # Same ball - increment counter
-                    self.failed_collection_attempts += 1
-                    self.logger.warning(f"🔄 Failed collection attempt #{self.failed_collection_attempts} on same ball at {current_position}")
-                else:
-                    # Different ball - reset counter
-                    self.failed_collection_attempts = 1
-                    self.last_failed_ball_position = current_position
-                    self.logger.warning(f"🔄 Failed collection attempt on new ball at {current_position}")
-            else:
-                # First failed attempt
-                self.failed_collection_attempts = 1
-                self.last_failed_ball_position = current_position
-                self.logger.warning(f"🔄 First failed collection attempt at {current_position}")
-            
-            # Check if we need recovery turn
-            if self.failed_collection_attempts >= config.FAILED_COLLECTION_MAX_ATTEMPTS:
-                self.logger.warning(f"🔄 MAX FAILED ATTEMPTS REACHED ({self.failed_collection_attempts}) - Starting recovery turn")
-                self.state = RobotState.FAILED_COLLECTION_RECOVERY
-                self.recovery_turn_start_time = time.time()
-                self.in_recovery_turn = True
-                return
+        # Simply increment counter for any failed collection
+        self.failed_collection_attempts += 1
+        self.logger.warning(f"🔄 Failed collection attempt #{self.failed_collection_attempts}")
+        
+        # Check if we need recovery turn
+        if self.failed_collection_attempts >= config.FAILED_COLLECTION_MAX_ATTEMPTS:
+            self.logger.warning(f"🔄 MAX FAILED ATTEMPTS REACHED ({self.failed_collection_attempts}) - Starting recovery turn")
+            self.state = RobotState.FAILED_COLLECTION_RECOVERY
+            self.recovery_turn_start_time = time.time()
+            self.in_recovery_turn = True
+            return
         
         # Normal return to search if not triggering recovery
         self.state = RobotState.SEARCHING
@@ -343,7 +322,6 @@ class RobotStateMachine:
             
             # Reset failed collection tracking
             self.failed_collection_attempts = 0
-            self.last_failed_ball_position = None
             self.in_recovery_turn = False
             self.recovery_turn_start_time = None
             
@@ -357,17 +335,6 @@ class RobotStateMachine:
             confident_balls = [ball for ball in balls if ball.confidence > 0.4]
             
             if confident_balls:
-                # Check if targeting a new ball - reset failed collection tracking
-                target_ball = confident_balls[0]
-                if self.last_failed_ball_position:
-                    distance = np.sqrt((target_ball.center[0] - self.last_failed_ball_position[0])**2 + 
-                                     (target_ball.center[1] - self.last_failed_ball_position[1])**2)
-                    
-                    if distance > config.FAILED_COLLECTION_POSITION_TOLERANCE:
-                        self.logger.info("🔄 Targeting new ball - resetting failed collection tracking")
-                        self.failed_collection_attempts = 0
-                        self.last_failed_ball_position = None
-                
                 ball_count = len(confident_balls)
                 avg_confidence = sum(ball.confidence for ball in confident_balls) / ball_count
                 
@@ -572,7 +539,6 @@ class RobotStateMachine:
             self.logger.info(f"✅ White ball collected! Total: {ball_count_after}/{config.BALLS_BEFORE_DELIVERY}")
             # Reset failed collection tracking on successful collection
             self.failed_collection_attempts = 0
-            self.last_failed_ball_position = None
         else:
             self.logger.warning(f"❌ White ball collection failed")
         
