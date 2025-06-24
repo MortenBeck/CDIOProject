@@ -133,7 +133,7 @@ RESTART_THRESHOLD = 5  # Number of consecutive errors before restart
 # === PRECISE TARGET ZONE (NEW APPROACH) ===
 TARGET_ZONE_WIDTH = 80              # Target zone width in pixels (ping pong ball sized)
 TARGET_ZONE_HEIGHT = 60             # Target zone height in pixels
-FIXED_COLLECTION_DRIVE_TIME = 0.85  # 0.8 is pretty new battery
+FIXED_COLLECTION_DRIVE_TIME = 0.95  # 0.8 is pretty new battery
 
 # Enhanced centering - ball must be in target zone AND X-centered before collection
 CENTERING_TOLERANCE = 40  # X-axis centering tolerance (pixels)
