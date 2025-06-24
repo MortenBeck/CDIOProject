@@ -107,9 +107,9 @@ class GolfBotDashboard:
         bottom_detection_height = int(detection_zone_height * 0.20)  # Same as sides: 20% of detection zone
         bottom_region_start = danger_end_y - bottom_detection_height  # Start from bottom up
         
-        # Exclude edge areas (10% margin from each side)
-        bottom_left_margin = int(w * 0.1)
-        bottom_right_margin = int(w * 0.1)
+        # Exclude edge areas (15% margin from each side for 70% width)
+        bottom_left_margin = int(w * 0.15)
+        bottom_right_margin = int(w * 0.15)
         bottom_detection_left = bottom_left_margin
         bottom_detection_right = w - bottom_right_margin
         
