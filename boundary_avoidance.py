@@ -110,7 +110,7 @@ class BoundaryAvoidanceSystem:
         return False
 
     def detect_boundaries(self, frame) -> bool:
-        """FOCUSED: Only detect walls below the collection zone middle - LESS AGGRESSIVE SIDES"""
+        """FOCUSED: Only detect walls below the collection zone middle - SMALLER SIDE ZONES (BOTTOM 20%)"""
         if frame is None:
             return False
 
@@ -119,7 +119,7 @@ class BoundaryAvoidanceSystem:
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # FIXED RED WALL DETECTION - Same permissive ranges as arena detection
+        # FIXED RED DETECTION - Same permissive ranges as arena detection
         lower_red1 = np.array([0, 50, 50])      # Much more permissive
         upper_red1 = np.array([15, 255, 255])
         lower_red2 = np.array([160, 50, 50])    # Much more permissive
@@ -153,6 +153,9 @@ class BoundaryAvoidanceSystem:
         danger_detected = False
         min_wall_area = 200   # Minimum area to consider a wall
 
+        # Calculate detection zone height for percentage calculations
+        detection_zone_height = danger_end_y - danger_start_y
+
         # UPDATED: Less aggressive side detection zones
         danger_distance_vertical = int(h * 0.1)        # 10% of frame height (unchanged)
         danger_distance_horizontal = int(w * 0.08)     # REDUCED from 15% to 8% of frame width
@@ -185,7 +188,11 @@ class BoundaryAvoidanceSystem:
                             self.logger.info(f"🚨 Bottom wall detected: area={area}, width={w_rect}")
                         break
 
-        # === REGION 2: LEFT WALL DETECTION (LESS AGGRESSIVE) ===
+        # === REGION 2: LEFT WALL DETECTION (BOTTOM 20% ONLY) ===
+        # NEW: Calculate Y range for left/right detection - bottom 20% only
+        side_detection_height = int(detection_zone_height * 0.20)  # 20% of detection zone
+        side_detection_start_y = danger_end_y - side_detection_height  # Start from bottom up
+        
         # Start from side_margin_reduction pixels from the left edge instead of 0
         left_start_x = side_margin_reduction
         left_width = danger_distance_horizontal
@@ -195,29 +202,30 @@ class BoundaryAvoidanceSystem:
         actual_left_width = left_end_x - left_start_x
         
         if actual_left_width > 20:  # Only check if we have reasonable width
-            left_region = red_mask[danger_start_y:danger_end_y, left_start_x:left_end_x]
+            # MODIFIED: Use smaller Y range (bottom 20% only)
+            left_region = red_mask[side_detection_start_y:danger_end_y, left_start_x:left_end_x]
             contours, _ = cv2.findContours(left_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours:
                 area = cv2.contourArea(contour)
                 if area > min_wall_area:
                     x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    if h_rect > 40:   # Vertical wall
+                    if h_rect > 20:   # Vertical wall (reduced threshold)
                         danger_detected = True
                         wall_info = {
                             'zone': 'left',
                             'contour': contour,
                             'area': area,
-                            'bbox': (left_start_x + x, danger_start_y + y, w_rect, h_rect),
+                            'bbox': (left_start_x + x, side_detection_start_y + y, w_rect, h_rect),
                             'length': h_rect,
                             'triggered': True
                         }
                         self.detected_walls.append(wall_info)
                         if config.DEBUG_VISION:
-                            self.logger.info(f"🚨 Left wall detected: area={area}, height={h_rect}, x_start={left_start_x}")
+                            self.logger.info(f"🚨 Left wall detected: area={area}, height={h_rect}, y_range=[{side_detection_start_y}:{danger_end_y}]")
                         break
 
-        # === REGION 3: RIGHT WALL DETECTION (LESS AGGRESSIVE) ===
+        # === REGION 3: RIGHT WALL DETECTION (BOTTOM 20% ONLY) ===
         # End at side_margin_reduction pixels from the right edge instead of w
         right_end_x = w - side_margin_reduction
         right_width = danger_distance_horizontal
@@ -227,26 +235,27 @@ class BoundaryAvoidanceSystem:
         actual_right_width = right_end_x - right_start_x
         
         if actual_right_width > 20:  # Only check if we have reasonable width
-            right_region = red_mask[danger_start_y:danger_end_y, right_start_x:right_end_x]
+            # MODIFIED: Use smaller Y range (bottom 20% only)
+            right_region = red_mask[side_detection_start_y:danger_end_y, right_start_x:right_end_x]
             contours, _ = cv2.findContours(right_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours:
                 area = cv2.contourArea(contour)
                 if area > min_wall_area:
                     x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    if h_rect > 40:   # Vertical wall
+                    if h_rect > 20:   # Vertical wall (reduced threshold)
                         danger_detected = True
                         wall_info = {
                             'zone': 'right',
                             'contour': contour,
                             'area': area,
-                            'bbox': (right_start_x + x, danger_start_y + y, w_rect, h_rect),
+                            'bbox': (right_start_x + x, side_detection_start_y + y, w_rect, h_rect),
                             'length': h_rect,
                             'triggered': True
                         }
                         self.detected_walls.append(wall_info)
                         if config.DEBUG_VISION:
-                            self.logger.info(f"🚨 Right wall detected: area={area}, height={h_rect}, x_start={right_start_x}")
+                            self.logger.info(f"🚨 Right wall detected: area={area}, height={h_rect}, y_range=[{side_detection_start_y}:{danger_end_y}]")
                         break
 
         # === REGION 4: CENTER FORWARD WALL DETECTION (unchanged) ===
@@ -278,6 +287,7 @@ class BoundaryAvoidanceSystem:
         if config.DEBUG_VISION and danger_detected:
             triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
             self.logger.info(f"🚨 WALL DETECTION SUCCESS - zones: {triggered_zones}")
+            self.logger.info(f"🚨 Side detection Y-range: [{side_detection_start_y}:{danger_end_y}] (bottom 20%)")
             self.logger.info(f"🚨 Side detection areas: LEFT[{left_start_x}:{left_end_x}], RIGHT[{right_start_x}:{right_end_x}]")
 
         return danger_detected
