@@ -522,7 +522,7 @@ class RobotStateMachine:
         time.sleep(0.2)
     
     def handle_delivery_zone_centering(self, delivery_zones=None):
-        """Enhanced centering on delivery zone - moves toward and centers green area"""
+        """FIXED: Enhanced centering on delivery zone - correct movement directions"""
         if not delivery_zones:
             self.logger.warning("Lost delivery zone during centering - searching again")
             self.state = RobotState.DELIVERY_ZONE_SEARCH
@@ -567,14 +567,16 @@ class RobotStateMachine:
         if distance_from_center > 80:
             self.logger.info(f"📍 Delivery zone far away ({distance_from_center:.0f}px) - moving closer")
             
-            # Move toward the zone (prioritize Y-axis movement to get closer)
+            # FIXED MOVEMENT LOGIC FOR Y-AXIS:
+            # Negative Y = zone is ABOVE center → move FORWARD to get closer
+            # Positive Y = zone is BELOW center → move BACKWARD to get closer
             if abs(y_offset) > 25:
-                if y_offset > 0:  # Zone is below center
+                if y_offset < 0:  # Zone is ABOVE center (negative Y)
                     self.hardware.move_forward(duration=0.4, speed=0.4)
-                    self.logger.info("⬆️ Moving forward toward delivery zone")
-                else:  # Zone is above center
+                    self.logger.info("⬆️ Moving FORWARD toward delivery zone (zone above center)")
+                else:  # Zone is BELOW center (positive Y)
                     self.hardware.move_backward(duration=0.4, speed=0.4)
-                    self.logger.info("⬇️ Moving backward toward delivery zone")
+                    self.logger.info("⬇️ Moving BACKWARD toward delivery zone (zone below center)")
                 movement_made = True
             
             # If Y is okay, adjust X
@@ -601,14 +603,14 @@ class RobotStateMachine:
                     self.logger.info(f"↖️ Fine centering: turn left ({x_offset:.0f}px offset)")
                 movement_made = True
             
-            # Fine Y-axis centering (forward/backward)
+            # FIXED FINE Y-AXIS CENTERING:
             elif abs(y_offset) > y_tolerance:
-                if y_offset < 0:  # Zone above center
+                if y_offset < 0:  # Zone ABOVE center (negative Y)
                     self.hardware.move_forward(duration=0.3, speed=0.35)
-                    self.logger.info(f"⬆️ Fine centering: move forward ({y_offset:.0f}px offset)")
-                else:  # Zone below center
+                    self.logger.info(f"⬆️ Fine centering: move FORWARD (zone {y_offset:.0f}px above)")
+                else:  # Zone BELOW center (positive Y)
                     self.hardware.move_backward(duration=0.3, speed=0.35)
-                    self.logger.info(f"⬇️ Fine centering: move backward ({y_offset:.0f}px offset)")
+                    self.logger.info(f"⬇️ Fine centering: move BACKWARD (zone {y_offset:.0f}px below)")
                 movement_made = True
         
         # Add timeout protection
