@@ -522,7 +522,7 @@ class RobotStateMachine:
         time.sleep(0.2)
     
     def handle_delivery_zone_centering(self, delivery_zones=None):
-        """Enhanced centering on delivery zone - targets UPPER portion of frame"""
+        """FIXED: Enhanced centering on delivery zone - correct movement directions"""
         if not delivery_zones:
             self.logger.warning("Lost delivery zone during centering - searching again")
             self.state = RobotState.DELIVERY_ZONE_SEARCH
@@ -536,84 +536,81 @@ class RobotStateMachine:
             self.delivery_search_start_time = time.time()
             return
         
-        # Calculate position relative to TARGET POSITION (not center)
+        # Calculate position relative to center
         zone_x, zone_y = target_zone.center
+        frame_center_x = config.CAMERA_WIDTH // 2
+        frame_center_y = config.CAMERA_HEIGHT // 2
         
-        # TARGET POSITION: X = center, Y = 30% down from top (70% up from bottom)
-        target_x = config.CAMERA_WIDTH // 2  # Still center horizontally
-        target_y = int(config.CAMERA_HEIGHT * 0.30)  # 30% down from top = 70% up from bottom
+        x_offset = zone_x - frame_center_x
+        y_offset = zone_y - frame_center_y
         
-        x_offset = zone_x - target_x
-        y_offset = zone_y - target_y
-        
-        # Calculate distance from TARGET position
-        distance_from_target = np.sqrt(x_offset**2 + y_offset**2)
+        # Calculate distance from center
+        distance_from_center = np.sqrt(x_offset**2 + y_offset**2)
         
         # Enhanced centering tolerances
         x_tolerance = config.DELIVERY_CENTERING_TOLERANCE  # 50 pixels by default
         y_tolerance = 40  # Y-axis tolerance for forward/backward movement
         
-        self.logger.info(f"🎯 Delivery zone at ({zone_x}, {zone_y}), target ({target_x}, {target_y})")
-        self.logger.info(f"🎯 Offset from target: X={x_offset:.0f}, Y={y_offset:.0f}, Distance={distance_from_target:.0f}px")
+        self.logger.info(f"🎯 Delivery zone offset: X={x_offset:.0f}, Y={y_offset:.0f}, Distance={distance_from_center:.0f}px")
         
-        # Check if well-positioned at target location
+        # Check if well-centered
         if abs(x_offset) <= x_tolerance and abs(y_offset) <= y_tolerance:
-            self.logger.info("✅ Delivery zone PERFECTLY POSITIONED in upper frame - starting ball release!")
+            self.logger.info("✅ Delivery zone PERFECTLY CENTERED - starting ball release!")
             self.state = RobotState.DELIVERY_RELEASING
             self.delivery_release_start_time = time.time()
             return
         
-        # Movement strategy: Get zone to target position (upper frame)
+        # Movement strategy: Prioritize getting closer first, then fine centering
         movement_made = False
         
-        # PHASE 1: If zone is far from target position, move toward it
-        if distance_from_target > 80:
-            self.logger.info(f"📍 Delivery zone far from target position ({distance_from_target:.0f}px) - repositioning")
+        # PHASE 1: If zone is far away, move toward it first
+        if distance_from_center > 80:
+            self.logger.info(f"📍 Delivery zone far away ({distance_from_center:.0f}px) - moving closer")
             
-            # Y-AXIS MOVEMENT to get zone to upper frame position:
-            # Positive Y offset = zone is BELOW target → move FORWARD to bring zone up
-            # Negative Y offset = zone is ABOVE target → move BACKWARD to bring zone down
+            # FIXED MOVEMENT LOGIC FOR Y-AXIS:
+            # Negative Y = zone is ABOVE center → move FORWARD to get closer
+            # Positive Y = zone is BELOW center → move BACKWARD to get closer
             if abs(y_offset) > 25:
-                if y_offset > 0:  # Zone is BELOW target position
+                if y_offset < 0:  # Zone is ABOVE center (negative Y)
                     self.hardware.move_forward(duration=0.4, speed=0.4)
-                    self.logger.info(f"⬆️ Moving FORWARD to bring zone UP to target position (zone {y_offset:.0f}px too low)")
-                else:  # Zone is ABOVE target position
+                    self.logger.info("⬆️ Moving FORWARD toward delivery zone (zone above center)")
+                else:  # Zone is BELOW center (positive Y)
                     self.hardware.move_backward(duration=0.4, speed=0.4)
-                    self.logger.info(f"⬇️ Moving BACKWARD to bring zone DOWN to target position (zone {abs(y_offset):.0f}px too high)")
+                    self.logger.info("⬇️ Moving BACKWARD toward delivery zone (zone below center)")
                 movement_made = True
             
-            # X-AXIS MOVEMENT to center zone horizontally
+            # If Y is okay, adjust X
             elif abs(x_offset) > 30:
-                if x_offset > 0:  # Zone is to the RIGHT of center
+                if x_offset > 0:  # Zone is to the right
                     self.hardware.turn_right(duration=0.3, speed=0.4)
-                    self.logger.info(f"↗️ Turning RIGHT to center zone horizontally (zone {x_offset:.0f}px right of center)")
-                else:  # Zone is to the LEFT of center
+                    self.logger.info("↗️ Turning right toward delivery zone")
+                else:  # Zone is to the left
                     self.hardware.turn_left(duration=0.3, speed=0.4)
-                    self.logger.info(f"↖️ Turning LEFT to center zone horizontally (zone {abs(x_offset):.0f}px left of center)")
+                    self.logger.info("↖️ Turning left toward delivery zone")
                 movement_made = True
         
-        # PHASE 2: Fine positioning when close to target
+        # PHASE 2: Fine centering when close
         else:
-            self.logger.info(f"🎯 Fine positioning delivery zone at target location ({distance_from_target:.0f}px)")
+            self.logger.info(f"🎯 Fine centering delivery zone ({distance_from_center:.0f}px)")
             
             # Fine X-axis centering (left/right turns)
             if abs(x_offset) > x_tolerance:
-                if x_offset > 0:  # Zone to the right of center
+                if x_offset > 0:  # Zone to the right
                     self.hardware.turn_right(duration=0.25, speed=0.35)
                     self.logger.info(f"↗️ Fine centering: turn right ({x_offset:.0f}px offset)")
-                else:  # Zone to the left of center
+                else:  # Zone to the left
                     self.hardware.turn_left(duration=0.25, speed=0.35)
-                    self.logger.info(f"↖️ Fine centering: turn left ({abs(x_offset):.0f}px offset)")
+                    self.logger.info(f"↖️ Fine centering: turn left ({x_offset:.0f}px offset)")
                 movement_made = True
             
-            # Fine Y-axis positioning to target height
+            # FIXED FINE Y-AXIS CENTERING:
             elif abs(y_offset) > y_tolerance:
-                if y_offset > 0:  # Zone BELOW target position
+                if y_offset < 0:  # Zone ABOVE center (negative Y)
                     self.hardware.move_forward(duration=0.3, speed=0.35)
-                    self.logger.info(f"⬆️ Fine positioning: move FORWARD (bring zone UP {y_offset:.0f}px)")
-                else:  # Zone ABOVE target position
+                    self.logger.info(f"⬆️ Fine centering: move FORWARD (zone {y_offset:.0f}px above)")
+                else:  # Zone BELOW center (positive Y)
                     self.hardware.move_backward(duration=0.3, speed=0.35)
-                    self.logger.info(f"⬇️ Fine positioning: move BACKWARD (bring zone DOWN {abs(y_offset):.0f}px)")
+                    self.logger.info(f"⬇️ Fine centering: move BACKWARD (zone {y_offset:.0f}px below)")
                 movement_made = True
         
         # Add timeout protection
@@ -622,7 +619,7 @@ class RobotStateMachine:
         
         centering_elapsed = time.time() - self.delivery_centering_start_time
         if centering_elapsed > 60.0:  # 60 second timeout
-            self.logger.warning("⏰ Delivery positioning timeout - proceeding with release anyway")
+            self.logger.warning("⏰ Delivery centering timeout - proceeding with release anyway")
             self.state = RobotState.DELIVERY_RELEASING
             self.delivery_release_start_time = time.time()
             delattr(self, 'delivery_centering_start_time')
@@ -632,12 +629,11 @@ class RobotStateMachine:
             time.sleep(0.1)  # Brief pause after movement
         else:
             # Shouldn't reach here, but safety fallback
-            self.logger.info("✅ Delivery zone positioned (fallback) - starting release")
+            self.logger.info("✅ Delivery zone centered (fallback) - starting release")
             self.state = RobotState.DELIVERY_RELEASING
             self.delivery_release_start_time = time.time()
             if hasattr(self, 'delivery_centering_start_time'):
                 delattr(self, 'delivery_centering_start_time')
-
     
     def handle_delivery_releasing(self):
         """Handle ball release sequence with timing"""
