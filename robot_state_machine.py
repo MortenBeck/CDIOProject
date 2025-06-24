@@ -54,59 +54,53 @@ class RobotStateMachine:
         # self.last_boundary_avoidance_time = None
         
     def execute_state_machine(self, balls, near_boundary, nav_command, delivery_zones=None):
-        """Execute state logic with PROPER boundary avoidance delegation"""
+        """Execute state logic with PROPER boundary avoidance delegation - FIXED VERSION"""
         
-        # === HIGHEST PRIORITY: Never interrupt active collection or delivery operations ===
-        if self.state in [RobotState.COLLECTING_BALL, RobotState.DELIVERY_MODE, 
-                         RobotState.DELIVERY_ZONE_SEARCH, RobotState.DELIVERY_ZONE_CENTERING,
-                         RobotState.DELIVERY_RELEASING, RobotState.POST_DELIVERY_TURN]:
-            
-            if self.state == RobotState.COLLECTING_BALL:
-                self.handle_collecting_ball()
-            elif self.state == RobotState.DELIVERY_MODE:
-                self.handle_delivery_mode(delivery_zones)
-            elif self.state == RobotState.DELIVERY_ZONE_SEARCH:
-                self.handle_delivery_zone_search(delivery_zones)
-            elif self.state == RobotState.DELIVERY_ZONE_CENTERING:
-                self.handle_delivery_zone_centering(delivery_zones)
-            elif self.state == RobotState.DELIVERY_RELEASING:
-                self.handle_delivery_releasing()
-            elif self.state == RobotState.POST_DELIVERY_TURN:
-                self.handle_post_delivery_turn()
-            return
+        # === HIGHEST PRIORITY: Emergency boundary avoidance (except during active collection/release) ===
+        # Only skip boundary checking during the actual physical collection and release operations
+        non_interruptible_states = [RobotState.COLLECTING_BALL, RobotState.DELIVERY_RELEASING]
         
-        # === SECOND PRIORITY: Check for delivery trigger ===
-        ball_count = self.hardware.get_ball_count()
-        if ball_count >= config.BALLS_BEFORE_DELIVERY and self.state != RobotState.DELIVERY_MODE:
-            self.logger.info(f"🚚 DELIVERY TRIGGERED: {ball_count}/{config.BALLS_BEFORE_DELIVERY} balls collected")
-            self.state = RobotState.DELIVERY_MODE
-            return
-        
-        # === THIRD PRIORITY: BOUNDARY AVOIDANCE (using boundary_avoidance.py) ===
-        if near_boundary:
-            # Get detailed boundary status from the dedicated boundary system
-            boundary_status = self.vision.boundary_system.get_status()
-            
-            if not boundary_status['safe']:
-                self.logger.warning(f"🚨 BOUNDARY AVOIDANCE TRIGGERED")
-                self.logger.warning(f"   Danger zones: {boundary_status['danger_zones']}")
-                self.logger.warning(f"   Current state: {self.state.value}")
+        if self.state not in non_interruptible_states:
+            # === BOUNDARY AVOIDANCE (using boundary_avoidance.py) ===
+            if near_boundary:
+                # Get detailed boundary status from the dedicated boundary system
+                boundary_status = self.vision.boundary_system.get_status()
                 
-                # Interrupt centering if necessary for safety
-                if self.state == RobotState.CENTERING_BALL:
-                    self.logger.warning("   Interrupting ball centering for safety!")
-                    self._reset_centering_state()
-                
-                self.state = RobotState.AVOIDING_BOUNDARY
-                # Execute boundary avoidance immediately
-                self.handle_avoiding_boundary(near_boundary)
+                if not boundary_status['safe']:
+                    self.logger.warning(f"🚨 BOUNDARY AVOIDANCE TRIGGERED during {self.state.value}")
+                    self.logger.warning(f"   Danger zones: {boundary_status['danger_zones']}")
+                    
+                    # Interrupt delivery operations if necessary for safety
+                    if self.state in [RobotState.DELIVERY_MODE, RobotState.DELIVERY_ZONE_SEARCH, 
+                                    RobotState.DELIVERY_ZONE_CENTERING, RobotState.POST_DELIVERY_TURN]:
+                        self.logger.warning("   Interrupting delivery operation for safety!")
+                        # Reset delivery state tracking
+                        self.delivery_search_start_time = None
+                        self.post_delivery_start_time = None
+                    
+                    # Interrupt centering if necessary for safety
+                    if self.state == RobotState.CENTERING_BALL:
+                        self.logger.warning("   Interrupting ball centering for safety!")
+                        self._reset_centering_state()
+                    
+                    self.state = RobotState.AVOIDING_BOUNDARY
+                    # Execute boundary avoidance immediately
+                    self.handle_avoiding_boundary(near_boundary)
+                    return
+        
+        # === STATE-SPECIFIC HANDLING ===
+        
+        # Check for delivery trigger (except during non-interruptible states)
+        if self.state not in non_interruptible_states:
+            ball_count = self.hardware.get_ball_count()
+            if ball_count >= config.BALLS_BEFORE_DELIVERY and self.state not in [
+                RobotState.DELIVERY_MODE, RobotState.DELIVERY_ZONE_SEARCH, 
+                RobotState.DELIVERY_ZONE_CENTERING, RobotState.DELIVERY_RELEASING, 
+                RobotState.POST_DELIVERY_TURN
+            ]:
+                self.logger.info(f"🚚 DELIVERY TRIGGERED: {ball_count}/{config.BALLS_BEFORE_DELIVERY} balls collected")
+                self.state = RobotState.DELIVERY_MODE
                 return
-        
-        # === FOURTH PRIORITY: Regular ball operations ===
-        # Only execute ball operations if no boundary detected
-        
-        confident_balls = [ball for ball in balls if ball.confidence > 0.4] if balls else []
-        has_good_target = bool(confident_balls)
         
         # Execute current state
         if self.state == RobotState.SEARCHING:
@@ -135,12 +129,37 @@ class RobotStateMachine:
         elif self.state == RobotState.APPROACHING_BALL:
             self.handle_approaching_ball(balls, nav_command)
             
+        elif self.state == RobotState.COLLECTING_BALL:
+            # This state is non-interruptible - no boundary checking
+            self.handle_collecting_ball()
+            
         elif self.state == RobotState.AVOIDING_BOUNDARY:
             # Handle boundary avoidance using the dedicated system
             self.handle_avoiding_boundary(near_boundary)
             
+        elif self.state == RobotState.DELIVERY_MODE:
+            # NOW includes boundary checking during delivery!
+            self.handle_delivery_mode(delivery_zones)
+            
+        elif self.state == RobotState.DELIVERY_ZONE_SEARCH:
+            # NOW includes boundary checking during search!
+            self.handle_delivery_zone_search(delivery_zones)
+            
+        elif self.state == RobotState.DELIVERY_ZONE_CENTERING:
+            # NOW includes boundary checking during centering!
+            self.handle_delivery_zone_centering(delivery_zones)
+            
+        elif self.state == RobotState.DELIVERY_RELEASING:
+            # This state is non-interruptible - no boundary checking
+            self.handle_delivery_releasing()
+            
+        elif self.state == RobotState.POST_DELIVERY_TURN:
+            # NOW includes boundary checking during post-delivery turn!
+            self.handle_post_delivery_turn()
+            
         elif self.state == RobotState.EMERGENCY_STOP:
             self.hardware.emergency_stop()
+
 
     def handle_avoiding_boundary(self, near_boundary):
         """UPDATED: Use the dedicated boundary system with improved commands"""
@@ -476,7 +495,7 @@ class RobotStateMachine:
         self.delivery_search_start_time = time.time()
     
     def handle_delivery_zone_search(self, delivery_zones=None):
-        """Search for green delivery zones"""
+        """Search for green delivery zones - NOW WITH BOUNDARY SAFETY"""
         if delivery_zones and len(delivery_zones) > 0:
             # Found delivery zone(s)
             target_zone = self.vision.get_target_delivery_zone(delivery_zones)
@@ -494,16 +513,16 @@ class RobotStateMachine:
             self.delivery_release_start_time = time.time()
             return
         
-        # Continue searching pattern
+        # Continue searching pattern - BUT NOW WITH BOUNDARY AWARENESS!
         if config.DEBUG_MOVEMENT:
-            self.logger.info("🔍 Searching for green delivery zones...")
+            self.logger.info("🔍 Searching for green delivery zones... (with boundary safety)")
         
-        # Simple search pattern
+        # Simple search pattern - boundary avoidance will interrupt if needed
         self.hardware.turn_right(duration=0.8, speed=0.4)
         time.sleep(0.2)
     
     def handle_delivery_zone_centering(self, delivery_zones=None):
-        """Center robot on delivery zone"""
+        """Center robot on delivery zone - NOW WITH BOUNDARY SAFETY"""
         if not delivery_zones:
             self.logger.warning("Lost delivery zone during centering - searching again")
             self.state = RobotState.DELIVERY_ZONE_SEARCH
@@ -527,14 +546,15 @@ class RobotStateMachine:
         # Get centering command
         centering_command = self.vision.get_delivery_zone_centering_command(target_zone)
         
+        # Execute centering movement - boundary avoidance will interrupt if needed
         if centering_command == "turn_right":
             self.hardware.turn_right(duration=0.25, speed=config.CENTERING_SPEED)
             if config.DEBUG_MOVEMENT:
-                self.logger.info("🎯 Centering delivery zone: turn right")
+                self.logger.info("🎯 Centering delivery zone: turn right (with boundary safety)")
         elif centering_command == "turn_left":
             self.hardware.turn_left(duration=0.25, speed=config.CENTERING_SPEED)
             if config.DEBUG_MOVEMENT:
-                self.logger.info("🎯 Centering delivery zone: turn left")
+                self.logger.info("🎯 Centering delivery zone: turn left (with boundary safety)")
         elif centering_command == "centered":
             # Already centered - move to release
             self.logger.info("✅ Delivery zone centered - starting release")
