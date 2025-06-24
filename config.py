@@ -120,7 +120,7 @@ BALL_LOST_TIMEOUT = 2.0  # Seconds before giving up on a ball
 MAX_COLLECTION_ATTEMPTS = 3
 
 # === FAILED COLLECTION RECOVERY ===
-FAILED_COLLECTION_RECOVERY_TURN_DURATION = 3.0  # Seconds to turn left after 2 failed collections
+FAILED_COLLECTION_RECOVERY_TURN_DURATION = 2.0  # Seconds to turn right after 2 failed collections
 FAILED_COLLECTION_MAX_ATTEMPTS = 2  # Number of attempts before recovery turn
 FAILED_COLLECTION_POSITION_TOLERANCE = 50  # Pixels - distance to consider same ball
 

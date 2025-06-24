@@ -303,8 +303,8 @@ class RobotStateMachine:
         """Handle recovery turn after failed collection attempts - FIXED"""
         if self.recovery_turn_start_time is None:
             # Start recovery turn - NON-BLOCKING
-            self.logger.warning(f"🔄 STARTING RECOVERY TURN: Left for {config.FAILED_COLLECTION_RECOVERY_TURN_DURATION}s")
-            self.hardware.turn_left(speed=0.4)  # Start turning left (no duration = non-blocking)
+            self.logger.warning(f"🔄 STARTING RECOVERY TURN: Right for {config.FAILED_COLLECTION_RECOVERY_TURN_DURATION}s")
+            self.hardware.turn_right(speed=0.4)  # Start turning right (no duration = non-blocking)
             self.recovery_turn_start_time = time.time()
             return
         
