@@ -16,7 +16,7 @@ class BallCollectionSystem:
         try:
             if config.DEBUG_COLLECTION:
                 self.logger.info("🚀 Starting enhanced collection sequence with SS only...")
-                self.logger.info("   Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> driving")
+                self.logger.info("   Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving")
                 self.logger.info("   SF: stays closed during collection")
             
             # Step 1: Move SS from driving to pre-collect position
@@ -31,21 +31,33 @@ class BallCollectionSystem:
             self.motors.move_forward(duration=config.FIXED_COLLECTION_DRIVE_TIME, speed=config.COLLECTION_SPEED)
             time.sleep(0.1)
             
-            # Step 3: SS captures ball
+            # Step 3: SS captures ball (first collect)
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 3: SS collect position")
+                self.logger.info("Step 3: SS collect position (first capture)")
             self.servos.servo_ss_to_collect()
             time.sleep(0.3)
             
             # Step 4: Move SS to store position (secure ball)
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 4: Moving SS to STORE position (secure)")
+                self.logger.info("Step 4: Moving SS to STORE position (secure first ball)")
             self.servos.servo_ss_to_store()
             time.sleep(0.3)
             
-            # Step 5: Return SS to driving position
+            # Step 5: SS captures ball again (second collect)
             if config.DEBUG_COLLECTION:
-                self.logger.info("Step 5: Returning SS to driving position")
+                self.logger.info("Step 5: SS collect position (second capture)")
+            self.servos.servo_ss_to_collect()
+            time.sleep(0.3)
+            
+            # Step 6: Move SS to store position again (secure ball)
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 6: Moving SS to STORE position (secure second ball)")
+            self.servos.servo_ss_to_store()
+            time.sleep(0.3)
+            
+            # Step 7: Return SS to driving position
+            if config.DEBUG_COLLECTION:
+                self.logger.info("Step 7: Returning SS to driving position")
             self.servos.servo_ss_to_driving()
             time.sleep(0.2)
             
