@@ -107,9 +107,9 @@ class GolfBotDashboard:
         bottom_detection_height = int(detection_zone_height * 0.20)  # Same as sides: 20% of detection zone
         bottom_region_start = danger_end_y - bottom_detection_height  # Start from bottom up
         
-        # Exclude edge areas (15% margin from each side for 70% width)
-        bottom_left_margin = int(w * 0.15)
-        bottom_right_margin = int(w * 0.15)
+        # Exclude edge areas (10% margin from each side for 80% width)
+        bottom_left_margin = int(w * 0.1)
+        bottom_right_margin = int(w * 0.1)
         bottom_detection_left = bottom_left_margin
         bottom_detection_right = w - bottom_right_margin
         
@@ -119,32 +119,7 @@ class GolfBotDashboard:
                      (bottom_detection_right, danger_end_y), 
                      zone_color, -1)
         
-        # === ZONE 2 & 3: LEFT AND RIGHT WALL DETECTION AREAS (UNCHANGED) ===
-        side_detection_height = int(detection_zone_height * 0.20)  # 20% of detection zone (unchanged)
-        side_detection_start_y = danger_end_y - side_detection_height  # Start from bottom up
-        
-        danger_distance_horizontal = int(w * 0.08)  # 8% of frame width
-        side_margin_reduction = int(w * 0.05)       # 5% margin from each side
-        
-        # Left side detection zone
-        left_start_x = side_margin_reduction
-        left_end_x = min(left_start_x + danger_distance_horizontal, w // 2)
-        if left_end_x > left_start_x + 20:  # Only draw if reasonable width
-            cv2.rectangle(overlay, 
-                         (left_start_x, side_detection_start_y), 
-                         (left_end_x, danger_end_y), 
-                         zone_color, -1)
-        
-        # Right side detection zone
-        right_end_x = w - side_margin_reduction
-        right_start_x = max(right_end_x - danger_distance_horizontal, w // 2)
-        if right_end_x > right_start_x + 20:  # Only draw if reasonable width
-            cv2.rectangle(overlay, 
-                         (right_start_x, side_detection_start_y), 
-                         (right_end_x, danger_end_y), 
-                         zone_color, -1)
-        
-        # === ZONE 4: CENTER FORWARD WALL DETECTION (UNCHANGED) ===
+        # === ZONE 2: CENTER FORWARD WALL DETECTION ===
         center_width = int(w * 0.4)         # Check center 40% of frame width
         center_start_x = int(w * 0.3)       # Start at 30% from left
         
@@ -509,10 +484,10 @@ class GolfBotDashboard:
             cv2.putText(self.dashboard, "Detection Areas:", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
             y += line_height
-            cv2.putText(self.dashboard, "• Bottom (center only)", 
+            cv2.putText(self.dashboard, "• Bottom (center 80%)", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small-0.1, (200, 200, 200), 1)
             y += line_height - 2
-            cv2.putText(self.dashboard, "• Left/Right (bottom 20%)", 
+            cv2.putText(self.dashboard, "• Center forward (full height)", 
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small-0.1, (200, 200, 200), 1)
         else:
             cv2.putText(self.dashboard, "System: Not Available", 
