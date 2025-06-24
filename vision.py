@@ -103,7 +103,7 @@ class VisionSystem:
         self.collection_zone = self._calculate_collection_zone()
         
         # Detection method tracking
-        self.detection_method = "hybrid"
+        self.detection_method = "hough_circles"
         
         # Dashboard support - store recent detections
         self._last_detected_balls = []
@@ -204,7 +204,7 @@ class VisionSystem:
         
         return "centered"
     
-    # === EXISTING BALL DETECTION METHODS ===
+    # === BALL DETECTION METHODS ===
     def is_ball_centered(self, ball: DetectedObject) -> bool:
         """Check if ball is centered enough to start collection (both X and Y)"""
         x_offset = abs(ball.center[0] - self.frame_center_x)
@@ -390,95 +390,6 @@ class VisionSystem:
                         detected_objects.append(ball)
         
         return detected_objects
-
-    def detect_balls_color_contours(self, frame) -> List[DetectedObject]:
-        """Fallback detection using color+contour method"""
-        detected_objects = []
-        
-        if frame is None:
-            return detected_objects
-        
-        if self.boundary_system.arena_mask is None:
-            self.boundary_system.detect_arena_boundaries(frame)
-        
-        self.arena_mask = self.boundary_system.arena_mask
-        
-        exclusion_zones = self.detect_excluded_areas(frame)
-        
-        h, w = frame.shape[:2]
-        bottom_exclusion_start = int(h * 0.7)
-        
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        ball_lower = np.array([0, 0, 200])
-        ball_upper = np.array([180, 40, 255])
-        white_mask = cv2.inRange(hsv, ball_lower, ball_upper)
-        
-        if self.arena_mask is not None:
-            white_mask = cv2.bitwise_and(white_mask, self.arena_mask)
-        
-        kernel = np.ones((7, 7), np.uint8)
-        white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel, iterations=2)
-        white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
-        white_mask = cv2.medianBlur(white_mask, 5)
-        
-        contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            
-            if config.BALL_MIN_AREA < area < config.BALL_MAX_AREA:
-                perimeter = cv2.arcLength(contour, True)
-                if perimeter > 0:
-                    circularity = 4 * np.pi * area / (perimeter * perimeter)
-                    
-                    if circularity > 0.6:
-                        (x, y), radius = cv2.minEnclosingCircle(contour)
-                        center = (int(x), int(y))
-                        radius = int(radius)
-                        
-                        if center[1] >= bottom_exclusion_start:
-                            continue
-                        
-                        if (config.BALL_MIN_RADIUS < radius < config.BALL_MAX_RADIUS and
-                            0 <= center[1] < h and 0 <= center[0] < w and
-                            self.arena_mask[center[1], center[0]] > 0):
-                            
-                            if self.is_ball_in_exclusion_zone(center, exclusion_zones):
-                                continue
-                            
-                            circle_mask = np.zeros((h, w), dtype=np.uint8)
-                            cv2.circle(circle_mask, center, radius, 255, -1)
-                            contour_mask = np.zeros((h, w), dtype=np.uint8)
-                            cv2.fillPoly(contour_mask, [contour], 255)
-                            
-                            intersection = cv2.bitwise_and(circle_mask, contour_mask)
-                            union = cv2.bitwise_or(circle_mask, contour_mask)
-                            overlap_ratio = np.sum(intersection) / max(1, np.sum(union))
-                            
-                            if overlap_ratio > 0.7:
-                                confidence = self._verify_white_ball_color(frame, center, radius)
-                                
-                                if confidence > 0.4:
-                                    distance_from_center = np.sqrt(
-                                        (center[0] - self.frame_center_x)**2 + 
-                                        (center[1] - self.frame_center_y)**2
-                                    )
-                                    
-                                    in_collection_zone = self.is_ball_in_target_zone(center)
-                                    
-                                    ball = DetectedObject(
-                                        object_type='ball',
-                                        center=center,
-                                        radius=radius,
-                                        area=area,
-                                        confidence=confidence * circularity * overlap_ratio,
-                                        distance_from_center=distance_from_center,
-                                        in_collection_zone=in_collection_zone
-                                    )
-                                    detected_objects.append(ball)
-        
-        return detected_objects
     
     def _verify_white_ball_color(self, frame, center, radius) -> float:
         """Simplified color verification for white balls only"""
@@ -523,28 +434,16 @@ class VisionSystem:
         return 0.0
     
     def detect_balls(self, frame) -> List[DetectedObject]:
-        """Main detection method using hybrid approach"""
-        hough_balls = self.detect_balls_hough_circles(frame)
+        """Main detection method using HoughCircles only"""
+        detected_balls = self.detect_balls_hough_circles(frame)
         
-        if len(hough_balls) < 2:
-            color_balls = self.detect_balls_color_contours(frame)
-            
-            for color_ball in color_balls:
-                is_duplicate = False
-                for hough_ball in hough_balls:
-                    distance = np.sqrt(
-                        (color_ball.center[0] - hough_ball.center[0])**2 +
-                        (color_ball.center[1] - hough_ball.center[1])**2
-                    )
-                    if distance < 25:
-                        is_duplicate = True
-                        break
-                
-                if not is_duplicate and len(hough_balls) < 6:
-                    hough_balls.append(color_ball)
+        # Sort by distance and confidence
+        detected_balls.sort(key=lambda x: (x.distance_from_center, -x.confidence))
         
-        hough_balls.sort(key=lambda x: (x.distance_from_center, -x.confidence))
-        detected_balls = hough_balls[:6]
+        # Limit to top 6 candidates
+        detected_balls = detected_balls[:6]
+        
+        # Store for dashboard access
         self._last_detected_balls = detected_balls
         
         return detected_balls
@@ -693,9 +592,6 @@ class VisionSystem:
             if zone.is_centered:
                 cv2.putText(result, "CENTERED", (zone.center[0]-30, zone.center[1]+20), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-        
-        # Status panel and other visualization code...
-        # (keeping existing status panel code but abbreviated for space)
         
         return result
     
@@ -900,4 +796,4 @@ class VisionSystem:
         """Clean up vision system"""
         self.camera.release()
         cv2.destroyAllWindows()
-        self.logger.info("Enhanced vision system (with delivery zones) cleanup completed")
+        self.logger.info("Simplified vision system (HoughCircles only) cleanup completed")
