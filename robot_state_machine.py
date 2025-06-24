@@ -603,10 +603,10 @@ class RobotStateMachine:
             
             # Fine Y-axis centering (forward/backward)
             elif abs(y_offset) > y_tolerance:
-                if y_offset > 0:  # Zone below center
+                if y_offset < 0:  # Zone above center
                     self.hardware.move_forward(duration=0.3, speed=0.35)
                     self.logger.info(f"⬆️ Fine centering: move forward ({y_offset:.0f}px offset)")
-                else:  # Zone above center
+                else:  # Zone below center
                     self.hardware.move_backward(duration=0.3, speed=0.35)
                     self.logger.info(f"⬇️ Fine centering: move backward ({y_offset:.0f}px offset)")
                 movement_made = True
@@ -616,7 +616,7 @@ class RobotStateMachine:
             self.delivery_centering_start_time = time.time()
         
         centering_elapsed = time.time() - self.delivery_centering_start_time
-        if centering_elapsed > 15.0:  # 15 second timeout
+        if centering_elapsed > 60.0:  # 60 second timeout
             self.logger.warning("⏰ Delivery centering timeout - proceeding with release anyway")
             self.state = RobotState.DELIVERY_RELEASING
             self.delivery_release_start_time = time.time()
