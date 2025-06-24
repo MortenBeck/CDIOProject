@@ -109,8 +109,10 @@ class BoundaryAvoidanceSystem:
 
         return False
 
+        # In boundary_avoidance.py, modify the bottom wall detection section:
+
     def detect_boundaries(self, frame) -> bool:
-        """FOCUSED: Only detect walls below the collection zone middle - SMALLER SIDE ZONES (BOTTOM 20%)"""
+        """FOCUSED: Only detect walls below the collection zone middle - EXCLUDE EDGE AREAS"""
         if frame is None:
             return False
 
@@ -163,10 +165,18 @@ class BoundaryAvoidanceSystem:
         # UPDATED: Side detection zones pushed more toward center
         side_margin_reduction = int(w * 0.05)          # NEW: 5% margin from each side
 
-        # === REGION 1: BOTTOM WALL DETECTION (unchanged) ===
+        # === REGION 1: BOTTOM WALL DETECTION (MODIFIED - EXCLUDE EDGES) ===
         bottom_region_start = max(danger_start_y, danger_end_y - danger_distance_vertical)
-        if bottom_region_start < danger_end_y:
-            bottom_region = red_mask[bottom_region_start:danger_end_y, :]
+        
+        # NEW: Calculate X boundaries for bottom detection - exclude purple edge areas
+        bottom_left_margin = int(w * 0.1)   # 10% margin from left edge
+        bottom_right_margin = int(w * 0.1)  # 10% margin from right edge 
+        bottom_detection_left = bottom_left_margin
+        bottom_detection_right = w - bottom_right_margin
+        
+        if bottom_region_start < danger_end_y and bottom_detection_right > bottom_detection_left:
+            # MODIFIED: Only check center area, not full width
+            bottom_region = red_mask[bottom_region_start:danger_end_y, bottom_detection_left:bottom_detection_right]
             contours, _ = cv2.findContours(bottom_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for contour in contours:
@@ -179,13 +189,13 @@ class BoundaryAvoidanceSystem:
                             'zone': 'bottom',
                             'contour': contour,
                             'area': area,
-                            'bbox': (x, bottom_region_start + y, w_rect, h_rect),
+                            'bbox': (bottom_detection_left + x, bottom_region_start + y, w_rect, h_rect),
                             'length': w_rect,
                             'triggered': True
                         }
                         self.detected_walls.append(wall_info)
                         if config.DEBUG_VISION:
-                            self.logger.info(f"🚨 Bottom wall detected: area={area}, width={w_rect}")
+                            self.logger.info(f"🚨 Bottom wall detected: area={area}, width={w_rect}, x_range=[{bottom_detection_left}:{bottom_detection_right}]")
                         break
 
         # === REGION 2: LEFT WALL DETECTION (BOTTOM 20% ONLY) ===
@@ -287,6 +297,7 @@ class BoundaryAvoidanceSystem:
         if config.DEBUG_VISION and danger_detected:
             triggered_zones = [wall['zone'] for wall in self.detected_walls if wall.get('triggered', False)]
             self.logger.info(f"🚨 WALL DETECTION SUCCESS - zones: {triggered_zones}")
+            self.logger.info(f"🚨 Bottom detection X-range: [{bottom_detection_left}:{bottom_detection_right}] (excludes edges)")
             self.logger.info(f"🚨 Side detection Y-range: [{side_detection_start_y}:{danger_end_y}] (bottom 20%)")
             self.logger.info(f"🚨 Side detection areas: LEFT[{left_start_x}:{left_end_x}], RIGHT[{right_start_x}:{right_end_x}]")
 
