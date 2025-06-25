@@ -70,15 +70,15 @@ SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
 SERVO_RELEASE = 0         # Release position
 
 # === SERVO SS (SERVO 1) FOUR-STATE SYSTEM ===
-SERVO_SS_STORE = 140        # Store position
-SERVO_SS_PRE_COLLECT = 70   # Pre-collect position
-SERVO_SS_DRIVING = 30      # Driving position (default/start position)
-SERVO_SS_COLLECT = 15      # Collect position
+SERVO_SS_STORE = 180        # Store position
+SERVO_SS_PRE_COLLECT = 110   # Pre-collect position
+SERVO_SS_DRIVING = 97      # Driving position (default/start position)
+SERVO_SS_COLLECT = 80      # Collect position
 SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 
 # === SERVO SF (SERVO 2) POSITIONS ===
 SERVO_SF_OPEN = 70          # Open position
-SERVO_SF_CLOSED = 160       # Closed position (default state)
+SERVO_SF_CLOSED = 180       # Closed position (default state)
 
 # === ENHANCED COLLECTION POSITIONS ===
 SERVO_READY_POSITION = 90  # Servos up and ready to catch
@@ -101,7 +101,7 @@ CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
 COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
 MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
 MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
-COLLECTION_SPEED = 0.35  # Slower speed for precise collection
+COLLECTION_SPEED = 0.3  # Slower speed for precise collection
 
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
 CENTERING_TURN_DURATION = 0.25  # Slightly reduced from 0.2
