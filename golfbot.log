@@ -1,0 +1,1043 @@
+2025-06-25 10:15:50,385 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-25 10:15:50,385 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-25 10:15:50,385 - motor_controller - INFO - Initializing motor controllers...
+2025-06-25 10:15:50,387 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-25 10:15:50,387 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-25 10:15:50,387 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-25 10:15:50,387 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-25 10:15:50,387 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-25 10:15:50,398 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-25 10:15:50,398 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-25 10:15:50,398 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-25 10:15:50,398 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-25 10:15:50,398 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-25 10:15:50,399 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-25 10:15:50,399 - __main__ - INFO - Detecting arena boundaries...
+2025-06-25 10:15:51,174 - boundary_avoidance - WARNING - ⚠️ Red area too small: 4152 < 30720
+2025-06-25 10:15:51,175 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-25 10:15:51,175 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-25 10:15:51,175 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-25 10:15:51,180 - competition_manager - INFO - Using new dashboard interface
+2025-06-25 10:15:51,306 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-25 10:15:51,306 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-25 10:15:51,306 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:15:51,711 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:15:52,215 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-25 10:15:53,215 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-25 10:15:53,216 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-25 10:15:53,216 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-25 10:15:53,216 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-25 10:15:53,216 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-25 10:15:54,046 - boundary_avoidance - INFO - 🔍 Red pixels detected: 11348
+2025-06-25 10:15:54,046 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:15:54,068 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.88)
+2025-06-25 10:15:54,921 - boundary_avoidance - INFO - 🔍 Red pixels detected: 10050
+2025-06-25 10:15:54,921 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:15:54,940 - robot_state_machine - INFO - Starting centering session
+2025-06-25 10:15:54,940 - robot_state_machine - INFO - Ball far from target (86px) - using aggressive centering
+2025-06-25 10:15:55,190 - robot_state_machine - INFO - Centering: turn right (x_error: 84px, dist: 86px)
+2025-06-25 10:15:56,078 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7628
+2025-06-25 10:15:56,079 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:15:56,097 - robot_state_machine - INFO - Ball far from target (197px) - using aggressive centering
+2025-06-25 10:15:56,347 - robot_state_machine - INFO - Centering: turn right (x_error: 101px, dist: 197px)
+2025-06-25 10:15:57,264 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9407
+2025-06-25 10:15:57,264 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:15:57,290 - robot_state_machine - INFO - Ball far from target (191px) - using aggressive centering
+2025-06-25 10:15:57,541 - robot_state_machine - INFO - Centering: turn right (x_error: 87px, dist: 191px)
+2025-06-25 10:15:58,483 - boundary_avoidance - INFO - 🔍 Red pixels detected: 7924
+2025-06-25 10:15:58,483 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:15:58,522 - robot_state_machine - INFO - Ball far from target (184px) - using aggressive centering
+2025-06-25 10:15:58,773 - robot_state_machine - INFO - Centering: turn right (x_error: 67px, dist: 184px)
+2025-06-25 10:15:59,650 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8783
+2025-06-25 10:15:59,650 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:15:59,685 - robot_state_machine - INFO - Ball far from target (179px) - using aggressive centering
+2025-06-25 10:15:59,935 - robot_state_machine - INFO - Centering: turn right (x_error: 51px, dist: 179px)
+2025-06-25 10:16:00,812 - boundary_avoidance - INFO - 🔍 Red pixels detected: 6348
+2025-06-25 10:16:00,812 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:00,839 - robot_state_machine - INFO - Ball far from target (180px) - using aggressive centering
+2025-06-25 10:16:01,089 - robot_state_machine - INFO - Centering: turn right (x_error: 48px, dist: 180px)
+2025-06-25 10:16:01,953 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8866
+2025-06-25 10:16:01,954 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:01,980 - robot_state_machine - INFO - Ball far from target (177px) - using aggressive centering
+2025-06-25 10:16:02,231 - robot_state_machine - INFO - Centering: turn right (x_error: 35px, dist: 177px)
+2025-06-25 10:16:03,117 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9279
+2025-06-25 10:16:03,117 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:03,141 - robot_state_machine - INFO - Ball far from target (175px) - using aggressive centering
+2025-06-25 10:16:03,542 - robot_state_machine - INFO - Centering: forward (y_error: 175px, dist: 175px)
+2025-06-25 10:16:04,441 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8276
+2025-06-25 10:16:04,441 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:04,471 - robot_state_machine - INFO - Ball far from target (166px) - using aggressive centering
+2025-06-25 10:16:04,872 - robot_state_machine - INFO - Centering: forward (y_error: 164px, dist: 166px)
+2025-06-25 10:16:05,737 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8098
+2025-06-25 10:16:05,737 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:05,762 - robot_state_machine - WARNING - HARD centering timeout (10.8s) - returning to search
+2025-06-25 10:16:06,614 - boundary_avoidance - INFO - 🔍 Red pixels detected: 8336
+2025-06-25 10:16:06,615 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:06,645 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 1.00)
+2025-06-25 10:16:07,502 - boundary_avoidance - INFO - 🔍 Red pixels detected: 10011
+2025-06-25 10:16:07,502 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:07,526 - robot_state_machine - INFO - Starting centering session
+2025-06-25 10:16:07,527 - robot_state_machine - INFO - Ball far from target (154px) - using aggressive centering
+2025-06-25 10:16:07,777 - robot_state_machine - INFO - Centering: turn right (x_error: 32px, dist: 154px)
+2025-06-25 10:16:08,647 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13851
+2025-06-25 10:16:08,647 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:08,677 - robot_state_machine - INFO - Ball far from target (153px) - using aggressive centering
+2025-06-25 10:16:09,078 - robot_state_machine - INFO - Centering: forward (y_error: 152px, dist: 153px)
+2025-06-25 10:16:09,981 - boundary_avoidance - INFO - 🔍 Red pixels detected: 15593
+2025-06-25 10:16:09,981 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:10,006 - robot_state_machine - INFO - Ball far from target (133px) - using aggressive centering
+2025-06-25 10:16:10,406 - robot_state_machine - INFO - Centering: forward (y_error: 133px, dist: 133px)
+2025-06-25 10:16:11,290 - boundary_avoidance - INFO - 🔍 Red pixels detected: 15890
+2025-06-25 10:16:11,290 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:11,320 - robot_state_machine - INFO - Ball far from target (113px) - using aggressive centering
+2025-06-25 10:16:11,721 - robot_state_machine - INFO - Centering: forward (y_error: 113px, dist: 113px)
+2025-06-25 10:16:12,614 - boundary_avoidance - INFO - 🔍 Red pixels detected: 17055
+2025-06-25 10:16:12,614 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:12,639 - robot_state_machine - INFO - Ball far from target (83px) - using aggressive centering
+2025-06-25 10:16:13,039 - robot_state_machine - INFO - Centering: forward (y_error: 83px, dist: 83px)
+2025-06-25 10:16:13,909 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32657
+2025-06-25 10:16:13,909 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:13,939 - robot_state_machine - INFO - Ball moderately close (53px) - using balanced centering
+2025-06-25 10:16:14,340 - robot_state_machine - INFO - Centering: forward (y_error: 52px, dist: 53px)
+2025-06-25 10:16:15,233 - boundary_avoidance - INFO - 🔍 Red pixels detected: 15966
+2025-06-25 10:16:15,233 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:15,258 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-25 10:16:16,201 - boundary_avoidance - INFO - 🔍 Red pixels detected: 18715
+2025-06-25 10:16:16,201 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:16,231 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-25 10:16:17,171 - boundary_avoidance - INFO - 🔍 Red pixels detected: 15693
+2025-06-25 10:16:17,172 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:17,196 - robot_state_machine - INFO - White ball STABLE in target zone! (took 9.7s, 6 attempts)
+2025-06-25 10:16:18,065 - boundary_avoidance - INFO - 🔍 Red pixels detected: 30226
+2025-06-25 10:16:18,065 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:18,096 - robot_state_machine - INFO - Starting collection: white ball (confidence: 1.00)
+2025-06-25 10:16:18,096 - robot_state_machine - INFO - Ball count before collection: 0
+2025-06-25 10:16:18,096 - ball_collection - INFO - 🚀 Starting enhanced collection sequence with SS only...
+2025-06-25 10:16:18,096 - ball_collection - INFO -    Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving
+2025-06-25 10:16:18,096 - ball_collection - INFO -    SF: stays closed during collection
+2025-06-25 10:16:18,096 - ball_collection - INFO - Step 1: Moving SS from DRIVING to PRE-COLLECT
+2025-06-25 10:16:18,096 - servo_controller - INFO - 🎯 Moving servo SS to PRE-COLLECT position (110°)
+2025-06-25 10:16:18,402 - ball_collection - INFO - Step 2: Driving forward for collection
+2025-06-25 10:16:19,452 - ball_collection - INFO - Step 3: SS collect position (first capture)
+2025-06-25 10:16:19,452 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (80°)
+2025-06-25 10:16:20,010 - ball_collection - INFO - Step 4: Moving SS to STORE position (secure first ball)
+2025-06-25 10:16:20,010 - servo_controller - INFO - 📦 Moving servo SS to STORE position (180°)
+2025-06-25 10:16:21,327 - ball_collection - INFO - Step 5: SS collect position (second capture)
+2025-06-25 10:16:21,327 - servo_controller - INFO - 🤏 Moving servo SS to COLLECT position (80°)
+2025-06-25 10:16:22,644 - ball_collection - INFO - Step 6: Moving SS to STORE position (secure second ball)
+2025-06-25 10:16:22,644 - servo_controller - INFO - 📦 Moving servo SS to STORE position (180°)
+2025-06-25 10:16:23,961 - ball_collection - INFO - Step 7: Returning SS to driving position
+2025-06-25 10:16:23,961 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:16:24,978 - ball_collection - INFO - ✅ Enhanced collection complete! SS state: DRIVING, Total balls: 1
+2025-06-25 10:16:24,978 - robot_state_machine - INFO - Ball count after collection: 1
+2025-06-25 10:16:24,978 - robot_state_machine - INFO - ✅ White ball collected! Total: 1/1
+2025-06-25 10:16:24,979 - robot_state_machine - INFO - Checking delivery trigger: 1 >= 1?
+2025-06-25 10:16:24,979 - robot_state_machine - INFO - 🚚 DELIVERY THRESHOLD REACHED: 1/1
+2025-06-25 10:16:25,911 - boundary_avoidance - INFO - 🔍 Red pixels detected: 26391
+2025-06-25 10:16:25,911 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:25,911 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=439.5, size=(50x22)
+2025-06-25 10:16:25,911 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:16:25,911 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:16:25,911 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:16:25,911 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:16:25,937 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during delivery_mode
+2025-06-25 10:16:25,937 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:16:25,937 - robot_state_machine - WARNING -    Interrupting delivery operation for safety!
+2025-06-25 10:16:25,939 - boundary_avoidance - INFO - 🔍 Red pixels detected: 26391
+2025-06-25 10:16:25,940 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:25,940 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=439.5, size=(50x22)
+2025-06-25 10:16:25,940 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:16:25,940 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:16:25,940 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:16:25,940 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:16:25,940 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:16:25,940 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:16:26,040 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:16:28,178 - boundary_avoidance - INFO - 🔍 Red pixels detected: 37429
+2025-06-25 10:16:28,179 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:28,179 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=2672.5, size=(187x35)
+2025-06-25 10:16:28,179 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:16:28,179 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:16:28,179 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:16:28,179 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:16:28,179 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:16:28,179 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:16:29,041 - boundary_avoidance - INFO - 🔍 Red pixels detected: 39164
+2025-06-25 10:16:29,041 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:16:29,041 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=235.5, size=(63x8)
+2025-06-25 10:16:29,041 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:16:29,041 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:16:29,041 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:16:29,042 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:16:29,065 - competition_manager - INFO - ============================================================
+2025-06-25 10:16:29,065 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-25 10:16:29,065 - competition_manager - INFO - ============================================================
+2025-06-25 10:16:29,066 - competition_manager - INFO - Total time: 35.8 seconds
+2025-06-25 10:16:29,066 - competition_manager - INFO - White balls collected: 1
+2025-06-25 10:16:29,066 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-25 10:16:29,066 - competition_manager - INFO - Final state: avoiding_boundary
+2025-06-25 10:16:29,066 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-25 10:16:29,066 - competition_manager - INFO - Arena detection: Fallback
+2025-06-25 10:16:29,066 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-25 10:16:29,066 - competition_manager - INFO - ============================================================
+2025-06-25 10:16:29,066 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-25 10:16:29,066 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:16:29,170 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:16:29,473 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-25 10:16:29,473 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-25 10:16:29,473 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-25 10:16:29,473 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-25 10:16:29,473 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-25 10:16:29,473 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:16:29,577 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:16:29,880 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-25 10:16:29,880 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-25 10:16:29,882 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-25 10:16:29,882 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-25 10:16:29,882 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-25 10:16:29,882 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-25 10:16:29,882 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-25 10:16:29,882 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-25 10:16:29,882 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-25 10:16:29,882 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-25 10:16:29,882 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:16:29,986 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:16:30,290 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-25 10:16:30,290 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-25 10:16:30,290 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-25 10:16:30,290 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-25 10:16:30,290 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized
+2025-06-25 10:17:15,794 - __main__ - INFO - Initializing GolfBot with enhanced collection system (WHITE BALLS ONLY)...
+2025-06-25 10:17:15,794 - hardware - INFO - Initializing GolfBot hardware subsystems...
+2025-06-25 10:17:15,794 - motor_controller - INFO - Initializing motor controllers...
+2025-06-25 10:17:15,797 - motor_controller - INFO - 🔋 Motors POWERED ON - ready for operation
+2025-06-25 10:17:15,797 - motor_controller - INFO - ✅ Motors initialized successfully
+2025-06-25 10:17:15,797 - motor_controller - INFO - ✓ Motor A: GPIO 19, 26
+2025-06-25 10:17:15,797 - motor_controller - INFO - ✓ Motor B: GPIO 20, 21
+2025-06-25 10:17:15,797 - servo_controller - INFO - Initializing PCA9685 for servo control...
+2025-06-25 10:17:15,808 - servo_controller - INFO - ✅ Servos initialized successfully
+2025-06-25 10:17:15,808 - servo_controller - INFO - ✓ Servo SS on channel 0
+2025-06-25 10:17:15,808 - servo_controller - INFO - ✓ Servo SF on channel 1
+2025-06-25 10:17:15,808 - hardware - INFO - 🔋 Turning ON motors for operation
+2025-06-25 10:17:15,808 - hardware - INFO - ✅ All hardware subsystems initialized successfully
+2025-06-25 10:17:15,808 - vision - INFO - Pi 5 camera initialized with libcamera
+2025-06-25 10:17:15,808 - __main__ - INFO - Detecting arena boundaries...
+2025-06-25 10:17:16,566 - boundary_avoidance - WARNING - ⚠️ Red area too small: 29960 < 30720
+2025-06-25 10:17:16,567 - boundary_avoidance - WARNING - ⚠️ Using fallback arena mask (no red walls detected)
+2025-06-25 10:17:16,567 - __main__ - INFO - ⚠️  Using fallback arena boundaries
+2025-06-25 10:17:16,567 - __main__ - INFO - All systems initialized successfully - WHITE BALLS ONLY
+2025-06-25 10:17:16,572 - competition_manager - INFO - Using new dashboard interface
+2025-06-25 10:17:16,703 - competition_manager - INFO - 🚀 Initializing servos for competition start...
+2025-06-25 10:17:16,703 - servo_controller - INFO - 🚀 Initializing servos for competition start...
+2025-06-25 10:17:16,703 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:17:17,007 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:17:17,511 - servo_controller - INFO - ✅ Servos initialized - SS at driving, SF closed
+2025-06-25 10:17:18,511 - competition_manager - INFO - COMPETITION STARTED - WHITE BALLS COLLECTION + DELIVERY CYCLE!
+2025-06-25 10:17:18,512 - competition_manager - INFO - Time limit: 480 seconds
+2025-06-25 10:17:18,512 - competition_manager - INFO - Delivery trigger: 1 balls
+2025-06-25 10:17:18,512 - competition_manager - INFO - Using enhanced collection: Ball centering (X+Y) + Enhanced sequence
+2025-06-25 10:17:18,512 - competition_manager - INFO - Servo setup: SS at driving, SF closed
+2025-06-25 10:17:19,353 - boundary_avoidance - INFO - 🔍 Red pixels detected: 25319
+2025-06-25 10:17:19,353 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:19,353 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=537.5, size=(42x20)
+2025-06-25 10:17:19,353 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:19,353 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:19,353 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:19,353 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:19,377 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during searching
+2025-06-25 10:17:19,377 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:19,381 - boundary_avoidance - INFO - 🔍 Red pixels detected: 25319
+2025-06-25 10:17:19,382 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:19,382 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=537.5, size=(42x20)
+2025-06-25 10:17:19,382 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:19,382 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:19,382 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:19,382 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:19,382 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:19,382 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:19,483 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:21,675 - boundary_avoidance - INFO - 🔍 Red pixels detected: 22556
+2025-06-25 10:17:21,675 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:21,676 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:17:22,555 - boundary_avoidance - INFO - 🔍 Red pixels detected: 27939
+2025-06-25 10:17:22,555 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:22,600 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.86)
+2025-06-25 10:17:23,457 - boundary_avoidance - INFO - 🔍 Red pixels detected: 31881
+2025-06-25 10:17:23,457 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:23,457 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=294.5, size=(48x13)
+2025-06-25 10:17:23,457 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:23,458 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:23,458 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:23,458 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:23,507 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during centering_ball
+2025-06-25 10:17:23,507 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:23,507 - robot_state_machine - WARNING -    Collection attempt interrupted by boundary detection!
+2025-06-25 10:17:23,507 - robot_state_machine - WARNING -    Interrupting ball centering for safety!
+2025-06-25 10:17:23,510 - boundary_avoidance - INFO - 🔍 Red pixels detected: 31881
+2025-06-25 10:17:23,511 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:23,511 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=294.5, size=(48x13)
+2025-06-25 10:17:23,511 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:23,511 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:23,511 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:23,511 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:23,511 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:23,511 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:23,611 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:25,780 - boundary_avoidance - INFO - 🔍 Red pixels detected: 36238
+2025-06-25 10:17:25,780 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:25,780 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=971.0, size=(91x20)
+2025-06-25 10:17:25,781 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:25,781 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:25,781 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:25,781 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:25,781 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:25,781 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:26,674 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34170
+2025-06-25 10:17:26,674 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:26,674 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=1040.5, size=(103x20)
+2025-06-25 10:17:26,674 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:26,674 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:26,674 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:26,674 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:26,701 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:17:26,701 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:26,705 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34170
+2025-06-25 10:17:26,705 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:26,705 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=1040.5, size=(103x20)
+2025-06-25 10:17:26,706 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:26,706 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:26,706 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:26,706 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:26,706 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:26,706 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:26,806 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:29,009 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35059
+2025-06-25 10:17:29,009 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:29,009 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=438.5, size=(64x14)
+2025-06-25 10:17:29,009 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:29,010 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:29,010 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:29,010 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:29,010 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:29,010 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:29,862 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34991
+2025-06-25 10:17:29,862 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:29,862 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=390.5, size=(57x13)
+2025-06-25 10:17:29,862 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:29,862 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:29,862 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:29,862 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:29,889 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:17:29,889 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:29,892 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34991
+2025-06-25 10:17:29,892 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:29,893 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=390.5, size=(57x13)
+2025-06-25 10:17:29,893 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:29,893 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:29,893 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:29,893 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:29,893 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:29,893 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:29,993 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:32,186 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34733
+2025-06-25 10:17:32,186 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:32,186 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=297.5, size=(67x12)
+2025-06-25 10:17:32,186 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:32,186 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:32,186 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:32,186 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:32,187 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:32,187 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:33,095 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32494
+2025-06-25 10:17:33,095 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:33,095 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=367.0, size=(49x12)
+2025-06-25 10:17:33,095 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:33,095 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:33,095 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:33,095 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:33,121 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:17:33,121 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:33,124 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32494
+2025-06-25 10:17:33,124 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:33,124 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=367.0, size=(49x12)
+2025-06-25 10:17:33,124 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:33,125 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:33,125 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:33,125 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:33,125 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:33,125 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:33,225 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:35,373 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34698
+2025-06-25 10:17:35,373 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:35,373 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=583.5, size=(113x17)
+2025-06-25 10:17:35,373 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:35,373 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:35,373 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:35,373 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:35,374 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:35,374 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:36,245 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35416
+2025-06-25 10:17:36,245 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:36,245 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=477.5, size=(83x11)
+2025-06-25 10:17:36,245 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:36,245 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:36,245 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:36,245 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:36,283 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:17:36,283 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:36,286 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35416
+2025-06-25 10:17:36,286 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:36,287 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=477.5, size=(83x11)
+2025-06-25 10:17:36,287 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:36,287 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:36,287 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:36,287 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:36,287 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:36,287 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:36,387 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:38,537 - boundary_avoidance - INFO - 🔍 Red pixels detected: 38314
+2025-06-25 10:17:38,537 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:38,538 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:17:38,538 - robot_state_machine - WARNING - 🔄 Failed collection attempt #1
+2025-06-25 10:17:39,441 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35958
+2025-06-25 10:17:39,441 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:39,441 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=385.0, size=(80x12)
+2025-06-25 10:17:39,441 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:39,441 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:39,441 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:39,441 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:39,467 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during searching
+2025-06-25 10:17:39,467 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:39,470 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35958
+2025-06-25 10:17:39,470 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:39,470 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=385.0, size=(80x12)
+2025-06-25 10:17:39,470 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:39,470 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:39,470 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:39,471 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:39,471 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:39,471 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:39,571 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:41,728 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35792
+2025-06-25 10:17:41,729 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:41,729 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:17:42,666 - boundary_avoidance - INFO - 🔍 Red pixels detected: 36815
+2025-06-25 10:17:42,667 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:42,711 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.82)
+2025-06-25 10:17:43,540 - boundary_avoidance - INFO - 🔍 Red pixels detected: 37482
+2025-06-25 10:17:43,540 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:43,541 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=262.0, size=(57x9)
+2025-06-25 10:17:43,541 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:43,541 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:43,541 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:43,541 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:43,565 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during centering_ball
+2025-06-25 10:17:43,565 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:43,565 - robot_state_machine - WARNING -    Collection attempt interrupted by boundary detection!
+2025-06-25 10:17:43,565 - robot_state_machine - WARNING -    Interrupting ball centering for safety!
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - 🔍 Red pixels detected: 37482
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=262.0, size=(57x9)
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:43,568 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:43,569 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:43,669 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:45,825 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35191
+2025-06-25 10:17:45,825 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:45,825 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=347.5, size=(48x11)
+2025-06-25 10:17:45,825 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:45,826 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:45,826 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:45,826 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:45,826 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:45,826 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:46,743 - boundary_avoidance - INFO - 🔍 Red pixels detected: 33765
+2025-06-25 10:17:46,743 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:46,743 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=393.5, size=(87x14)
+2025-06-25 10:17:46,743 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:46,743 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:46,743 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:46,743 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:46,789 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:17:46,789 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - 🔍 Red pixels detected: 33765
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=393.5, size=(87x14)
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:46,792 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:46,792 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:46,893 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:49,068 - boundary_avoidance - INFO - 🔍 Red pixels detected: 36965
+2025-06-25 10:17:49,068 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:49,068 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=244.0, size=(73x10)
+2025-06-25 10:17:49,068 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:49,068 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:49,068 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:49,068 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:49,069 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:49,069 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:50,010 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32181
+2025-06-25 10:17:50,010 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:50,010 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=251.0, size=(64x11)
+2025-06-25 10:17:50,010 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:50,010 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:50,010 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:50,011 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:50,035 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:17:50,035 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:17:50,038 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32181
+2025-06-25 10:17:50,038 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:50,038 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=251.0, size=(64x11)
+2025-06-25 10:17:50,038 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:50,038 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:50,038 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:50,038 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:50,039 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:17:50,039 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:17:50,139 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:17:52,294 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34615
+2025-06-25 10:17:52,294 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:52,295 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=429.0, size=(73x14)
+2025-06-25 10:17:52,295 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:52,295 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:52,295 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:52,295 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:52,295 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:52,295 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:53,161 - boundary_avoidance - INFO - 🔍 Red pixels detected: 31947
+2025-06-25 10:17:53,161 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:53,208 - boundary_avoidance - INFO - 🔍 Red pixels detected: 31947
+2025-06-25 10:17:53,208 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:54,058 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32340
+2025-06-25 10:17:54,058 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:54,058 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=770.5, size=(96x18)
+2025-06-25 10:17:54,058 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:17:54,058 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:17:54,058 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:17:54,058 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:17:54,059 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:17:54,059 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:17:54,975 - boundary_avoidance - INFO - 🔍 Red pixels detected: 28612
+2025-06-25 10:17:54,975 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:55,002 - boundary_avoidance - INFO - 🔍 Red pixels detected: 28612
+2025-06-25 10:17:55,002 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:55,740 - boundary_avoidance - INFO - 🔍 Red pixels detected: 23140
+2025-06-25 10:17:55,741 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:55,741 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:17:55,741 - robot_state_machine - WARNING - 🔄 Failed collection attempt #2
+2025-06-25 10:17:55,741 - robot_state_machine - WARNING - 🔄 MAX FAILED ATTEMPTS REACHED (2) - Starting recovery turn
+2025-06-25 10:17:56,649 - boundary_avoidance - INFO - 🔍 Red pixels detected: 25050
+2025-06-25 10:17:56,650 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:56,695 - robot_state_machine - WARNING - 🔄 STARTING RECOVERY TURN: Right for 2.0s
+2025-06-25 10:17:57,628 - boundary_avoidance - INFO - 🔍 Red pixels detected: 22995
+2025-06-25 10:17:57,628 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:58,504 - boundary_avoidance - INFO - 🔍 Red pixels detected: 23317
+2025-06-25 10:17:58,504 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:59,459 - boundary_avoidance - INFO - 🔍 Red pixels detected: 50061
+2025-06-25 10:17:59,459 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:17:59,483 - robot_state_machine - INFO - ✅ Recovery turn complete - resetting failed collection tracking
+2025-06-25 10:18:00,392 - boundary_avoidance - INFO - 🔍 Red pixels detected: 40705
+2025-06-25 10:18:00,392 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:00,393 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=426.5, size=(60x12)
+2025-06-25 10:18:00,393 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:00,393 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:00,393 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:00,393 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:00,436 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during searching
+2025-06-25 10:18:00,436 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:00,440 - boundary_avoidance - INFO - 🔍 Red pixels detected: 40705
+2025-06-25 10:18:00,440 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:00,440 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=426.5, size=(60x12)
+2025-06-25 10:18:00,441 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:00,441 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:00,441 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:00,441 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:00,441 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:00,441 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:00,541 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:02,698 - boundary_avoidance - INFO - 🔍 Red pixels detected: 37347
+2025-06-25 10:18:02,698 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:02,698 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=438.5, size=(47x17)
+2025-06-25 10:18:02,698 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:02,698 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:02,698 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:02,698 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:02,699 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:18:02,699 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:18:03,562 - boundary_avoidance - INFO - 🔍 Red pixels detected: 26494
+2025-06-25 10:18:03,562 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:03,562 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=624.0, size=(75x30)
+2025-06-25 10:18:03,562 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:03,562 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:03,562 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:03,562 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:03,590 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:18:03,591 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:03,595 - boundary_avoidance - INFO - 🔍 Red pixels detected: 26494
+2025-06-25 10:18:03,595 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:03,595 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=624.0, size=(75x30)
+2025-06-25 10:18:03,595 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:03,595 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:03,595 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:03,596 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:03,596 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:03,596 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:03,696 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:05,865 - boundary_avoidance - INFO - 🔍 Red pixels detected: 26695
+2025-06-25 10:18:05,865 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:05,866 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:18:06,779 - boundary_avoidance - INFO - 🔍 Red pixels detected: 24318
+2025-06-25 10:18:06,780 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:06,780 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=588.5, size=(61x31)
+2025-06-25 10:18:06,780 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:06,780 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:06,780 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:06,780 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:06,826 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during searching
+2025-06-25 10:18:06,826 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - 🔍 Red pixels detected: 24318
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=588.5, size=(61x31)
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:06,829 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:06,829 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:06,929 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:09,078 - boundary_avoidance - INFO - 🔍 Red pixels detected: 23137
+2025-06-25 10:18:09,078 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:09,078 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:18:09,931 - boundary_avoidance - INFO - 🔍 Red pixels detected: 24310
+2025-06-25 10:18:09,931 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:11,240 - boundary_avoidance - INFO - 🔍 Red pixels detected: 21305
+2025-06-25 10:18:11,240 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:12,999 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32612
+2025-06-25 10:18:12,999 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:13,024 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.41)
+2025-06-25 10:18:13,881 - boundary_avoidance - INFO - 🔍 Red pixels detected: 43992
+2025-06-25 10:18:13,881 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:13,927 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-25 10:18:14,848 - boundary_avoidance - INFO - 🔍 Red pixels detected: 40820
+2025-06-25 10:18:14,848 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:14,873 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.48)
+2025-06-25 10:18:15,735 - boundary_avoidance - INFO - 🔍 Red pixels detected: 39024
+2025-06-25 10:18:15,735 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:15,787 - robot_state_machine - INFO - Starting centering session
+2025-06-25 10:18:15,787 - robot_state_machine - INFO - Ball far from target (83px) - using aggressive centering
+2025-06-25 10:18:16,038 - robot_state_machine - INFO - Centering: turn right (x_error: 80px, dist: 83px)
+2025-06-25 10:18:16,911 - boundary_avoidance - INFO - 🔍 Red pixels detected: 41165
+2025-06-25 10:18:16,911 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:16,911 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=3395.5, size=(256x31)
+2025-06-25 10:18:16,911 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:16,911 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:16,911 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:16,911 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:16,936 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during centering_ball
+2025-06-25 10:18:16,936 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:16,936 - robot_state_machine - WARNING -    Collection attempt interrupted by boundary detection!
+2025-06-25 10:18:16,936 - robot_state_machine - WARNING -    Interrupting ball centering for safety!
+2025-06-25 10:18:16,939 - boundary_avoidance - INFO - 🔍 Red pixels detected: 41165
+2025-06-25 10:18:16,940 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:16,940 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=3395.5, size=(256x31)
+2025-06-25 10:18:16,940 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:16,940 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:16,940 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:16,940 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:16,940 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:16,940 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:17,040 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:19,192 - boundary_avoidance - INFO - 🔍 Red pixels detected: 37694
+2025-06-25 10:18:19,192 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:19,192 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=598.0, size=(64x36)
+2025-06-25 10:18:19,193 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:19,193 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:19,193 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:19,193 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:19,193 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:18:19,193 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:18:20,057 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35016
+2025-06-25 10:18:20,057 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:20,104 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35016
+2025-06-25 10:18:20,105 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:20,884 - boundary_avoidance - INFO - 🔍 Red pixels detected: 48947
+2025-06-25 10:18:20,884 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:20,884 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=685.0, size=(42x38)
+2025-06-25 10:18:20,884 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:20,884 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:20,884 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:20,884 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:20,885 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:18:20,885 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:18:21,801 - boundary_avoidance - INFO - 🔍 Red pixels detected: 58700
+2025-06-25 10:18:21,801 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:21,801 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=794.5, size=(100x37)
+2025-06-25 10:18:21,801 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:21,801 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:21,801 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:21,801 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:21,827 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:18:21,827 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - 🔍 Red pixels detected: 58700
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=794.5, size=(100x37)
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:21,830 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:21,830 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:21,930 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:24,085 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34622
+2025-06-25 10:18:24,085 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:24,086 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:18:24,086 - robot_state_machine - WARNING - 🔄 Failed collection attempt #1
+2025-06-25 10:18:24,953 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34761
+2025-06-25 10:18:24,953 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:24,998 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.75)
+2025-06-25 10:18:25,838 - boundary_avoidance - INFO - 🔍 Red pixels detected: 33489
+2025-06-25 10:18:25,838 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:25,838 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=644.0, size=(59x30)
+2025-06-25 10:18:25,838 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:25,838 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:25,838 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:25,838 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:25,863 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during centering_ball
+2025-06-25 10:18:25,863 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:25,863 - robot_state_machine - WARNING -    Collection attempt interrupted by boundary detection!
+2025-06-25 10:18:25,863 - robot_state_machine - WARNING -    Interrupting ball centering for safety!
+2025-06-25 10:18:25,866 - boundary_avoidance - INFO - 🔍 Red pixels detected: 33489
+2025-06-25 10:18:25,866 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:25,866 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=644.0, size=(59x30)
+2025-06-25 10:18:25,866 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:25,867 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:25,867 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:25,867 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:25,867 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:25,867 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:25,967 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:28,144 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34916
+2025-06-25 10:18:28,144 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:28,144 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=709.0, size=(72x37)
+2025-06-25 10:18:28,145 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:28,145 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:28,145 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:28,145 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:28,145 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:18:28,145 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:18:29,002 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34546
+2025-06-25 10:18:29,003 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:29,003 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=774.5, size=(71x35)
+2025-06-25 10:18:29,003 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:29,003 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:29,003 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:29,003 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:29,033 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:18:29,034 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:29,037 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34546
+2025-06-25 10:18:29,037 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:29,037 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=774.5, size=(71x35)
+2025-06-25 10:18:29,038 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:29,038 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:29,038 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:29,038 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:29,038 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:29,038 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:29,138 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:31,282 - boundary_avoidance - INFO - 🔍 Red pixels detected: 31149
+2025-06-25 10:18:31,282 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:31,283 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=412.5, size=(20x35)
+2025-06-25 10:18:31,283 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:31,283 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:31,283 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:31,283 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:31,283 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:18:31,284 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:18:32,149 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32909
+2025-06-25 10:18:32,149 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:32,149 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=723.5, size=(70x41)
+2025-06-25 10:18:32,149 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:32,149 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:32,149 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:32,149 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:32,180 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:18:32,180 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32909
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=723.5, size=(70x41)
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:32,183 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:32,183 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:32,284 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:34,448 - boundary_avoidance - INFO - 🔍 Red pixels detected: 33245
+2025-06-25 10:18:34,448 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:34,449 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=800.0, size=(46x49)
+2025-06-25 10:18:34,449 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:34,449 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:34,449 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:34,449 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:34,449 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:18:34,449 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:18:35,313 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35775
+2025-06-25 10:18:35,313 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:35,313 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=1151.5, size=(52x73)
+2025-06-25 10:18:35,313 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:35,313 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:35,314 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:35,314 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:35,357 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during avoiding_boundary
+2025-06-25 10:18:35,357 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:35,361 - boundary_avoidance - INFO - 🔍 Red pixels detected: 35775
+2025-06-25 10:18:35,361 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:35,361 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=1151.5, size=(52x73)
+2025-06-25 10:18:35,362 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:35,362 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:35,362 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:35,362 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:35,362 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:35,365 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:35,465 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:37,609 - boundary_avoidance - INFO - 🔍 Red pixels detected: 32074
+2025-06-25 10:18:37,609 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:37,609 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=411.0, size=(66x18)
+2025-06-25 10:18:37,609 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:37,609 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:37,609 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:37,609 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:37,610 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:18:37,610 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:18:38,469 - boundary_avoidance - INFO - 🔍 Red pixels detected: 26215
+2025-06-25 10:18:38,470 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:38,497 - boundary_avoidance - INFO - 🔍 Red pixels detected: 26215
+2025-06-25 10:18:38,497 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:39,262 - boundary_avoidance - INFO - 🔍 Red pixels detected: 30256
+2025-06-25 10:18:39,262 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:39,263 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:18:39,263 - robot_state_machine - WARNING - 🔄 Failed collection attempt #2
+2025-06-25 10:18:39,263 - robot_state_machine - WARNING - 🔄 MAX FAILED ATTEMPTS REACHED (2) - Starting recovery turn
+2025-06-25 10:18:40,129 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13905
+2025-06-25 10:18:40,129 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:40,176 - robot_state_machine - WARNING - 🔄 STARTING RECOVERY TURN: Right for 2.0s
+2025-06-25 10:18:41,044 - boundary_avoidance - INFO - 🔍 Red pixels detected: 37476
+2025-06-25 10:18:41,044 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:41,943 - boundary_avoidance - INFO - 🔍 Red pixels detected: 34931
+2025-06-25 10:18:41,943 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:41,943 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=812.5, size=(21x65)
+2025-06-25 10:18:41,943 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:41,943 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:41,943 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:41,943 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:42,849 - boundary_avoidance - INFO - 🔍 Red pixels detected: 17876
+2025-06-25 10:18:42,849 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:42,874 - robot_state_machine - INFO - ✅ Recovery turn complete - resetting failed collection tracking
+2025-06-25 10:18:43,744 - boundary_avoidance - INFO - 🔍 Red pixels detected: 31494
+2025-06-25 10:18:43,744 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:43,787 - robot_state_machine - INFO - Found 3 confident white ball(s) (avg conf: 0.83)
+2025-06-25 10:18:44,639 - boundary_avoidance - INFO - 🔍 Red pixels detected: 25307
+2025-06-25 10:18:44,639 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:44,668 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-25 10:18:45,614 - boundary_avoidance - INFO - 🔍 Red pixels detected: 12781
+2025-06-25 10:18:45,614 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:45,657 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 1.00)
+2025-06-25 10:18:46,514 - boundary_avoidance - INFO - 🔍 Red pixels detected: 18265
+2025-06-25 10:18:46,514 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:46,538 - robot_state_machine - INFO - Starting centering session
+2025-06-25 10:18:46,538 - robot_state_machine - INFO - Ball moderately close (70px) - using balanced centering
+2025-06-25 10:18:46,739 - robot_state_machine - INFO - Centering: turn right (x_error: 43px, dist: 70px)
+2025-06-25 10:18:47,630 - boundary_avoidance - INFO - 🔍 Red pixels detected: 15586
+2025-06-25 10:18:47,630 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:47,674 - robot_state_machine - INFO - Ball moderately close (65px) - using balanced centering
+2025-06-25 10:18:47,874 - robot_state_machine - INFO - Centering: turn right (x_error: 38px, dist: 65px)
+2025-06-25 10:18:48,756 - boundary_avoidance - INFO - 🔍 Red pixels detected: 14369
+2025-06-25 10:18:48,756 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:48,781 - robot_state_machine - INFO - Ball moderately close (72px) - using balanced centering
+2025-06-25 10:18:48,981 - robot_state_machine - INFO - Centering: turn right (x_error: 37px, dist: 72px)
+2025-06-25 10:18:49,863 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13091
+2025-06-25 10:18:49,863 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:49,908 - robot_state_machine - INFO - Ball far from target (80px) - using aggressive centering
+2025-06-25 10:18:50,158 - robot_state_machine - INFO - Centering: turn right (x_error: 62px, dist: 80px)
+2025-06-25 10:18:51,062 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9685
+2025-06-25 10:18:51,062 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:51,086 - robot_state_machine - INFO - Ball moderately close (59px) - using balanced centering
+2025-06-25 10:18:51,287 - robot_state_machine - INFO - Centering: turn right (x_error: 39px, dist: 59px)
+2025-06-25 10:18:52,182 - boundary_avoidance - INFO - 🔍 Red pixels detected: 12215
+2025-06-25 10:18:52,182 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:52,225 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-25 10:18:53,170 - boundary_avoidance - INFO - 🔍 Red pixels detected: 14121
+2025-06-25 10:18:53,170 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:53,170 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=318.5, size=(60x14)
+2025-06-25 10:18:53,170 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:53,170 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:53,171 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:53,171 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:53,196 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during centering_ball
+2025-06-25 10:18:53,196 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:18:53,196 - robot_state_machine - WARNING -    Collection attempt interrupted by boundary detection!
+2025-06-25 10:18:53,196 - robot_state_machine - WARNING -    Interrupting ball centering for safety!
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - 🔍 Red pixels detected: 14121
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=318.5, size=(60x14)
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:18:53,199 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:18:53,199 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:18:53,299 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:18:55,460 - boundary_avoidance - INFO - 🔍 Red pixels detected: 15652
+2025-06-25 10:18:55,460 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:55,461 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:18:55,461 - robot_state_machine - WARNING - 🔄 Failed collection attempt #1
+2025-06-25 10:18:56,377 - boundary_avoidance - INFO - 🔍 Red pixels detected: 14422
+2025-06-25 10:18:56,377 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:57,742 - boundary_avoidance - INFO - 🔍 Red pixels detected: 11841
+2025-06-25 10:18:57,742 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:57,766 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.93)
+2025-06-25 10:18:58,606 - boundary_avoidance - INFO - 🔍 Red pixels detected: 15126
+2025-06-25 10:18:58,606 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:58,649 - robot_state_machine - INFO - Starting centering session
+2025-06-25 10:18:58,649 - robot_state_machine - INFO - Ball very close (40px) - using precise centering
+2025-06-25 10:18:58,825 - robot_state_machine - INFO - Centering: turn right (x_error: 35px, dist: 40px)
+2025-06-25 10:18:59,742 - boundary_avoidance - INFO - 🔍 Red pixels detected: 12281
+2025-06-25 10:18:59,743 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:18:59,767 - robot_state_machine - INFO - Ball in target zone - verifying stability (1/3)
+2025-06-25 10:19:00,727 - boundary_avoidance - INFO - 🔍 Red pixels detected: 12826
+2025-06-25 10:19:00,727 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:00,779 - robot_state_machine - INFO - Ball in target zone - verifying stability (2/3)
+2025-06-25 10:19:01,730 - boundary_avoidance - INFO - 🔍 Red pixels detected: 16764
+2025-06-25 10:19:01,730 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:01,754 - robot_state_machine - INFO - Ball far from target (122px) - using aggressive centering
+2025-06-25 10:19:02,155 - robot_state_machine - INFO - Centering: forward (y_error: 122px, dist: 122px)
+2025-06-25 10:19:03,051 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13500
+2025-06-25 10:19:03,051 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:03,051 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=610.0, size=(23x38)
+2025-06-25 10:19:03,051 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:19:03,051 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:19:03,051 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:19:03,051 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:19:03,096 - robot_state_machine - WARNING - 🚨 BOUNDARY AVOIDANCE TRIGGERED during centering_ball
+2025-06-25 10:19:03,096 - robot_state_machine - WARNING -    Danger zones: ['center_forward']
+2025-06-25 10:19:03,096 - robot_state_machine - WARNING -    Collection attempt interrupted by boundary detection!
+2025-06-25 10:19:03,096 - robot_state_machine - WARNING -    Interrupting ball centering for safety!
+2025-06-25 10:19:03,099 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13500
+2025-06-25 10:19:03,100 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:03,100 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=610.0, size=(23x38)
+2025-06-25 10:19:03,101 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:19:03,101 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:19:03,101 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:19:03,101 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:19:03,101 - boundary_avoidance - INFO - Wall avoidance: detected zones ['center_forward'] -> backup_and_turn
+2025-06-25 10:19:03,101 - robot_state_machine - WARNING - 🚨 EXECUTING BOUNDARY AVOIDANCE: backup_and_turn
+2025-06-25 10:19:03,201 - robot_state_machine - WARNING - 🚨 Boundary avoidance: Backup and turn
+2025-06-25 10:19:05,358 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9539
+2025-06-25 10:19:05,358 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:05,358 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=1689.0, size=(256x25)
+2025-06-25 10:19:05,358 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:19:05,358 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:19:05,358 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:19:05,359 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:19:05,359 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:19:05,359 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:19:06,247 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13960
+2025-06-25 10:19:06,247 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:06,281 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13960
+2025-06-25 10:19:06,282 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:07,032 - boundary_avoidance - INFO - 🔍 Red pixels detected: 16787
+2025-06-25 10:19:07,032 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:07,033 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=639.0, size=(56x54)
+2025-06-25 10:19:07,033 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:19:07,033 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:19:07,033 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:19:07,033 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:19:07,034 - robot_state_machine - WARNING - ⚠️ Still detecting boundaries after avoidance
+2025-06-25 10:19:07,034 - robot_state_machine - WARNING - ⚠️ Remaining danger zones: ['center_forward']
+2025-06-25 10:19:07,900 - boundary_avoidance - INFO - 🔍 Red pixels detected: 12671
+2025-06-25 10:19:07,900 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:07,948 - boundary_avoidance - INFO - 🔍 Red pixels detected: 12671
+2025-06-25 10:19:07,948 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:08,735 - boundary_avoidance - INFO - 🔍 Red pixels detected: 11548
+2025-06-25 10:19:08,735 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:08,735 - robot_state_machine - INFO - ✅ Boundary avoidance successful
+2025-06-25 10:19:08,735 - robot_state_machine - WARNING - 🔄 Failed collection attempt #2
+2025-06-25 10:19:08,735 - robot_state_machine - WARNING - 🔄 MAX FAILED ATTEMPTS REACHED (2) - Starting recovery turn
+2025-06-25 10:19:09,615 - boundary_avoidance - INFO - 🔍 Red pixels detected: 10845
+2025-06-25 10:19:09,616 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:09,640 - robot_state_machine - WARNING - 🔄 STARTING RECOVERY TURN: Right for 2.0s
+2025-06-25 10:19:10,576 - boundary_avoidance - INFO - 🔍 Red pixels detected: 12109
+2025-06-25 10:19:10,576 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:11,490 - boundary_avoidance - INFO - 🔍 Red pixels detected: 13808
+2025-06-25 10:19:11,490 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:12,380 - boundary_avoidance - INFO - 🔍 Red pixels detected: 27124
+2025-06-25 10:19:12,380 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:12,380 - boundary_avoidance - INFO - 🚨 CENTER FORWARD wall detected: area=1301.0, size=(104x22)
+2025-06-25 10:19:12,380 - boundary_avoidance - INFO - 🚨 WALL DETECTION SUCCESS - zones: ['center_forward']
+2025-06-25 10:19:12,381 - boundary_avoidance - INFO - 🚨 Bottom detection Y-range: [423:456] (height: 33)
+2025-06-25 10:19:12,381 - boundary_avoidance - INFO - 🚨 Bottom detection X-range: [64:576] (80% width)
+2025-06-25 10:19:12,381 - boundary_avoidance - INFO - 🚨 Center forward detection: [192:448] x [290:456]
+2025-06-25 10:19:12,424 - robot_state_machine - INFO - ✅ Recovery turn complete - resetting failed collection tracking
+2025-06-25 10:19:13,293 - boundary_avoidance - INFO - 🔍 Red pixels detected: 18436
+2025-06-25 10:19:13,293 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:13,317 - robot_state_machine - INFO - Found 2 confident white ball(s) (avg conf: 0.69)
+2025-06-25 10:19:14,173 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9758
+2025-06-25 10:19:14,173 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:14,217 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-25 10:19:15,120 - boundary_avoidance - INFO - 🔍 Red pixels detected: 25523
+2025-06-25 10:19:15,120 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:16,857 - boundary_avoidance - INFO - 🔍 Red pixels detected: 17348
+2025-06-25 10:19:16,858 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:16,908 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.76)
+2025-06-25 10:19:17,749 - boundary_avoidance - INFO - 🔍 Red pixels detected: 16840
+2025-06-25 10:19:17,749 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:17,774 - robot_state_machine - INFO - Lost sight of ball during centering - returning to search
+2025-06-25 10:19:18,688 - boundary_avoidance - INFO - 🔍 Red pixels detected: 9734
+2025-06-25 10:19:18,689 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:18,730 - robot_state_machine - INFO - Found 1 confident white ball(s) (avg conf: 0.74)
+2025-06-25 10:19:19,578 - boundary_avoidance - INFO - 🔍 Red pixels detected: 10720
+2025-06-25 10:19:19,578 - boundary_avoidance - INFO - 🔍 FOCUSED wall detection zone: Y=290 to 456
+2025-06-25 10:19:19,601 - competition_manager - INFO - ============================================================
+2025-06-25 10:19:19,602 - competition_manager - INFO - COMPETITION ENDED - WHITE BALLS + DELIVERY CYCLE!
+2025-06-25 10:19:19,602 - competition_manager - INFO - ============================================================
+2025-06-25 10:19:19,602 - competition_manager - INFO - Total time: 121.1 seconds
+2025-06-25 10:19:19,602 - competition_manager - INFO - White balls collected: 0
+2025-06-25 10:19:19,602 - competition_manager - INFO - Delivery target: 1 balls per cycle
+2025-06-25 10:19:19,602 - competition_manager - INFO - Final state: centering_ball
+2025-06-25 10:19:19,602 - competition_manager - INFO - Collection system: Enhanced (X+Y Centering + SS Only)
+2025-06-25 10:19:19,602 - competition_manager - INFO - Arena detection: Fallback
+2025-06-25 10:19:19,602 - competition_manager - INFO - Boundary avoidance: Modular system
+2025-06-25 10:19:19,602 - competition_manager - INFO - ============================================================
+2025-06-25 10:19:19,602 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-25 10:19:19,602 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:19:19,706 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:19:20,009 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-25 10:19:20,010 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-25 10:19:20,010 - robot_state_machine - WARNING - 🛑 State machine emergency stop activated
+2025-06-25 10:19:20,010 - competition_manager - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-25 10:19:20,010 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-25 10:19:20,010 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:19:20,113 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:19:20,417 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-25 10:19:20,417 - hardware - WARNING - 🛑 EMERGENCY STOP activated
+2025-06-25 10:19:20,418 - vision - INFO - Simplified vision system (HoughCircles only) cleanup completed
+2025-06-25 10:19:20,419 - hardware - INFO - 🧹 Starting hardware cleanup...
+2025-06-25 10:19:20,419 - hardware - INFO - 🔋 Turning OFF motors for power saving
+2025-06-25 10:19:20,419 - motor_controller - INFO - 🧹 Cleaning up motors...
+2025-06-25 10:19:20,419 - motor_controller - INFO - 🔋 Motors POWERED OFF - saving battery
+2025-06-25 10:19:20,419 - motor_controller - INFO - ✅ Motor cleanup completed - motors POWERED OFF
+2025-06-25 10:19:20,419 - servo_controller - INFO - 🧹 Cleaning up servos...
+2025-06-25 10:19:20,419 - servo_controller - INFO - 🔧 Centering servos...
+2025-06-25 10:19:20,419 - servo_controller - INFO - 🚗 Moving servo SS to DRIVING position (97°)
+2025-06-25 10:19:20,523 - servo_controller - INFO - 🔒 Moving servo SF to CLOSED position (180°)
+2025-06-25 10:19:20,827 - servo_controller - INFO - ✅ Servos centered - SS at driving, SF closed
+2025-06-25 10:19:20,827 - servo_controller - INFO - ✅ Servo cleanup completed
+2025-06-25 10:19:20,827 - hardware - INFO - ✅ Hardware cleanup completed
+2025-06-25 10:19:20,827 - __main__ - WARNING - EMERGENCY STOP ACTIVATED
+2025-06-25 10:19:20,827 - __main__ - ERROR - Emergency stop error: PWMOutputDevice is closed or uninitialized

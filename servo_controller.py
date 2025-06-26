@@ -38,7 +38,7 @@ class ServoController:
     # === BASIC SERVO CONTROL ===
     def set_servo_angle(self, servo_obj, angle):
         """Set servo to specific angle (0-180 degrees) - immediate movement"""
-        angle = max(0, min(180, angle))  # Clamp to valid range
+        angle = max(0, min(180, angle))
         try:
             servo_obj.angle = angle
             if config.DEBUG_MOVEMENT:
@@ -51,7 +51,7 @@ class ServoController:
         if speed_delay is None:
             speed_delay = getattr(config, 'SERVO_STEP_DELAY', 0.02)
             
-        target_angle = max(0, min(180, target_angle))  # Clamp to valid range
+        target_angle = max(0, min(180, target_angle))
         
         try:
             # Get current angle (default to 90 if unknown)
@@ -61,7 +61,7 @@ class ServoController:
             
             # Calculate step direction and size
             angle_diff = target_angle - current_angle
-            if abs(angle_diff) <= 2:  # Already close enough
+            if abs(angle_diff) <= 2:
                 servo_obj.angle = target_angle
                 return
             
@@ -72,7 +72,7 @@ class ServoController:
             for i in range(steps):
                 current_angle += step_size
                 servo_obj.angle = current_angle
-                time.sleep(speed_delay)  # Small delay between steps
+                time.sleep(speed_delay)
             
             # Final position
             servo_obj.angle = target_angle
@@ -101,7 +101,7 @@ class ServoController:
                 return
             
             # Calculate movement parameters
-            steps = max(10, int(duration / 0.02))  # At least 10 steps
+            steps = max(10, int(duration / 0.02)) 
             angle_step = angle_diff / steps
             time_step = duration / steps
             
@@ -148,7 +148,7 @@ class ServoController:
             for i in range(steps):
                 current_angle += step_direction
                 self.servo_ss.angle = int(current_angle)
-                time.sleep(0.05)  # Small delay between steps
+                time.sleep(0.05)
             
             # Final position adjustment
             self.servo_ss.angle = target_angle
@@ -205,42 +205,56 @@ class ServoController:
             self.logger.error(f"Failed to get servo SS state: {e}")
             return "unknown"
 
-    # === SERVO SF (SERVO 2) CONTROL ===
-    def servo_sf_to_ready(self):
-        """Move servo SF to ready position"""
+    # === SERVO SF (SERVO 2) SIMPLIFIED TWO-STATE SYSTEM ===
+    def servo_sf_to_open(self):
+        """Move servo SF to open position"""
         if config.DEBUG_COLLECTION:
-            self.logger.info(f"🔧 Moving servo SF to READY position ({config.SERVO_SF_READY}°)")
-        self.set_servo_angle_gradual(self.servo_sf, config.SERVO_SF_READY)
+            self.logger.info(f"🔓 Moving servo SF to OPEN position ({config.SERVO_SF_OPEN}°)")
+        self.set_servo_angle_gradual(self.servo_sf, config.SERVO_SF_OPEN)
 
-    def servo_sf_to_catch(self):
-        """Move servo SF to catch position"""
+    def servo_sf_to_closed(self):
+        """Move servo SF to closed position"""
         if config.DEBUG_COLLECTION:
-            self.logger.info(f"🤏 Moving servo SF to CATCH position ({config.SERVO_SF_CATCH}°)")
-        self.set_servo_angle_gradual(self.servo_sf, config.SERVO_SF_CATCH)
+            self.logger.info(f"🔒 Moving servo SF to CLOSED position ({config.SERVO_SF_CLOSED}°)")
+        self.set_servo_angle_gradual(self.servo_sf, config.SERVO_SF_CLOSED)
 
-    def servo_sf_to_release(self):
-        """Move servo SF to release position"""
-        if config.DEBUG_COLLECTION:
-            self.logger.info(f"🔓 Moving servo SF to RELEASE position ({config.SERVO_SF_RELEASE}°)")
-        self.set_servo_angle_gradual(self.servo_sf, config.SERVO_SF_RELEASE)
+    def get_servo_sf_state(self):
+        """Get current servo SF state as string"""
+        try:
+            current_angle = getattr(self.servo_sf, 'angle', 90)
+            if current_angle is None:
+                return "unknown"
+            
+            # Determine which state we're closest to
+            open_distance = abs(current_angle - config.SERVO_SF_OPEN)
+            closed_distance = abs(current_angle - config.SERVO_SF_CLOSED)
+            
+            if open_distance < closed_distance:
+                return "open"
+            else:
+                return "closed"
+                
+        except Exception as e:
+            self.logger.error(f"Failed to get servo SF state: {e}")
+            return "unknown"
 
     # === COMBINED SERVO OPERATIONS ===
     def initialize_servos_for_competition(self):
-        """Initialize both servos for competition start"""
+        """Initialize both servos for competition start - SS driving, SF closed"""
         try:
             if config.DEBUG_COLLECTION:
                 self.logger.info("🚀 Initializing servos for competition start...")
             self.servo_ss_to_driving()
             time.sleep(0.3)
-            self.servo_sf_to_ready()
-            time.sleep(0.5)  # Allow time to settle
+            self.servo_sf_to_closed()
+            time.sleep(0.5)
             if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Servos initialized - SS at driving, SF at ready")
+                self.logger.info("✅ Servos initialized - SS at driving, SF closed")
         except Exception as e:
             self.logger.error(f"Failed to initialize servos for competition: {e}")
     
     def center_servos(self):
-        """Center both servos - SS goes to driving position, SF to ready"""
+        """Center both servos - SS goes to driving position, SF to closed"""
         try:
             # Check if gradual movement is enabled
             use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
@@ -253,17 +267,17 @@ class ServoController:
                 # Move SS to driving position using incremental movement
                 self.servo_ss_to_driving()
                 time.sleep(sequential_delay)
-                # Move SF to ready position
-                self.servo_sf_to_ready()
-                time.sleep(0.3)  # Final settling time
+                # Move SF to closed position
+                self.servo_sf_to_closed()
+                time.sleep(0.3)
             else:
                 # Original immediate movement
                 self.servo_ss_to_driving()
-                self.servo_sf_to_ready()
-                time.sleep(0.5)  # Allow time to reach position
+                self.servo_sf_to_closed()
+                time.sleep(0.5)
             
             if config.DEBUG_COLLECTION:
-                self.logger.info("✅ Servos centered - SS at driving, SF at ready")
+                self.logger.info("✅ Servos centered - SS at driving, SF closed")
                 
         except Exception as e:
             self.logger.error(f"Failed to center servos: {e}")
@@ -299,22 +313,20 @@ class ServoController:
             time.sleep(1)
             self.servo_ss_to_store()
             time.sleep(1)
-            self.servo_ss_to_driving()  # Return to driving
+            self.servo_ss_to_driving()
             time.sleep(1)
             
-            # Test servo SF
+            # Test servo SF (simplified two-state)
             self.logger.info("Testing servo SF...")
-            self.servo_sf_to_ready()
+            self.servo_sf_to_closed()
             time.sleep(1)
-            self.servo_sf_to_catch()
+            self.servo_sf_to_open()
             time.sleep(1)
-            self.servo_sf_to_release()
-            time.sleep(1)
-            self.servo_sf_to_ready()  # Return to ready
+            self.servo_sf_to_closed()
             time.sleep(1)
             
-            # Return to center
-            self.center_servos()
+            # Return to competition starting position
+            self.initialize_servos_for_competition()
             
             self.logger.info("✅ Servo test completed successfully")
             return True
@@ -329,7 +341,7 @@ class ServoController:
             if config.DEBUG_MOVEMENT:
                 self.logger.info("🧹 Cleaning up servos...")
             
-            self.center_servos()  # This will set SS to driving, SF to ready
+            self.center_servos()  # This will set SS to driving, SF to closed
             
             # Deinitialize PCA9685
             if hasattr(self.pca, 'deinit'):
@@ -339,3 +351,16 @@ class ServoController:
             
         except Exception as e:
             self.logger.error(f"❌ Servo cleanup failed: {e}")
+
+    # === LEGACY METHODS FOR BACKWARD COMPATIBILITY ===
+    def servo_sf_to_ready(self):
+        """Legacy method - redirects to closed"""
+        self.servo_sf_to_closed()
+
+    def servo_sf_to_catch(self):
+        """Legacy method - redirects to closed"""
+        self.servo_sf_to_closed()
+
+    def servo_sf_to_release(self):
+        """Legacy method - redirects to open"""
+        self.servo_sf_to_open()

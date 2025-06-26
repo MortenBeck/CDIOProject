@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 GolfBot Hardware Testing Interface - FIXED
 Interactive testing for servos and DC motors
@@ -51,7 +50,6 @@ class HardwareTester:
             if cmd.startswith('ss-'):
                 try:
                     angle = int(cmd[3:])
-                    # FIXED: Use servo controller directly
                     self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_ss, angle)
                     print(f"Servo SS → {angle}°")
                 except ValueError:
@@ -60,7 +58,6 @@ class HardwareTester:
             elif cmd.startswith('sf-'):
                 try:
                     angle = int(cmd[3:])
-                    # FIXED: Use servo controller directly
                     self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_sf, angle)
                     print(f"Servo SF → {angle}°")
                 except ValueError:
@@ -69,7 +66,6 @@ class HardwareTester:
             elif cmd.startswith('all-'):
                 try:
                     angle = int(cmd[4:])
-                    # FIXED: Use servo controller directly
                     self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_ss, angle)
                     self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_sf, angle)
                     print(f"Both servos → {angle}°")
@@ -231,7 +227,6 @@ class HardwareTester:
         angles = [0, 45, 90, 135, 180, 90]
         for angle in angles:
             print(f"  Moving both servos to {angle}°...")
-            # FIXED: Use servo controller directly
             self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_ss, angle)
             self.hardware.servo_controller.set_servo_angle(self.hardware.servo_controller.servo_sf, angle)
             time.sleep(1)
@@ -364,9 +359,7 @@ class HardwareTester:
         """FIXED: Clean shutdown - motors only"""
         if self.hardware:
             print("\nStopping motors...")
-            # Only stop motors, don't center servos
             self.hardware.stop_motors()
-            # FIXED: Access motor components through motor_controller
             try:
                 motor_controller = self.hardware.motor_controller
                 for component in [motor_controller.motor_in1, motor_controller.motor_in2, 
@@ -402,6 +395,5 @@ def run_hardware_test():
     return True
 
 if __name__ == "__main__":
-    # Setup basic logging for testing
     logging.basicConfig(level=logging.INFO)
     run_hardware_test()

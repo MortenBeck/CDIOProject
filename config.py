@@ -1,9 +1,14 @@
 import numpy as np
 
 # === COMPETITION SETTINGS ===
-COMPETITION_TIME = 8 * 60  # 8 minutes in seconds
+COMPETITION_TIME = 8 * 60
 BALL_COUNT = 11
 VIP_BALL_COLOR = "orange"
+
+# === COLLECTION AND DELIVERY CYCLE ===
+BALLS_BEFORE_DELIVERY = 1  # Number of balls to collect before moving to delivery phase
+POST_DELIVERY_TURN_DURATION = 3.0  # Seconds to turn right after delivery
+DELIVERY_DOOR_OPEN_TIME = 5.0  # Seconds to keep SF door open during delivery
 
 # === SCORING ===
 GOAL_A_POINTS = 150  # Smaller goal
@@ -42,9 +47,9 @@ CAMERA_FRAMERATE = 20
 BALL_HSV_LOWER = np.array([0, 0, 180])    # White/light detection
 BALL_HSV_UPPER = np.array([180, 30, 255])
 BALL_MIN_AREA = 100
-BALL_MAX_AREA = 10000
+BALL_MAX_AREA = 5000
 BALL_MIN_RADIUS = 10
-BALL_MAX_RADIUS = 70
+BALL_MAX_RADIUS = 50
 
 # Orange VIP ball detection
 ##ORANGE_HSV_LOWER = np.array([10, 100, 100])
@@ -65,16 +70,15 @@ SERVO_COLLECT_CLOSE = 135 # Close position to hold ball
 SERVO_RELEASE = 0         # Release position
 
 # === SERVO SS (SERVO 1) FOUR-STATE SYSTEM ===
-SERVO_SS_STORE = 110        # Store position
-SERVO_SS_PRE_COLLECT = 50   # Pre-collect position
-SERVO_SS_DRIVING = 10       # Driving position (default/start position)
-SERVO_SS_COLLECT = 3      # Collect position
+SERVO_SS_STORE = 180        # Store position
+SERVO_SS_PRE_COLLECT = 110   # Pre-collect position
+SERVO_SS_DRIVING = 97      # Driving position (default/start position)
+SERVO_SS_COLLECT = 80      # Collect position
 SERVO_SS_STEP_SIZE = 5      # Incremental movement step size
 
 # === SERVO SF (SERVO 2) POSITIONS ===
-SERVO_SF_READY = 90         # Ready position
-SERVO_SF_CATCH = 135        # Catch position
-SERVO_SF_RELEASE = 0        # Release position
+SERVO_SF_OPEN = 70          # Open position
+SERVO_SF_CLOSED = 180       # Closed position (default state)
 
 # === ENHANCED COLLECTION POSITIONS ===
 SERVO_READY_POSITION = 90  # Servos up and ready to catch
@@ -97,12 +101,12 @@ CENTERING_DISTANCE_TOLERANCE = 30  # Pixels - more lenient Y centering (was 20)
 COLLECTION_DRIVE_TIME_PER_PIXEL = 0.003  # Seconds per pixel distance to ball
 MIN_COLLECTION_DRIVE_TIME = 0.5  # Minimum drive time
 MAX_COLLECTION_DRIVE_TIME = 2.0  # Maximum drive time for safety
-COLLECTION_SPEED = 0.4  # Slower speed for precise collection
+COLLECTION_SPEED = 0.3  # Slower speed for precise collection
 
 # === ENHANCED CENTERING BEHAVIOR (FASTER) ===
-CENTERING_TURN_DURATION = 0.15  # Slightly reduced from 0.2
-CENTERING_DRIVE_DURATION = 0.25  # Slightly reduced from 0.3
-CENTERING_SPEED = 0.45  # Slightly reduced from 0.4
+CENTERING_TURN_DURATION = 0.25  # Slightly reduced from 0.2
+CENTERING_DRIVE_DURATION = 0.4  # Slightly reduced from 0.3
+CENTERING_SPEED = 0.4  # Slightly reduced from 0.4
 
 # === NAVIGATION STRATEGY ===
 SEARCH_PATTERN = [
@@ -111,9 +115,14 @@ SEARCH_PATTERN = [
 ]
 
 # === BALL COLLECTION ===
-COLLECTION_DISTANCE_THRESHOLD = 30  # Pixels - how close before attempting collection
+COLLECTION_DISTANCE_THRESHOLD = 20  # Pixels - how close before attempting collection
 BALL_LOST_TIMEOUT = 2.0  # Seconds before giving up on a ball
 MAX_COLLECTION_ATTEMPTS = 3
+
+# === FAILED COLLECTION RECOVERY ===
+FAILED_COLLECTION_RECOVERY_TURN_DURATION = 2.0  # Seconds to turn right after 2 failed collections
+FAILED_COLLECTION_MAX_ATTEMPTS = 2  # Number of attempts before recovery turn
+FAILED_COLLECTION_POSITION_TOLERANCE = 50  # Pixels - distance to consider same ball
 
 # === DEBUGGING ===
 DEBUG_VISION = True
@@ -129,7 +138,7 @@ RESTART_THRESHOLD = 5  # Number of consecutive errors before restart
 # === PRECISE TARGET ZONE (NEW APPROACH) ===
 TARGET_ZONE_WIDTH = 80              # Target zone width in pixels (ping pong ball sized)
 TARGET_ZONE_HEIGHT = 60             # Target zone height in pixels
-FIXED_COLLECTION_DRIVE_TIME = 0.7  # Fixed time to drive from target zone to collection point
+FIXED_COLLECTION_DRIVE_TIME = 0.95  # 0.75-1.0 is basically the range for collection drive time
 
 # Enhanced centering - ball must be in target zone AND X-centered before collection
 CENTERING_TOLERANCE = 40  # X-axis centering tolerance (pixels)
@@ -137,12 +146,23 @@ REQUIRE_TARGET_ZONE_FOR_COLLECTION = True  # Ball must be in target zone, not ju
 
 # === COLLECTION ZONE CONFIGURATION ===
 # Target zone positioning (0.0 = top, 1.0 = bottom)
-TARGET_ZONE_VERTICAL_POSITION = 0.65  # 65% down from top (was centered at 50%)
+TARGET_ZONE_VERTICAL_POSITION = 0.65 
 
 # Target zone size (pixels)
-TARGET_ZONE_WIDTH = 60   # Reduced from 80 pixels
-TARGET_ZONE_HEIGHT = 45  # Reduced from 60 pixels
+TARGET_ZONE_WIDTH = 60 
+TARGET_ZONE_HEIGHT = 45
 
-# General collection area
-COLLECTION_ZONE_HORIZONTAL_MARGIN = 0.35  # Increased from 0.3 (smaller area)
-COLLECTION_ZONE_VERTICAL_START = 0.55     # Start at 55% down (was 40%)
+# === DELIVERY ZONE DETECTION ===
+# Green delivery zone detection (extension of outer wall)
+DELIVERY_ZONE_HSV_LOWER = np.array([40, 50, 50])   # Green detection
+DELIVERY_ZONE_HSV_UPPER = np.array([80, 255, 255])
+DELIVERY_ZONE_MIN_AREA = 500    # Minimum area for delivery zone
+DELIVERY_ZONE_MAX_AREA = 50000  # Maximum area for delivery zone
+DELIVERY_CENTERING_TOLERANCE = 50  # Pixels tolerance for centering on delivery zone (increased)
+
+# === BOUNDARY AVOIDANCE TIMING ===
+BOUNDARY_TURN_DURATION = 0.6      # Seconds for left/right turns to avoid walls
+BOUNDARY_TURN_SPEED = 0.45         # Speed for avoidance turns
+BOUNDARY_BACKUP_DURATION = 0.3     # Seconds to back up from walls
+BOUNDARY_BACKUP_SPEED = 0.45       # Speed for backing up
+BOUNDARY_COMPOUND_TURN_DURATION = 0.8  # Longer turn for backup_and_turn maneuver

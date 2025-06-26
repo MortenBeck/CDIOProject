@@ -24,6 +24,9 @@ class GolfBotHardware:
                 self.servo_controller
             )
             
+            # Explicitly turn on motors after initialization
+            self.logger.info("🔋 Turning ON motors for operation")
+            
             self.logger.info("✅ All hardware subsystems initialized successfully")
             
         except Exception as e:
@@ -60,7 +63,7 @@ class GolfBotHardware:
         """Get current speed"""
         return self.motor_controller.current_speed
     
-    # === SERVO CONTROL DELEGATION ===
+    # === SERVO SS CONTROL DELEGATION ===
     def servo_ss_to_store(self):
         """Move servo SS to store position"""
         return self.servo_controller.servo_ss_to_store()
@@ -77,33 +80,48 @@ class GolfBotHardware:
         """Move servo SS to collect position"""
         return self.servo_controller.servo_ss_to_collect()
     
+    def get_servo_ss_state(self):
+        """Get current servo SS state"""
+        return self.servo_controller.get_servo_ss_state()
+    
+    # === SERVO SF CONTROL DELEGATION ===
+    def servo_sf_to_open(self):
+        """Move servo SF to open position (for delivery only)"""
+        return self.servo_controller.servo_sf_to_open()
+    
+    def servo_sf_to_closed(self):
+        """Move servo SF to closed position (default state)"""
+        return self.servo_controller.servo_sf_to_closed()
+    
+    def get_servo_sf_state(self):
+        """Get current servo SF state"""
+        return self.servo_controller.get_servo_sf_state()
+    
+    # === LEGACY SF METHODS FOR BACKWARD COMPATIBILITY ===
     def servo_sf_to_ready(self):
-        """Move servo SF to ready position"""
-        return self.servo_controller.servo_sf_to_ready()
+        """Legacy method - redirects to closed"""
+        return self.servo_controller.servo_sf_to_closed()
     
     def servo_sf_to_catch(self):
-        """Move servo SF to catch position"""
-        return self.servo_controller.servo_sf_to_catch()
+        """Legacy method - redirects to closed"""
+        return self.servo_controller.servo_sf_to_closed()
     
     def servo_sf_to_release(self):
-        """Move servo SF to release position"""
-        return self.servo_controller.servo_sf_to_release()
+        """Legacy method - redirects to open"""
+        return self.servo_controller.servo_sf_to_open()
     
+    # === SERVO SYSTEM OPERATIONS ===
     def initialize_servos_for_competition(self):
-        """Initialize both servos for competition start"""
+        """Initialize both servos for competition start - SS driving, SF closed"""
         return self.servo_controller.initialize_servos_for_competition()
     
     def center_servos(self):
-        """Center both servos"""
+        """Center both servos - SS driving, SF closed"""
         return self.servo_controller.center_servos()
     
     def get_servo_angles(self):
         """Get current servo angles"""
         return self.servo_controller.get_servo_angles()
-    
-    def get_servo_ss_state(self):
-        """Get current servo SS state"""
-        return self.servo_controller.get_servo_ss_state()
     
     # === BALL COLLECTION DELEGATION ===
     def enhanced_collection_sequence(self):
@@ -147,6 +165,7 @@ class GolfBotHardware:
         motor_status = self.motor_controller.get_motor_status()
         servo_angles = self.servo_controller.get_servo_angles()
         servo_ss_state = self.servo_controller.get_servo_ss_state()
+        servo_sf_state = self.servo_controller.get_servo_sf_state()
         collection_status = self.ball_collection.get_collection_status()
         
         use_gradual = getattr(config, 'SERVO_GRADUAL_MOVEMENT', True)
@@ -157,6 +176,7 @@ class GolfBotHardware:
             'speed_percentage': motor_status['speed_percentage'],
             'servo_angles': servo_angles,
             'servo_ss_state': servo_ss_state,
+            'servo_sf_state': servo_sf_state,
             'motor_status': {
                 'in1_active': motor_status['in1_active'],
                 'in2_active': motor_status['in2_active'],
@@ -176,7 +196,7 @@ class GolfBotHardware:
         self.logger.info("🔧 HARDWARE STATUS SUMMARY:")
         self.logger.info(f"   Balls collected: {status['collected_balls']}")
         self.logger.info(f"   Current speed: {status['speed_percentage']}")
-        self.logger.info(f"   Servo angles: SS={servo_angles['servo_ss']}° ({status['servo_ss_state']}) SF={servo_angles['servo_sf']}°")
+        self.logger.info(f"   Servo angles: SS={servo_angles['servo_ss']}° ({status['servo_ss_state']}) SF={servo_angles['servo_sf']}° ({status['servo_sf_state']})")
         self.logger.info(f"   Gradual movement: {status['gradual_movement']}")
         self.logger.info(f"   Collection method: {status['collection_method']}")
     
@@ -207,6 +227,10 @@ class GolfBotHardware:
         try:
             if config.DEBUG_MOVEMENT:
                 self.logger.info("🧹 Starting hardware cleanup...")
+            
+            # Explicitly turn OFF motors before cleanup
+            self.logger.info("🔋 Turning OFF motors for power saving")
+            self.motor_controller.stop_motors()
             
             # Clean up subsystems
             self.motor_controller.cleanup()

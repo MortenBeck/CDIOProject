@@ -4,15 +4,16 @@ from gpiozero import PWMOutputDevice
 import config
 
 class MotorController:
-    """Handles all motor movement and control"""
+    """Handles all motor movement and control with power management"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.current_speed = config.DEFAULT_SPEED
+        self.motors_powered = False
         self.setup_motors()
         
     def setup_motors(self):
-        """Initialize motor GPIO connections"""
+        """Initialize motor GPIO connections and turn motors ON"""
         try:
             self.logger.info("Initializing motor controllers...")
             
@@ -22,8 +23,9 @@ class MotorController:
             self.motor_in3 = PWMOutputDevice(config.MOTOR_IN3)
             self.motor_in4 = PWMOutputDevice(config.MOTOR_IN4)
             
-            # Start with motors stopped
+            # Start with motors stopped but powered
             self.stop_motors()
+            self.power_on_motors()
             
             self.logger.info("✅ Motors initialized successfully")
             self.logger.info(f"✓ Motor A: GPIO {config.MOTOR_IN1}, {config.MOTOR_IN2}")
@@ -33,21 +35,44 @@ class MotorController:
             self.logger.error(f"Motor initialization failed: {e}")
             raise
     
+    def power_on_motors(self):
+        """Explicitly turn motors ON for operation"""
+        self.motors_powered = True
+        if config.DEBUG_MOVEMENT:
+            self.logger.info("🔋 Motors POWERED ON - ready for operation")
+    
+    def power_off_motors(self):
+        """Explicitly turn motors OFF for power saving"""
+        self.stop_motors()
+        self.motors_powered = False
+        if config.DEBUG_MOVEMENT:
+            self.logger.info("🔋 Motors POWERED OFF - saving battery")
+    
     def stop_motors(self):
         """Stop all motors"""
-        self.motor_in1.off()
-        self.motor_in2.off()
-        self.motor_in3.off()
-        self.motor_in4.off()
+        if hasattr(self, 'motor_in1'):  # Check if motors are initialized
+            self.motor_in1.off()
+            self.motor_in2.off()
+            self.motor_in3.off()
+            self.motor_in4.off()
         if config.DEBUG_MOVEMENT:
             self.logger.debug("🛑 Motors stopped")
     
+    def _check_motors_powered(self):
+        """Check if motors are powered before movement"""
+        if not self.motors_powered:
+            self.logger.warning("⚠️ Attempted motor movement while powered OFF")
+            return False
+        return True
+    
     def move_forward(self, duration=None, speed=None):
         """Move robot forward"""
+        if not self._check_motors_powered():
+            return
+            
         if speed is None:
             speed = self.current_speed
             
-        # Motor A forward, Motor B reverse (due to mirrored mounting)
         self.motor_in1.value = speed
         self.motor_in2.off()
         self.motor_in3.off() 
@@ -62,10 +87,12 @@ class MotorController:
     
     def move_backward(self, duration=None, speed=None):
         """Move robot backward"""
+        if not self._check_motors_powered():
+            return
+            
         if speed is None:
             speed = self.current_speed
             
-        # Reverse of forward movement
         self.motor_in1.off()
         self.motor_in2.value = speed
         self.motor_in3.value = speed
@@ -80,10 +107,12 @@ class MotorController:
     
     def turn_right(self, duration=None, speed=None):
         """Turn robot right"""
+        if not self._check_motors_powered():
+            return
+            
         if speed is None:
             speed = self.current_speed
             
-        # Both motors forward (same direction = turn right)
         self.motor_in1.value = speed
         self.motor_in2.off()
         self.motor_in3.value = speed
@@ -98,10 +127,12 @@ class MotorController:
     
     def turn_left(self, duration=None, speed=None):
         """Turn robot left"""
+        if not self._check_motors_powered():
+            return
+            
         if speed is None:
             speed = self.current_speed
             
-        # Both motors reverse (same direction = turn left)
         self.motor_in1.off()
         self.motor_in2.value = speed
         self.motor_in3.off()
@@ -128,12 +159,17 @@ class MotorController:
             'in3_active': self.motor_in3.is_active if hasattr(self.motor_in3, 'is_active') else False,
             'in4_active': self.motor_in4.is_active if hasattr(self.motor_in4, 'is_active') else False,
             'current_speed': self.current_speed,
-            'speed_percentage': f"{self.current_speed*100:.0f}%"
+            'speed_percentage': f"{self.current_speed*100:.0f}%",
+            'motors_powered': self.motors_powered
         }
     
     def test_motors(self):
         """Test all motor movements"""
         try:
+            if not self.motors_powered:
+                self.logger.warning("Motors not powered - turning on for test")
+                self.power_on_motors()
+                
             self.logger.info("Testing motors...")
             self.move_forward(duration=0.2)
             time.sleep(0.2)
@@ -150,19 +186,18 @@ class MotorController:
             return False
     
     def cleanup(self):
-        """Clean shutdown of motors"""
+        """Clean shutdown of motors with power OFF"""
         try:
             if config.DEBUG_MOVEMENT:
                 self.logger.info("🧹 Cleaning up motors...")
             
-            self.stop_motors()
+            self.power_off_motors()
             
-            # Close motor GPIO connections
             for component in [self.motor_in1, self.motor_in2, self.motor_in3, self.motor_in4]:
                 if hasattr(component, 'close'):
                     component.close()
             
-            self.logger.info("✅ Motor cleanup completed")
+            self.logger.info("✅ Motor cleanup completed - motors POWERED OFF")
             
         except Exception as e:
             self.logger.error(f"❌ Motor cleanup failed: {e}")
