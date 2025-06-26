@@ -19,49 +19,41 @@ class BallCollectionSystem:
                 self.logger.info("   Flow: SS driving -> pre-collect -> drive forward -> collect -> store -> collect -> store -> driving")
                 self.logger.info("   SF: stays closed during collection")
             
-            # Step 1: Move SS from driving to pre-collect position
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 1: Moving SS from DRIVING to PRE-COLLECT")
             self.servos.servo_ss_to_pre_collect()
             time.sleep(0.2)
-            
-            # Step 2: Drive forward for collection
+
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 2: Driving forward for collection")
             self.motors.move_forward(duration=config.FIXED_COLLECTION_DRIVE_TIME, speed=config.COLLECTION_SPEED)
             time.sleep(0.1)
-            
-            # Step 3: SS captures ball (first collect)
+
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 3: SS collect position (first capture)")
             self.servos.servo_ss_to_collect()
             time.sleep(0.3)
-            
-            # Step 4: Move SS to store position (secure ball)
+
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 4: Moving SS to STORE position (secure first ball)")
             self.servos.servo_ss_to_store()
             time.sleep(0.3)
-            
-            # Step 5: SS captures ball again (second collect)
+
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 5: SS collect position (second capture)")
             self.servos.servo_ss_to_collect()
             time.sleep(0.3)
-            
-            # Step 6: Move SS to store position again (secure ball)
+
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 6: Moving SS to STORE position (secure second ball)")
             self.servos.servo_ss_to_store()
             time.sleep(0.3)
-            
-            # Step 7: Return SS to driving position
+
             if config.DEBUG_COLLECTION:
                 self.logger.info("Step 7: Returning SS to driving position")
             self.servos.servo_ss_to_driving()
             time.sleep(0.2)
-            
-            # Record collection
+
             self.collected_balls.append(time.time())
             
             if config.DEBUG_COLLECTION:
@@ -108,12 +100,12 @@ class BallCollectionSystem:
             
             if use_gradual:
                 self.servos.set_servo_angle_smooth(self.servos.servo_ss, config.SERVO_COLLECT_CLOSE, duration=0.4)
-                time.sleep(0.5)  # Give time to secure ball
+                time.sleep(0.5)  
             else:
                 self.servos.set_servo_angle(self.servos.servo_ss, config.SERVO_COLLECT_CLOSE)
-                time.sleep(0.8)  # Give time to secure ball
+                time.sleep(0.8)  
                 
-            self.collected_balls.append(time.time())  # Track collection time
+            self.collected_balls.append(time.time())  
             
             if config.DEBUG_COLLECTION:
                 self.logger.info(f"✅ Ball grabbed! Total collected: {len(self.collected_balls)}")
@@ -133,24 +125,21 @@ class BallCollectionSystem:
                 self.logger.info(f"🔓 Releasing {balls_to_release} balls for delivery...")
             
             if use_gradual:
-                # Move SS to store position for release
                 self.servos.servo_ss_to_store()
                 time.sleep(sequential_delay)
-                # Open SF for ball release
                 self.servos.servo_sf_to_open()
-                time.sleep(1.5)  # Allow balls to fall out
+                time.sleep(1.5)  
                 
-                # Return servos to ready positions after release
                 self.servos.servo_ss_to_driving()
                 time.sleep(0.1)
-                self.servos.servo_sf_to_closed()  # Close SF after delivery
+                self.servos.servo_sf_to_closed()  
                 time.sleep(0.2)
             else:
                 self.servos.servo_ss_to_store()
                 self.servos.servo_sf_to_open()
-                time.sleep(1.5)  # Allow balls to fall out
-                self.servos.servo_ss_to_driving()  # Return to driving
-                self.servos.servo_sf_to_closed()   # Close SF after delivery
+                time.sleep(1.5)  
+                self.servos.servo_ss_to_driving()  
+                self.servos.servo_sf_to_closed()   
                 
             self.collected_balls.clear()
             

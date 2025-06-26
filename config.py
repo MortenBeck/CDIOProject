@@ -1,7 +1,7 @@
 import numpy as np
 
 # === COMPETITION SETTINGS ===
-COMPETITION_TIME = 8 * 60  # 8 minutes in seconds
+COMPETITION_TIME = 8 * 60
 BALL_COUNT = 11
 VIP_BALL_COLOR = "orange"
 
@@ -146,11 +146,11 @@ REQUIRE_TARGET_ZONE_FOR_COLLECTION = True  # Ball must be in target zone, not ju
 
 # === COLLECTION ZONE CONFIGURATION ===
 # Target zone positioning (0.0 = top, 1.0 = bottom)
-TARGET_ZONE_VERTICAL_POSITION = 0.65  # 65% down from top (was centered at 50%)
+TARGET_ZONE_VERTICAL_POSITION = 0.65 
 
 # Target zone size (pixels)
-TARGET_ZONE_WIDTH = 60   # Reduced from 80 pixels
-TARGET_ZONE_HEIGHT = 45  # Reduced from 60 pixels
+TARGET_ZONE_WIDTH = 60 
+TARGET_ZONE_HEIGHT = 45
 
 # === DELIVERY ZONE DETECTION ===
 # Green delivery zone detection (extension of outer wall)

@@ -38,7 +38,7 @@ class ServoController:
     # === BASIC SERVO CONTROL ===
     def set_servo_angle(self, servo_obj, angle):
         """Set servo to specific angle (0-180 degrees) - immediate movement"""
-        angle = max(0, min(180, angle))  # Clamp to valid range
+        angle = max(0, min(180, angle))
         try:
             servo_obj.angle = angle
             if config.DEBUG_MOVEMENT:
@@ -51,7 +51,7 @@ class ServoController:
         if speed_delay is None:
             speed_delay = getattr(config, 'SERVO_STEP_DELAY', 0.02)
             
-        target_angle = max(0, min(180, target_angle))  # Clamp to valid range
+        target_angle = max(0, min(180, target_angle))
         
         try:
             # Get current angle (default to 90 if unknown)
@@ -61,7 +61,7 @@ class ServoController:
             
             # Calculate step direction and size
             angle_diff = target_angle - current_angle
-            if abs(angle_diff) <= 2:  # Already close enough
+            if abs(angle_diff) <= 2:
                 servo_obj.angle = target_angle
                 return
             
@@ -72,7 +72,7 @@ class ServoController:
             for i in range(steps):
                 current_angle += step_size
                 servo_obj.angle = current_angle
-                time.sleep(speed_delay)  # Small delay between steps
+                time.sleep(speed_delay)
             
             # Final position
             servo_obj.angle = target_angle
@@ -101,7 +101,7 @@ class ServoController:
                 return
             
             # Calculate movement parameters
-            steps = max(10, int(duration / 0.02))  # At least 10 steps
+            steps = max(10, int(duration / 0.02)) 
             angle_step = angle_diff / steps
             time_step = duration / steps
             
@@ -148,7 +148,7 @@ class ServoController:
             for i in range(steps):
                 current_angle += step_direction
                 self.servo_ss.angle = int(current_angle)
-                time.sleep(0.05)  # Small delay between steps
+                time.sleep(0.05)
             
             # Final position adjustment
             self.servo_ss.angle = target_angle
@@ -247,7 +247,7 @@ class ServoController:
             self.servo_ss_to_driving()
             time.sleep(0.3)
             self.servo_sf_to_closed()
-            time.sleep(0.5)  # Allow time to settle
+            time.sleep(0.5)
             if config.DEBUG_COLLECTION:
                 self.logger.info("✅ Servos initialized - SS at driving, SF closed")
         except Exception as e:
@@ -269,12 +269,12 @@ class ServoController:
                 time.sleep(sequential_delay)
                 # Move SF to closed position
                 self.servo_sf_to_closed()
-                time.sleep(0.3)  # Final settling time
+                time.sleep(0.3)
             else:
                 # Original immediate movement
                 self.servo_ss_to_driving()
                 self.servo_sf_to_closed()
-                time.sleep(0.5)  # Allow time to reach position
+                time.sleep(0.5)
             
             if config.DEBUG_COLLECTION:
                 self.logger.info("✅ Servos centered - SS at driving, SF closed")
@@ -313,7 +313,7 @@ class ServoController:
             time.sleep(1)
             self.servo_ss_to_store()
             time.sleep(1)
-            self.servo_ss_to_driving()  # Return to driving
+            self.servo_ss_to_driving()
             time.sleep(1)
             
             # Test servo SF (simplified two-state)
@@ -322,7 +322,7 @@ class ServoController:
             time.sleep(1)
             self.servo_sf_to_open()
             time.sleep(1)
-            self.servo_sf_to_closed()  # Return to closed
+            self.servo_sf_to_closed()
             time.sleep(1)
             
             # Return to competition starting position

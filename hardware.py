@@ -84,7 +84,7 @@ class GolfBotHardware:
         """Get current servo SS state"""
         return self.servo_controller.get_servo_ss_state()
     
-    # === SERVO SF CONTROL DELEGATION (SIMPLIFIED) ===
+    # === SERVO SF CONTROL DELEGATION ===
     def servo_sf_to_open(self):
         """Move servo SF to open position (for delivery only)"""
         return self.servo_controller.servo_sf_to_open()

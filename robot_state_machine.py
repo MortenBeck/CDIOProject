@@ -62,7 +62,7 @@ class RobotStateMachine:
         non_interruptible_states = [
             RobotState.COLLECTING_BALL, 
             RobotState.DELIVERY_RELEASING,
-            RobotState.FAILED_COLLECTION_RECOVERY  # Recovery turn must not be interrupted
+            RobotState.FAILED_COLLECTION_RECOVERY
         ]
         
         if self.state not in non_interruptible_states:
@@ -148,7 +148,7 @@ class RobotStateMachine:
             self.handle_avoiding_boundary(near_boundary)
             
         elif self.state == RobotState.FAILED_COLLECTION_RECOVERY:
-            # Handle failed collection recovery turn - NON-INTERRUPTIBLE
+            # Handle failed collection recovery turn
             self.handle_failed_collection_recovery()
             
         elif self.state == RobotState.DELIVERY_MODE:
@@ -218,13 +218,13 @@ class RobotStateMachine:
                     # NEW: Emergency backup for immediate danger
                     self.logger.warning("🚨🚨 EMERGENCY BACKUP: Immediate front danger!")
                     self.hardware.move_backward(
-                        duration=config.BOUNDARY_BACKUP_DURATION * 1.5,  # Longer backup
+                        duration=config.BOUNDARY_BACKUP_DURATION * 1.5,
                         speed=config.BOUNDARY_BACKUP_SPEED
                     )
                     time.sleep(0.1)
                     # Follow with a turn to get away from the wall
                     self.hardware.turn_right(
-                        duration=config.BOUNDARY_COMPOUND_TURN_DURATION * 1.2,  # Longer turn
+                        duration=config.BOUNDARY_COMPOUND_TURN_DURATION * 1.2,
                         speed=config.BOUNDARY_TURN_SPEED
                     )
                 else:
@@ -519,11 +519,9 @@ class RobotStateMachine:
         else:
             self.logger.info("Starting collection: white ball")
         
-        # Use the proper collection system instead of manual servo control
         ball_count_before = self.hardware.get_ball_count()
         self.logger.info(f"Ball count before collection: {ball_count_before}")
         
-        # This method properly handles ball counting and uses SS only
         success = self.hardware.enhanced_collection_sequence()
         
         ball_count_after = self.hardware.get_ball_count()
@@ -689,7 +687,7 @@ class RobotStateMachine:
             self.hardware.turn_right(duration=config.POST_DELIVERY_TURN_DURATION, speed=0.5)
         
         elapsed = time.time() - self.post_delivery_start_time
-        if elapsed >= config.POST_DELIVERY_TURN_DURATION + 0.5:  # Add small buffer
+        if elapsed >= config.POST_DELIVERY_TURN_DURATION + 0.5:
             # Set servos back to competition positions
             self.hardware.servo_ss_to_driving()
             self.hardware.servo_sf_to_closed()

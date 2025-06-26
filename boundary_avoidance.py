@@ -29,44 +29,37 @@ class BoundaryAvoidanceSystem:
         h, w = frame.shape[:2]
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # FIXED RED DETECTION - Much more permissive ranges
-        # Range 1: Lower red hues (0-15) - More permissive
-        lower_red1 = np.array([0, 50, 50])      # Lowered saturation from 150 to 50
-        upper_red1 = np.array([15, 255, 255])   # Extended hue range to 15
+        # Range 1: Lower red hues (0-15)
+        lower_red1 = np.array([0, 50, 50])      
+        upper_red1 = np.array([15, 255, 255])   
         
-        # Range 2: Upper red hues (160-180) - More permissive  
-        lower_red2 = np.array([160, 50, 50])    # Lowered saturation from 150 to 50
+        # Range 2: Upper red hues (160-180)
+        lower_red2 = np.array([160, 50, 50])    
         upper_red2 = np.array([180, 255, 255])
 
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
         mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
         red_boundary_mask = mask1 + mask2
 
-        # Store the red mask for visualization
         self.red_mask = red_boundary_mask.copy()
 
-        # Clean up the boundary mask
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         red_boundary_mask = cv2.morphologyEx(red_boundary_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
         red_boundary_mask = cv2.morphologyEx(red_boundary_mask, cv2.MORPH_OPEN, kernel, iterations=2)
 
-        # Find the arena boundary contour
         contours, _ = cv2.findContours(red_boundary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if contours:
-            # Get the largest contour (should be arena boundary)
             largest_contour = max(contours, key=cv2.contourArea)
             area = cv2.contourArea(largest_contour)
 
             # Check if this could be a valid arena boundary
-            min_arena_area = (w * h) * 0.10  # Lowered from 15% to 10%
+            min_arena_area = (w * h) * 0.10
 
             if area > min_arena_area:
-                # Create arena mask - everything inside the red boundary
                 self.arena_mask = np.zeros((h, w), dtype=np.uint8)
                 cv2.fillPoly(self.arena_mask, [largest_contour], 255)
 
-                # Erode slightly to ensure we're well inside the boundary
                 erosion_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15))
                 self.arena_mask = cv2.erode(self.arena_mask, erosion_kernel, iterations=1)
 
@@ -86,14 +79,13 @@ class BoundaryAvoidanceSystem:
         # Fallback: create a conservative arena mask
         if not self.arena_detected:
             self.arena_mask = np.ones((h, w), dtype=np.uint8) * 255
-            # Exclude outer edges where objects might be outside arena
-            margin_h = int(h * 0.12)  # 12% margin top/bottom
-            margin_w = int(w * 0.08)  # 8% margin left/right
+            margin_h = int(h * 0.12)
+            margin_w = int(w * 0.08)
 
-            self.arena_mask[:margin_h, :] = 0  # Top
-            self.arena_mask[-margin_h:, :] = 0  # Bottom
-            self.arena_mask[:, :margin_w] = 0  # Left
-            self.arena_mask[:, -margin_w:] = 0  # Right
+            self.arena_mask[:margin_h, :] = 0
+            self.arena_mask[-margin_h:, :] = 0
+            self.arena_mask[:, :margin_w] = 0
+            self.arena_mask[:, -margin_w:] = 0
 
             if config.DEBUG_VISION:
                 self.logger.warning("⚠️ Using fallback arena mask (no red walls detected)")
@@ -110,10 +102,10 @@ class BoundaryAvoidanceSystem:
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # FIXED RED DETECTION - Same permissive ranges as arena detection
-        lower_red1 = np.array([0, 50, 50])      # Much more permissive
+
+        lower_red1 = np.array([0, 50, 50])
         upper_red1 = np.array([15, 255, 255])
-        lower_red2 = np.array([160, 50, 50])    # Much more permissive
+        lower_red2 = np.array([160, 50, 50])
         upper_red2 = np.array([180, 255, 255])
 
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
@@ -122,18 +114,17 @@ class BoundaryAvoidanceSystem:
 
         self.red_mask = red_mask.copy()
 
-        # Clean up mask
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel, iterations=1)
         red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
 
         # FOCUSED DETECTION ZONE: From top of collection zone downward
-        target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)  # 65% down from top
+        target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)
         target_zone_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
         target_zone_top_y = target_zone_center_y - (target_zone_height // 2)
         
-        danger_start_y = target_zone_top_y  # Start detection from TOP of target zone
-        danger_end_y = int(h * 0.95)  # Go almost to bottom (95%)
+        danger_start_y = target_zone_top_y 
+        danger_end_y = int(h * 0.95)
 
         if config.DEBUG_VISION:
             # Count total red pixels for debugging
@@ -142,24 +133,22 @@ class BoundaryAvoidanceSystem:
             self.logger.info(f"🔍 FOCUSED wall detection zone: Y={danger_start_y} to {danger_end_y}")
 
         danger_detected = False
-        min_wall_area = 200   # Minimum area to consider a wall
+        min_wall_area = 200
 
         # Calculate detection zone height for percentage calculations
         detection_zone_height = danger_end_y - danger_start_y
 
-        # === REGION 1: BOTTOM WALL DETECTION (MODIFIED - SAME DEPTH AS SIDES) ===
-        # CHANGED: Use same 20% calculation as sides instead of 10% of frame height
-        bottom_detection_height = int(detection_zone_height * 0.20)  # Same as sides: 20% of detection zone
-        bottom_region_start = danger_end_y - bottom_detection_height  # Start from bottom up
+        # === REGION 1: BOTTOM WALL DETECTION ===
+        bottom_detection_height = int(detection_zone_height * 0.20) 
+        bottom_region_start = danger_end_y - bottom_detection_height 
         
-        # NEW: Calculate X boundaries for bottom detection - exclude purple edge areas
-        bottom_left_margin = int(w * 0.1)   # 10% margin from left edge (80% width)
-        bottom_right_margin = int(w * 0.1)  # 10% margin from right edge (80% width) 
+        # Calculate X boundaries for bottom detection - exclude purple edge areas
+        bottom_left_margin = int(w * 0.1)  
+        bottom_right_margin = int(w * 0.1) 
         bottom_detection_left = bottom_left_margin
         bottom_detection_right = w - bottom_right_margin
         
         if bottom_region_start < danger_end_y and bottom_detection_right > bottom_detection_left:
-            # MODIFIED: Only check center area, not full width, with NEW shallower height
             bottom_region = red_mask[bottom_region_start:danger_end_y, bottom_detection_left:bottom_detection_right]
             contours, _ = cv2.findContours(bottom_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -167,7 +156,7 @@ class BoundaryAvoidanceSystem:
                 area = cv2.contourArea(contour)
                 if area > min_wall_area:
                     x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                    if w_rect > 60:   # Horizontal wall
+                    if w_rect > 60:
                         danger_detected = True
                         wall_info = {
                             'zone': 'bottom',
@@ -183,8 +172,8 @@ class BoundaryAvoidanceSystem:
                         break
 
         # === REGION 2: CENTER FORWARD WALL DETECTION ===
-        center_width = int(w * 0.4)         # Check center 40% of frame width
-        center_start_x = int(w * 0.3)       # Start at 30% from left
+        center_width = int(w * 0.4)
+        center_start_x = int(w * 0.3)
 
         center_region = red_mask[danger_start_y:danger_end_y, center_start_x:center_start_x + center_width]
         contours, _ = cv2.findContours(center_region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -193,7 +182,7 @@ class BoundaryAvoidanceSystem:
             area = cv2.contourArea(contour)
             if area > min_wall_area:
                 x, y, w_rect, h_rect = cv2.boundingRect(contour)
-                if w_rect > 40 or h_rect > 30:   # Reasonable size thresholds
+                if w_rect > 40 or h_rect > 30:
                     danger_detected = True
                     wall_info = {
                         'zone': 'center_forward',
@@ -230,7 +219,6 @@ class BoundaryAvoidanceSystem:
         if config.DEBUG_VISION:
             self.logger.info(f"Wall avoidance: detected zones {triggered_zones} -> backup_and_turn")
 
-        # UNIFIED STRATEGY: Always backup and turn right for any wall detection
         return 'backup_and_turn'
 
     def draw_boundary_visualization(self, frame) -> np.ndarray:
@@ -245,7 +233,7 @@ class BoundaryAvoidanceSystem:
         if self.red_mask is not None:
             # Show red detection in bright overlay
             red_overlay = np.zeros_like(result)
-            red_overlay[:, :, 2] = self.red_mask  # Red channel
+            red_overlay[:, :, 2] = self.red_mask
             cv2.addWeighted(result, 0.7, red_overlay, 0.3, 0, result)
 
             # Count and show red pixels
@@ -257,7 +245,7 @@ class BoundaryAvoidanceSystem:
             contours, _ = cv2.findContours(self.red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for i, contour in enumerate(contours):
                 area = cv2.contourArea(contour)
-                if area > 50:  # Show even small red areas
+                if area > 50:
                     cv2.drawContours(result, [contour], -1, (0, 255, 255), 2)  # Cyan outline
                     # Label each red area
                     M = cv2.moments(contour)

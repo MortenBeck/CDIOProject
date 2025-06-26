@@ -66,7 +66,7 @@ class GolfBotDashboard:
         self._add_robot_status_panel(robot_state, hardware)
         self._add_detection_details_panel(vision_system)
         self._add_delivery_cycle_panel(hardware, robot_state)
-        self._add_wall_danger_panel(vision_system)  # NEW: Wall danger status panel
+        self._add_wall_danger_panel(vision_system)
         self._add_controls_legend_panel()
         
         return self.dashboard
@@ -85,7 +85,7 @@ class GolfBotDashboard:
         walls_detected = boundary_status.get('walls_triggered', 0) > 0
         
         # Calculate danger zones (same logic as boundary_avoidance.py)
-        target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)  # 65% down from top
+        target_zone_center_y = int(h * config.TARGET_ZONE_VERTICAL_POSITION)
         target_zone_height = getattr(config, 'TARGET_ZONE_HEIGHT', 45)
         target_zone_top_y = target_zone_center_y - (target_zone_height // 2)
         
@@ -103,9 +103,8 @@ class GolfBotDashboard:
         overlay = result.copy()
         
         # === ZONE 1: BOTTOM WALL DETECTION AREA (UPDATED - SHALLOWER) ===
-        # CHANGED: Use same 20% calculation as sides instead of 10% of frame height
-        bottom_detection_height = int(detection_zone_height * 0.20)  # Same as sides: 20% of detection zone
-        bottom_region_start = danger_end_y - bottom_detection_height  # Start from bottom up
+        bottom_detection_height = int(detection_zone_height * 0.20)
+        bottom_region_start = danger_end_y - bottom_detection_height
         
         # Exclude edge areas (10% margin from each side for 80% width)
         bottom_left_margin = int(w * 0.1)
@@ -120,8 +119,8 @@ class GolfBotDashboard:
                      zone_color, -1)
         
         # === ZONE 2: CENTER FORWARD WALL DETECTION ===
-        center_width = int(w * 0.4)         # Check center 40% of frame width
-        center_start_x = int(w * 0.3)       # Start at 30% from left
+        center_width = int(w * 0.4)
+        center_start_x = int(w * 0.3)
         
         cv2.rectangle(overlay, 
                      (center_start_x, danger_start_y), 
@@ -290,10 +289,9 @@ class GolfBotDashboard:
                 (self.right_panel_x + 5, y), self.font, self.font_scale_small, self.text_color, 1)
         y += line_height
         
-        # Servo status - FIXED TO USE CORRECT NAMES
+        # Servo status
         if hardware and hasattr(hardware, 'get_servo_angles'):
             angles = hardware.get_servo_angles()
-            # Use the correct keys: 'servo_ss' and 'servo_sf'
             ss_angle = angles.get('servo_ss', 90)
             sf_angle = angles.get('servo_sf', 90)
             
@@ -351,7 +349,7 @@ class GolfBotDashboard:
                        (self.right_panel_x + 5, y), self.font, self.font_scale_small, (128, 128, 128), 1)
             y += line_height * 2
         
-        # Centering info (both X and Y) - Updated for more lenient tolerances
+        # Centering info (both X and Y)
         x_tolerance = getattr(config, 'CENTERING_TOLERANCE', 25)
         y_tolerance = getattr(config, 'CENTERING_DISTANCE_TOLERANCE', 30)
         cv2.putText(self.dashboard, f"Centering: ±{x_tolerance}px X, ±{y_tolerance}px Y", 

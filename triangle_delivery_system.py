@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 PRECISION TRIANGLE TIP ALIGNMENT SYSTEM
 Designed for DEAD-STRAIGHT delivery through precise holes in walls
@@ -40,7 +39,7 @@ class PrecisionTriangleVision:
         
         # ROBOT POSITION: Bottom center of frame (where robot actually is)
         self.robot_x = config.CAMERA_WIDTH // 2
-        self.robot_y = int(config.CAMERA_HEIGHT * 0.85)  # 85% down from top
+        self.robot_y = int(config.CAMERA_HEIGHT * 0.85)
         
         # PRECISION ALIGNMENT PARAMETERS
         self.precision_x_tolerance = 8      # Pixels - VERY tight X centering
@@ -129,7 +128,7 @@ class PrecisionTriangleVision:
                         tip_vector = np.array(tip_point) - robot_pos
                         if np.linalg.norm(tip_vector) > 0:
                             tip_vector_norm = tip_vector / np.linalg.norm(tip_vector)
-                            straight_vector = np.array([0, -1])  # Straight up
+                            straight_vector = np.array([0, -1])
                             angle_error = np.degrees(np.arccos(np.clip(np.dot(tip_vector_norm, straight_vector), -1, 1)))
                         else:
                             angle_error = 0
@@ -273,7 +272,7 @@ class PrecisionTriangleVision:
         # Combined confidence with tip emphasis
         combined = (size_confidence * 0.2 + 
                    shape_confidence * 0.2 + 
-                   tip_confidence * 0.4 +        # TIP IS MOST IMPORTANT
+                   tip_confidence * 0.4 +
                    distance_confidence * 0.2)
         
         return min(1.0, combined)
@@ -765,9 +764,9 @@ class PrecisionTriangleDeliverySystem:
         
         # Enhanced backing sequence for precision scenarios
         self.logger.info("🔄 Executing precision retreat sequence")
-        self.hardware.move_backward(duration=1.8, speed=0.4)  # Longer retreat
+        self.hardware.move_backward(duration=1.8, speed=0.4)
         time.sleep(0.2)
-        self.hardware.turn_left(duration=0.9, speed=0.4)      # More turn for clearance
+        self.hardware.turn_left(duration=0.9, speed=0.4)
         time.sleep(0.2)
         
         # Reset all tracking

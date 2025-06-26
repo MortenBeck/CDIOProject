@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Enhanced Green Target Delivery System - Proper Perpendicular Alignment
 Ensures robot approaches perpendicular to the short sides of rotated rectangles
@@ -12,8 +11,6 @@ from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import config
 
-# FIXED IMPORTS - Use the new precision system
-# Import the precision triangular system from triangle_delivery_system.py
 try:
     from triangle_delivery_system import run_precision_triangular_delivery_test
 except ImportError as e:
@@ -37,7 +34,7 @@ class GreenTarget:
     rotated_rect: Optional[Tuple] = None
     box_points: Optional[np.ndarray] = None
     rotation_angle: Optional[float] = None
-    closest_short_side: Optional[dict] = None  # New: closest short side info
+    closest_short_side: Optional[dict] = None
 
 class EnhancedDeliveryVisionSystem:
     """Enhanced vision system with proper perpendicular alignment"""
@@ -187,7 +184,7 @@ class EnhancedDeliveryVisionSystem:
         
         # Sort by length to find short sides
         side_info.sort(key=lambda x: x['length'])
-        short_sides = side_info[:2]  # Two shortest sides
+        short_sides = side_info[:2]
         
         # Find the closest short side to the robot
         closest_short_side = min(short_sides, key=lambda x: x['distance_to_robot'])
@@ -252,8 +249,6 @@ class EnhancedDeliveryVisionSystem:
         
         # PHASE 2: Fine alignment - ensure perpendicular approach angle
         elif angle_error > self.alignment_tolerance:
-            # Calculate which direction to turn for better alignment
-            # Cross product to determine turn direction
             cross_product = np.cross(robot_to_target_norm, normal_vector)
             
             if cross_product > 0:
@@ -598,7 +593,6 @@ class EnhancedDeliverySystem:
         
         cv2.destroyAllWindows()
 
-# FIXED: Update the main test function to use the correct imports
 def run_delivery_test():
     """Main entry point for delivery system - FIXED IMPORTS"""
     print("\n🚚 GOLFBOT DELIVERY SYSTEM v4.0 - PRECISION EDITION")
@@ -616,12 +610,12 @@ def run_delivery_test():
                 print("\n🎯 PRECISION TRIANGULAR DELIVERY MODE SELECTED")
                 print("Target: Green triangles with EXTREME precision tip alignment")
                 print("Purpose: Dead-straight delivery through precise holes in walls")
-                return run_precision_triangular_delivery_test()  # Use the correct function name
+                return run_precision_triangular_delivery_test()
                 
             elif choice == '2':
                 print("\n🟫 RECTANGULAR DELIVERY MODE SELECTED")
                 print("Target: Green rectangular zones")
-                return run_rectangular_delivery_test()  # Your existing system
+                return run_rectangular_delivery_test()
                 
             else:
                 print("Invalid choice. Enter 1 or 2.")
@@ -661,7 +655,6 @@ def run_rectangular_delivery_test():
         
         print("✅ Rectangular delivery systems ready!")
         
-        # Use your existing EnhancedDeliverySystem
         delivery_system = EnhancedDeliverySystem(hardware, vision)
         delivery_system.start_enhanced_delivery_mode()
         

@@ -43,7 +43,7 @@ class MotorController:
     
     def power_off_motors(self):
         """Explicitly turn motors OFF for power saving"""
-        self.stop_motors()  # Ensure stopped first
+        self.stop_motors()
         self.motors_powered = False
         if config.DEBUG_MOVEMENT:
             self.logger.info("🔋 Motors POWERED OFF - saving battery")
@@ -73,7 +73,6 @@ class MotorController:
         if speed is None:
             speed = self.current_speed
             
-        # Motor A forward, Motor B reverse (due to mirrored mounting)
         self.motor_in1.value = speed
         self.motor_in2.off()
         self.motor_in3.off() 
@@ -94,7 +93,6 @@ class MotorController:
         if speed is None:
             speed = self.current_speed
             
-        # Reverse of forward movement
         self.motor_in1.off()
         self.motor_in2.value = speed
         self.motor_in3.value = speed
@@ -115,7 +113,6 @@ class MotorController:
         if speed is None:
             speed = self.current_speed
             
-        # Both motors forward (same direction = turn right)
         self.motor_in1.value = speed
         self.motor_in2.off()
         self.motor_in3.value = speed
@@ -136,7 +133,6 @@ class MotorController:
         if speed is None:
             speed = self.current_speed
             
-        # Both motors reverse (same direction = turn left)
         self.motor_in1.off()
         self.motor_in2.value = speed
         self.motor_in3.off()
@@ -195,10 +191,8 @@ class MotorController:
             if config.DEBUG_MOVEMENT:
                 self.logger.info("🧹 Cleaning up motors...")
             
-            # Power off motors first
             self.power_off_motors()
             
-            # Close motor GPIO connections
             for component in [self.motor_in1, self.motor_in2, self.motor_in3, self.motor_in4]:
                 if hasattr(component, 'close'):
                     component.close()

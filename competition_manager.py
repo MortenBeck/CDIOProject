@@ -60,7 +60,7 @@ class CompetitionManager:
         # Initialize servos for competition start - SS driving, SF closed
         self.logger.info("🚀 Initializing servos for competition start...")
         self.hardware.initialize_servos_for_competition()
-        time.sleep(1.0)  # Allow servos to reach position
+        time.sleep(1.0)
         
         self.start_time = time.time()
         self.competition_active = True
@@ -126,13 +126,13 @@ class CompetitionManager:
                 
                 # Adaptive sleep based on detection results and state
                 if self.state_machine.state == RobotState.CENTERING_BALL:
-                    time.sleep(0.03)  # Faster when centering
+                    time.sleep(0.03)
                 elif self.state_machine.state in [RobotState.DELIVERY_MODE, RobotState.POST_DELIVERY_TURN]:
-                    time.sleep(0.1)   # Normal when in delivery cycle
+                    time.sleep(0.1)
                 elif balls and len(balls) > 0:
-                    time.sleep(0.05)  # Faster when balls detected
+                    time.sleep(0.05)
                 else:
-                    time.sleep(0.1)   # Slower when searching
+                    time.sleep(0.1)
                 
             except Exception as e:
                 self.logger.error(f"Main loop iteration error: {e}")

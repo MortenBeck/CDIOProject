@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 GolfBot Main Entry Point - Simplified and Modular
 White ball collection system with enhanced features + Delivery System

@@ -165,7 +165,7 @@ class VisionSystem:
                     # Calculate confidence based on area and shape
                     size_confidence = min(1.0, area / 5000)
                     aspect_ratio = w_rect / max(h_rect, 1)
-                    shape_confidence = min(1.0, 1.0 / max(1, abs(aspect_ratio - 1.5)))  # Prefer rectangular
+                    shape_confidence = min(1.0, 1.0 / max(1, abs(aspect_ratio - 1.5)))
                     confidence = (size_confidence + shape_confidence) / 2
                     
                     if confidence > 0.3:
