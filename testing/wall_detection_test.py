@@ -1,17 +1,15 @@
-#!/usr/bin/env python3
 """
-GolfBot Wall Avoidance System - INTEGRATED MOTOR CONTROL
-Pi 5 Compatible with automatic wall detection and motor stopping
+GolfBot Ball and Wall Detection - OPTIMIZED LOW LATENCY VERSION
+Pi 5 Compatible with white ball and red wall detection
 
 FEATURES:
 - White ball detection (from original code)
 - Red wall/boundary detection for navigation
-- DC Motor control integration from second_test.py
-- Automatic stopping when walls detected
-- Manual motor control with keyboard
+- Same optimized camera system with picamera2
 - Real-time performance monitoring
+- Multiple detection visualization modes
 
-EXPECTED: 15 FPS with dual detection and motor control
+EXPECTED: 15 FPS with dual detection for stable performance
 """
 
 import cv2
@@ -20,9 +18,6 @@ import time
 import subprocess
 import os
 import sys
-
-# Motor control imports
-from gpiozero import PWMOutputDevice
 
 # Try to import picamera2 (best performance)
 try:
@@ -48,115 +43,12 @@ BALL_CIRCULARITY_THRESHOLD = 0.25  # Ball circularity
 WALL_MIN_LENGTH = 50     # Minimum wall segment length
 ENABLE_PERFORMANCE_STATS = True
 
-# Motor control settings
-MOTOR_SPEED_SLOW = 0.3    # 30% speed
-MOTOR_SPEED_MEDIUM = 0.5  # 50% speed
-MOTOR_SPEED_FAST = 0.8    # 80% speed
-DEFAULT_SPEED = MOTOR_SPEED_SLOW  # Default speed for manual control
-
-# Wall avoidance settings
-WALL_DANGER_DISTANCE = 50   # Pixels from bottom of frame to consider "close" (reduced from 150)
-AUTO_STOP_ENABLED = True    # Enable automatic stopping
-WALL_AVOIDANCE_ACTIVE = True  # Enable wall avoidance system
-
-# === DC MOTOR SETUP ===
-print("Initializing motor control...")
-try:
-    motor_in1 = PWMOutputDevice(19)  # GPIO 19 (Pin 35) - Motor A direction 1
-    motor_in2 = PWMOutputDevice(26)  # GPIO 26 (Pin 37) - Motor A direction 2
-    motor_in3 = PWMOutputDevice(20)  # GPIO 20 (Pin 38) - Motor B direction 1
-    motor_in4 = PWMOutputDevice(21)  # GPIO 21 (Pin 40) - Motor B direction 2
-    MOTORS_AVAILABLE = True
-    print("✓ Motors initialized successfully")
-except Exception as e:
-    MOTORS_AVAILABLE = False
-    print(f"⚠️  Motor initialization failed: {e}")
-
-# === MOTOR CONTROL FUNCTIONS ===
-def stop_motors():
-    """Stop all motors immediately"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_in1.off()
-    motor_in2.off()
-    motor_in3.off()
-    motor_in4.off()
-
-def motor_a_forward(speed=DEFAULT_SPEED):
-    """Motor A forward"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_in1.value = speed
-    motor_in2.off()
-
-def motor_a_reverse(speed=DEFAULT_SPEED):
-    """Motor A reverse"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_in1.off()
-    motor_in2.value = speed
-
-def motor_b_forward(speed=DEFAULT_SPEED):
-    """Motor B forward"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_in3.value = speed
-    motor_in4.off()
-
-def motor_b_reverse(speed=DEFAULT_SPEED):
-    """Motor B reverse"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_in3.off()
-    motor_in4.value = speed
-
-# CORRECTED FUNCTIONS - Both motors same direction for straight movement
-def both_motors_forward(speed=DEFAULT_SPEED):
-    """Move forward (straight) - CORRECTED for proper wiring"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_a_forward(speed)
-    motor_b_reverse(speed)  # CHANGED: Motor B needs to be reverse for forward motion
-    print(f"Moving forward at {int(speed*100)}% speed")
-
-def both_motors_reverse(speed=DEFAULT_SPEED):
-    """Move reverse (straight) - CORRECTED for proper wiring"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_a_reverse(speed)
-    motor_b_forward(speed)  # CHANGED: Motor B needs to be forward for reverse motion
-    print(f"Moving reverse at {int(speed*100)}% speed")
-
-def turn_right(speed=DEFAULT_SPEED):
-    """Turn right - CORRECTED direction"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_a_forward(speed)   # Left motor forward
-    motor_b_forward(speed)   # Right motor forward (same direction = turn right)
-    print(f"Turning right at {int(speed*100)}% speed")
-
-def turn_left(speed=DEFAULT_SPEED):
-    """Turn left - CORRECTED direction"""
-    if not MOTORS_AVAILABLE:
-        return
-    motor_a_reverse(speed)   # Left motor reverse  
-    motor_b_reverse(speed)   # Right motor reverse (same direction = turn left)
-    print(f"Turning left at {int(speed*100)}% speed")
-
 # Visualization modes
 class VisualizationMode:
     BOTH = 0          # Show both balls and walls
     BALLS_ONLY = 1    # Show only balls
     WALLS_ONLY = 2    # Show only walls
     DEBUG = 3         # Show debug masks
-
-# Motor states for display
-class MotorState:
-    STOPPED = 0
-    FORWARD = 1
-    REVERSE = 2
-    TURN_LEFT = 3
-    TURN_RIGHT = 4
 
 # === PERFORMANCE MONITORING ===
 class PerformanceMonitor:
@@ -375,10 +267,10 @@ def detect_white_balls_fast(frame):
 
 def detect_red_walls_fast(frame):
     """
-    Optimized red wall/boundary detection with danger zone analysis
+    Optimized red wall/boundary detection
     """
     if frame is None:
-        return [], None, False
+        return [], None
     
     # Resize for processing
     small_frame = cv2.resize(frame, (PROCESS_WIDTH, PROCESS_HEIGHT))
@@ -409,12 +301,8 @@ def detect_red_walls_fast(frame):
     contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     walls = []
-    danger_detected = False
     scale_x = CAMERA_WIDTH / PROCESS_WIDTH
     scale_y = CAMERA_HEIGHT / PROCESS_HEIGHT
-    
-    # Define danger zone (bottom portion of frame)
-    danger_y_threshold = PROCESS_HEIGHT - (WALL_DANGER_DISTANCE / scale_y)
     
     for contour in contours:
         area = cv2.contourArea(contour)
@@ -432,30 +320,17 @@ def detect_red_walls_fast(frame):
             length = max(w_scaled, h_scaled)
             if length > WALL_MIN_LENGTH:
                 walls.append((x_scaled, y_scaled, w_scaled, h_scaled))
-                
-                # Check if wall is in danger zone (close to robot)
-                wall_bottom_y = y + h
-                if wall_bottom_y > danger_y_threshold:
-                    danger_detected = True
     
-    # Return walls, debug mask, and danger status
+    # Return both walls and debug mask (scaled up for visualization)
     debug_mask = cv2.resize(red_mask, (CAMERA_WIDTH, CAMERA_HEIGHT))
-    return walls, debug_mask, danger_detected
+    return walls, debug_mask
 
-def draw_detections_with_motors(frame, balls, walls, motor_state, danger_detected, mode=VisualizationMode.BOTH):
-    """Draw detections with motor status and danger indicators"""
+def draw_detections(frame, balls, walls, mode=VisualizationMode.BOTH):
+    """Draw detections based on visualization mode"""
     if frame is None:
         return frame
     
     display_frame = frame.copy()
-    
-    # Draw danger zone line
-    if WALL_AVOIDANCE_ACTIVE:
-        danger_y = CAMERA_HEIGHT - WALL_DANGER_DISTANCE
-        color = (0, 0, 255) if danger_detected else (0, 255, 255)  # Red if danger, yellow if safe
-        cv2.line(display_frame, (0, danger_y), (CAMERA_WIDTH, danger_y), color, 2)
-        cv2.putText(display_frame, "DANGER ZONE", (CAMERA_WIDTH - 150, danger_y - 10), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
     
     # Draw balls
     if mode in [VisualizationMode.BOTH, VisualizationMode.BALLS_ONLY]:
@@ -466,75 +341,68 @@ def draw_detections_with_motors(frame, balls, walls, motor_state, danger_detecte
             cv2.putText(display_frame, "BALL", (x-20, y-radius-10), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     
-    # Draw walls with danger highlighting
+    # Draw walls
     if mode in [VisualizationMode.BOTH, VisualizationMode.WALLS_ONLY]:
         for x, y, w, h in walls:
-            # Check if this wall is in danger zone
-            wall_in_danger = (y + h) > (CAMERA_HEIGHT - WALL_DANGER_DISTANCE)
-            wall_color = (0, 0, 255) if wall_in_danger else (255, 0, 0)  # Bright red if dangerous
-            thickness = 3 if wall_in_danger else 2
-            
-            cv2.rectangle(display_frame, (x, y), (x+w, y+h), wall_color, thickness)
+            cv2.rectangle(display_frame, (x, y), (x+w, y+h), (0, 0, 255), 2)  # Red rectangle
             # Add label  
-            label = "DANGER!" if wall_in_danger else "WALL"
-            cv2.putText(display_frame, label, (x, y-5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, wall_color, 2)
-    
-    # Motor status indicator
-    motor_colors = {
-        MotorState.STOPPED: (128, 128, 128),     # Gray
-        MotorState.FORWARD: (0, 255, 0),         # Green
-        MotorState.REVERSE: (255, 255, 0),       # Yellow
-        MotorState.TURN_LEFT: (255, 0, 255),     # Magenta
-        MotorState.TURN_RIGHT: (0, 255, 255)     # Cyan
-    }
-    
-    motor_texts = {
-        MotorState.STOPPED: "STOPPED",
-        MotorState.FORWARD: "FORWARD", 
-        MotorState.REVERSE: "REVERSE",
-        MotorState.TURN_LEFT: "TURN LEFT",
-        MotorState.TURN_RIGHT: "TURN RIGHT"
-    }
-    
-    motor_color = motor_colors.get(motor_state, (255, 255, 255))
-    motor_text = motor_texts.get(motor_state, "UNKNOWN")
-    
-    # Draw motor status box
-    cv2.rectangle(display_frame, (CAMERA_WIDTH - 150, 10), (CAMERA_WIDTH - 10, 50), motor_color, -1)
-    cv2.rectangle(display_frame, (CAMERA_WIDTH - 150, 10), (CAMERA_WIDTH - 10, 50), (255, 255, 255), 2)
-    cv2.putText(display_frame, motor_text, (CAMERA_WIDTH - 145, 35), 
-               cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+            cv2.putText(display_frame, "WALL", (x, y-5), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     
     return display_frame
 
-# === MAIN WALL AVOIDANCE FUNCTION ===
-def wall_avoidance_system():
-    """Main wall avoidance system with motor control"""
-    global AUTO_STOP_ENABLED, WALL_AVOIDANCE_ACTIVE
+def draw_debug_masks(frame, ball_mask, wall_mask):
+    """Draw debug masks side by side"""
+    if frame is None:
+        return frame
     
-    print("=== WALL AVOIDANCE SYSTEM ===")
-    print("Detecting walls and controlling motors for collision avoidance")
+    # Create 3-channel versions of masks
+    ball_mask_color = cv2.cvtColor(ball_mask, cv2.COLOR_GRAY2BGR) if ball_mask is not None else np.zeros_like(frame)
+    wall_mask_color = cv2.cvtColor(wall_mask, cv2.COLOR_GRAY2BGR) if wall_mask is not None else np.zeros_like(frame)
+    
+    # Resize to half width for side-by-side display
+    h, w = frame.shape[:2]
+    half_w = w // 2
+    
+    frame_small = cv2.resize(frame, (half_w, h))
+    ball_small = cv2.resize(ball_mask_color, (half_w, h))
+    wall_small = cv2.resize(wall_mask_color, (half_w, h))
+    
+    # Create combined view: original | ball mask | wall mask
+    # Top half: original and ball mask
+    top = np.hstack([frame_small, ball_small])
+    # Bottom half: wall mask and combined
+    combined = cv2.bitwise_or(ball_small, wall_small)
+    bottom = np.hstack([wall_small, combined])
+    
+    # Stack vertically
+    debug_frame = np.vstack([top, bottom])
+    
+    # Add labels
+    cv2.putText(debug_frame, "ORIGINAL", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    cv2.putText(debug_frame, "BALL MASK", (half_w + 10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    cv2.putText(debug_frame, "WALL MASK", (10, h + 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    cv2.putText(debug_frame, "COMBINED", (half_w + 10, h + 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+    
+    return debug_frame
+
+# === MAIN DETECTION FUNCTION ===
+def ball_and_wall_detection():
+    """Main ball and wall detection function"""
+    print("=== BALL AND WALL DETECTION ===")
+    print("Detecting white balls and red walls with optimized performance")
     print("Controls:")
     print("  'q' - Quit")
     print("  'v' - Cycle visualization modes")
     print("  's' - Show/hide performance stats")
-    print("  'a' - Toggle auto-stop")
-    print("  'w' - Toggle wall avoidance")
-    print("  ↑ - Move forward")
-    print("  ↓ - Move reverse")
-    print("  ← - Turn left") 
-    print("  → - Turn right")
-    print("  SPACE or X - Stop motors")
-    print("  'x' - Stop motors")
-    print("  '1/2/3' - Speed control")
+    print("  'r' - Reset performance stats")
+    print("  'd' - Toggle debug mode")
     
     # Performance monitoring
     perf_monitor = PerformanceMonitor()
     show_stats = ENABLE_PERFORMANCE_STATS
     vis_mode = VisualizationMode.BOTH
-    motor_state = MotorState.STOPPED
-    current_speed = DEFAULT_SPEED  # Use the configured default speed
+    debug_mode = False
     
     # Initialize camera
     camera = None
@@ -565,12 +433,8 @@ def wall_avoidance_system():
         return
     
     print(f"✓ Using: {camera_type}")
-    print(f"✓ Motors: {'Available' if MOTORS_AVAILABLE else 'Disabled'}")
-    print(f"✓ Auto-stop: {'Enabled' if AUTO_STOP_ENABLED else 'Disabled'}")
-    print(f"✓ Target FPS: {TARGET_FPS} (optimized for stability)")
-    
-    # Initialize motors
-    stop_motors()
+    print(f"✓ Resolution: {CAMERA_WIDTH}x{CAMERA_HEIGHT}")
+    print(f"✓ Processing: {PROCESS_WIDTH}x{PROCESS_HEIGHT}")
     
     # Visualization mode names
     mode_names = ["BOTH", "BALLS ONLY", "WALLS ONLY", "DEBUG"]
@@ -578,7 +442,6 @@ def wall_avoidance_system():
     try:
         frame_count = 0
         start_time = time.time()
-        last_danger_time = 0
         
         while True:
             # Capture frame
@@ -592,19 +455,18 @@ def wall_avoidance_system():
             
             # Detect balls and walls
             balls = detect_white_balls_fast(frame)
-            walls, wall_debug_mask, danger_detected = detect_red_walls_fast(frame)
+            walls, wall_debug_mask = detect_red_walls_fast(frame)
             
-            # Wall avoidance logic
-            current_time = time.time()
-            if WALL_AVOIDANCE_ACTIVE and AUTO_STOP_ENABLED and danger_detected:
-                if motor_state != MotorState.STOPPED:
-                    stop_motors()
-                    motor_state = MotorState.STOPPED
-                    last_danger_time = current_time
-                    print("🚨 WALL DETECTED - EMERGENCY STOP!")
-            
-            # Draw display
-            display_frame = draw_detections_with_motors(frame, balls, walls, motor_state, danger_detected, vis_mode)
+            # Choose display based on mode
+            if debug_mode:
+                # Create a simple ball mask for debug view
+                ball_debug_mask = np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH), dtype=np.uint8)
+                for x, y, radius in balls:
+                    cv2.circle(ball_debug_mask, (x, y), radius, 255, -1)
+                
+                display_frame = draw_debug_masks(frame, ball_debug_mask, wall_debug_mask)
+            else:
+                display_frame = draw_detections(frame, balls, walls, vis_mode)
             
             # Add status overlay
             ball_color = (0, 255, 0) if len(balls) > 0 else (100, 100, 100)
@@ -615,86 +477,48 @@ def wall_avoidance_system():
             cv2.putText(display_frame, f"Walls: {len(walls)}", (10, 60), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, wall_color, 2)
             
-            # System status
-            auto_status = "AUTO-STOP: ON" if AUTO_STOP_ENABLED else "AUTO-STOP: OFF"
-            wall_status = "AVOIDANCE: ON" if WALL_AVOIDANCE_ACTIVE else "AVOIDANCE: OFF"
-            cv2.putText(display_frame, auto_status, (10, 90), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
-            cv2.putText(display_frame, wall_status, (10, 110), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
-            
-            # Speed indicator
-            cv2.putText(display_frame, f"Speed: {int(current_speed*100)}%", (10, 130), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
-            
-            # Danger warning
-            if danger_detected:
-                cv2.putText(display_frame, "⚠️ DANGER ZONE ⚠️", (CAMERA_WIDTH//2 - 100, 50), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 3)
+            # Visualization mode
+            if not debug_mode:
+                cv2.putText(display_frame, f"Mode: {mode_names[vis_mode]}", (10, 90), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+            else:
+                cv2.putText(display_frame, "DEBUG MODE", (10, 90), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 255), 2)
             
             # Performance stats
-            if show_stats:
+            if show_stats and not debug_mode:
                 fps_text = f"FPS: {perf_monitor.fps:.1f}"
                 latency_text = f"Latency: {perf_monitor.avg_latency:.1f}ms"
-                cv2.putText(display_frame, fps_text, (10, 160), 
+                cv2.putText(display_frame, fps_text, (10, 120), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
-                cv2.putText(display_frame, latency_text, (10, 180), 
+                cv2.putText(display_frame, latency_text, (10, 150), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
             
+            # Camera info
+            if not debug_mode:
+                cv2.putText(display_frame, f"Camera: {camera_type}", (10, display_frame.shape[0] - 20), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            
             # Display frame
-            window_name = 'GolfBot Wall Avoidance System'
+            window_name = 'Ball and Wall Detection - Low Latency'
             cv2.imshow(window_name, display_frame)
             
             # Handle keyboard input
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-            elif key == ord('v'):
+            elif key == ord('v') and not debug_mode:
                 vis_mode = (vis_mode + 1) % 3  # Cycle through first 3 modes
                 print(f"Visualization mode: {mode_names[vis_mode]}")
             elif key == ord('s'):
                 show_stats = not show_stats
                 print(f"Performance stats: {'ON' if show_stats else 'OFF'}")
-            elif key == ord('a'):
-                AUTO_STOP_ENABLED = not AUTO_STOP_ENABLED
-                print(f"Auto-stop: {'ON' if AUTO_STOP_ENABLED else 'OFF'}")
             elif key == ord('r'):
-                WALL_AVOIDANCE_ACTIVE = not WALL_AVOIDANCE_ACTIVE
-                print(f"Wall avoidance: {'ON' if WALL_AVOIDANCE_ACTIVE else 'OFF'}")
-            
-            # Manual motor control (only if not in danger or auto-stop disabled)
-            elif not (danger_detected and AUTO_STOP_ENABLED):
-                if key == 82:  # Up arrow - Forward
-                    both_motors_forward(current_speed)
-                    motor_state = MotorState.FORWARD
-                    print("Manual: Forward")
-                elif key == 84:  # Down arrow - Reverse
-                    both_motors_reverse(current_speed)
-                    motor_state = MotorState.REVERSE
-                    print("Manual: Reverse")
-                elif key == 81:  # Left arrow - Turn left
-                    turn_left(current_speed)
-                    motor_state = MotorState.TURN_LEFT
-                    print("Manual: Turn left")
-                elif key == 83:  # Right arrow - Turn right
-                    turn_right(current_speed)
-                    motor_state = MotorState.TURN_RIGHT
-                    print("Manual: Turn right")
-                elif key == ord(' ') or key == ord('x'):  # Space bar or X - Stop
-                    stop_motors()
-                    motor_state = MotorState.STOPPED
-                    print("Manual: Stop")
-            
-            # Speed control
-            if key == ord('1'):
-                current_speed = MOTOR_SPEED_SLOW
-                print(f"Speed: {int(current_speed*100)}%")
-            elif key == ord('2'):
-                current_speed = MOTOR_SPEED_MEDIUM
-                print(f"Speed: {int(current_speed*100)}%")
-            elif key == ord('3'):
-                current_speed = MOTOR_SPEED_FAST
-                print(f"Speed: {int(current_speed*100)}%")
+                perf_monitor = PerformanceMonitor()
+                print("Performance stats reset")
+            elif key == ord('d'):
+                debug_mode = not debug_mode
+                print(f"Debug mode: {'ON' if debug_mode else 'OFF'}")
             
     except KeyboardInterrupt:
         print("\n🛑 Interrupted by user")
@@ -702,17 +526,9 @@ def wall_avoidance_system():
     finally:
         # Cleanup
         print("\nCleaning up...")
-        stop_motors()
         if camera:
             camera.release()
         cv2.destroyAllWindows()
-        
-        # Close motor connections
-        if MOTORS_AVAILABLE:
-            motor_in1.close()
-            motor_in2.close()
-            motor_in3.close()
-            motor_in4.close()
         
         # Final stats
         total_time = time.time() - start_time
@@ -724,78 +540,20 @@ def wall_avoidance_system():
         print(f"   Total time: {total_time:.1f}s")
         print(f"   Average FPS: {avg_fps:.1f}")
         print(f"   Camera type: {camera_type}")
-        print(f"   Motors: {'Available' if MOTORS_AVAILABLE else 'Disabled'}")
 
 if __name__ == "__main__":
-    print("GolfBot Wall Avoidance System with Motor Control")
-    print("This system will:")
-    print("  🟢 Detect white balls")
-    print("  🔴 Detect red walls/boundaries")
-    print("  🛑 Automatically stop when walls are too close")
-    print("  🎮 Allow manual motor control with Arrow Keys")
-    print("  ⚡ Run at optimized 15 FPS for stable performance")
+    print("GolfBot Ball and Wall Detection - Low Latency Version")
+    print("This will detect:")
+    print("  🟢 White balls (like golf balls)")
+    print("  🔴 Red walls/boundaries (like the tape in your image)")
     print()
     
-    # Safety check
-    if not MOTORS_AVAILABLE:
-        print("⚠️  Motors not available - running in vision-only mode")
-        print("   Motor control commands will be ignored")
-    
-    # Speed configuration
-    print("=== SPEED CONFIGURATION ===")
-    print(f"Current default speed: {int(DEFAULT_SPEED*100)}%")
-    print("Available presets:")
-    print("  1 - Slow (30%)")
-    print("  2 - Medium (50%)")  
-    print("  3 - Fast (80%)")
-    print("  c - Custom percentage (10-100%)")
-    print("  ENTER - Use current default")
-    
     try:
-        speed_choice = input("Choose speed setting: ").strip().lower()
-        
-        if speed_choice == "1":
-            DEFAULT_SPEED = MOTOR_SPEED_SLOW
-            print(f"✓ Speed set to: {int(DEFAULT_SPEED*100)}% (Slow)")
-        elif speed_choice == "2":
-            DEFAULT_SPEED = MOTOR_SPEED_MEDIUM
-            print(f"✓ Speed set to: {int(DEFAULT_SPEED*100)}% (Medium)")
-        elif speed_choice == "3":
-            DEFAULT_SPEED = MOTOR_SPEED_FAST
-            print(f"✓ Speed set to: {int(DEFAULT_SPEED*100)}% (Fast)")
-        elif speed_choice == "c":
-            while True:
-                try:
-                    custom_percent = int(input("Enter speed percentage (10-100): "))
-                    if 10 <= custom_percent <= 100:
-                        DEFAULT_SPEED = custom_percent / 100.0
-                        print(f"✓ Speed set to: {custom_percent}% (Custom)")
-                        break
-                    else:
-                        print("Please enter a value between 10 and 100")
-                except ValueError:
-                    print("Please enter a valid number")
-        elif speed_choice == "":
-            print(f"✓ Using default speed: {int(DEFAULT_SPEED*100)}%")
-        else:
-            print(f"✓ Invalid choice, using default: {int(DEFAULT_SPEED*100)}%")
+        ball_and_wall_detection()
             
     except KeyboardInterrupt:
         print("\nExiting...")
-        exit()
-    
-    print(f"\n🚀 Starting system with {int(DEFAULT_SPEED*100)}% motor speed...")
-    print("Remember: You can still change speed during operation with keys 1, 2, 3")
-    time.sleep(1)
-    
-    try:
-        wall_avoidance_system()
-            
-    except KeyboardInterrupt:
-        print("\nExiting...")
-        stop_motors()
     except Exception as e:
         print(f"Error: {e}")
-        stop_motors()
         import traceback
         traceback.print_exc()

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 GolfBot Autonomous Wall Avoidance System - AUTONOMOUS OPERATION
 Pi 5 Compatible with automatic ball collection and wall avoidance

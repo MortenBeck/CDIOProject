@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
 """
-GolfBot Control System with Pi Camera 2 Integration and Speed Control
+GolfBot Control System with Pi Camera 2 Integration
 Servo/Motor control + Camera testing for Pi 5
 """
 
-from gpiozero import Servo, PWMOutputDevice
+from gpiozero import Servo, OutputDevice
 import time
 import subprocess
 import os
@@ -14,20 +13,11 @@ servo1 = Servo(18)  # GPIO 18 (Pin 12) - Hardware PWM0
 servo2 = Servo(12)  # GPIO 12 (Pin 32) - Hardware PWM0 ALT  
 servo3 = Servo(13)  # GPIO 13 (Pin 33) - Hardware PWM1 ALT
 
-# === DC MOTOR SETUP WITH PWM ===
-motor_in1 = PWMOutputDevice(19)  # GPIO 19 (Pin 35) - Motor A direction 1
-motor_in2 = PWMOutputDevice(26)  # GPIO 26 (Pin 37) - Motor A direction 2
-motor_in3 = PWMOutputDevice(20)  # GPIO 20 (Pin 38) - Motor B direction 1
-motor_in4 = PWMOutputDevice(21)  # GPIO 21 (Pin 40) - Motor B direction 2
-
-# === SPEED SETTINGS ===
-MOTOR_SPEED_SLOW = 0.3    # 30% speed
-MOTOR_SPEED_MEDIUM = 0.5  # 50% speed
-MOTOR_SPEED_FAST = 0.8    # 80% speed
-MOTOR_SPEED_MAX = 1.0     # 100% speed
-
-# Current speed setting (change this to adjust default speed)
-current_speed = MOTOR_SPEED_SLOW
+# === DC MOTOR SETUP ===
+motor_in1 = OutputDevice(19)  # GPIO 19 (Pin 35)
+motor_in2 = OutputDevice(26)  # GPIO 26 (Pin 37)
+motor_in3 = OutputDevice(20)  # GPIO 20 (Pin 38)
+motor_in4 = OutputDevice(21)  # GPIO 21 (Pin 40)
 
 # === CAMERA SETUP ===
 def test_camera_detection():
@@ -120,15 +110,10 @@ def camera_full_test():
 
 # === SERVO FUNCTIONS ===
 def set_servo_angle(servo, angle):
-    """Set servo to angle (0-180 degrees)"""
-    if angle < 0:
-        angle = 0
-    elif angle > 180:
-        angle = 180
-    
-    value = (angle - 90) / 90
+    """Set servo to any angle (no limits)"""
+    value = (angle / 90) - 1  # Convert angle to -1 to +1 range
     servo.value = value
-
+    
 def set_servo1(angle):
     set_servo_angle(servo1, angle)
     print(f"Servo 1 → {angle}°")
@@ -150,7 +135,8 @@ def set_all_servos(angle):
 def center_servos():
     set_all_servos(90)
 
-# === DC MOTOR FUNCTIONS WITH SPEED CONTROL ===
+# === DC MOTOR FUNCTIONS ===
+# === CORRECTED DC MOTOR FUNCTIONS ===
 def stop_motors():
     motor_in1.off()
     motor_in2.off()
@@ -158,161 +144,47 @@ def stop_motors():
     motor_in4.off()
     print("Motors stopped")
 
-def motor_a_forward(speed=None):
-    if speed is None:
-        speed = current_speed
-    motor_in1.value = speed
+def motor_a_forward():
+    motor_in1.on()
     motor_in2.off()
-    print(f"Motor A forward at {int(speed*100)}% speed")
+    print("Motor A forward")
 
-def motor_a_reverse(speed=None):
-    if speed is None:
-        speed = current_speed
+def motor_a_reverse():
     motor_in1.off()
-    motor_in2.value = speed
-    print(f"Motor A reverse at {int(speed*100)}% speed")
+    motor_in2.on()
+    print("Motor A reverse")
 
-def motor_b_forward(speed=None):
-    if speed is None:
-        speed = current_speed
-    motor_in3.value = speed
+def motor_b_forward():
+    motor_in3.on()
     motor_in4.off()
-    print(f"Motor B forward at {int(speed*100)}% speed")
+    print("Motor B forward")
 
-def motor_b_reverse(speed=None):
-    if speed is None:
-        speed = current_speed
+def motor_b_reverse():
     motor_in3.off()
-    motor_in4.value = speed
-    print(f"Motor B reverse at {int(speed*100)}% speed")
+    motor_in4.on()
+    print("Motor B reverse")
 
 # CORRECTED FUNCTIONS - Motor B is reversed for straight movement
-def both_motors_forward(speed=None):
-    if speed is None:
-        speed = current_speed
-    motor_a_forward(speed)
-    motor_b_reverse(speed)  # Reversed because motor B is mirrored
-    print(f"Moving forward at {int(speed*100)}% speed")
+def both_motors_forward():
+    motor_a_forward()
+    motor_b_reverse()  # Reversed because motor B is mirrored
+    print("Both motors forward (straight)")
 
-def both_motors_reverse(speed=None):
-    if speed is None:
-        speed = current_speed
-    motor_a_reverse(speed)
-    motor_b_forward(speed)  # Reversed because motor B is mirrored
-    print(f"Moving reverse at {int(speed*100)}% speed")
+def both_motors_reverse():
+    motor_a_reverse()
+    motor_b_forward()  # Reversed because motor B is mirrored
+    print("Both motors reverse (straight)")
 
-def turn_right(speed=None):
-    if speed is None:
-        speed = current_speed
-    motor_a_forward(speed)
-    motor_b_forward(speed)  # Both same direction = turn right
-    print(f"Turning right at {int(speed*100)}% speed")
+# NEW FUNCTIONS - For actual turning
+def turn_right():
+    motor_a_forward()
+    motor_b_forward()  # Both same direction = turn right
+    print("Turning right")
 
-def turn_left(speed=None):
-    if speed is None:
-        speed = current_speed
-    motor_a_reverse(speed)
-    motor_b_reverse(speed)  # Both same direction = turn left
-    print(f"Turning left at {int(speed*100)}% speed")
-
-# === SPEED CONTROL FUNCTIONS ===
-def set_speed(speed):
-    """Set motor speed (0.0 to 1.0)"""
-    global current_speed
-    if 0.0 <= speed <= 1.0:
-        current_speed = speed
-        print(f"Motor speed set to {int(speed*100)}%")
-    else:
-        print("Speed must be between 0.0 and 1.0")
-
-def set_speed_slow():
-    set_speed(MOTOR_SPEED_SLOW)
-
-def set_speed_medium():
-    set_speed(MOTOR_SPEED_MEDIUM)
-
-def set_speed_fast():
-    set_speed(MOTOR_SPEED_FAST)
-
-def set_speed_max():
-    set_speed(MOTOR_SPEED_MAX)
-
-def get_current_speed():
-    print(f"Current speed: {int(current_speed*100)}%")
-    return current_speed
-
-# === GRADUAL MOVEMENT FUNCTIONS ===
-def gradual_forward(duration=2, target_speed=None):
-    """Gradually accelerate forward then stop"""
-    if target_speed is None:
-        target_speed = current_speed
-    
-    print(f"Gradual forward movement for {duration}s...")
-    steps = 20
-    for i in range(steps):
-        speed = (target_speed * i) / steps
-        both_motors_forward(speed)
-        time.sleep(duration / (steps * 2))
-    
-    # Run at full speed for half the time
-    both_motors_forward(target_speed)
-    time.sleep(duration / 2)
-    
-    # Gradual stop
-    for i in range(steps, 0, -1):
-        speed = (target_speed * i) / steps
-        both_motors_forward(speed)
-        time.sleep(duration / (steps * 4))
-    
-    stop_motors()
-    print("Gradual movement complete")
-
-# === TEST FUNCTIONS ===
-def speed_test():
-    """Test all speed levels"""
-    print("=== SPEED TEST ===")
-    speeds = [
-        ("Slow", MOTOR_SPEED_SLOW),
-        ("Medium", MOTOR_SPEED_MEDIUM), 
-        ("Fast", MOTOR_SPEED_FAST),
-        ("Max", MOTOR_SPEED_MAX)
-    ]
-    
-    for name, speed in speeds:
-        print(f"Testing {name} speed ({int(speed*100)}%)...")
-        both_motors_forward(speed)
-        time.sleep(1.5)
-        stop_motors()
-        time.sleep(0.5)
-    
-    print("Speed test complete!")
-
-def precision_test():
-    """Test precise movements at slow speed"""
-    print("=== PRECISION MOVEMENT TEST ===")
-    old_speed = current_speed
-    set_speed(0.2)  # Very slow for precision
-    
-    print("Forward...")
-    both_motors_forward()
-    time.sleep(1)
-    
-    print("Right turn...")
-    turn_right()
-    time.sleep(0.5)
-    
-    print("Forward...")
-    both_motors_forward()
-    time.sleep(1)
-    
-    print("Left turn...")
-    turn_left()
-    time.sleep(0.5)
-    
-    stop_motors()
-    set_speed(old_speed)  # Restore original speed
-    print("Precision test complete!")
-
+def turn_left():
+    motor_a_reverse()
+    motor_b_reverse()  # Both same direction = turn left
+    print("Turning left")
 # === INTEGRATED DEMO ===
 def demo_sequence():
     """Demo with servo, motor, and camera integration"""
@@ -338,7 +210,7 @@ def demo_sequence():
         servo_func(90)
         time.sleep(0.5)
     
-    # 4. Motor tests at slow speed
+    # 4. Motor tests
     print("4. Testing motors...")
     both_motors_forward()
     time.sleep(1)
@@ -416,12 +288,12 @@ def competition_ready():
         print("⚠️  Camera issues detected - fix before competition")
 
 # === INITIALIZE ===
-print("=== GOLFBOT CONTROL SYSTEM WITH CAMERA AND SPEED CONTROL ===")
+print("=== GOLFBOT CONTROL SYSTEM WITH CAMERA ===")
 print("Initializing...")
 stop_motors()
 center_servos()
 time.sleep(1)
-print(f"Ready! Default speed: {int(current_speed*100)}%. Type 'help' for commands")
+print("Ready! Type 'help' for commands")
 
 # === MAIN CONTROL LOOP ===
 try:
@@ -470,31 +342,12 @@ try:
                 both_motors_forward()
             elif cmd == 'mr':
                 both_motors_reverse()
+            elif cmd == 'ms':
+                stop_motors()
             elif cmd == 'tr':
                 turn_right()
             elif cmd == 'tl':
                 turn_left()
-            elif cmd == 'ms':
-                stop_motors()
-            
-            # === SPEED COMMANDS ===
-            elif cmd.startswith('speed-'):
-                try:
-                    speed = float(cmd[6:])
-                    set_speed(speed)
-                except ValueError:
-                    print("Invalid speed. Use: speed-0.3")
-            elif cmd == 'slow':
-                set_speed_slow()
-            elif cmd == 'medium':
-                set_speed_medium()
-            elif cmd == 'fast':
-                set_speed_fast()
-            elif cmd == 'max':
-                set_speed_max()
-            elif cmd == 'speed':
-                get_current_speed()
-            
             # === CAMERA COMMANDS ===
             elif cmd == 'cam':
                 test_camera_detection()
@@ -516,12 +369,6 @@ try:
                 emergency_stop()
             elif cmd == 'test':
                 test_servo_pins()
-            elif cmd == 'speedtest':
-                speed_test()
-            elif cmd == 'precision':
-                precision_test()
-            elif cmd == 'gradual':
-                gradual_forward()
             elif cmd == 'ready':
                 competition_ready()
             elif cmd == 'quit' or cmd == 'q':
@@ -541,18 +388,11 @@ try:
                 print("  mar      - Motor A reverse")
                 print("  mbf      - Motor B forward")
                 print("  mbr      - Motor B reverse")
-                print("  mf       - Move forward (straight)")
-                print("  mr       - Move reverse (straight)")
+                print("  mf       - Both motors forward")
+                print("  mr       - Both motors reverse")
+                print("  ms       - Stop motors")
                 print("  tr       - Turn right")
                 print("  tl       - Turn left")
-                print("  ms       - Stop motors")
-                print("\n=== SPEED CONTROL ===")
-                print("  slow     - Set slow speed (30%)")
-                print("  medium   - Set medium speed (50%)")
-                print("  fast     - Set fast speed (80%)")
-                print("  max      - Set max speed (100%)")
-                print("  speed-0.3 - Set custom speed (0.0-1.0)")
-                print("  speed    - Show current speed")
                 print("\n=== CAMERA COMMANDS ===")
                 print("  cam      - Detect camera")
                 print("  preview  - 5-second preview")
@@ -562,9 +402,6 @@ try:
                 print("\n=== SYSTEM COMMANDS ===")
                 print("  demo     - Integrated system demo")
                 print("  test     - Test servo pins")
-                print("  speedtest - Test all speed levels")
-                print("  precision - Precision movement test")
-                print("  gradual  - Gradual acceleration test")
                 print("  ready    - Competition readiness check")
                 print("  stop     - Emergency stop")
                 print("  help     - Show this help")
@@ -573,7 +410,7 @@ try:
                 print("Unknown command. Type 'help' for available commands")
                 
         except (ValueError, IndexError):
-            print("Invalid format. Use: s1-90, cam, speed-0.3, etc.")
+            print("Invalid format. Use: s1-90, cam, etc.")
             
 except KeyboardInterrupt:
     emergency_stop()

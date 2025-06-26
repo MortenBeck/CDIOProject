@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 GolfBot Computer Vision Test - Pi 5 Compatible
 Uses libcamera for Pi 5 camera support
